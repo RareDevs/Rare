@@ -6,7 +6,6 @@ from PySide6.QtWidgets import QLabel
 
 
 class ElideLabel(QLabel):
-
     def __init__(self, text="", parent=None):
         super(ElideLabel, self).__init__(parent=parent)
         self.__text = text
@@ -22,8 +21,9 @@ class ElideLabel(QLabel):
 
     def __setElideText(self, a0: str):
         elided_text = self.__fm.elidedText(
-            a0, Qt.TextElideMode.ElideRight,
-            self.width() - (self.contentsMargins().left() + self.contentsMargins().right())
+            a0,
+            Qt.TextElideMode.ElideRight,
+            self.width() - (self.contentsMargins().left() + self.contentsMargins().right()),
         )
         if not self.__tooltip:
             if self.__fm.boundingRect(elided_text).width() < self.__fm.boundingRect(self.__text).width():

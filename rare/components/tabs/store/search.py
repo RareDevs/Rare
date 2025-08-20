@@ -100,24 +100,12 @@ class SearchWidget(QWidget, SideTabContents):
             # self.show_info.emit(self.search_bar.text())
 
     def init_filter(self):
-        self.ui.none_price.toggled.connect(
-            lambda: self.prepare_request("") if self.ui.none_price.isChecked() else None
-        )
-        self.ui.free_button.toggled.connect(
-            lambda: self.prepare_request("free") if self.ui.free_button.isChecked() else None
-        )
-        self.ui.under10.toggled.connect(
-            lambda: self.prepare_request("<price>[0, 1000)") if self.ui.under10.isChecked() else None
-        )
-        self.ui.under20.toggled.connect(
-            lambda: self.prepare_request("<price>[0, 2000)") if self.ui.under20.isChecked() else None
-        )
-        self.ui.under30.toggled.connect(
-            lambda: self.prepare_request("<price>[0, 3000)") if self.ui.under30.isChecked() else None
-        )
-        self.ui.above.toggled.connect(
-            lambda: self.prepare_request("<price>[1499,]") if self.ui.above.isChecked() else None
-        )
+        self.ui.none_price.toggled.connect(lambda: self.prepare_request("") if self.ui.none_price.isChecked() else None)
+        self.ui.free_button.toggled.connect(lambda: self.prepare_request("free") if self.ui.free_button.isChecked() else None)
+        self.ui.under10.toggled.connect(lambda: self.prepare_request("<price>[0, 1000)") if self.ui.under10.isChecked() else None)
+        self.ui.under20.toggled.connect(lambda: self.prepare_request("<price>[0, 2000)") if self.ui.under20.isChecked() else None)
+        self.ui.under30.toggled.connect(lambda: self.prepare_request("<price>[0, 3000)") if self.ui.under30.isChecked() else None)
+        self.ui.above.toggled.connect(lambda: self.prepare_request("<price>[1499,]") if self.ui.above.isChecked() else None)
         # self.on_discount.toggled.connect(
         #     lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None
         # )

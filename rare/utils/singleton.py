@@ -35,10 +35,7 @@ class SingleInstance(object):
             self.lockfile = lockfile
         else:
             basename = (
-                os.path.splitext(os.path.abspath(sys.argv[0]))[0]
-                .replace("/", "-")
-                .replace(":", "")
-                .replace("\\", "-")
+                os.path.splitext(os.path.abspath(sys.argv[0]))[0].replace("/", "-").replace(":", "").replace("\\", "-")
                 + "-%s" % flavor_id
                 + ".lock"
             )

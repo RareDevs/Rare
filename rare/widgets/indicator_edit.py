@@ -60,6 +60,7 @@ class IndicatorReasons(IntEnum):
     MyReasons(IndicatorReasons):
         MY_REASON = auto()
     """
+
     @staticmethod
     def _generate_next_value_(name, start, count, last_values):
         """generate consecutive automatic numbers starting from zero"""
@@ -199,7 +200,7 @@ class IndicatorLineEdit(QWidget):
     def setText(self, text: str):
         self.line_edit.setText(text)
 
-    def setInfo(self, text:str):
+    def setInfo(self, text: str):
         text = text.strip()
         self.info_label.setVisible(bool(text))
         self.info_label.setText(text)
@@ -258,12 +259,30 @@ class PathEditIconProvider(QAbstractFileIconProvider):
 
     icons = {
         CustomIconType.Unknown: ("mdi.file-cancel", "fa5.file-excel"),  # Unknown
-        QAbstractFileIconProvider.IconType.Computer: ("mdi.desktop-classic", "fa5s.desktop"),  # Computer
-        QAbstractFileIconProvider.IconType.Desktop: ("mdi.desktop-mac", "fa5s.desktop"),  # Desktop
-        QAbstractFileIconProvider.IconType.Trashcan: ("mdi.trash-can", "fa5s.trash"),  # Trashcan
-        QAbstractFileIconProvider.IconType.Network: ("mdi.server-network", "fa5s.server"),  # Network
-        QAbstractFileIconProvider.IconType.Drive: ("mdi.harddisk", "fa5s.desktop"),  # Drive
-        QAbstractFileIconProvider.IconType.Folder: ("mdi.folder", "fa5.folder"),  # Folder
+        QAbstractFileIconProvider.IconType.Computer: (
+            "mdi.desktop-classic",
+            "fa5s.desktop",
+        ),  # Computer
+        QAbstractFileIconProvider.IconType.Desktop: (
+            "mdi.desktop-mac",
+            "fa5s.desktop",
+        ),  # Desktop
+        QAbstractFileIconProvider.IconType.Trashcan: (
+            "mdi.trash-can",
+            "fa5s.trash",
+        ),  # Trashcan
+        QAbstractFileIconProvider.IconType.Network: (
+            "mdi.server-network",
+            "fa5s.server",
+        ),  # Network
+        QAbstractFileIconProvider.IconType.Drive: (
+            "mdi.harddisk",
+            "fa5s.desktop",
+        ),  # Drive
+        QAbstractFileIconProvider.IconType.Folder: (
+            "mdi.folder",
+            "fa5.folder",
+        ),  # Folder
         QAbstractFileIconProvider.IconType.File: ("mdi.file", "fa5.file"),  # File
         CustomIconType.Executable: ("mdi.cog", "fa5s.cog"),  # Executable
     }
@@ -370,7 +389,6 @@ class PathEdit(IndicatorLineEdit):
 
 
 class ColumnCompleter(QCompleter):
-
     def __init__(self, items: ItemsView[str, str], parent=None):
         super(ColumnCompleter, self).__init__(parent)
 

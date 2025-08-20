@@ -4,7 +4,7 @@ from datetime import datetime
 from logging import getLogger
 from typing import Tuple
 
-from PySide6.QtCore import QThreadPool, QSettings, Slot, Qt
+from PySide6.QtCore import QThreadPool, Slot, Qt
 from PySide6.QtWidgets import (
     QWidget,
     QFileDialog,
@@ -14,15 +14,18 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QGroupBox,
     QVBoxLayout,
-    QSpacerItem, QFormLayout,
+    QSpacerItem,
+    QFormLayout,
 )
 from legendary.models.game import SaveGameStatus
 
 from rare.models.game import RareGame
-from rare.models.options import options
+from rare.models.settings import settings, RareAppSettings
 from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineSavePathResolver
-from rare.ui.components.tabs.library.details.cloud_settings_widget import Ui_CloudSettingsWidget
+from rare.ui.components.tabs.library.details.cloud_settings_widget import (
+    Ui_CloudSettingsWidget,
+)
 from rare.ui.components.tabs.library.details.cloud_sync_widget import Ui_CloudSyncWidget
 from rare.utils.metrics import timelogger
 from rare.utils.misc import qta_icon
@@ -43,7 +46,7 @@ class CloudSaves(QWidget, SideTabContents):
 
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
-        self.settings = QSettings(self)
+        self.settings = RareAppSettings.instance()
 
         self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa5s.desktop").pixmap(128, 128))
         self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "fa5s.cloud").pixmap(128, 128))
@@ -70,7 +73,7 @@ class CloudSaves(QWidget, SideTabContents):
         self.cloud_ui.main_layout.setWidget(
             self.cloud_ui.main_layout.getWidgetPosition(self.cloud_ui.path_label)[0],
             QFormLayout.ItemRole.FieldRole,
-            self.cloud_save_path_edit
+            self.cloud_save_path_edit,
         )
 
         self.compute_save_path_button = QPushButton(qta_icon("fa.magic", "fa5s.magic"), self.tr("Resolve path"))
@@ -138,8 +141,11 @@ class CloudSaves(QWidget, SideTabContents):
 
     @Slot(Qt.CheckState)
     def __on_sync_check_changed(self, state: Qt.CheckState):
-        options.set_with_global(
-            self.settings, options.auto_sync_cloud, state != Qt.CheckState.Unchecked, self.rgame.app_name
+        settings.set_with_global(
+            self.settings,
+            settings.auto_sync_cloud,
+            state != Qt.CheckState.Unchecked,
+            self.rgame.app_name,
         )
 
     @Slot(str, str)
@@ -171,15 +177,13 @@ class CloudSaves(QWidget, SideTabContents):
         supports_saves = self.rgame.game.supports_cloud_saves or self.rgame.game.supports_mac_cloud_saves
         saves_ready = self.rgame.igame is not None and supports_saves
 
-        self.sync_widget.setEnabled(
-            bool(saves_ready and self.rgame.save_path))  # and not self.rgame.is_save_up_to_date))
+        self.sync_widget.setEnabled(bool(saves_ready and self.rgame.save_path))  # and not self.rgame.is_save_up_to_date))
 
         self.cloud_widget.setEnabled(saves_ready)
         info_text = (
-            self.tr("<b>This game doesn't support cloud saves</b>") if not supports_saves else (
-                self.tr("<b>This game supports cloud saves, but it's not installed</b>")
-                if self.rgame.igame is None else ""
-            )
+            self.tr("<b>This game doesn't support cloud saves</b>")
+            if not supports_saves
+            else (self.tr("<b>This game supports cloud saves, but it's not installed</b>") if self.rgame.igame is None else "")
         )
         self.info_label.setText(info_text)
         self.info_label.setVisible(bool(info_text))
@@ -195,20 +199,17 @@ class CloudSaves(QWidget, SideTabContents):
         status, (dt_local, dt_remote) = self.rgame.save_game_state
 
         local_tz = datetime.now().astimezone().tzinfo
-        self.sync_ui.date_info_local.setText(
-            dt_local.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_local else "None")
-        self.sync_ui.date_info_remote.setText(
-            dt_remote.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_remote else "None")
+        self.sync_ui.date_info_local.setText(dt_local.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_local else "None")
+        self.sync_ui.date_info_remote.setText(dt_remote.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_remote else "None")
 
         newer = self.tr("Newer")
-        self.sync_ui.age_label_local.setText(
-            f"<b>{newer}</b>" if status == SaveGameStatus.LOCAL_NEWER else " "
-        )
-        self.sync_ui.age_label_remote.setText(
-            f"<b>{newer}</b>" if status == SaveGameStatus.REMOTE_NEWER else " "
-        )
+        self.sync_ui.age_label_local.setText(f"<b>{newer}</b>" if status == SaveGameStatus.LOCAL_NEWER else " ")
+        self.sync_ui.age_label_remote.setText(f"<b>{newer}</b>" if status == SaveGameStatus.REMOTE_NEWER else " ")
 
-        button_disabled = self.rgame.state in [RareGame.State.RUNNING, RareGame.State.SYNCING]
+        button_disabled = self.rgame.state in [
+            RareGame.State.RUNNING,
+            RareGame.State.SYNCING,
+        ]
         self.sync_widget.setDisabled(button_disabled)
         if self.rgame.state == RareGame.State.SYNCING:
             self.loading_widget.start()

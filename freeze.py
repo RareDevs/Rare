@@ -10,7 +10,7 @@ _icon = "rare/resources/images/Rare"
 _license = "LICENSE"
 
 build_exe_options = {
-    "bin_excludes": [ "qpdf.dll", "libqpdf.so", "libqpdf.dylib"],
+    "bin_excludes": ["qpdf.dll", "libqpdf.so", "libqpdf.dylib"],
     "excludes": [
         "tkinter",
         "unittest",
@@ -85,11 +85,7 @@ bdist_dmg_options = {
         "licenses": {
             "en_US": _license,
         },
-        "buttons": {
-            "en_US": [
-                "English", "Agree", "Disagree", "Print", "Save", "License"
-            ]
-        },
+        "buttons": {"en_US": ["English", "Agree", "Disagree", "Print", "Save", "License"]},
     },
 }
 

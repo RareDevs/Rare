@@ -14,7 +14,11 @@ class WrapperType(IntEnum):
 
 class Wrapper:
     def __init__(
-        self, command: Union[str, List[str]], name: str = None, wtype: WrapperType = None, enabled: bool = True
+        self,
+        command: Union[str, List[str]],
+        name: str = None,
+        wtype: WrapperType = None,
+        enabled: bool = True,
     ):
         self.__command: List[str] = shlex.split(command) if isinstance(command, str) else command
         self.__name: str = name if name is not None else os.path.basename(self.__command[0])
@@ -76,13 +80,9 @@ class Wrapper:
         return cls(
             command=data.get("command"),
             name=data.get("name"),
-            wtype=WrapperType(data.get("wtype", WrapperType.USER_DEFINED))
+            wtype=WrapperType(data.get("wtype", WrapperType.USER_DEFINED)),
         )
 
     @property
     def __dict__(self):
-        return dict(
-            command=self.__command,
-            name=self.__name,
-            wtype=int(self.__wtype)
-        )
+        return dict(command=self.__command, name=self.__name, wtype=int(self.__wtype))

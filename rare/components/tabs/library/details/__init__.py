@@ -6,7 +6,11 @@ from PySide6.QtGui import QKeyEvent, QShowEvent
 from PySide6.QtWidgets import QTreeView
 
 from rare.models.game import RareGame
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton, ArgumentsSingleton
+from rare.shared import (
+    LegendaryCoreSingleton,
+    GlobalSignalsSingleton,
+    ArgumentsSingleton,
+)
 from rare.utils.json_formatter import QJsonModel
 from rare.widgets.side_tab import SideTabWidget, SideTabContents
 from .cloud_saves import CloudSaves

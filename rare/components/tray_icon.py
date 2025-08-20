@@ -1,11 +1,11 @@
 from logging import getLogger
 from typing import List
 
-from PySide6.QtCore import Signal, Slot, QSettings
+from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
 
-from rare.models.options import options
+from rare.models.settings import settings, RareAppSettings
 from rare.shared import RareCore
 
 logger = getLogger("TrayIcon")
@@ -22,7 +22,7 @@ class TrayIcon(QSystemTrayIcon):
         self.__parent = parent
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
-        self.settings = QSettings()
+        self.settings = RareAppSettings.instance()
 
         self.setIcon(QIcon(":/images/Rare.png"))
         self.setVisible(True)
@@ -62,9 +62,12 @@ class TrayIcon(QSystemTrayIcon):
 
     @Slot(str, str)
     def notify(self, title: str, body: str):
-        if self.settings.value(*options.notification):
+        if self.settings.get_value(settings.notification):
             self.showMessage(
-                f"{title} - {QApplication.applicationName()}", body, QSystemTrayIcon.MessageIcon.Information, 4000
+                f"{title} - {QApplication.applicationName()}",
+                body,
+                QSystemTrayIcon.MessageIcon.Information,
+                4000,
             )
 
     @Slot()

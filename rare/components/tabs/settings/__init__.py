@@ -31,9 +31,7 @@ class SettingsTab(SideTabWidget):
         self.about = About(self)
         title = self.tr("About")
         self.about_index = self.addTab(self.about, title, title)
-        self.about.update_available_ready.connect(
-            lambda: self.tabBar().setTabText(self.about_index, "About (!)")
-        )
+        self.about.update_available_ready.connect(lambda: self.tabBar().setTabText(self.about_index, "About (!)"))
 
         if self.args.debug:
             title = self.tr("Debug")

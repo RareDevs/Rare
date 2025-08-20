@@ -10,7 +10,6 @@ import legendary
 from PySide6 import __version__ as PYSIDE_VERSION_STR
 from PySide6.QtCore import __version__ as QT_VERSION_STR
 from PySide6.QtCore import (
-    QSettings,
     QTranslator,
     QObject,
     Signal,
@@ -23,7 +22,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 import rare.resources.resources
-from rare.models.options import options
+from rare.models.settings import RareAppSettings, settings
 from rare.utils import paths
 from rare.utils.misc import set_color_pallete, set_style_sheet, get_static_style
 
@@ -50,9 +49,11 @@ class RareAppException(QObject):
             return
         self.logger.fatal(message)
         action = QMessageBox.warning(
-            None, exc_type.__name__, message,
+            None,
+            exc_type.__name__,
+            message,
             buttons=QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Abort,
-            defaultButton=QMessageBox.StandardButton.Abort
+            defaultButton=QMessageBox.StandardButton.Abort,
         )
         if action == QMessageBox.StandardButton.Abort:
             QApplication.instance().quit()
@@ -108,27 +109,20 @@ class RareApp(QApplication):
             f" - Qt version: {QT_VERSION_STR}, PySide6 version: {PYSIDE_VERSION_STR}"
         )
 
-        self.settings = QSettings(self)
+        self.settings = RareAppSettings(self)
 
-        language = self.settings.value(*options.language)
+        language = self.settings.get_value(settings.language)
         self.load_translator(language)
 
         # Style
         # lk: this is a bit silly but serves well until we have a class
         # lk: store the default qt style name from the system on startup as a property for later reference
         self.setProperty("rareDefaultQtStyle", self.style().objectName())
-        if (
-                self.settings.value(options.style_sheet.key, None) is None
-                and self.settings.value(options.color_scheme.key, None) is None
-        ):
-            self.settings.setValue(options.color_scheme.key, options.color_scheme.default)
-            self.settings.setValue(options.style_sheet.key, options.style_sheet.default)
-
-        if color_scheme := self.settings.value(options.color_scheme.key, False):
-            self.settings.setValue(options.style_sheet.key, "")
+        if color_scheme := self.settings.get_value(settings.color_scheme):
+            self.settings.set_value(settings.style_sheet, "")
             set_color_pallete(str(color_scheme))
-        elif style_sheet := self.settings.value(options.style_sheet.key, False):
-            self.settings.setValue(options.color_scheme.key, "")
+        elif style_sheet := self.settings.get_value(settings.style_sheet):
+            self.settings.set_value(settings.color_scheme, "")
             set_style_sheet(str(style_sheet))
         else:
             self.setStyleSheet(get_static_style())

@@ -3,10 +3,10 @@ import time
 from logging import getLogger
 from typing import List
 
-from PySide6.QtCore import QObject, QSettings, Slot
+from PySide6.QtCore import QObject, Slot
 from pypresence import Presence, exceptions
 
-from rare.models.options import options, DiscordRPCMode
+from rare.models.settings import settings, RareAppSettings, DiscordRPCMode
 from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
 
 client_id = "830732538225360908"
@@ -20,9 +20,9 @@ class DiscordRPC(QObject):
         self.core = LegendaryCoreSingleton()
         self.signals = GlobalSignalsSingleton()
 
-        self.settings = QSettings()
-        rpc_mode = DiscordRPCMode(options.get_value(self.settings, options.discord_rpc_mode))
-        if  rpc_mode == DiscordRPCMode.ALWAYS:  # show always
+        self.settings = RareAppSettings.instance()
+        rpc_mode = DiscordRPCMode(self.settings.get_value(settings.discord_rpc_mode))
+        if rpc_mode == DiscordRPCMode.ALWAYS:  # show always
             self.set_discord_rpc()
 
         self.signals.discord_rpc.update_presence.connect(self.update_presence)
@@ -40,7 +40,7 @@ class DiscordRPC(QObject):
     @Slot()
     @Slot(list)
     def update_settings(self, game_running: List = None):
-        rpc_mode = DiscordRPCMode(options.get_value(self.settings, options.discord_rpc_mode))
+        rpc_mode = DiscordRPCMode(self.settings.get_value(settings.discord_rpc_mode))
         if rpc_mode == DiscordRPCMode.NEVER:
             self.remove_rpc()
             return
@@ -52,7 +52,7 @@ class DiscordRPC(QObject):
             self.set_discord_rpc(game_running[0])
 
     def remove_rpc(self):
-        rpc_mode = DiscordRPCMode(options.get_value(self.settings, options.discord_rpc_mode))
+        rpc_mode = DiscordRPCMode(self.settings.get_value(settings.discord_rpc_mode))
         if rpc_mode != DiscordRPCMode.ALWAYS:
             if not self.rpc:
                 return
@@ -90,7 +90,7 @@ class DiscordRPC(QObject):
         self.update_rpc(app_name)
 
     def update_rpc(self, app_name=None):
-        rpc_mode = DiscordRPCMode(options.get_value(self.settings, options.discord_rpc_mode))
+        rpc_mode = DiscordRPCMode(self.settings.get_value(settings.discord_rpc_mode))
         if rpc_mode == DiscordRPCMode.NEVER or (not app_name and rpc_mode == DiscordRPCMode.GAME_ONLY):
             self.remove_rpc()
             return
@@ -98,17 +98,17 @@ class DiscordRPC(QObject):
         if not app_name:
             self.rpc.update(large_image="logo", details="https://github.com/RareDevs/Rare")
             return
-        if options.get_value(self.settings, options.discord_rpc_game):
+        if self.settings.get_value(settings.discord_rpc_game):
             try:
                 title = self.core.get_installed_game(app_name).title
             except AttributeError:
                 logger.error(f"Could not get title of game: {app_name}")
                 title = app_name
         start = None
-        if options.get_value(self.settings, options.discord_rpc_time):
+        if self.settings.get_value(settings.discord_rpc_time):
             start = str(time.time()).split(".")[0]
         os = None
-        if options.get_value(self.settings, options.discord_rpc_os):
+        if self.settings.get_value(settings.discord_rpc_os):
             os = f"via Rare on {platform.system()}"
 
         self.rpc.update(large_image="logo", details=title, large_text=title, state=os, start=start)

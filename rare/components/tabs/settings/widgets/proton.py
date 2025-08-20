@@ -5,7 +5,13 @@ from typing import Tuple, Union, Optional
 
 from PySide6.QtCore import Signal, Slot, Qt
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QGroupBox, QFileDialog, QFormLayout, QComboBox, QHBoxLayout
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QFileDialog,
+    QFormLayout,
+    QComboBox,
+    QHBoxLayout,
+)
 
 from rare.models.wrapper import Wrapper, WrapperType
 from rare.shared import RareCore
@@ -48,7 +54,7 @@ class ProtonSettings(QGroupBox):
             edit_func=self.proton_prefix_edit,
             save_func=self.proton_prefix_save,
             placeholder=self.tr("Please select path for proton prefix"),
-            parent=self
+            parent=self,
         )
 
         # self.winetricks_button = QPushButton(self.tr("Winetricks"), self)
@@ -104,7 +110,10 @@ class ProtonSettings(QGroupBox):
             self.tool_combo.addItem(tool.name, tool)
         try:
             wrapper = next(
-                filter(lambda w: w.is_compat_tool, self.wrappers.get_wrappers(self.app_name))
+                filter(
+                    lambda w: w.is_compat_tool,
+                    self.wrappers.get_wrappers(self.app_name),
+                )
             )
             self.tool_wrapper = wrapper
             tool = next(filter(lambda t: t.checksum == wrapper.checksum, tools))
@@ -137,7 +146,9 @@ class ProtonSettings(QGroupBox):
         library_paths = steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] if "STEAM_COMPAT_LIBRARY_PATHS" in steam_environ else ""
         if self.app_name != "default":
             install_path = RareCore.instance().get_game(self.app_name).install_path
-            library_paths = ":".join([library_paths, os.path.dirname(install_path)]) if library_paths else os.path.dirname(install_path)
+            library_paths = (
+                ":".join([library_paths, os.path.dirname(install_path)]) if library_paths else os.path.dirname(install_path)
+            )
             steam_environ["STEAM_COMPAT_INSTALL_PATH"] = install_path
         steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] = library_paths
         for key, value in steam_environ.items():
@@ -151,7 +162,9 @@ class ProtonSettings(QGroupBox):
             self.tool_wrapper = None
         else:
             wrapper = Wrapper(
-                command=steam_tool.command(), name=steam_tool.name, wtype=WrapperType.COMPAT_TOOL
+                command=steam_tool.command(),
+                name=steam_tool.name,
+                wtype=WrapperType.COMPAT_TOOL,
             )
             wrappers.append(wrapper)
             self.tool_wrapper = wrapper
@@ -176,7 +189,10 @@ class ProtonSettings(QGroupBox):
         compat_path = self._get_compat_path(compat_type)
         config.adjust_proton_compat_data_path(self.app_name, str(compat_path))
         self.compat_edit.setText(str(compat_path))
-        if compat_type in {ProtonSettings.CompatLocation.SHARED, ProtonSettings.CompatLocation.ISOLATED}:
+        if compat_type in {
+            ProtonSettings.CompatLocation.SHARED,
+            ProtonSettings.CompatLocation.ISOLATED,
+        }:
             self.compat_edit.setEnabled(False)
         else:
             self.compat_edit.setEnabled(True)
@@ -193,4 +209,3 @@ class ProtonSettings(QGroupBox):
             return
         config.adjust_proton_compat_data_path(self.app_name, text)
         self.environ_changed.emit("STEAM_COMPAT_DATA_PATH")
-

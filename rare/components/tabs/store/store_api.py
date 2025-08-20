@@ -136,11 +136,12 @@ class StoreAPI(QObject):
             self.next_browse_request = (browse_model, callback)
             return
         self.browse_active = True
-        payload = {
-            "query": search_query,
-            "variables": browse_model.to_dict()
-        }
-        self.manager.post(graphql_url, lambda data: self.__handle_browse_games(data, callback), payload)
+        payload = {"query": search_query, "variables": browse_model.to_dict()}
+        self.manager.post(
+            graphql_url,
+            lambda data: self.__handle_browse_games(data, callback),
+            payload,
+        )
 
     def __handle_browse_games(self, data, callback):
         self.browse_active = False
@@ -204,7 +205,11 @@ class StoreAPI(QObject):
                 "locale": self.locale,
             },
         }
-        self.authed_manager.post(graphql_url, lambda data: self._handle_add_to_wishlist(data, callback), payload)
+        self.authed_manager.post(
+            graphql_url,
+            lambda data: self._handle_add_to_wishlist(data, callback),
+            payload,
+        )
 
     def _handle_add_to_wishlist(self, data, callback):
         try:
@@ -230,8 +235,11 @@ class StoreAPI(QObject):
                 "operation": "REMOVE",
             },
         }
-        self.authed_manager.post(graphql_url, lambda data: self._handle_remove_from_wishlist(data, callback),
-                                 payload)
+        self.authed_manager.post(
+            graphql_url,
+            lambda data: self._handle_remove_from_wishlist(data, callback),
+            payload,
+        )
 
     def _handle_remove_from_wishlist(self, data, callback):
         try:

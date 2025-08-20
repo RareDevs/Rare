@@ -5,14 +5,14 @@ from enum import IntEnum
 from logging import getLogger
 from typing import Optional, List, Tuple
 
-from PySide6.QtCore import QObject, Signal, QRunnable, QThreadPool, QSettings
+from PySide6.QtCore import QObject, Signal, QRunnable, QThreadPool
 from legendary.lfs import eos
 from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
 from legendary.utils.selective_dl import get_sdl_appname
 
-from rare.models.options import options
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import UninstallOptionsModel, InstallOptionsModel
+from rare.models.settings import settings, RareAppSettings
 
 logger = getLogger("RareGameBase")
 
@@ -27,7 +27,6 @@ class RareSaveGame:
 
 
 class RareGameBase(QObject):
-
     class State(IntEnum):
         IDLE = 0
         RUNNING = 1
@@ -74,11 +73,11 @@ class RareGameBase(QObject):
         self._state = RareGameBase.State.IDLE
 
     @property
-    def state(self) -> 'RareGameBase.State':
+    def state(self) -> "RareGameBase.State":
         return self._state
 
     @state.setter
-    def state(self, state: 'RareGameBase.State'):
+    def state(self, state: "RareGameBase.State"):
         if state != self._state:
             self._state = state
             self.signals.widget.update.emit()
@@ -195,9 +194,9 @@ class RareGameBase(QObject):
 
 
 class RareGameSlim(RareGameBase):
-
     def __init__(self, legendary_core: LegendaryCore, game: Game, parent=None):
         super(RareGameSlim, self).__init__(legendary_core, game, parent=parent)
+        self.settings = RareAppSettings.instance()
         # None if origin or not installed
         self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
         self.saves: List[RareSaveGame] = []
@@ -213,7 +212,7 @@ class RareGameSlim(RareGameBase):
 
     @property
     def auto_sync_saves(self):
-        auto_sync_cloud = options.get_with_global(QSettings(self), options.auto_sync_cloud, self.app_name)
+        auto_sync_cloud = self.settings.get_with_global(settings.auto_sync_cloud, self.app_name)
         return self.supports_cloud_saves and auto_sync_cloud
 
     @property
@@ -230,14 +229,14 @@ class RareGameSlim(RareGameBase):
         return RareSaveGame(None)
 
     @property
-    def save_game_state(self) -> Tuple[SaveGameStatus, Tuple[Optional[datetime], Optional[datetime]]]:
+    def save_game_state(
+        self,
+    ) -> Tuple[SaveGameStatus, Tuple[Optional[datetime], Optional[datetime]]]:
         if self.save_path:
             latest = self.latest_save
             # lk: if the save path wasn't known at startup, dt_local will be None
             # In that case resolve the save again before returning
-            latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
-                self.save_path, latest.file
-            )
+            latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(self.save_path, latest.file)
             return latest.status, (latest.dt_local, latest.dt_remote)
         return SaveGameStatus.NO_SAVE, (None, None)
 
@@ -292,19 +291,24 @@ class RareGameSlim(RareGameBase):
             _download()
 
     def load_saves(self, saves: List[SaveGameFile]):
-        """ Use only in a thread """
+        """Use only in a thread"""
         self.saves.clear()
         for save in saves:
             if self.save_path:
                 status, (dt_local, dt_remote) = self.core.check_savegame_state(self.save_path, save)
                 rsave = RareSaveGame(save, status, dt_local, dt_remote)
             else:
-                rsave = RareSaveGame(save, SaveGameStatus.SAME_AGE, dt_local=None, dt_remote=save.datetime)
+                rsave = RareSaveGame(
+                    save,
+                    SaveGameStatus.SAME_AGE,
+                    dt_local=None,
+                    dt_remote=save.datetime,
+                )
             self.saves.append(rsave)
         self.signals.widget.update.emit()
 
     def update_saves(self):
-        """ Use only in a thread """
+        """Use only in a thread"""
         saves = self.core.get_save_games(self.app_name)
         self.load_saves(saves)
 
@@ -324,7 +328,7 @@ class RareGameSlim(RareGameBase):
     @property
     def raw_save_path_mac(self) -> str:
         if self.game.supports_mac_cloud_saves:
-            return self.game.metadata.get("customAttributes", {}).get('CloudSaveFolder_MAC', {}).get('value')
+            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder_MAC", {}).get("value")
         return ""
 
     @property

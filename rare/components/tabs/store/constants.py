@@ -44,19 +44,19 @@ class Constants(QObject):
         ]
 
 
-__Image = '''
+__Image = """
 type
 url
 alt
-'''
+"""
 
-__StorePageMapping = '''
+__StorePageMapping = """
 cmsSlug
 offerId
 prePurchaseOfferId
-'''
+"""
 
-__PageSandboxModel = '''
+__PageSandboxModel = """
 pageSlug
 pageType
 productId
@@ -67,9 +67,9 @@ deletedDate
 mappings {
   %s
 }
-''' % (__StorePageMapping)
+""" % (__StorePageMapping)
 
-__CatalogNamespace = '''
+__CatalogNamespace = """
 parent
 displayName
 store
@@ -82,14 +82,14 @@ addons: mappings(pageType: "addon--cms-hybrid") {
 offers: mappings(pageType: "offer") {
   %s
 }
-''' % (__PageSandboxModel, __PageSandboxModel, __PageSandboxModel)
+""" % (__PageSandboxModel, __PageSandboxModel, __PageSandboxModel)
 
-__CatalogItem = '''
+__CatalogItem = """
 id
 namespace
-'''
+"""
 
-__GetPriceRes = '''
+__GetPriceRes = """
   totalPrice {
     discountPrice
     originalPrice
@@ -115,9 +115,9 @@ __GetPriceRes = '''
       }
     }
   }
-'''
+"""
 
-__Promotions = '''
+__Promotions = """
 promotionalOffers {
     promotionalOffers {
         startDate
@@ -138,9 +138,9 @@ upcomingPromotionalOffers {
         }
     }
 }
-'''
+"""
 
-__CatalogOffer = '''
+__CatalogOffer = """
 title
 id
 namespace
@@ -188,7 +188,7 @@ price(country: $country) @include(if: $withPrice) {
 promotions(category: $category) @include(if: $withPromotions) {
     %(promotions)s
 }
-''' % {
+""" % {
     "image": __Image,
     "catalog_item": __CatalogItem,
     "catalog_namespace": __CatalogNamespace,
@@ -197,12 +197,12 @@ promotions(category: $category) @include(if: $withPromotions) {
     "promotions": __Promotions,
 }
 
-__Pagination = '''
+__Pagination = """
 count
 total
-'''
+"""
 
-SEARCH_STORE_QUERY = '''
+SEARCH_STORE_QUERY = """
 query searchStoreQuery(
   $allowCountries: String
   $category: String
@@ -254,9 +254,10 @@ query searchStoreQuery(
     }
   }
 }
-''' % (__CatalogOffer, __Pagination)
+""" % (__CatalogOffer, __Pagination)
 
-__WISHLIST_ITEM = '''
+__WISHLIST_ITEM = (
+    """
 id
 order
 created
@@ -267,9 +268,12 @@ isFirstTime
 offer(locale: $locale) {
   %s
 }
-''' % __CatalogOffer
+"""
+    % __CatalogOffer
+)
 
-WISHLIST_QUERY = '''
+WISHLIST_QUERY = (
+    """
 query wishlistQuery(
   $country: String!
   $locale: String
@@ -286,9 +290,12 @@ query wishlistQuery(
     }
   }
 }
-''' % __WISHLIST_ITEM
+"""
+    % __WISHLIST_ITEM
+)
 
-WISHLIST_ADD_QUERY = '''
+WISHLIST_ADD_QUERY = (
+    """
 mutation addWishlistMutation(
   $namespace: String!
   $offerId: String!
@@ -311,9 +318,11 @@ mutation addWishlistMutation(
     }
   }
 }
-''' % __WISHLIST_ITEM
+"""
+    % __WISHLIST_ITEM
+)
 
-WISHLIST_REMOVE_QUERY = '''
+WISHLIST_REMOVE_QUERY = """
 mutation removeFromWishlistMutation(
   $namespace: String!
   $offerId: String!
@@ -329,9 +338,9 @@ mutation removeFromWishlistMutation(
     }
   }
 }
-'''
+"""
 
-COUPONS_QUERY = '''
+COUPONS_QUERY = """
 query getCoupons(
   $currencyCountry: String!
   $identityId: String!
@@ -375,9 +384,9 @@ query getCoupons(
     }
   }
 }
-'''
+"""
 
-STORE_CONFIG_QUERY = '''
+STORE_CONFIG_QUERY = """
 query getStoreConfig(
   $includeCriticReviews: Boolean = false
   $locale: String!
@@ -434,7 +443,7 @@ query getStoreConfig(
     }
   }
 }
-'''
+"""
 
 
 def compress_query(query: str) -> str:

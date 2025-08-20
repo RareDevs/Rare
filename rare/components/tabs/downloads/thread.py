@@ -42,7 +42,13 @@ class DlThread(QThread):
     result = Signal(DlResultModel)
     progress = Signal(UIUpdate, object)
 
-    def __init__(self, item: InstallQueueItemModel, rgame: RareGame, core: LegendaryCore, debug: bool = False):
+    def __init__(
+        self,
+        item: InstallQueueItemModel,
+        rgame: RareGame,
+        core: LegendaryCore,
+        debug: bool = False,
+    ):
         super(DlThread, self).__init__()
         self.dlm_signals: DLManagerSignals = DLManagerSignals()
         self.core: LegendaryCore = core
@@ -134,8 +140,7 @@ class DlThread(QThread):
                         for dlc in dlcs
                     )
                 if (
-                    self.item.download.game.supports_cloud_saves
-                    or self.item.download.game.supports_mac_cloud_saves
+                    self.item.download.game.supports_cloud_saves or self.item.download.game.supports_mac_cloud_saves
                 ) and not self.item.download.game.is_dlc:
                     result.sync_saves = True
 
@@ -158,7 +163,7 @@ class DlThread(QThread):
 
     def _handle_postinstall(self, postinstall, igame):
         logger.info("This game lists the following prerequisites to be installed:")
-        logger.info(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
+        logger.info(f"- {postinstall['name']}: {' '.join((postinstall['path'], postinstall['args']))}")
         if platform.system() == "Windows":
             if self.item.options.install_prereqs:
                 logger.info("Launching prerequisite executable..")

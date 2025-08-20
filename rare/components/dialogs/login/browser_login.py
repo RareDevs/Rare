@@ -37,8 +37,7 @@ class BrowserLogin(QFrame):
         self.ui.copy_button.setIcon(qta_icon("mdi.content-copy", "fa5.copy"))
         self.ui.copy_button.clicked.connect(self.copy_link)
         self.ui.form_layout.setWidget(
-            self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0],
-            QFormLayout.ItemRole.FieldRole, self.sid_edit
+            self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0], QFormLayout.ItemRole.FieldRole, self.sid_edit
         )
 
         self.ui.open_button.clicked.connect(self.open_browser)
@@ -73,7 +72,7 @@ class BrowserLogin(QFrame):
         auth_code = self.sid_edit.text()
         try:
             if self.core.auth_code(auth_code):
-                logger.info("Successfully logged in as %s", self.core.lgd.userdata['displayName'])
+                logger.info("Successfully logged in as %s", self.core.lgd.userdata["displayName"])
                 self.success.emit()
             else:
                 self.ui.status_label.setText(self.tr("Login failed."))
@@ -93,13 +92,13 @@ class BrowserLogin(QFrame):
             proc.waitForFinished(-1)
             out, _ = (
                 proc.readAllStandardOutput().data().decode("utf-8", "ignore"),
-                proc.readAllStandardError().data().decode("utf-8", "ignore")
+                proc.readAllStandardError().data().decode("utf-8", "ignore"),
             )
             proc.deleteLater()
 
             if out:
                 self.core.auth_ex_token(out)
-                logger.info("Successfully logged in as %s", {self.core.lgd.userdata['displayName']})
+                logger.info("Successfully logged in as %s", {self.core.lgd.userdata["displayName"]})
                 self.success.emit()
             else:
                 logger.warning("Failed to login through browser.")

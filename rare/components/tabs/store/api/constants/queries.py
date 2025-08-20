@@ -1,5 +1,4 @@
-
-FEED_QUERY = '''
+FEED_QUERY = """
 query feedQuery(
   $locale: String!
   $countryCode: String
@@ -75,9 +74,9 @@ query feedQuery(
     }
   }
 }
-'''
+"""
 
-REVIEWS_QUERY = '''
+REVIEWS_QUERY = """
 query productReviewsQuery($sku: String!) {
   OpenCritic {
     productReviews(sku: $sku) {
@@ -106,9 +105,9 @@ query productReviewsQuery($sku: String!) {
     }
   }
 }
-'''
+"""
 
-MEDIA_QUERY = '''
+MEDIA_QUERY = """
 query fetchMediaRef($mediaRefId: String!) {
   Media {
     getMediaRef(mediaRefId: $mediaRefId) {
@@ -125,9 +124,9 @@ query fetchMediaRef($mediaRefId: String!) {
     }
   }
 }
-'''
+"""
 
-ADDONS_QUERY = '''
+ADDONS_QUERY = """
 query getAddonsByNamespace(
   $categories: String!
   $count: Int!
@@ -178,9 +177,9 @@ query getAddonsByNamespace(
     }
   }
 }
-'''
+"""
 
-CATALOG_QUERY = '''
+CATALOG_QUERY = """
 query catalogQuery(
   $category: String
   $count: Int
@@ -271,9 +270,9 @@ query catalogQuery(
     }
   }
 }
-'''
+"""
 
-CATALOG_TAGS_QUERY = '''
+CATALOG_TAGS_QUERY = """
 query catalogTags($namespace: String!) {
   Catalog {
     tags(namespace: $namespace, start: 0, count: 999) {
@@ -287,9 +286,9 @@ query catalogTags($namespace: String!) {
     }
   }
 }
-'''
+"""
 
-PREREQUISITES_QUERY = '''
+PREREQUISITES_QUERY = """
 query fetchPrerequisites($offerParams: [OfferParams]) {
   Launcher {
     prerequisites(offerParams: $offerParams) {
@@ -300,9 +299,9 @@ query fetchPrerequisites($offerParams: [OfferParams]) {
     }
   }
 }
-'''
+"""
 
-PROMOTIONS_QUERY = '''
+PROMOTIONS_QUERY = """
 query promotionsQuery(
   $namespace: String!
   $country: String!
@@ -360,9 +359,9 @@ query promotionsQuery(
     }
   }
 }
-'''
+"""
 
-OFFERS_QUERY = '''
+OFFERS_QUERY = """
 query catalogQuery(
   $productNamespace: String!
   $offerId: String!
@@ -442,9 +441,9 @@ query catalogQuery(
     }
   }
 }
-'''
+"""
 
-SEARCH_STORE_QUERY = '''
+SEARCH_STORE_QUERY = """
 query searchStoreQuery(
   $allowCountries: String
   $category: String
@@ -565,4 +564,4 @@ query searchStoreQuery(
     }
   }
 }
-'''
+"""

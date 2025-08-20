@@ -3,7 +3,16 @@ import platform
 from logging import getLogger
 from typing import Optional
 
-from PySide6.QtCore import QRunnable, QObject, Signal, QThreadPool, Qt, Slot, QSize, QUrl
+from PySide6.QtCore import (
+    QRunnable,
+    QObject,
+    Signal,
+    QThreadPool,
+    Qt,
+    Slot,
+    QSize,
+    QUrl,
+)
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QGroupBox,
@@ -56,11 +65,11 @@ class EosPrefixWidget(QFrame):
             prefix.replace(os.path.expanduser("~"), "~") if prefix is not None else overlay.app_title,
             parent=self,
         )
-        self.prefix_label.setAlignment(Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.prefix_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
 
         self.overlay_label = ElideLabel(parent=self)
         self.overlay_label.setDisabled(True)
-        self.overlay_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter)
+        self.overlay_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
 
         self.path_select = QComboBox(self)
         self.path_select.setMaximumWidth(150)
@@ -141,9 +150,7 @@ class EosPrefixWidget(QFrame):
                     self,
                     "Warning",
                     self.tr("Failed to completely disable the active EOS Overlay.{}").format(
-                        self.tr(
-                            " Since the previous overlay was managed by EGL you can safely ignore this is."
-                        )
+                        self.tr(" Since the previous overlay was managed by EGL you can safely ignore this is.")
                         if active_path != install_path
                         else ""
                     ),
@@ -155,9 +162,7 @@ class EosPrefixWidget(QFrame):
                     self,
                     "Warning",
                     self.tr("Failed to completely enable EOS overlay.{}").format(
-                        self.tr(
-                            " Since the previous overlay was managed by EGL you can safely ignore this is."
-                        )
+                        self.tr(" Since the previous overlay was managed by EGL you can safely ignore this is.")
                         if active_path != install_path
                         else ""
                     ),
@@ -223,8 +228,12 @@ class EosGroup(QGroupBox):
             self.ui.button_stack.setCurrentWidget(self.ui.install_page)
         self.install_path.setEnabled(self.overlay.is_installed)
         self.install_path.setText(
-            style_hyperlink(QUrl.fromLocalFile(self.overlay.install_path).toString(), self.overlay.install_path)
-            if self.overlay.is_installed else "N/A"
+            style_hyperlink(
+                QUrl.fromLocalFile(self.overlay.install_path).toString(),
+                self.overlay.install_path,
+            )
+            if self.overlay.is_installed
+            else "N/A"
         )
 
         self.ui.install_button.setEnabled(self.overlay.state == RareEosOverlay.State.IDLE)
@@ -270,7 +279,11 @@ class EosGroup(QGroupBox):
     def install_finished(self):
         if not self.overlay.is_installed:
             logger.error("Something went wrong while installing EOS Overlay")
-            QMessageBox.warning(self, "Error", self.tr("Something went wrong while installing EOS Overlay"))
+            QMessageBox.warning(
+                self,
+                "Error",
+                self.tr("Something went wrong while installing EOS Overlay"),
+            )
             return
         self.update_state()
 

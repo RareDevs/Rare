@@ -6,7 +6,14 @@ from typing import Tuple, Iterable, List, Union
 
 from PySide6.QtCore import Qt, QThreadPool, QRunnable, Slot, Signal
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QGroupBox, QListWidgetItem, QFileDialog, QMessageBox, QFrame, QFormLayout
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QListWidgetItem,
+    QFileDialog,
+    QMessageBox,
+    QFrame,
+    QFormLayout,
+)
 from legendary.models.egl import EGLManifest
 from legendary.models.game import InstalledGame
 
@@ -15,7 +22,9 @@ from rare.models.pathspec import PathSpec
 from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WinePathResolver
 from rare.ui.components.tabs.library.integrations.egl_sync_group import Ui_EGLSyncGroup
-from rare.ui.components.tabs.library.integrations.egl_sync_list_group import Ui_EGLSyncListGroup
+from rare.ui.components.tabs.library.integrations.egl_sync_list_group import (
+    Ui_EGLSyncListGroup,
+)
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
@@ -31,9 +40,7 @@ class EGLSyncGroup(QGroupBox):
 
         self.egl_path_edit = PathEdit(
             path=self.core.egl.programdata_path,
-            placeholder=self.tr(
-                "Path to the Wine prefix where EGL is installed, or the Manifests folder"
-            ),
+            placeholder=self.tr("Path to the Wine prefix where EGL is installed, or the Manifests folder"),
             file_mode=QFileDialog.FileMode.Directory,
             edit_func=self.egl_path_edit_edit_cb,
             save_func=self.egl_path_edit_save_cb,
@@ -41,13 +48,15 @@ class EGLSyncGroup(QGroupBox):
         )
         self.ui.egl_sync_layout.setWidget(
             self.ui.egl_sync_layout.getWidgetPosition(self.ui.egl_path_edit_label)[0],
-            QFormLayout.ItemRole.FieldRole, self.egl_path_edit
+            QFormLayout.ItemRole.FieldRole,
+            self.egl_path_edit,
         )
 
         self.egl_path_info = ElideLabel(parent=self)
         self.ui.egl_sync_layout.setWidget(
             self.ui.egl_sync_layout.getWidgetPosition(self.ui.egl_path_info_label)[0],
-            QFormLayout.ItemRole.FieldRole, self.egl_path_info
+            QFormLayout.ItemRole.FieldRole,
+            self.egl_path_info,
         )
 
         if platform.system() == "Windows":
@@ -94,10 +103,7 @@ class EGLSyncGroup(QGroupBox):
         self.egl_path_info.setText(path)
         if not path:
             self.egl_path_info.setText(
-                self.tr(
-                    "Default Wine prefix is unset, or path does not exist. "
-                    "Create it or configure it in Settings -> Linux."
-                )
+                self.tr("Default Wine prefix is unset, or path does not exist. Create it or configure it in Settings -> Linux.")
             )
         elif not os.path.exists(path):
             self.egl_path_info.setText(
@@ -113,9 +119,7 @@ class EGLSyncGroup(QGroupBox):
     def egl_path_edit_edit_cb(path) -> Tuple[bool, str, int]:
         if not path:
             return True, path, IndicatorReasonsCommon.VALID
-        if os.path.exists(os.path.join(path, "system.reg")) and os.path.exists(
-                os.path.join(path, "dosdevices/c:")
-        ):
+        if os.path.exists(os.path.join(path, "system.reg")) and os.path.exists(os.path.join(path, "dosdevices/c:")):
             # path is a wine prefix
             path = PathSpec.prefix_egl_programdata(path)
         elif not path.rstrip("/").endswith(PathSpec.wine_egl_programdata()):
@@ -216,7 +220,7 @@ class EGLSyncExportItem(EGLSyncListItem):
     def __init__(self, game: InstalledGame):
         super(EGLSyncExportItem, self).__init__(game=game)
 
-    def action(self) -> Union[str,bool]:
+    def action(self) -> Union[str, bool]:
         error = False
         try:
             self.core.egl_export(self.game.app_name)
@@ -233,7 +237,7 @@ class EGLSyncImportItem(EGLSyncListItem):
     def __init__(self, game: EGLManifest):
         super(EGLSyncImportItem, self).__init__(game=game)
 
-    def action(self) -> Union[str,bool]:
+    def action(self) -> Union[str, bool]:
         error = False
         try:
             self.core.egl_import(self.game.app_name)
@@ -318,7 +322,12 @@ class EGLSyncExportGroup(EGLSyncListGroup):
                 try:
                     i = EGLSyncExportItem(item)
                 except AttributeError as e:
-                    logger.error("%s(%s) constructor failed with %s", type(self).__name__, item.app_name, e)
+                    logger.error(
+                        "%s(%s) constructor failed with %s",
+                        type(self).__name__,
+                        item.app_name,
+                        e,
+                    )
                 else:
                     self.ui.list.addItem(i)
         super(EGLSyncExportGroup, self).populate(enabled)
@@ -356,7 +365,12 @@ class EGLSyncImportGroup(EGLSyncListGroup):
                 try:
                     i = EGLSyncImportItem(item)
                 except AttributeError as e:
-                    logger.error("%s(%s) constructor failed with %s", type(self).__name__, item.app_name, e)
+                    logger.error(
+                        "%s(%s) constructor failed with %s",
+                        type(self).__name__,
+                        item.app_name,
+                        e,
+                    )
                 else:
                     self.ui.list.addItem(i)
         super(EGLSyncImportGroup, self).populate(enabled)

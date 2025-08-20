@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 
-from PySide6.QtCore import Qt, QSettings, QTimer, QSize, Signal, Slot
+from PySide6.QtCore import Qt, QTimer, QSize, Signal, Slot
 from PySide6.QtGui import QCloseEvent, QCursor
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
     QSystemTrayIcon,
 )
 
-from rare.models.options import options
+from rare.models.settings import settings, RareAppSettings
 from rare.components.tabs import MainTabWidget
 from rare.components.tray_icon import TrayIcon
 from rare.shared import RareCore
@@ -43,7 +43,7 @@ class RareWindow(QMainWindow):
         self.core = RareCore.instance().core()
         self.signals = RareCore.instance().signals()
         self.args = RareCore.instance().args()
-        self.settings = QSettings()
+        self.settings = RareAppSettings.instance()
 
         self.setWindowTitle(QApplication.applicationName())
         self.tab_widget = MainTabWidget(self)
@@ -95,10 +95,10 @@ class RareWindow(QMainWindow):
         # self.status_timer.setInterval(5000)
         # self.status_timer.start()
 
-        width, height = options.window_width.default, options.window_height.default
-        if self.settings.value(*options.restore_window):
-            width = self.settings.value(*options.window_width)
-            height = self.settings.value(*options.window_height)
+        width, height = settings.window_width.default, settings.window_height.default
+        if self.settings.get_value(settings.restore_window):
+            width = self.settings.get_value(settings.window_width)
+            height = self.settings.get_value(settings.window_height)
         self.resize(width, height)
 
         if not self.args.offline:
@@ -117,14 +117,15 @@ class RareWindow(QMainWindow):
         self.tray_icon: TrayIcon = TrayIcon(self)
         self.tray_icon.exit_app.connect(self.__on_exit_app)
         self.tray_icon.show_app.connect(self.show)
-        self.tray_icon.activated.connect(
-            lambda r: self.toggle() if r == QSystemTrayIcon.ActivationReason.DoubleClick else None
-        )
+        self.tray_icon.activated.connect(lambda r: self.toggle() if r == QSystemTrayIcon.ActivationReason.DoubleClick else None)
 
         # enable kinetic scrolling
         for scroll_area in self.findChildren(QScrollArea):
             if not scroll_area.property("no_kinetic_scroll"):
-                QScroller.grabGesture(scroll_area.viewport(), QScroller.ScrollerGestureType.LeftMouseButtonGesture)
+                QScroller.grabGesture(
+                    scroll_area.viewport(),
+                    QScroller.ScrollerGestureType.LeftMouseButtonGesture,
+                )
 
             # fix scrolling
             for combo_box in scroll_area.findChildren(QComboBox):
@@ -141,9 +142,7 @@ class RareWindow(QMainWindow):
         screen_rect = current_screen.availableGeometry()
         decor_width = margins.left() + margins.right()
         decor_height = margins.top() + margins.bottom()
-        window_size = QSize(self.width(), self.height()).boundedTo(
-            screen_rect.size() - QSize(decor_width, decor_height)
-        )
+        window_size = QSize(self.width(), self.height()).boundedTo(screen_rect.size() - QSize(decor_width, decor_height))
 
         self.resize(window_size)
         self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
@@ -156,9 +155,9 @@ class RareWindow(QMainWindow):
         self._window_launched = True
 
     def hide(self) -> None:
-        if self.settings.value(*options.restore_window):
-            self.settings.setValue(options.window_width.key, self.size().width())
-            self.settings.setValue(options.window_height.key, self.size().height())
+        if self.settings.get_value(settings.restore_window):
+            self.settings.set_value(settings.window_width, self.size().width())
+            self.settings.set_value(settings.window_height, self.size().height())
         super(RareWindow, self).hide()
 
     def toggle(self):
@@ -219,7 +218,7 @@ class RareWindow(QMainWindow):
         # lk: `accept_close` is set to `True` by the `close()` method, overrides exiting to tray in `closeEvent()`
         # lk: ensures exiting instead of hiding when `close()` is called programmatically
         if not self.__accept_close:
-            if self.settings.value(*options.sys_tray_close):
+            if self.settings.get_value(settings.sys_tray_close):
                 self.hide()
                 e.ignore()
                 return
@@ -230,9 +229,7 @@ class RareWindow(QMainWindow):
                 self,
                 self.tr("Quit {}?").format(QApplication.applicationName()),
                 self.tr(
-                    "There are currently running operations. "
-                    "Rare cannot exit until they are completed.\n\n"
-                    "Do you want to clear the queue?"
+                    "There are currently running operations. Rare cannot exit until they are completed.\n\nDo you want to clear the queue?"
                 ),
                 buttons=(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No),
                 defaultButton=QMessageBox.StandardButton.No,
@@ -249,9 +246,7 @@ class RareWindow(QMainWindow):
                 self,
                 self.tr("Quit {}?").format(QApplication.applicationName()),
                 self.tr(
-                    "There is an active download. "
-                    "Quitting Rare now will stop the download.\n\n"
-                    "Are you sure you want to quit?"
+                    "There is an active download. Quitting Rare now will stop the download.\n\nAre you sure you want to quit?"
                 ),
                 buttons=(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No),
                 defaultButton=QMessageBox.StandardButton.No,
@@ -267,4 +262,3 @@ class RareWindow(QMainWindow):
         self.hide()
         self.exit_app.emit(self.__exit_code)
         super(RareWindow, self).closeEvent(e)
-

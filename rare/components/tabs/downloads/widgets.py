@@ -7,7 +7,11 @@ from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
 from rare.utils.misc import qta_icon
 
-from rare.models.install import InstallQueueItemModel, InstallOptionsModel, InstallDownloadModel
+from rare.models.install import (
+    InstallQueueItemModel,
+    InstallOptionsModel,
+    InstallDownloadModel,
+)
 from rare.shared import RareCore, ImageManagerSingleton
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.tabs.downloads.queue_base_widget import Ui_QueueBaseWidget
@@ -55,7 +59,10 @@ class QueueInfoWidget(QWidget):
     def update_information(self, game, igame, analysis, old_igame):
         self.ui.title.setText(game.app_title)
         self.ui.remote_version.setText(
-            elide_text(self.ui.remote_version, old_igame.version if old_igame else game.app_version(igame.platform))
+            elide_text(
+                self.ui.remote_version,
+                old_igame.version if old_igame else game.app_version(igame.platform),
+            )
         )
         self.ui.local_version.setText(elide_text(self.ui.local_version, igame.version))
         self.ui.dl_size.setText(format_size(analysis.dl_size) if analysis else "")
@@ -123,14 +130,16 @@ class QueueWidget(QFrame):
                 lambda m: logger.error(f"Failed to requeue download for {item.options.app_name} with error: {m}")
             )
             worker.signals.failed.connect(lambda m: self.remove.emit(item.options.app_name))
-            worker.signals.finished.connect(
-                lambda: logger.info(f"Download requeue worker finished for {item.options.app_name}")
-            )
+            worker.signals.finished.connect(lambda: logger.info(f"Download requeue worker finished for {item.options.app_name}"))
             QThreadPool.globalInstance().start(worker)
             self.info_widget = QueueInfoWidget(None, None, None, old_igame, parent=self)
         else:
             self.info_widget = QueueInfoWidget(
-                item.download.game, item.download.igame, item.download.analysis, old_igame, parent=self
+                item.download.game,
+                item.download.igame,
+                item.download.analysis,
+                old_igame,
+                parent=self,
             )
         self.ui.info_layout.addWidget(self.info_widget)
         self.ui.update_buttons.setVisible(False)
@@ -139,14 +148,10 @@ class QueueWidget(QFrame):
         self.item = item
 
         self.ui.move_up_button.setIcon(qta_icon("fa.arrow-up", "fa5s.arrow-up"))
-        self.ui.move_up_button.clicked.connect(
-            lambda: self.move_up.emit(self.item.options.app_name)
-        )
+        self.ui.move_up_button.clicked.connect(lambda: self.move_up.emit(self.item.options.app_name))
 
         self.ui.move_down_button.setIcon(qta_icon("fa.arrow-down", "fa5s.arrow-down"))
-        self.ui.move_down_button.clicked.connect(
-            lambda: self.move_down.emit(self.item.options.app_name)
-        )
+        self.ui.move_down_button.clicked.connect(lambda: self.move_down.emit(self.item.options.app_name))
 
         self.ui.remove_button.clicked.connect(lambda: self.remove.emit(self.item.options.app_name))
         self.ui.force_button.clicked.connect(lambda: self.force.emit(self.item))

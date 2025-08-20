@@ -25,7 +25,6 @@ class LandingPage(QFrame):
 
 
 class LoginDialog(BaseDialog):
-
     def __init__(self, core: LegendaryCore, parent=None):
         super(LoginDialog, self).__init__(parent=parent)
         self.setWindowFlags(
@@ -156,4 +155,3 @@ class LoginDialog(BaseDialog):
             self.ui.next_button.setEnabled(False)
             self.logged_in = False
             QMessageBox.warning(None, self.tr("Login error"), str(e))
-

@@ -9,7 +9,7 @@ from PySide6.QtCore import QThreadPool, QTimer, Slot, Qt
 from PySide6.QtWidgets import QApplication, QMessageBox
 from requests import HTTPError
 
-from rare.models.options import options
+from rare.models.settings import settings
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import RareWindow
 from rare.shared import RareCore
@@ -56,7 +56,7 @@ class Rare(RareApp):
         QTimer.singleShot(0, self.launch_app)
 
     def poke_timer(self):
-        dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1]).replace(tzinfo=timezone.utc)
+        dt_exp = datetime.fromisoformat(self.core.lgd.userdata["expires_at"][:-1]).replace(tzinfo=timezone.utc)
         dt_now = datetime.now(timezone.utc)
         td = abs(dt_exp - dt_now)
         self.relogin_timer.start(int(td.total_seconds() - 60) * 1000)
@@ -91,7 +91,7 @@ class Rare(RareApp):
         self.main_window = RareWindow()
         self.main_window.exit_app.connect(self.__on_exit_app)
 
-        if (not self.args.silent) and (not self.settings.value(*options.sys_tray_start)):
+        if (not self.args.silent) and (not self.settings.get_value(settings.sys_tray_start)):
             self.main_window.show()
 
         if self.args.test_start:

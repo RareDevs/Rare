@@ -47,7 +47,7 @@ def subreaper(args: Namespace, other: List[str]) -> int:
     ]
 
     proc_name = b"reaper"
-    buff = create_string_buffer(len(proc_name)+1)
+    buff = create_string_buffer(len(proc_name) + 1)
     buff.value = proc_name
     prctl_ret = prctl(PR_SET_NAME, byref(buff), 0, 0, 0)
     logger.debug("prctl PR_SET_NAME exited with status: %s", prctl_ret)
@@ -78,7 +78,7 @@ def subreaper(args: Namespace, other: List[str]) -> int:
 
 if __name__ == "__main__":
     sep = sys.argv.index("--")
-    argv = sys.argv[sep+1:]
+    argv = sys.argv[sep + 1 :]
     args = Namespace(command=argv.pop(0), workdir=os.getcwd(), debug=True)
     subreaper(args, argv)
 

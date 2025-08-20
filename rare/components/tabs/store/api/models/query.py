@@ -11,7 +11,8 @@ class SearchDateRange:
     def __str__(self):
         def fmt_date(date: datetime) -> str:
             # lk: The formatting accepted by the GraphQL API is either '%Y-%m-%dT%H:%M:%S.000Z' or '%Y-%m-%d'
-            return datetime.strftime(date, '%Y-%m-%dT%H:%M:%S.000Z')
+            return datetime.strftime(date, "%Y-%m-%dT%H:%M:%S.000Z")
+
         return f"[{fmt_date(self.start_date)},{fmt_date(self.end_date)}]"
 
 

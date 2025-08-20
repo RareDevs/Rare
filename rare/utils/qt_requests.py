@@ -6,7 +6,12 @@ from typing import Union
 
 import orjson
 from PySide6.QtCore import QObject, Signal, QUrl, QUrlQuery, Slot
-from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply, QNetworkDiskCache
+from PySide6.QtNetwork import (
+    QNetworkAccessManager,
+    QNetworkRequest,
+    QNetworkReply,
+    QNetworkDiskCache,
+)
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
 RequestHandler = TypeVar("RequestHandler", bound=Callable[[Union[Dict, bytes]], None])
@@ -55,14 +60,19 @@ class QtRequests(QObject):
 
     def __prepare_request(self, item: RequestQueueItem) -> QNetworkRequest:
         request = QNetworkRequest(item.url)
-        request.setHeader(QNetworkRequest.KnownHeaders.ContentTypeHeader, "application/json; charset=UTF-8")
+        request.setHeader(
+            QNetworkRequest.KnownHeaders.ContentTypeHeader,
+            "application/json; charset=UTF-8",
+        )
         request.setHeader(QNetworkRequest.KnownHeaders.UserAgentHeader, USER_AGENT)
         request.setAttribute(
-            QNetworkRequest.Attribute.RedirectPolicyAttribute, QNetworkRequest.RedirectPolicy.NoLessSafeRedirectPolicy
+            QNetworkRequest.Attribute.RedirectPolicyAttribute,
+            QNetworkRequest.RedirectPolicy.NoLessSafeRedirectPolicy,
         )
         if self.cache is not None:
             request.setAttribute(
-                QNetworkRequest.Attribute.CacheLoadControlAttribute, QNetworkRequest.CacheLoadControl.PreferCache
+                QNetworkRequest.Attribute.CacheLoadControlAttribute,
+                QNetworkRequest.CacheLoadControl.PreferCache,
             )
         if self.token is not None:
             request.setRawHeader(b"Authorization", self.token.encode())
@@ -85,7 +95,13 @@ class QtRequests(QObject):
         reply.errorOccurred.connect(self.__on_error)
         self.__active_requests[reply] = item
 
-    def get(self, url: str, handler: RequestHandler, payload: Dict = None, params: Dict = None):
+    def get(
+        self,
+        url: str,
+        handler: RequestHandler,
+        payload: Dict = None,
+        params: Dict = None,
+    ):
         url = self.__prepare_query(url, params) if params is not None else QUrl(url)
         item = RequestQueueItem(method="get", url=url, payload=payload, handlers=[handler])
         self.__get(item)

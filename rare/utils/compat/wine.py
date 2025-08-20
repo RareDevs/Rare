@@ -5,9 +5,7 @@ from typing import Dict, Tuple, List, Optional
 
 logger = getLogger("Wine")
 
-lutris_runtime_paths = [
-    os.path.expanduser("~/.local/share/lutris")
-]
+lutris_runtime_paths = [os.path.expanduser("~/.local/share/lutris")]
 
 __lutris_runtime: str = None
 __lutris_wine: str = None
@@ -76,13 +74,18 @@ def get_wine_environment(executable: str = None, prefix: str = None) -> Dict:
 if __name__ == "__main__":
     from pprint import pprint
 
-    pprint(get_wine_environment(
-        "/opt/wine-ge-custom/bin/wine", None))
-    pprint(get_wine_environment(
-        "/usr/bin/wine", None))
-    pprint(get_wine_environment(
-        "/usr/share/steam/compatitiblitytools.d/dist/bin/wine", None))
-    pprint(get_wine_environment(
-        os.path.expanduser("~/.local/share/Steam/compatibilitytools.d/GE-Proton8-14/files/bin/wine"), None))
-    pprint(get_wine_environment(
-        os.path.expanduser("~/.local/share/lutris/runners/wine/lutris-GE-Proton8-14-x86_64/bin/wine"), None))
+    pprint(get_wine_environment("/opt/wine-ge-custom/bin/wine", None))
+    pprint(get_wine_environment("/usr/bin/wine", None))
+    pprint(get_wine_environment("/usr/share/steam/compatitiblitytools.d/dist/bin/wine", None))
+    pprint(
+        get_wine_environment(
+            os.path.expanduser("~/.local/share/Steam/compatibilitytools.d/GE-Proton8-14/files/bin/wine"),
+            None,
+        )
+    )
+    pprint(
+        get_wine_environment(
+            os.path.expanduser("~/.local/share/lutris/runners/wine/lutris-GE-Proton8-14-x86_64/bin/wine"),
+            None,
+        )
+    )

@@ -10,7 +10,10 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QSpacerItem,
-    QSizePolicy, QTableWidgetItem, QHeaderView, QApplication,
+    QSizePolicy,
+    QTableWidgetItem,
+    QHeaderView,
+    QApplication,
 )
 
 from rare.ui.commands.launcher.console_env import Ui_ConsoleEnv
@@ -25,9 +28,7 @@ class ConsoleDialog(QDialog):
     def __init__(self, app_title: str, parent=None):
         super(ConsoleDialog, self).__init__(parent=parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
-        self.setWindowTitle(
-            dialog_title(game_title(self.tr("Console"), app_title))
-        )
+        self.setWindowTitle(dialog_title(game_title(self.tr("Console"), app_title)))
         self.setGeometry(0, 0, 640, 480)
         layout = QVBoxLayout()
 
@@ -85,20 +86,13 @@ class ConsoleDialog(QDialog):
         screen_rect = current_screen.availableGeometry()
         decor_width = margins.left() + margins.right()
         decor_height = margins.top() + margins.bottom()
-        window_size = QSize(self.width(), self.height()).boundedTo(
-            screen_rect.size() - QSize(decor_width, decor_height)
-        )
+        window_size = QSize(self.width(), self.height()).boundedTo(screen_rect.size() - QSize(decor_width, decor_height))
 
         self.resize(window_size)
-        self.move(
-            screen_rect.center()
-            - self.rect().adjusted(0, 0, decor_width, decor_height).center()
-        )
+        self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
 
     def save(self):
-        file, ok = QFileDialog.getSaveFileName(
-            self, "Save output", "", "Log Files (*.log);;All Files (*)"
-        )
+        file, ok = QFileDialog.getSaveFileName(self, "Save output", "", "Log Files (*.log);;All Files (*)")
         if ok:
             if "." not in file:
                 file += ".log"
@@ -127,9 +121,7 @@ class ConsoleDialog(QDialog):
         self.console_edit.error(text)
 
     def on_process_exit(self, app_title: str, status: Union[int, str]):
-        self.error(
-            self.tr("Application finished with exit code \"{}\"").format(status)
-        )
+        self.error(self.tr('Application finished with exit code "{}"').format(status))
         self.accept_close = True
 
     def reject(self) -> None:
@@ -148,15 +140,12 @@ class ConsoleDialog(QDialog):
 
 
 class ConsoleEnv(QDialog):
-
     def __init__(self, app_title: str, parent=None):
         super(ConsoleEnv, self).__init__(parent=parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, False)
         self.ui = Ui_ConsoleEnv()
         self.ui.setupUi(self)
-        self.setWindowTitle(
-            dialog_title(game_title(self.tr("Environment"), app_title))
-        )
+        self.setWindowTitle(dialog_title(game_title(self.tr("Environment"), app_title)))
 
     def setTable(self, env: QProcessEnvironment):
         self.ui.table.clearContents()
@@ -170,7 +159,6 @@ class ConsoleEnv(QDialog):
 
 
 class ConsoleEdit(QPlainTextEdit):
-
     def __init__(self, parent=None):
         super(ConsoleEdit, self).__init__(parent=parent)
         self.setReadOnly(True)
@@ -181,13 +169,11 @@ class ConsoleEdit(QPlainTextEdit):
     def scroll_to_last_line(self):
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.MoveOperation.End)
-        cursor.movePosition(
-            QTextCursor.MoveOperation.Up if cursor.atBlockStart() else QTextCursor.MoveOperation.StartOfLine
-        )
+        cursor.movePosition(QTextCursor.MoveOperation.Up if cursor.atBlockStart() else QTextCursor.MoveOperation.StartOfLine)
         self.setTextCursor(cursor)
 
     def print_to_console(self, text: str, color: str):
-        html = f"<p style=\"color:{color};white-space:pre\">{text}</p>"
+        html = f'<p style="color:{color};white-space:pre">{text}</p>'
         self.appendHtml(html)
         self.scroll_to_last_line()
 

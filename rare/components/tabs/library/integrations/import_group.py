@@ -25,7 +25,12 @@ from rare.lgndr.glue.monkeys import LgndrIndirectStatus, get_boolean_choice_fact
 from rare.shared import RareCore
 from rare.ui.components.tabs.library.integrations.import_group import Ui_ImportGroup
 from rare.widgets.elide_label import ElideLabel
-from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon, PathEdit, ColumnCompleter
+from rare.widgets.indicator_edit import (
+    IndicatorLineEdit,
+    IndicatorReasonsCommon,
+    PathEdit,
+    ColumnCompleter,
+)
 
 logger = getLogger("Import")
 
@@ -68,14 +73,14 @@ class ImportWorker(QRunnable):
         result = Signal(list)
 
     def __init__(
-            self,
-            core: LegendaryCore,
-            path: str,
-            app_name: str = None,
-            platform: Optional[str] = None,
-            import_folder: bool = False,
-            import_dlcs: bool = False,
-            import_force: bool = False
+        self,
+        core: LegendaryCore,
+        path: str,
+        app_name: str = None,
+        platform: Optional[str] = None,
+        import_folder: bool = False,
+        import_dlcs: bool = False,
+        import_force: bool = False,
     ):
         super(ImportWorker, self).__init__()
         self.setAutoDelete(True)
@@ -135,7 +140,7 @@ class ImportWorker(QRunnable):
             skip_dlcs=not self.import_dlcs,
             with_dlcs=self.import_dlcs,
             indirect_status=status,
-            get_boolean_choice=get_boolean_choice_factory(self.import_dlcs)
+            get_boolean_choice=get_boolean_choice_factory(self.import_dlcs),
         )
         cli.import_game(args)
         return status.success, status.message
@@ -165,7 +170,8 @@ class ImportGroup(QGroupBox):
         self.path_edit.textChanged.connect(self.__path_changed)
         self.ui.import_layout.setWidget(
             self.ui.import_layout.getWidgetPosition(self.ui.path_edit_label)[0],
-            QFormLayout.ItemRole.FieldRole, self.path_edit
+            QFormLayout.ItemRole.FieldRole,
+            self.path_edit,
         )
 
         self.app_name_edit = IndicatorLineEdit(
@@ -177,18 +183,17 @@ class ImportGroup(QGroupBox):
         self.app_name_edit.textChanged.connect(self.__app_name_changed)
         self.ui.import_layout.setWidget(
             self.ui.import_layout.getWidgetPosition(self.ui.app_name_label)[0],
-            QFormLayout.ItemRole.FieldRole, self.app_name_edit
+            QFormLayout.ItemRole.FieldRole,
+            self.app_name_edit,
         )
 
-        self.ui.import_folder_check.stateChanged.connect(self.import_folder_changed)
+        self.ui.import_folder_check.checkStateChanged.connect(self.import_folder_changed)
         self.ui.import_dlcs_check.setEnabled(False)
-        self.ui.import_dlcs_check.stateChanged.connect(self.import_dlcs_changed)
+        self.ui.import_dlcs_check.checkStateChanged.connect(self.import_dlcs_changed)
 
         self.ui.import_button_label.setText("")
         self.ui.import_button.setEnabled(False)
-        self.ui.import_button.clicked.connect(
-            lambda: self.__import(self.path_edit.text())
-        )
+        self.ui.import_button.clicked.connect(lambda: self.__import(self.path_edit.text()))
 
         self.button_info_stack = QStackedWidget(self)
         self.button_info_stack.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -214,7 +219,10 @@ class ImportGroup(QGroupBox):
         if app_name:
             rgame = self.rcore.get_game(app_name)
             self.path_edit.setText(
-                os.path.join(self.core.get_default_install_dir(rgame.default_platform), rgame.folder_name)
+                os.path.join(
+                    self.core.get_default_install_dir(rgame.default_platform),
+                    rgame.folder_name,
+                )
             )
             self.app_name_edit.setText(app_name)
 
@@ -260,14 +268,10 @@ class ImportGroup(QGroupBox):
         self.info_label.setText("")
         self.ui.import_dlcs_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
-        self.ui.import_dlcs_check.setEnabled(
-            self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(app_name))
-        )
-        self.ui.import_button.setEnabled(
-            not bool(self.worker) and (self.app_name_edit.is_valid and self.path_edit.is_valid)
-        )
+        self.ui.import_dlcs_check.setEnabled(self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(app_name)))
+        self.ui.import_button.setEnabled(not bool(self.worker) and (self.app_name_edit.is_valid and self.path_edit.is_valid))
 
-    @Slot(int)
+    @Slot(Qt.CheckState)
     def import_folder_changed(self, state: Qt.CheckState):
         self.app_name_edit.setEnabled(not state)
         self.ui.platform_combo.setEnabled(not state)
@@ -276,22 +280,22 @@ class ImportGroup(QGroupBox):
                 "When importing multiple games, the current OS will be used at the"
                 " platform for the games that support it, otherwise the Windows version"
                 " will be imported."
-            ) if state else ""
+            )
+            if state != Qt.CheckState.Unchecked
+            else ""
         )
         self.ui.import_dlcs_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_dlcs_check.setEnabled(
-            state
+            state != Qt.CheckState.Unchecked
             or (self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(self.app_name_edit.text())))
         )
-        self.ui.import_button.setEnabled(
-            not bool(self.worker) and (state or (not state and self.app_name_edit.is_valid))
-        )
+        self.ui.import_button.setEnabled(not bool(self.worker) and (state or (not state and self.app_name_edit.is_valid)))
 
-    @Slot(int)
+    @Slot(Qt.CheckState)
     def import_dlcs_changed(self, state: Qt.CheckState):
         self.ui.import_button.setEnabled(
-            not bool(self.worker) and (self.ui.import_folder_check.isChecked() or self.app_name_edit.is_valid)
+            not bool(self.worker) and (state != Qt.CheckState.Unchecked or self.app_name_edit.is_valid)
         )
 
     @Slot(str)
@@ -310,7 +314,7 @@ class ImportGroup(QGroupBox):
             platform=self.ui.platform_combo.currentText() if not self.ui.import_folder_check.isChecked() else None,
             import_folder=self.ui.import_folder_check.isChecked(),
             import_dlcs=self.ui.import_dlcs_check.isChecked(),
-            import_force=self.ui.import_force_check.isChecked()
+            import_force=self.ui.import_force_check.isChecked(),
         )
         self.worker.signals.progress.connect(self.__on_import_progress)
         self.worker.signals.result.connect(self.__on_import_result)
@@ -321,9 +325,7 @@ class ImportGroup(QGroupBox):
         self.info_progress.setValue(progress)
         if imported.result == ImportResult.SUCCESS:
             self.rcore.get_game(imported.app_name).set_installed(True)
-        status = "error" if not imported.result else (
-            "failed" if imported.result == ImportResult.FAILED else "successful"
-        )
+        status = "error" if not imported.result else ("failed" if imported.result == ImportResult.FAILED else "successful")
         logger.info(f"Import {status}: {imported.app_title}: {imported.path} ({imported.message})")
 
     @Slot(list)
@@ -333,17 +335,11 @@ class ImportGroup(QGroupBox):
         if len(result) == 1:
             res = result[0]
             if res.result == ImportResult.SUCCESS:
-                self.info_label.setText(
-                    self.tr("Success: <b>{}</b> imported").format(res.app_title)
-                )
+                self.info_label.setText(self.tr("Success: <b>{}</b> imported").format(res.app_title))
             elif res.result == ImportResult.FAILED:
-                self.info_label.setText(
-                    self.tr("Failed: <b>{}</b> - {}").format(res.app_title, res.message)
-                )
+                self.info_label.setText(self.tr("Failed: <b>{}</b> - {}").format(res.app_title, res.message))
             else:
-                self.info_label.setText(
-                    self.tr("Error: Could not find AppName for <b>{}</b>").format(res.path)
-                )
+                self.info_label.setText(self.tr("Error: Could not find AppName for <b>{}</b>").format(res.path))
         else:
             self.info_label.setText(self.tr("Status: Finished importing games"))
             success = [r for r in result if r.result == ImportResult.SUCCESS]
@@ -354,25 +350,23 @@ class ImportGroup(QGroupBox):
                 QMessageBox.Icon.Information,
                 self.tr("Import summary"),
                 self.tr(
-                    "Tried to import {} folders.\n\n"
-                    "Successfully imported {} games, failed to import {} games and {} errors occurred"
-                ).format(len(success) + len(failure) + len(errored), len(success), len(failure), len(errored)),
+                    "Tried to import {} folders.\n\nSuccessfully imported {} games, failed to import {} games and {} errors occurred"
+                ).format(
+                    len(success) + len(failure) + len(errored),
+                    len(success),
+                    len(failure),
+                    len(errored),
+                ),
                 buttons=QMessageBox.StandardButton.Close,
                 parent=self,
             )
             messagebox.setWindowModality(Qt.WindowModality.NonModal)
             details: List = []
             for res in success:
-                details.append(
-                    self.tr("Success: {} imported").format(res.app_title)
-                )
+                details.append(self.tr("Success: {} imported").format(res.app_title))
             for res in failure:
-                details.append(
-                    self.tr("Failed: {} - {}").format(res.app_title, res.message)
-                )
+                details.append(self.tr("Failed: {} - {}").format(res.app_title, res.message))
             for res in errored:
-                details.append(
-                    self.tr("Error: Could not find AppName for {}").format(res.path)
-                )
+                details.append(self.tr("Error: Could not find AppName for {}").format(res.path))
             messagebox.setDetailedText("\n".join(details))
             messagebox.show()

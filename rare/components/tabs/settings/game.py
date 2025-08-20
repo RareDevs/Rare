@@ -1,13 +1,14 @@
 from logging import getLogger
 from typing import Type
 
-from PySide6.QtCore import QSettings, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QHideEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from rare.shared import LegendaryCoreSingleton
 from rare.utils import config_helper as config
 from rare.widgets.side_tab import SideTabContents
+from rare.models.settings import RareAppSettings
 from .widgets.env_vars import EnvVars
 from .widgets.launch import LaunchSettingsBase, LaunchSettingsType
 from .widgets.wrappers import WrapperSettings
@@ -16,18 +17,17 @@ logger = getLogger("GlobalGameSettings")
 
 
 class GameSettingsBase(QWidget, SideTabContents):
-
     def __init__(
         self,
         launch_widget: Type[LaunchSettingsType],
         envvar_widget: Type[EnvVars],
-        parent=None
+        parent=None,
     ):
         super(GameSettingsBase, self).__init__(parent=parent)
         self.implements_scrollarea = True
 
         self.core = LegendaryCoreSingleton()
-        self.settings = QSettings(self)
+        self.settings = RareAppSettings.instance()
         self.app_name: str = "default"
 
         self.launch = launch_widget(self)
@@ -52,8 +52,4 @@ class GlobalLaunchSettings(LaunchSettingsBase):
 
 class GlobalGameSettings(GameSettingsBase):
     def __init__(self, parent=None):
-            super(GlobalGameSettings, self).__init__(
-                launch_widget=GlobalLaunchSettings,
-                envvar_widget=EnvVars,
-                parent=parent
-            )
+        super(GlobalGameSettings, self).__init__(launch_widget=GlobalLaunchSettings, envvar_widget=EnvVars, parent=parent)

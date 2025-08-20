@@ -2,13 +2,14 @@ import platform as pf
 from logging import getLogger
 from typing import Type
 
-from PySide6.QtCore import QSettings, Signal, Qt
+from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QHideEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from rare.shared import LegendaryCoreSingleton
 from rare.utils import config_helper as config
 from rare.widgets.side_tab import SideTabContents
+from rare.models.settings import RareAppSettings
 from .widgets.overlay import DxvkHudSettings, DxvkConfigSettings, DxvkNvapiDrsSettings
 from .widgets.runner import RunnerSettingsBase, RunnerSettingsType
 from .widgets.wine import WineSettings
@@ -31,14 +32,14 @@ class CompatSettingsBase(QWidget, SideTabContents):
         dxvk_hud_widget: Type[DxvkHudSettings],
         dxvk_config_widget: Type[DxvkConfigSettings],
         dxvk_nvapi_drs_widget: Type[DxvkNvapiDrsSettings],
-        runner_widget: Type['RunnerSettingsType'],
-        mangohud_widget: Type['MangoHudSettings'] = None,
-        parent=None
+        runner_widget: Type["RunnerSettingsType"],
+        mangohud_widget: Type["MangoHudSettings"] = None,
+        parent=None,
     ):
         super(CompatSettingsBase, self).__init__(parent=parent)
 
         self.core = LegendaryCoreSingleton()
-        self.settings = QSettings(self)
+        self.settings = RareAppSettings.instance()
         self.app_name: str = "default"
 
         self.runner = runner_widget(self)
@@ -92,7 +93,7 @@ class GlobalCompatSettings(CompatSettingsBase):
                 dxvk_nvapi_drs_widget=DxvkNvapiDrsSettings,
                 runner_widget=GlobalRunnerSettings,
                 mangohud_widget=MangoHudSettings,
-                parent=parent
+                parent=parent,
             )
         else:
             super(GlobalCompatSettings, self).__init__(
@@ -100,5 +101,5 @@ class GlobalCompatSettings(CompatSettingsBase):
                 dxvk_config_widget=DxvkConfigSettings,
                 dxvk_nvapi_drs_widget=DxvkNvapiDrsSettings,
                 runner_widget=GlobalRunnerSettings,
-                parent=parent
+                parent=parent,
             )
