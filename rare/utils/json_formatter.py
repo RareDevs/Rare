@@ -136,9 +136,7 @@ class QJsonModel(QtCore.QAbstractItemModel):
 
         """
 
-        assert isinstance(
-            document, (dict, list, tuple)
-        ), "`document` must be of dict, list or tuple, " "not %s" % type(document)
+        assert isinstance(document, (dict, list, tuple)), "`document` must be of dict, list or tuple, not %s" % type(document)
 
         self.beginResetModel()
 

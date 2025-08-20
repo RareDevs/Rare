@@ -24,7 +24,7 @@ class DieselSystemDetailItem:
             minimum=d.pop("minimum", ""),
             recommended=d.pop("recommended", ""),
             title=d.pop("title", ""),
-            unmapped=d
+            unmapped=d,
         )
 
 
@@ -43,7 +43,7 @@ class DieselSystemDetail:
             _type=d.pop("_type", ""),
             details=details,
             systemType=d.pop("systemType", ""),
-            unmapped=d
+            unmapped=d,
         )
 
 
@@ -64,7 +64,7 @@ class DieselSystemDetails:
             languages=d.pop("languages", []),
             rating=d.pop("rating", {}),
             systems=systems,
-            unmapped=d
+            unmapped=d,
         )
 
 
@@ -86,7 +86,7 @@ class DieselProductAbout:
             developerAttribution=d.pop("developerAttribution", ""),
             publisherAttribution=d.pop("publisherAttribution", ""),
             shortDescription=d.pop("shortDescription", ""),
-            unmapped=d
+            unmapped=d,
         )
 
 
@@ -108,7 +108,7 @@ class DieselProductDetail:
             about=about,
             requirements=requirements,
             socialLinks=d.pop("socialLinks", {}),
-            unmapped=d
+            unmapped=d,
         )
 
 
@@ -142,5 +142,5 @@ class DieselProduct:
             pages=pages,
             data=data,
             productName=d.pop("productName", ""),
-            unmapped=d
+            unmapped=d,
         )

@@ -11,7 +11,10 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QWidget,
-    QLayout, QSpacerItem, QSizePolicy, QLabel,
+    QLayout,
+    QSpacerItem,
+    QSizePolicy,
+    QLabel,
 )
 
 from rare.utils.misc import qta_icon
@@ -26,7 +29,6 @@ def dialog_title(text: str) -> str:
 
 
 class BaseDialog(QDialog):
-
     def __init__(self, parent=None):
         super(BaseDialog, self).__init__(parent=parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
@@ -70,7 +72,6 @@ class BaseDialog(QDialog):
 
 
 class ButtonDialog(BaseDialog):
-
     def __init__(self, parent=None):
         super(ButtonDialog, self).__init__(parent=parent)
 
@@ -97,8 +98,10 @@ class ButtonDialog(BaseDialog):
         self.main_layout.addWidget(self.subtitle_label)
         # lk: dirty way to set a minimum width with fixed size constraint
         spacer = QSpacerItem(
-            480, self.main_layout.spacing(),
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
+            480,
+            self.main_layout.spacing(),
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Fixed,
         )
         self.main_layout.addItem(spacer)
         self.main_layout.addLayout(self.button_layout)
@@ -114,18 +117,12 @@ class ButtonDialog(BaseDialog):
 
     def setCentralWidget(self, widget: QWidget):
         widget.layout().setContentsMargins(0, 0, 0, 0)
-        self.main_layout.insertWidget(
-            self.main_layout.indexOf(self.subtitle_label) + 1,
-            widget
-        )
+        self.main_layout.insertWidget(self.main_layout.indexOf(self.subtitle_label) + 1, widget)
         widget.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
 
     def setCentralLayout(self, layout: QLayout):
         layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.insertLayout(
-            self.main_layout.indexOf(self.subtitle_label) + 1,
-            layout
-        )
+        self.main_layout.insertLayout(self.main_layout.indexOf(self.subtitle_label) + 1, layout)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
     @abstractmethod

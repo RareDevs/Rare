@@ -36,7 +36,10 @@ class VerifyWorker(QueueWorker):
 
     def worker_info(self) -> QueueWorkerInfo:
         return QueueWorkerInfo(
-            app_name=self.rgame.app_name, app_title=self.rgame.app_title, worker_type="Verify", state=self.state
+            app_name=self.rgame.app_name,
+            app_title=self.rgame.app_title,
+            worker_type="Verify",
+            state=self.state,
         )
 
     def run_real(self):
@@ -47,13 +50,16 @@ class VerifyWorker(QueueWorker):
         args = LgndrVerifyGameArgs(
             app_name=self.rgame.app_name,
             indirect_status=status,
-            verify_stdout=verify_stdout_factory(self.__status_callback)
+            verify_stdout=verify_stdout_factory(self.__status_callback),
         )
 
         # lk: first pass, verify with the current manifest
         repair_mode = False
         result = cli.verify_game(
-            args, print_command=False, repair_mode=repair_mode, repair_online=not self.args.offline
+            args,
+            print_command=False,
+            repair_mode=repair_mode,
+            repair_online=not self.args.offline,
         )
         if result is None:
             # lk: second pass with downloading the latest manifest
@@ -64,7 +70,10 @@ class VerifyWorker(QueueWorker):
                 # lk: and is raised only in the case we are offline
                 repair_mode = True
                 result = cli.verify_game(
-                    args, print_command=False, repair_mode=repair_mode, repair_online=not self.args.offline
+                    args,
+                    print_command=False,
+                    repair_mode=repair_mode,
+                    repair_online=not self.args.offline,
                 )
                 if result is None:
                     raise ValueError
@@ -79,7 +88,10 @@ class VerifyWorker(QueueWorker):
             # lk: this could probably be cut down to what is relevant for this use-case and skip the `cli` call
             repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.rgame.app_name}.repair")
             cli.install_game_cleanup(
-                game=self.rgame.game, igame=self.rgame.igame, repair_mode=True, repair_file=repair_file
+                game=self.rgame.game,
+                igame=self.rgame.igame,
+                repair_mode=True,
+                repair_file=repair_file,
             )
             self.rgame.needs_verification = False
             self.rgame.update_rgame()

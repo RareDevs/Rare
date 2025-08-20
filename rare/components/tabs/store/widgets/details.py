@@ -11,7 +11,11 @@ from PySide6.QtWidgets import (
     QSizePolicy,
 )
 
-from rare.components.tabs.store.api.models.diesel import DieselProduct, DieselProductDetail, DieselSystemDetail
+from rare.components.tabs.store.api.models.diesel import (
+    DieselProduct,
+    DieselProductDetail,
+    DieselSystemDetail,
+)
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.components.tabs.store.store_api import StoreAPI
 from rare.models.image import ImageSize
@@ -124,7 +128,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
                 self.catalog_offer.id,
                 lambda success: self.ui.wishlist_button.setText(self.tr("Remove from wishlist"))
                 if success
-                else self.ui.wishlist_button.setText("Something went wrong")
+                else self.ui.wishlist_button.setText("Something went wrong"),
             )
         else:
             self.store_api.remove_from_wishlist(
@@ -156,11 +160,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
             font = self.font()
             font.setStrikeOut(True)
             self.ui.original_price.setFont(font)
-            self.ui.discount_price.setText(
-                discount_price
-                if discount_price != "0"
-                else self.tr("Free")
-            )
+            self.ui.discount_price.setText(discount_price if discount_price != "0" else self.tr("Free"))
             self.ui.discount_price.setVisible(True)
         else:
             self.ui.discount_price.setVisible(False)

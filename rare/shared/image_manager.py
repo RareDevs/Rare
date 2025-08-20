@@ -10,8 +10,26 @@ from typing import TYPE_CHECKING, Optional, Set, Any
 from typing import Tuple, Dict, Union, Type, List, Callable
 
 import requests
-from PySide6.QtCore import Qt, Signal, QObject, QSize, QThreadPool, QRunnable, QRect, QRectF, Slot
-from PySide6.QtGui import QPixmap, QImage, QPainter, QPainterPath, QBrush, QTransform, QPen
+from PySide6.QtCore import (
+    Qt,
+    Signal,
+    QObject,
+    QSize,
+    QThreadPool,
+    QRunnable,
+    QRect,
+    QRectF,
+    Slot,
+)
+from PySide6.QtGui import (
+    QPixmap,
+    QImage,
+    QPainter,
+    QPainterPath,
+    QBrush,
+    QTransform,
+    QPen,
+)
 from legendary.models.game import Game
 
 from rare.lgndr.core import LegendaryCore
@@ -61,8 +79,17 @@ class ImageManager(QObject):
         # lk: the ordering in __img_types matters for the order of fallbacks
         # {'AndroidIcon', 'DieselGameBox', 'DieselGameBoxLogo', 'DieselGameBoxTall', 'DieselGameBoxWide',
         #  'ESRB', 'Featured', 'OfferImageTall', 'OfferImageWide', 'Screenshot', 'Thumbnail'}
-        self.__img_tall_types: Tuple = ("DieselGameBoxTall", "OfferImageTall", "Thumbnail")
-        self.__img_wide_types: Tuple = ("DieselGameBoxWide", "DieselGameBox", "OfferImageWide", "Screenshot")
+        self.__img_tall_types: Tuple = (
+            "DieselGameBoxTall",
+            "OfferImageTall",
+            "Thumbnail",
+        )
+        self.__img_wide_types: Tuple = (
+            "DieselGameBoxWide",
+            "DieselGameBox",
+            "OfferImageWide",
+            "Screenshot",
+        )
         self.__img_logo_types: Tuple = ("DieselGameBoxLogo",)
         self.__img_types: Tuple = self.__img_tall_types + self.__img_wide_types + self.__img_logo_types
         self.__dl_retries = 1
@@ -154,7 +181,10 @@ class ImageManager(QObject):
                 self.__convert(game, cache_data)
                 json_data["cache"] = None
                 json_data["scale"] = ImageSize.Tall.pixel_ratio
-                json_data["size"] = {"w": ImageSize.Tall.size.width(), "h": ImageSize.Tall.size.height()}
+                json_data["size"] = {
+                    "w": ImageSize.Tall.size.width(),
+                    "h": ImageSize.Tall.size.height(),
+                }
                 with open(self.__img_json(game.app_name), "w", encoding="utf-8") as file:
                     json.dump(json_data, file)
             else:
@@ -205,15 +235,32 @@ class ImageManager(QObject):
         #         cache_data[req.image_type] = req.result().content
         # else:
         for image in downloads:
-            logger.info("Downloading %s for %s (%s)", image['type'], game.app_name, game.app_title)
+            logger.info(
+                "Downloading %s for %s (%s)",
+                image["type"],
+                game.app_name,
+                game.app_title,
+            )
             json_data[image["type"]] = image["md5"]
             if image["type"] in self.__img_tall_types:
-                payload = {"resize": 1, "w": ImageSize.Tall.size.width(), "h": ImageSize.Tall.size.height()}
+                payload = {
+                    "resize": 1,
+                    "w": ImageSize.Tall.size.width(),
+                    "h": ImageSize.Tall.size.height(),
+                }
             elif image["type"] in self.__img_wide_types:
-                payload = {"resize": 1, "w": ImageSize.Wide.size.width(), "h": ImageSize.Wide.size.height()}
+                payload = {
+                    "resize": 1,
+                    "w": ImageSize.Wide.size.width(),
+                    "h": ImageSize.Wide.size.height(),
+                }
             else:
                 # Set the larger of the sizes for everything else
-                payload = {"resize": 1, "w": ImageSize.Wide.size.width(), "h": ImageSize.Wide.size.height()}
+                payload = {
+                    "resize": 1,
+                    "w": ImageSize.Wide.size.width(),
+                    "h": ImageSize.Wide.size.height(),
+                }
             try:
                 cache_data[image["type"]] = requests.get(image["url"], params=payload, timeout=10).content
             except Exception as e:
@@ -228,7 +275,12 @@ class ImageManager(QObject):
                 with open(resources_path.joinpath("images", "cover.png"), "rb") as fd:
                     cache_data[image["type"]] = fd.read()
                 json_data[image["type"]] = None
-                logger.error("Invalid image %s data for %s (%s)", image['type'], game.app_name, game.app_title)
+                logger.error(
+                    "Invalid image %s data for %s (%s)",
+                    image["type"],
+                    game.app_name,
+                    game.app_title,
+                )
             del image_data
 
         self.__convert(game, cache_data)
@@ -246,7 +298,10 @@ class ImageManager(QObject):
 
         json_data["cache"] = archive_hash
         json_data["scale"] = ImageSize.Tall.pixel_ratio
-        json_data["size"] = {"w": ImageSize.Tall.size.width(), "h": ImageSize.Tall.size.height()}
+        json_data["size"] = {
+            "w": ImageSize.Tall.size.width(),
+            "h": ImageSize.Tall.size.height(),
+        }
 
         # write image.json
         with open(self.__img_json(game.app_name), "w", encoding="utf-8") as file:
@@ -296,16 +351,20 @@ class ImageManager(QObject):
                     image.width(),
                     image.height(),
                     Qt.AspectRatioMode.KeepAspectRatio,
-                    Qt.TransformationMode.SmoothTransformation
+                    Qt.TransformationMode.SmoothTransformation,
                 )
             painter = QPainter(image)
-            painter.drawImage((image.width() - logo.width()) // 2, image.height() - logo.height(), logo)
+            painter.drawImage(
+                (image.width() - logo.width()) // 2,
+                image.height() - logo.height(),
+                logo,
+            )
             painter.end()
 
         return image.scaled(
             preset.size,
             Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation
+            Qt.TransformationMode.SmoothTransformation,
         )
 
     @staticmethod
@@ -365,11 +424,26 @@ class ImageManager(QObject):
         wide = self.__convert_image(wide_data, logo_data, ImageSize.Wide)
 
         icon = self.__convert_icon(tall)
-        icon.save(desktop_icon_path(game.app_name).as_posix(), format=desktop_icon_suffix().upper())
+        icon.save(
+            desktop_icon_path(game.app_name).as_posix(),
+            format=desktop_icon_suffix().upper(),
+        )
 
-        self.__save_image(icon, image_icon_path(game.app_name), image_icon_path(game.app_name, color=False))
-        self.__save_image(tall, image_tall_path(game.app_name), image_tall_path(game.app_name, color=False))
-        self.__save_image(wide, image_wide_path(game.app_name), image_wide_path(game.app_name, color=False))
+        self.__save_image(
+            icon,
+            image_icon_path(game.app_name),
+            image_icon_path(game.app_name, color=False),
+        )
+        self.__save_image(
+            tall,
+            image_tall_path(game.app_name),
+            image_tall_path(game.app_name, color=False),
+        )
+        self.__save_image(
+            wide,
+            image_wide_path(game.app_name),
+            image_wide_path(game.app_name, color=False),
+        )
 
     def __compress(self, game: Game, data: Dict) -> None:
         archive = open(self.__img_cache(game.app_name), "wb")
@@ -396,7 +470,11 @@ class ImageManager(QObject):
         self.__worker_app_names.remove(game.app_name)
 
     def download_image(
-            self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False
+        self,
+        game: Game,
+        load_callback: Callable[[], None],
+        priority: int,
+        force: bool = False,
     ) -> None:
         if game.app_name in self.__worker_app_names:
             return
@@ -413,7 +491,11 @@ class ImageManager(QObject):
             self.threadpool.start(image_worker, priority)
 
     def download_image_launch(
-            self, game: Game, callback: Callable[[Game], None], priority: int, force: bool = False
+        self,
+        game: Game,
+        callback: Callable[[Game], None],
+        priority: int,
+        force: bool = False,
     ) -> None:
         if self.__img_cache(game.app_name).is_file() and not force:
             return
@@ -432,7 +514,10 @@ class ImageManager(QObject):
 
     @staticmethod
     def __get_cover(
-            container: Union[Type[QPixmap], Type[QImage]], app_name: str, preset: ImageSize.Preset, color: bool,
+        container: Union[Type[QPixmap], Type[QImage]],
+        app_name: str,
+        preset: ImageSize.Preset,
+        color: bool,
     ) -> Union[QPixmap, QImage]:
         ret = container()
         if preset.orientation == ImageType.Icon:
@@ -451,7 +536,7 @@ class ImageManager(QObject):
                 divisor=preset.base.divisor,
                 pixel_ratio=1,
                 orientation=preset.base.orientation,
-                base=preset
+                base=preset,
             )
             ret.setDevicePixelRatio(preset.pixel_ratio)
             # lk: Scaling happens at painting. It might be inefficient so leave this here as an alternative
@@ -459,7 +544,7 @@ class ImageManager(QObject):
             ret = ret.scaled(
                 device.size,
                 Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation
+                Qt.TransformationMode.SmoothTransformation,
             )
             ret.setDevicePixelRatio(device.pixel_ratio)
         return ret

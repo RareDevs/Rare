@@ -9,7 +9,6 @@ from .wishlist import WishlistPage
 
 
 class StoreTab(SideTabWidget):
-
     def __init__(self, core: LegendaryCore, parent=None):
         super(StoreTab, self).__init__(parent=parent)
         self.init = False
@@ -20,7 +19,7 @@ class StoreTab(SideTabWidget):
             self.core.egs.session.headers["Authorization"],
             self.core.language_code,
             self.core.country_code,
-            []  # [i.asset_infos["Windows"].namespace for i in self.rcore.game_list if bool(i.asset_infos)]
+            [],  # [i.asset_infos["Windows"].namespace for i in self.rcore.game_list if bool(i.asset_infos)]
         )
 
         self.landing = LandingPage(self.api, parent=self)

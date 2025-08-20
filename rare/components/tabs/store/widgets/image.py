@@ -95,11 +95,15 @@ class LoadingImageWidget(ImageWidget):
         self.setPixmap(QPixmap())
         self.spinner.setFixedSize(self._image_size.size)
         self.spinner.start()
-        self.manager.get(url, self.__on_image_ready, params={
-            "resize": 1,
-            "w": self._image_size.base.size.width(),
-            "h": self._image_size.base.size.height(),
-        })
+        self.manager.get(
+            url,
+            self.__on_image_ready,
+            params={
+                "resize": 1,
+                "w": self._image_size.base.size.width(),
+                "h": self._image_size.base.size.height(),
+            },
+        )
 
     def __on_image_ready(self, data):
         cover = QImage()

@@ -87,7 +87,8 @@ class ImportLogin(QFrame):
             try:
                 wine_folders = get_shell_folders(read_registry(egl_wine_pfx), egl_wine_pfx)
                 self.egl_appdata = os.path.realpath(
-                    os.path.join(wine_folders['Local AppData'], 'EpicGamesLauncher', 'Saved', 'Config', 'Windows'))
+                    os.path.join(wine_folders["Local AppData"], "EpicGamesLauncher", "Saved", "Config", "Windows")
+                )
                 if path_exists := os.path.exists(self.egl_appdata):
                     self.ui.status_label.setText(self.text_egl_found)
                 return path_exists
@@ -101,7 +102,7 @@ class ImportLogin(QFrame):
             self.core.egl.appdata_path = self.egl_appdata
         try:
             if self.core.auth_import():
-                logger.info("Logged in as %s", {self.core.lgd.userdata['displayName']})
+                logger.info("Logged in as %s", {self.core.lgd.userdata["displayName"]})
                 self.success.emit()
             else:
                 self.ui.status_label.setText(self.tr("Login failed."))

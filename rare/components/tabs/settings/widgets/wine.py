@@ -30,7 +30,11 @@ class WineSettings(QGroupBox):
         self.wine_prefix = PathEdit(
             path="",
             file_mode=QFileDialog.FileMode.Directory,
-            edit_func=lambda path: (os.path.isdir(path) or not path, path, IndicatorReasonsCommon.DIR_NOT_EXISTS),
+            edit_func=lambda path: (
+                os.path.isdir(path) or not path,
+                path,
+                IndicatorReasonsCommon.DIR_NOT_EXISTS,
+            ),
             save_func=self.save_prefix,
         )
 
@@ -39,7 +43,11 @@ class WineSettings(QGroupBox):
             path="",
             file_mode=QFileDialog.FileMode.ExistingFile,
             name_filters=("wine", "wine64"),
-            edit_func=lambda text: (os.path.isfile(text) or not text, text, IndicatorReasonsCommon.FILE_NOT_EXISTS),
+            edit_func=lambda text: (
+                os.path.isfile(text) or not text,
+                text,
+                IndicatorReasonsCommon.FILE_NOT_EXISTS,
+            ),
             save_func=self.save_exec,
         )
 

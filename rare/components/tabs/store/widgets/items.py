@@ -51,12 +51,12 @@ class StoreItemWidget(ItemWidget):
         self.ui.developer_label.setText(developer)
         price = game.price.totalPrice.fmtPrice["originalPrice"]
         discount_price = game.price.totalPrice.fmtPrice["discountPrice"]
-        self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
+        self.ui.price_label.setText(f"{price if price != '0' else self.tr('Free')}")
         if price != discount_price:
             font = self.ui.price_label.font()
             font.setStrikeOut(True)
             self.ui.price_label.setFont(font)
-            self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
+            self.ui.discount_label.setText(f"{discount_price if discount_price != '0' else self.tr('Free')}")
         else:
             self.ui.discount_label.setVisible(False)
 
@@ -86,12 +86,12 @@ class SearchItemWidget(ItemWidget):
 
         price = catalog_game.price.totalPrice.fmtPrice["originalPrice"]
         discount_price = catalog_game.price.totalPrice.fmtPrice["discountPrice"]
-        self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
+        self.ui.price_label.setText(f"{price if price != '0' else self.tr('Free')}")
         if price != discount_price:
             font = self.ui.price_label.font()
             font.setStrikeOut(True)
             self.ui.price_label.setFont(font)
-            self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
+            self.ui.discount_label.setText(f"{discount_price if discount_price != '0' else self.tr('Free')}")
         else:
             self.ui.discount_label.setVisible(False)
 
@@ -114,23 +114,18 @@ class WishlistItemWidget(ItemWidget):
 
         self.ui.title_label.setText(catalog_game.title)
         self.ui.developer_label.setText(developer)
-        self.ui.price_label.setText(f'{original_price if original_price != "0" else self.tr("Free")}')
+        self.ui.price_label.setText(f"{original_price if original_price != '0' else self.tr('Free')}")
         if original_price != discount_price:
             font = self.ui.price_label.font()
             font.setStrikeOut(True)
             self.ui.price_label.setFont(font)
-            self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
+            self.ui.discount_label.setText(f"{discount_price if discount_price != '0' else self.tr('Free')}")
         else:
             self.ui.discount_label.setVisible(False)
         key_images = catalog_game.keyImages
-        self.fetchPixmap(
-            key_images.for_dimensions(self.width(), self.height()).url
-        )
+        self.fetchPixmap(key_images.for_dimensions(self.width(), self.height()).url)
 
         self.delete_button = QPushButton(self)
         self.delete_button.setIcon(qta_icon("mdi.delete", color="white"))
-        self.delete_button.clicked.connect(
-            lambda: self.delete_from_wishlist.emit(self.catalog_game)
-        )
+        self.delete_button.clicked.connect(lambda: self.delete_from_wishlist.emit(self.catalog_game))
         self.layout().insertWidget(0, self.delete_button, alignment=Qt.AlignmentFlag.AlignRight)
-

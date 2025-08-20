@@ -35,9 +35,7 @@ class ListGameWidget(GameWidget):
 
         self.ui.launch_btn.setEnabled(self.rgame.can_launch)
 
-        self.ui.launch_btn.setText(
-            self.tr("Launch") if not self.rgame.is_origin else self.tr("Link/Play")
-        )
+        self.ui.launch_btn.setText(self.tr("Launch") if not self.rgame.is_origin else self.tr("Link/Play"))
         self.ui.developer_label.setText(self.rgame.developer)
         # self.version_label.setVisible(self.is_installed)
         if self.rgame.igame:
@@ -59,7 +57,7 @@ class ListGameWidget(GameWidget):
     def start_progress(self):
         self.showProgress(
             self.rgame.get_pixmap(ImageSize.LibraryWide, True),
-            self.rgame.get_pixmap(ImageSize.LibraryWide, False)
+            self.rgame.get_pixmap(ImageSize.LibraryWide, False),
         )
 
     def enterEvent(self, a0: QEvent = None) -> None:
@@ -84,12 +82,14 @@ class ListGameWidget(GameWidget):
         device: QImage = QImage(
             pixmap.size().width() * 1,
             int(self.sizeHint().height() * pixmap.devicePixelRatioF()) + 1,
-            QImage.Format.Format_ARGB32_Premultiplied
+            QImage.Format.Format_ARGB32_Premultiplied,
         )
         painter = QPainter(device)
         pixmap = pixmap.copy(
-            0, (pixmap.height() - self.sizeHint().height()) // 2,
-            pixmap.width(), self.sizeHint().height()
+            0,
+            (pixmap.height() - self.sizeHint().height()) // 2,
+            pixmap.width(),
+            self.sizeHint().height(),
         )
         brush = QBrush(pixmap)
         painter.fillRect(device.rect(), brush)
@@ -135,16 +135,20 @@ class ListGameWidget(GameWidget):
         painter = QPainter(device)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, self._smooth_transform)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
-        prog_h = (device.height() * progress // 100)
+        prog_h = device.height() * progress // 100
         gray = gray.copy(
-            0, (gray.height() - self.sizeHint().height()) // 2,
-            gray.width(), self.sizeHint().height()
+            0,
+            (gray.height() - self.sizeHint().height()) // 2,
+            gray.width(),
+            self.sizeHint().height(),
         )
         brush = QBrush(gray)
         painter.fillRect(device.rect().adjusted(0, 0, 0, -prog_h), brush)
         color = color.copy(
-            0, (color.height() - self.sizeHint().height()) // 2,
-            color.width(), self.sizeHint().height()
+            0,
+            (color.height() - self.sizeHint().height()) // 2,
+            color.width(),
+            self.sizeHint().height(),
         )
         brush.setTexture(color)
         painter.fillRect(device.rect().adjusted(0, device.height() - prog_h, 0, 0), brush)

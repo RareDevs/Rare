@@ -99,7 +99,6 @@ class AvailableGameDlcWidget(GameDlcWidget):
 
 
 class GameDlcs(QToolBox, SideTabContents):
-
     def __init__(self, parent=None):
         super(GameDlcs, self).__init__(parent=parent)
         self.implements_scrollarea = True
@@ -111,23 +110,27 @@ class GameDlcs(QToolBox, SideTabContents):
         self.rgame: Optional[RareGame] = None
 
     def list_installed(self) -> List[InstalledGameDlcWidget]:
-        return self.ui.installed_dlc_container.findChildren(InstalledGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
+        return self.ui.installed_dlc_container.findChildren(
+            InstalledGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly
+        )
 
     def list_available(self) -> List[AvailableGameDlcWidget]:
-        return self.ui.available_dlc_container.findChildren(AvailableGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
+        return self.ui.available_dlc_container.findChildren(
+            AvailableGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly
+        )
 
     def get_installed(self, app_name: str) -> Optional[InstalledGameDlcWidget]:
         return self.ui.installed_dlc_container.findChild(
             InstalledGameDlcWidget,
             name=widget_object_name(InstalledGameDlcWidget, app_name),
-            options=Qt.FindChildOption.FindDirectChildrenOnly
+            options=Qt.FindChildOption.FindDirectChildrenOnly,
         )
 
     def get_available(self, app_name: str) -> Optional[AvailableGameDlcWidget]:
         return self.ui.available_dlc_container.findChild(
             AvailableGameDlcWidget,
             name=widget_object_name(AvailableGameDlcWidget, app_name),
-            options=Qt.FindChildOption.FindDirectChildrenOnly
+            options=Qt.FindChildOption.FindDirectChildrenOnly,
         )
 
     def update_installed_page(self):
@@ -151,9 +154,7 @@ class GameDlcs(QToolBox, SideTabContents):
         if a_widget is not None:
             self.ui.available_dlc_container.layout().removeWidget(a_widget)
             a_widget.deleteLater()
-        i_widget: InstalledGameDlcWidget = InstalledGameDlcWidget(
-            self.rgame, rdlc, self.ui.installed_dlc_container
-        )
+        i_widget: InstalledGameDlcWidget = InstalledGameDlcWidget(self.rgame, rdlc, self.ui.installed_dlc_container)
         i_widget.destroyed.connect(self.update_installed_page)
         i_widget.uninstalled.connect(self.append_available)
         self.ui.installed_dlc_container.layout().addWidget(i_widget)
@@ -165,9 +166,7 @@ class GameDlcs(QToolBox, SideTabContents):
         if i_widget is not None:
             self.ui.available_dlc_container.layout().removeWidget(i_widget)
             i_widget.deleteLater()
-        a_widget: AvailableGameDlcWidget = AvailableGameDlcWidget(
-            self.rgame, rdlc, self.ui.available_dlc_container
-        )
+        a_widget: AvailableGameDlcWidget = AvailableGameDlcWidget(self.rgame, rdlc, self.ui.available_dlc_container)
         a_widget.destroyed.connect(self.update_available_page)
         a_widget.installed.connect(self.append_installed)
         self.ui.available_dlc_container.layout().addWidget(a_widget)

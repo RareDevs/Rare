@@ -20,10 +20,22 @@ resources_path = Path(__file__).absolute().parent.parent.joinpath("resources")
 
 # lk: delete old Rare directories
 for old_dir in [
-    Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation), "rare").joinpath("tmp"),
-    Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation), "rare").joinpath("images"),
-    Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation), "rare"),
-    Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation), "rare"),
+    Path(
+        QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation),
+        "rare",
+    ).joinpath("tmp"),
+    Path(
+        QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation),
+        "rare",
+    ).joinpath("images"),
+    Path(
+        QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation),
+        "rare",
+    ),
+    Path(
+        QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation),
+        "rare",
+    ),
 ]:
     if old_dir.exists():
         # lk: case-sensitive matching on Winblows
@@ -34,7 +46,10 @@ for old_dir in [
 # lk: TempLocation doesn't depend on OrganizationName or ApplicationName
 # lk: so it is fine to use it before initializing the QApplication
 def lock_file() -> Path:
-    return Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.TempLocation), "Rare.lock")
+    return Path(
+        QStandardPaths.writableLocation(QStandardPaths.StandardLocation.TempLocation),
+        "Rare.lock",
+    )
 
 
 def config_dir() -> Path:
@@ -125,9 +140,7 @@ def compat_logs_dir(name: str) -> Path:
 
 
 def setup_compat_shaders_dir(path: str) -> Dict:
-    """Setup per-game shader cache if shader pre-caching is disabled
-
-    """
+    """Setup per-game shader cache if shader pre-caching is disabled"""
     environ = {}
     shader_cache_name = "steamapp_shader_cache"
     shader_cache_vars = {
@@ -151,9 +164,9 @@ def setup_compat_shaders_dir(path: str) -> Dict:
         # DXVK
         "DXVK_STATE_CACHE_PATH": os.path.join(path, "DXVK_state_cache"),
         # VKD3D
-        "VKD3D_SHADER_CACHE_PATH": os.path.join(path, "VKD3D_shader_cache")
+        "VKD3D_SHADER_CACHE_PATH": os.path.join(path, "VKD3D_shader_cache"),
     }
-    for (key, value) in shader_cache_vars.items():
+    for key, value in shader_cache_vars.items():
         if key in {
             "__GL_SHADER_DISK_CACHE_PATH",
             "MESA_GLSL_CACHE_DIR",

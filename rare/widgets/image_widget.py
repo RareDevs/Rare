@@ -155,4 +155,3 @@ class ImageWidget(QWidget):
 
 
 __all__ = ["ImageSize", "ImageWidget"]
-
