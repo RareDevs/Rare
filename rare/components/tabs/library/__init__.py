@@ -5,11 +5,6 @@ from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
 
 from rare.models.game import RareGame
-from rare.shared import (
-    GlobalSignalsSingleton,
-    ArgumentsSingleton,
-    ImageManagerSingleton,
-)
 from rare.shared import RareCore
 from rare.models.settings import settings, RareAppSettings
 from .details import GameInfoTabs
@@ -24,10 +19,10 @@ class GamesLibrary(QStackedWidget):
     def __init__(self, parent=None):
         super(GamesLibrary, self).__init__(parent=parent)
         self.rcore = RareCore.instance()
-        self.core = self.rcore.core()
-        self.signals = GlobalSignalsSingleton()
-        self.args = ArgumentsSingleton()
-        self.image_manager = ImageManagerSingleton()
+        self.core = RareCore.instance().core()
+        self.signals = RareCore.instance().signals()
+        self.args = RareCore.instance().args()
+        self.image_manager = RareCore.instance().image_manager()
         self.settings = RareAppSettings.instance()
 
         self.games_page = QWidget(parent=self)

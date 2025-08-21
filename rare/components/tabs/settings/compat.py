@@ -6,7 +6,7 @@ from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QHideEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
-from rare.shared import LegendaryCoreSingleton
+from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.widgets.side_tab import SideTabContents
 from rare.models.settings import RareAppSettings
@@ -38,7 +38,7 @@ class CompatSettingsBase(QWidget, SideTabContents):
     ):
         super(CompatSettingsBase, self).__init__(parent=parent)
 
-        self.core = LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
         self.settings = RareAppSettings.instance()
         self.app_name: str = "default"
 

@@ -12,7 +12,7 @@ from rare.models.install import (
     InstallOptionsModel,
     InstallDownloadModel,
 )
-from rare.shared import RareCore, ImageManagerSingleton
+from rare.shared import RareCore
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.tabs.downloads.queue_base_widget import Ui_QueueBaseWidget
 from rare.ui.components.tabs.downloads.queue_info_widget import Ui_QueueInfoWidget
@@ -35,7 +35,7 @@ class QueueInfoWidget(QWidget):
         self.ui = Ui_QueueInfoWidget()
         self.ui.setupUi(self)
 
-        self.image_manager = ImageManagerSingleton()
+        self.image_manager = RareCore.instance().image_manager()
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.LibraryIcon)
