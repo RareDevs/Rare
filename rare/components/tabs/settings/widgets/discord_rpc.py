@@ -3,7 +3,7 @@ import importlib.util
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGroupBox
 
-from rare.shared import GlobalSignalsSingleton
+from rare.shared import RareCore
 from rare.models.settings import settings, RareAppSettings, DiscordRPCMode
 from rare.ui.components.tabs.settings.widgets.discord_rpc import Ui_DiscordRPCSettings
 
@@ -13,7 +13,7 @@ class DiscordRPCSettings(QGroupBox):
         super(DiscordRPCSettings, self).__init__(parent=parent)
         self.ui = Ui_DiscordRPCSettings()
         self.ui.setupUi(self)
-        self.signals = GlobalSignalsSingleton()
+        self.signals = RareCore.instance().signals()
 
         self.ui.mode_combo.addItem(self.tr("When playing"), DiscordRPCMode.GAME_ONLY)
         self.ui.mode_combo.addItem(self.tr("Always"), DiscordRPCMode.ALWAYS)

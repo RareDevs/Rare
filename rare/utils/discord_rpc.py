@@ -7,7 +7,7 @@ from PySide6.QtCore import QObject, Slot
 from pypresence import Presence, exceptions
 
 from rare.models.settings import settings, RareAppSettings, DiscordRPCMode
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared import RareCore
 
 client_id = "830732538225360908"
 logger = getLogger("DiscordRPC")
@@ -17,8 +17,8 @@ class DiscordRPC(QObject):
     def __init__(self):
         super(DiscordRPC, self).__init__()
         self.rpc = None
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
+        self.core = RareCore.instance().core()
+        self.signals = RareCore.instance().signals()
 
         self.settings = RareAppSettings.instance()
         rpc_mode = DiscordRPCMode(self.settings.get_value(settings.discord_rpc_mode))

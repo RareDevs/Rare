@@ -2,12 +2,7 @@ from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShortcut
 from PySide6.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QMessageBox
 
-from rare.shared import (
-    RareCore,
-    LegendaryCoreSingleton,
-    GlobalSignalsSingleton,
-    ArgumentsSingleton,
-)
+from rare.shared import RareCore
 from rare.utils.misc import qta_icon, ExitCodes
 from .account import AccountWidget
 from .downloads import DownloadsTab
@@ -26,9 +21,9 @@ class MainTabWidget(QTabWidget):
         self.setObjectName(type(self).__name__)
 
         self.rcore = RareCore.instance()
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
-        self.args = ArgumentsSingleton()
+        self.core = RareCore.instance().core()
+        self.signals = RareCore.instance().signals()
+        self.args = RareCore.instance().args()
 
         self.tab_bar = MainTabBar(parent=self)
         self.setTabBar(self.tab_bar)

@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 import rare.utils.config_helper as config
-from rare.shared import LegendaryCoreSingleton
+from rare.shared import RareCore
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 from .wrappers import WrapperSettings
 
@@ -25,7 +25,7 @@ class LaunchSettingsBase(QGroupBox):
         super(LaunchSettingsBase, self).__init__(parent=parent)
         self.setTitle(self.tr("Launch"))
 
-        self.core = LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
         self.app_name: str = "default"
 
         self.prelaunch_cmd = PathEdit(

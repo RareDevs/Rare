@@ -5,7 +5,7 @@ from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFrame, QMessageBox, QToolBox
 
 from rare.models.game import RareGame
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared import RareCore
 from rare.ui.components.tabs.library.details.dlcs import Ui_GameDlcs
 from rare.ui.components.tabs.library.details.dlc_widget import Ui_GameDlcWidget
 from rare.widgets.image_widget import ImageWidget, ImageSize
@@ -104,8 +104,8 @@ class GameDlcs(QToolBox, SideTabContents):
         self.implements_scrollarea = True
         self.ui = Ui_GameDlcs()
         self.ui.setupUi(self)
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
+        self.core = RareCore.instance().core()
+        self.signals = RareCore.instance().signals()
 
         self.rgame: Optional[RareGame] = None
 

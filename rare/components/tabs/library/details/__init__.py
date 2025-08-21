@@ -6,11 +6,7 @@ from PySide6.QtGui import QKeyEvent, QShowEvent
 from PySide6.QtWidgets import QTreeView
 
 from rare.models.game import RareGame
-from rare.shared import (
-    LegendaryCoreSingleton,
-    GlobalSignalsSingleton,
-    ArgumentsSingleton,
-)
+from rare.shared import RareCore
 from rare.utils.json_formatter import QJsonModel
 from rare.widgets.side_tab import SideTabWidget, SideTabContents
 from .cloud_saves import CloudSaves
@@ -26,9 +22,9 @@ class GameInfoTabs(SideTabWidget):
 
     def __init__(self, parent=None):
         super(GameInfoTabs, self).__init__(show_back=True, parent=parent)
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
-        self.args = ArgumentsSingleton()
+        self.core = RareCore.instance().core()
+        self.signals = RareCore.instance().signals()
+        self.args = RareCore.instance().args()
 
         self.details_tab = GameDetails(self)
         self.details_tab.import_clicked.connect(self.import_clicked)

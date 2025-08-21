@@ -141,12 +141,7 @@ class CloudSaves(QWidget, SideTabContents):
 
     @Slot(Qt.CheckState)
     def __on_sync_check_changed(self, state: Qt.CheckState):
-        settings.set_with_global(
-            self.settings,
-            settings.auto_sync_cloud,
-            state != Qt.CheckState.Unchecked,
-            self.rgame.app_name,
-        )
+        self.settings.set_with_global(settings.auto_sync_cloud, state != Qt.CheckState.Unchecked, self.rgame.app_name)
 
     @Slot(str, str)
     def __on_wine_resolver_result(self, path, app_name):

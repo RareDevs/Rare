@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 
 from rare.components.tabs.settings.widgets.discord_rpc import DiscordRPCSettings
 from rare.models.settings import settings, RareAppSettings, LibraryView
-from rare.shared import LegendaryCoreSingleton
+from rare.shared import RareCore
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils.misc import (
     get_translations,
@@ -33,7 +33,7 @@ class RareSettings(QWidget):
         super(RareSettings, self).__init__(parent=parent)
         self.ui = Ui_RareSettings()
         self.ui.setupUi(self)
-        self.core = LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
         self.settings = RareAppSettings.instance()
 
         # Select lang

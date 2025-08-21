@@ -59,7 +59,7 @@ class RareCore(QObject):
 
         self.__start_time = time.perf_counter()
 
-        self.args(args)
+        self.args(args=args)
         self.signals(init=True)
         self.core(init=True)
         config_helper.init_config_handler(self.__core)

@@ -8,12 +8,7 @@ from PySide6.QtGui import QMouseEvent, QShowEvent, QPaintEvent, QAction
 from PySide6.QtWidgets import QMessageBox
 
 from rare.models.game import RareGame
-from rare.shared import (
-    LegendaryCoreSingleton,
-    GlobalSignalsSingleton,
-    ArgumentsSingleton,
-    ImageManagerSingleton,
-)
+from rare.shared import RareCore
 from rare.utils.paths import (
     desktop_links_supported,
     desktop_link_path,
@@ -38,10 +33,10 @@ class GameWidget(LibraryWidget):
 
     def __init__(self, rgame: RareGame, parent=None):
         super(GameWidget, self).__init__(parent=parent)
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
-        self.args = ArgumentsSingleton()
-        self.image_manager = ImageManagerSingleton()
+        self.core = RareCore.instance().core()
+        self.signals = RareCore.instance().signals()
+        self.args = RareCore.instance().args()
+        self.image_manager = RareCore.instance().image_manager()
 
         self.rgame: RareGame = rgame
 
