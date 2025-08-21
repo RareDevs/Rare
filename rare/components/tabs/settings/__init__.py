@@ -1,6 +1,6 @@
 import platform as pf
 
-from rare.shared import ArgumentsSingleton
+from rare.shared import RareCore
 from rare.widgets.side_tab import SideTabWidget
 from .about import About
 from .compat import GlobalCompatSettings
@@ -13,7 +13,7 @@ from .rare import RareSettings
 class SettingsTab(SideTabWidget):
     def __init__(self, parent=None):
         super(SettingsTab, self).__init__(parent=parent)
-        self.args = ArgumentsSingleton()
+        self.args = RareCore.instance().args()
 
         rare_settings = RareSettings(self)
         self.rare_index = self.addTab(rare_settings, "Rare")

@@ -8,7 +8,7 @@ from PySide6.QtGui import QShowEvent, QHideEvent
 from PySide6.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
 from rare.models.settings import settings, RareAppSettings
-from rare.shared import LegendaryCoreSingleton
+from rare.shared import RareCore
 from rare.shared.workers.worker import Worker
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.misc import format_size
@@ -28,7 +28,7 @@ class RefreshGameMetaWorker(Worker):
     def __init__(self, platforms: Set[str], include_unreal: bool):
         super(RefreshGameMetaWorker, self).__init__()
         self.signals = RefreshGameMetaWorker.Signals()
-        self.core = LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
         self.platforms = platforms if platforms else {"Windows"}
         self.skip_ue = not include_unreal
 
@@ -43,9 +43,9 @@ class LegendarySettings(QWidget):
         super(LegendarySettings, self).__init__(parent=parent)
         self.ui = Ui_LegendarySettings()
         self.ui.setupUi(self)
-        self.settings = RareAppSettings.instance()
 
-        self.core = LegendaryCoreSingleton()
+        self.core = RareCore.instance().core()
+        self.settings = RareAppSettings.instance()
 
         # Platform specific installation directory for macOS games
         if pf.system() == "Darwin":

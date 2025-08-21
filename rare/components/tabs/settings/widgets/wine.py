@@ -6,7 +6,7 @@ from PySide6.QtCore import Signal, Qt, QSignalBlocker, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFileDialog, QFormLayout, QGroupBox
 
-from rare.shared import LegendaryCoreSingleton, GlobalSignalsSingleton
+from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
@@ -21,8 +21,8 @@ class WineSettings(QGroupBox):
         super(WineSettings, self).__init__(parent=parent)
         self.setTitle(self.tr("Wine"))
 
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
+        self.core = RareCore.instance().core()
+        self.signals = RareCore.instance().signals()
 
         self.app_name: Optional[str] = "default"
 
