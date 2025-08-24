@@ -4,12 +4,14 @@
     <p>Logo by <a href="https://github.com/MultisampledNight">@MultisampledNight</a> available
         <a href="https://github.com/RareDevs/Rare/blob/main/docs/assets/">here</a>,
         licensed under CC BY-SA 4.0</p>
+    <a href="https://discord.gg/YvmABK9YSk" target="_blank">
+  <img src="https://discordapp.com/api/guilds/826881530310819914/widget.png?style=shield" alt="Discord Shield">
+</a>
 </div>
 
-[![Discord Shield](https://discordapp.com/api/guilds/826881530310819914/widget.png?style=shield)](https://discord.gg/YvmABK9YSk)
 
 ## What is Rare?
-Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
+A graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
 
 ## Why Rare?
 
