@@ -13,7 +13,8 @@ from PySide6.QtNetwork import (
     QNetworkDiskCache,
 )
 
-USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
+user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
+# user_agent = f'UELauncher/{version} Windows/10.0.19041.1.256.64bit'
 RequestHandler = TypeVar("RequestHandler", bound=Callable[[Union[Dict, bytes]], None])
 
 
@@ -64,7 +65,7 @@ class QtRequests(QObject):
             QNetworkRequest.KnownHeaders.ContentTypeHeader,
             "application/json; charset=UTF-8",
         )
-        request.setHeader(QNetworkRequest.KnownHeaders.UserAgentHeader, USER_AGENT)
+        request.setHeader(QNetworkRequest.KnownHeaders.UserAgentHeader, user_agent)
         request.setAttribute(
             QNetworkRequest.Attribute.RedirectPolicyAttribute,
             QNetworkRequest.RedirectPolicy.NoLessSafeRedirectPolicy,
