@@ -23,6 +23,7 @@ A graphical interface for Legendary, a command line alternative to Epic Games la
 
 
 ## Screenshots
+
 | Game covers                                   | Vertical list                                 |
 |-----------------------------------------------|-----------------------------------------------|
 | ![alt text](/Rare/assets/RareLibraryIcon.png) | ![alt text](/Rare/assets/RareLibraryList.png) |
