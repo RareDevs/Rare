@@ -173,9 +173,6 @@ environment's `PATH`
 #### In Arch Linux
 You can run `sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson` and `yay -S legendary python-vdf`.
 
-#### In FreeBSD
-You can run `sudo pkg install py39-qt5`.
-
 #### For packaging 
 For build and install the package manually, run `python setup.py bdist_wheel` and `python -m installer dist/*.whl`.
 
