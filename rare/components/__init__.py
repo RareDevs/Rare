@@ -110,6 +110,8 @@ class Rare(RareApp):
             self.relogin_timer = None
         self.rcore.deleteLater()
         del self.rcore
+        self.settings.deleteLater()
+        del self.settings
         self.processEvents()
         shutil.rmtree(paths.tmp_dir())
         os.makedirs(paths.tmp_dir())
