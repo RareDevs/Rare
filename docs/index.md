@@ -1,21 +1,17 @@
-# Rare
-
-
-
-## A frontend for legendary, the open source Epic Games Launcher alternative
-
-Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
-
 <div align="center">
     <img src="https://github.com/RareDevs/Rare/blob/main/docs/assets/RareLogoWide.png?raw=true" alt="Logo" width="200"/>
-    <p><i>Logo by <a href="https://github.com/MultisampledNight">@MultisampledNight</a> available
+    <h2>Rare</h2>
+    <p>Logo by <a href="https://github.com/MultisampledNight">@MultisampledNight</a> available
         <a href="https://github.com/RareDevs/Rare/blob/main/docs/assets/">here</a>,
-        licensed under CC BY-SA 4.0</i></p>
+        licensed under CC BY-SA 4.0</p>
+    <a href="https://discord.gg/YvmABK9YSk" target="_blank">
+  <img src="https://discordapp.com/api/guilds/826881530310819914/widget.png?style=shield" alt="Discord Shield">
+</a>
 </div>
 
-[![Discord Shield](https://discordapp.com/api/guilds/826881530310819914/widget.png?style=shield)](https://discord.gg/YvmABK9YSk)
 
-
+## What is Rare?
+A graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
 
 ## Why Rare?
 
@@ -69,7 +65,6 @@ There is also a semi-portable `.zip` archive in [releases page](https://github.c
 
 
 ### Linux
-
 #### Flatpak
 
 Rare is available as a flatpak. See [rare](https://flathub.org/apps/details/io.github.dummerle.rare).
@@ -96,16 +91,6 @@ There are some AUR packages available:
 
 - [rare](https://aur.archlinux.org/packages/rare) - for stable releases
 - [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest development version
-
-#### Debian based
-
-- DUR package: [rare](https://mpr.hunterwittenborn.com/packages/rare)
-- `.deb` file in [releases page](https://github.com/RareDevs/Rare/releases)
-
-**Note**:
-- pypresence is an optional package. You can install it from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip.
-- Some icons might look strange on Debian based distributions. The official python3-qtawesome package is too old.
-
 
 ### macOS
 
@@ -149,31 +134,31 @@ environment's `PATH`
 |---------|--------------------------------------------|
 | Windows | `<python_installation_folder>\Scripts`     |
 | Linux   | `/home/<username>/.local/bin`              |
-| masOS   | `/Users/<username>/Library/Python/3.x/bin` |
+| macOS   | `/Users/<username>/Library/Python/3.x/bin` |
 
 
 ### Run from source
+1. Clone the repo: `git clone https://github.com/RareDevs/Rare`.
+2. Change your working directory to the project folder: `cd Rare`.
+3. Run `pip install -r misc/requirements.in` to install all required dependencies.
+4. Run `./tools/ui2py.sh --force`, `./tools/qrc2py.sh --force` and `./tools/ts2qm.py` to prepare the UI components.
+5. Finally, run `pip install .`.
+6. Run the application with `python3 -m rare`.
 
-1. Clone the repo: `git clone https://github.com/RareDevs/Rare`
-2. Change your working directory to the project folder: `cd Rare`
-3. Run `pip install -r requirements.txt` to install all required dependencies.
-   * If you want to be able to use the automatic login and Discord pypresence, run 
-     ```lang-default
-     pip install -r requirements-full.txt
-     ```
-   * If you are on Arch you can run
-     ```lang-default
-     sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson
-     ```
-     ```
-     yay -S legendary python-vdf
-     ```
-   * If you are on FreeBSD you have to install py39-qt5 from the packages
-     ```lang-default
-     sudo pkg install py39-qt5
-     ```
-4. Run `python3 -m rare`
+#### In Arch Linux
+You can run `sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson` and `yay -S legendary python-vdf`.
 
+#### For packaging 
+For build and install the package manually, run `python setup.py bdist_wheel` and `python -m installer dist/*.whl`.
+
+
+## Contributing
+There are several options to contribute.
+
+- If you know Python and PyQt, you can implement new features (Some ideas are in the projects tab).
+- You can translate the application in your language: Check our [transifex](https://www.transifex.com/rare-1/rare) page for that.
+
+More information is available in CONTRIBUTING.md.
 
 
 ## Reporting issues
@@ -188,7 +173,7 @@ You can find the longs in the following locations depending on your operating sy
 |---------|----------------------------------------------------------|
 | Windows | `C:\Users\<username>\AppData\Local\Rare\Rare\cache\logs` |
 | Linux   | `/home/<username>/.cache/Rare/Rare/logs`                 |
-| masOS   | `/Users/<username>/Library/Caches/Rare/Rare/logs`        |
+| macOS   | `/Users/<username>/Library/Caches/Rare/Rare/logs`        |
 
 In these folders you will find files named like below
 
@@ -205,15 +190,15 @@ If you don't have a GitHub account or you just want to chat, you also can contac
 https://discord.gg/YvmABK9YSk
 
 
+## Common issues
+* If you are using multiple accounts, there is a chance that at some point you will not be able to log in into your account and see something like the following.
+  > Login failed. Decryption of EPIC launcher user information failed.
 
-## Contributing
+  In that case navigate to one of the following directorories depending on your operating system and delete `user.json`
 
-There are several options to contribute.
-
-- If you know Python and PyQt, you can implement new features (Some ideas are in the projects tab).
-- You can translate the application in your language: Check our [transifex](https://www.transifex.com/rare-1/rare) page for that.
-
-More information is available in CONTRIBUTING.md.
-
-
+  | OS      | Path                               |
+  |---------|------------------------------------|
+  | Windows | `%USERPROFILE%\.config\legendary\` |
+  | Linux   | `$HOME/.config/legendary/`         |
+  | macOS   | `$HOME/.config/legendary/`         |
 

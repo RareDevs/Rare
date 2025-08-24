@@ -186,7 +186,6 @@ There are several options to contribute.
 More information is available in CONTRIBUTING.md.
 
 
-
 ## Screenshots
 
 | Game covers                                   | Vertical list                                |
