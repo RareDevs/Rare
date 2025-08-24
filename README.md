@@ -167,7 +167,7 @@ environment's `PATH`
 
 1. Clone the repo: `git clone https://github.com/RareDevs/Rare`
 2. Change your working directory to the project folder: `cd Rare`
-3. Run `pip install -r requirements.txt` to install all required dependencies.
+<!--3. Run `pip install -r requirements.txt` to install all required dependencies.
    * If you want to be able to use the automatic login and Discord pypresence, run 
      ```lang-default
      pip install -r requirements-full.txt
@@ -182,7 +182,7 @@ environment's `PATH`
    * If you are on FreeBSD you have to install py39-qt5 from the packages
      ```lang-default
      sudo pkg install py39-qt5
-     ```
+     ```-->
 4. Run `python3 -m rare`
 
 
