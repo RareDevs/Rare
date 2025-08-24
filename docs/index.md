@@ -13,8 +13,8 @@
 ## What is Rare?
 A graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
 
-## Why Rare?
 
+## Why Rare?
 - Runs natively, and supports most of the major platforms
 - Gets out of your way when you don't need it, allowing you to enjoy your games
 - Tries to be as lightweight as we can make it while still offering a feature-full experience
@@ -22,9 +22,7 @@ A graphical interface for Legendary, a command line alternative to Epic Games la
 - Packages, packages everywhere
 
 
-
 ## Screenshots
-
 | Game covers                                   | Vertical list                                 |
 |-----------------------------------------------|-----------------------------------------------|
 | ![alt text](/Rare/assets/RareLibraryIcon.png) | ![alt text](/Rare/assets/RareLibraryList.png) |
@@ -38,13 +36,8 @@ A graphical interface for Legendary, a command line alternative to Epic Games la
 | ![alt text](/Rare/assets/RareDownloads.png) | ![alt text](/Rare/assets/RareSettings.png) |
 
 
-
-
 ## Installation
-
-
 ### Windows
-
 There is an `.msi` installer available in [releases page](https://github.com/RareDevs/Rare/releases).
 
 There is also a semi-portable `.zip` archive in [releases page](https://github.com/RareDevs/Rare/releases) that lets you run Rare without installing it.
@@ -52,7 +45,6 @@ There is also a semi-portable `.zip` archive in [releases page](https://github.c
 **Important**: On recent version of Windows you should have MSVC 2015 installed, you can get it from [here](https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2015-2017-2019-and-2022)
 
 #### Packages
-
 - Rare is available as a [Winget package](https://github.com/microsoft/winget-pkgs/tree/master/manifests/d/Dummerle/Rare). You can install Rare with the following one-liner:
     ```lang-default
     winget install rare
@@ -63,10 +55,12 @@ There is also a semi-portable `.zip` archive in [releases page](https://github.c
     choco install rare
     ```
 
-
 ### Linux
-#### Flatpak
+### AppImage
 
+Available in [releases page](https://github.com/RareDevs/Rare/releases).
+
+#### Flatpak
 Rare is available as a flatpak. See [rare](https://flathub.org/apps/details/io.github.dummerle.rare).
 
 Install it via:
@@ -81,19 +75,13 @@ flatpak run io.github.dummerle.rare
 
 Alternatively, you can download the flatpak package from [our repository](https://github.com/RareDevs/io.github.dummerle.rare/releases)
 
-### AppImage
-
-Available in [releases page](https://github.com/RareDevs/Rare/releases).
-
 #### Arch based
-
 There are some AUR packages available:
 
 - [rare](https://aur.archlinux.org/packages/rare) - for stable releases
 - [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest development version
 
 ### macOS
-
 There is a `.dmg` file available in [releases page](https://github.com/RareDevs/Rare/releases).
 
 Rare's macOS binaries are currently not singed and because of that  when you launch Rare, you will see an error,
@@ -110,14 +98,12 @@ Alternatively, you can install using `pip`/`pipx` or from source.
 
 
 ### Latest development version
-
 In the [actions](https://github.com/RareDevs/Rare/actions/workflows/snapshot.yml) tab you can find packages for the latest commits.
 
 **Note**: They might be unstable and likely broken.
 
 
 ### Installation via pip (platform independent)
-
 Execute `pip install Rare` for all users, or `pip install Rare --user` for the current user only.
 
 - Linux, macOS and FreeBSD: execute `rare` in your terminal.
@@ -162,7 +148,6 @@ More information is available in CONTRIBUTING.md.
 
 
 ## Reporting issues
-
 If you run into any issues, you can report them by creating an issue on GitHub:
 https://github.com/RareDevs/Rare/issues/new/choose
 
@@ -180,7 +165,7 @@ In these folders you will find files named like below
 - `Rare_23-12-19--11-14.log`
 
 These are the logs for the main Rare application. As such are importand when Rare itself is crashing.
- 
+
 - `RareLauncher_f4e0c1dff48749fa9145c1585699e276_23-12-17--19-53.log`
 
 These are the logs for each of the games you run through Rare. Rare uses a separate instance of itself
