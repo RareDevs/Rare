@@ -109,6 +109,10 @@ class RareAppSettings(QSettings):
         else:
             self.set_value(option, value, prefix)
 
+    def deleteLater(self):
+        RareAppSettings.__instance = None
+        super(RareAppSettings, self).deleteLater()
+
 
 __all__ = [
     "settings",
