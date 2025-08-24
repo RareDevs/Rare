@@ -1,21 +1,15 @@
-# Rare
-
-
-
-## A frontend for legendary, the open source Epic Games Launcher alternative
-
-Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
-
 <div align="center">
     <img src="https://github.com/RareDevs/Rare/blob/main/docs/assets/RareLogoWide.png?raw=true" alt="Logo" width="200"/>
-    <p><i>Logo by <a href="https://github.com/MultisampledNight">@MultisampledNight</a> available
+    <h2>Rare</h2>
+    <p>Logo by <a href="https://github.com/MultisampledNight">@MultisampledNight</a> available
         <a href="https://github.com/RareDevs/Rare/blob/main/docs/assets/">here</a>,
-        licensed under CC BY-SA 4.0</i></p>
+        licensed under CC BY-SA 4.0</p>
 </div>
 
 [![Discord Shield](https://discordapp.com/api/guilds/826881530310819914/widget.png?style=shield)](https://discord.gg/YvmABK9YSk)
 
-
+## What is Rare?
+Rare is a graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
 
 ## Why Rare?
 
@@ -121,16 +115,6 @@ There are some AUR packages available:
 
 - [rare](https://aur.archlinux.org/packages/rare) - for stable releases
 - [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest development version
-
-#### Debian based
-
-- DUR package: [rare](https://mpr.hunterwittenborn.com/packages/rare)
-- `.deb` file in [releases page](https://github.com/RareDevs/Rare/releases)
-
-**Note**:
-- pypresence is an optional package. You can install it from [DUR](https://mpr.hunterwittenborn.com/packages/python3-pypresence) or with pip.
-- Some icons might look strange on Debian based distributions. The official python3-qtawesome package is too old.
-
 
 ### macOS
 
