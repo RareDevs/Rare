@@ -13,14 +13,13 @@
 ## What is Rare?
 A graphical interface for Legendary, a command line alternative to Epic Games launcher, written in PySide6
 
-## Why Rare?
 
+## Why Rare?
 - Runs natively, and supports most of the major platforms
 - Gets out of your way when you don't need it, allowing you to enjoy your games
 - Tries to be as lightweight as we can make it while still offering a feature-full experience
 - Integrates seamlessly with legendary as both projects are developed in Python
 - Packages, packages everywhere
-
 
 
 ## Screenshots
@@ -38,13 +37,8 @@ A graphical interface for Legendary, a command line alternative to Epic Games la
 | ![alt text](/Rare/assets/RareDownloads.png) | ![alt text](/Rare/assets/RareSettings.png) |
 
 
-
-
 ## Installation
-
-
 ### Windows
-
 There is an `.msi` installer available in [releases page](https://github.com/RareDevs/Rare/releases).
 
 There is also a semi-portable `.zip` archive in [releases page](https://github.com/RareDevs/Rare/releases) that lets you run Rare without installing it.
@@ -52,7 +46,6 @@ There is also a semi-portable `.zip` archive in [releases page](https://github.c
 **Important**: On recent version of Windows you should have MSVC 2015 installed, you can get it from [here](https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2015-2017-2019-and-2022)
 
 #### Packages
-
 - Rare is available as a [Winget package](https://github.com/microsoft/winget-pkgs/tree/master/manifests/d/Dummerle/Rare). You can install Rare with the following one-liner:
     ```lang-default
     winget install rare
@@ -63,10 +56,12 @@ There is also a semi-portable `.zip` archive in [releases page](https://github.c
     choco install rare
     ```
 
-
 ### Linux
-#### Flatpak
+### AppImage
 
+Available in [releases page](https://github.com/RareDevs/Rare/releases).
+
+#### Flatpak
 Rare is available as a flatpak. See [rare](https://flathub.org/apps/details/io.github.dummerle.rare).
 
 Install it via:
@@ -81,19 +76,13 @@ flatpak run io.github.dummerle.rare
 
 Alternatively, you can download the flatpak package from [our repository](https://github.com/RareDevs/io.github.dummerle.rare/releases)
 
-### AppImage
-
-Available in [releases page](https://github.com/RareDevs/Rare/releases).
-
 #### Arch based
-
 There are some AUR packages available:
 
 - [rare](https://aur.archlinux.org/packages/rare) - for stable releases
 - [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest development version
 
 ### macOS
-
 There is a `.dmg` file available in [releases page](https://github.com/RareDevs/Rare/releases).
 
 Rare's macOS binaries are currently not singed and because of that  when you launch Rare, you will see an error,
@@ -110,14 +99,12 @@ Alternatively, you can install using `pip`/`pipx` or from source.
 
 
 ### Latest development version
-
 In the [actions](https://github.com/RareDevs/Rare/actions/workflows/snapshot.yml) tab you can find packages for the latest commits.
 
 **Note**: They might be unstable and likely broken.
 
 
 ### Installation via pip (platform independent)
-
 Execute `pip install Rare` for all users, or `pip install Rare --user` for the current user only.
 
 - Linux, macOS and FreeBSD: execute `rare` in your terminal.
@@ -137,32 +124,59 @@ environment's `PATH`
 | macOS   | `/Users/<username>/Library/Python/3.x/bin` |
 
 
-### Run from source
+### Running from source (advanced)
 1. Clone the repo: `git clone https://github.com/RareDevs/Rare`.
 2. Change your working directory to the project folder: `cd Rare`.
-3. Run `pip install -r misc/requirements.in` to install all required dependencies.
-4. Run `./tools/ui2py.sh --force`, `./tools/qrc2py.sh --force` and `./tools/ts2qm.py` to prepare the UI components.
-5. Finally, run `pip install .`.
-6. Run the application with `python3 -m rare`.
+3. *Optional*: keep Rare isolated from your local python installation.
+    * Create a virtualenv to install Rare into using `python -m venv venv`
+    * Active your virtualenv
+      - Linux/MacOS: `source ./venv/bin/activate`
+      - Windows: `.\venv\scripts\activate.ps1`
+4. *Optional*: make sure all generated files are up to date.
+   * Use `pip install ruff PySide6-Essentials` to install the packages required by the following scripts.
+   * Run
+     ```sh
+     ./tools/ui2py.sh --force
+     ./tools/qrc2py.sh --force
+     ./tools/ts2qm.py
+     ```
+5. Use `pip install .` to install Rare and its runtime dependencies.
+6. You can use `pip install .[discordrpc]` or `pip install .[webview]` instead to install optional dependencies for Discord Presence and Webview respectively.
+7. Run the application with `rare` or `python3 -m rare`.
+    * If you installed in a virtualenv, you need to activate it before running Rare.
 
 #### In Arch Linux
-You can run `sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson` and `yay -S legendary python-vdf`.
+You can run
+```
+sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson
+yay -S legendary python-vdf
+```
 
-#### For packaging 
-For build and install the package manually, run `python setup.py bdist_wheel` and `python -m installer dist/*.whl`.
+#### Packaging
+Packaging is done in accordance to [PEP-517](https://peps.python.org/pep-0517/). For that you need the `build` and
+`installer` packages. After you ensure these are installed, Rare can be built and installed using
+```
+python -m build
+python -m installer dist/rare-*.whl
+```
 
 
 ## Contributing
 There are several options to contribute.
 
-- If you know Python and PyQt, you can implement new features (Some ideas are in the projects tab).
+- If you know Python and Qt, you can implement new features (Some ideas are in the projects tab).
 - You can translate the application in your language: Check our [transifex](https://www.transifex.com/rare-1/rare) page for that.
 
 More information is available in CONTRIBUTING.md.
 
+### Running from source for developmenmt purposes
+1. Clone the repo: `git clone https://github.com/RareDevs/Rare.git`.
+2. Change your working directory to the project folder: `cd Rare`.
+3. Run `pip install -e .` to install Rare in editable mode along with any required runtime dependencies.
+4. External tools used for development can be installed by running `pip install -e .[dev]` instead.
+
 
 ## Reporting issues
-
 If you run into any issues, you can report them by creating an issue on GitHub:
 https://github.com/RareDevs/Rare/issues/new/choose
 
@@ -180,7 +194,7 @@ In these folders you will find files named like below
 - `Rare_23-12-19--11-14.log`
 
 These are the logs for the main Rare application. As such are importand when Rare itself is crashing.
- 
+
 - `RareLauncher_f4e0c1dff48749fa9145c1585699e276_23-12-17--19-53.log`
 
 These are the logs for each of the games you run through Rare. Rare uses a separate instance of itself

@@ -1,3 +1,5 @@
+build
+installer
 setuptools-scm
 requests < 3.0
 PySide6-Essentials
@@ -7,3 +9,4 @@ orjson
 vdf
 pywin32 ; platform_system == "Windows"
 pypresence
+
