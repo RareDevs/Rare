@@ -1,27 +1,48 @@
+# Python bytecode and cache
 *.pyc
 *.pyo
-__pycache__
+__pycache__/
 
-/.idea
-/.vscode
-*~
-/build
-/dist
-/deb_dist
-*.tar.gz
+
+# Packaging and distribution
 *.egg-info/
-/venv*
-/test.py
+*.tar.gz
 /.eggs
-/appimage-builder-cache/
-/AppDir/
-/System Volume Information/
-/test_files/
-rare/_version.py
+/build/
+/dist/
+/deb_dist/
+
+
 # Nuitka build artifacts
-/rare.build
-/rare.dist
-/rare.bin
-/rare.cmd
+rare/_version.py
+/rare.build/
+/rare.dist/
+/rare.bin/
+/rare.cmd/
 /rare.exe
+
+
+# Virtual environments
+/venv*
+/build_venv/
+
+
+# Test files and folders
+/test.py
+/test_files/
+
+
+# IDE and editor configuration
+/.idea/
+/.vscode/
+*~
+
+
+# System-specific folders
+/System Volume Information/
+/AppDir/
+/appimage-builder-cache/
+
+
+# Dependency lock files
 /poetry.lock
