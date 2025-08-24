@@ -18,7 +18,12 @@ def main() -> int:
         if sys.stderr is None:
             sys.stderr = open(os.devnull, "w")
 
-    os.environ["QT_QPA_PLATFORMTHEME"] = ""
+    # remove QT_QPA_PLATFORMTHEME to avoid broken theming
+    if "QT_QPA_PLATFORMTHEME" in os.environ:
+        del os.environ["QT_QPA_PLATFORMTHEME"]
+    # remove XDG_CONFIG_HOME if running under Wine to stop legendary from using the Linux client config
+    if platform.system() == "Windows" and "XDG_CONFIG_HOME" in os.environ:
+        del os.environ["XDG_CONFIG_HOME"]
     if "LEGENDARY_CONFIG_PATH" in os.environ:
         os.environ["LEGENDARY_CONFIG_PATH"] = os.path.expanduser(os.environ["LEGENDARY_CONFIG_PATH"])
 
