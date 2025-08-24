@@ -90,7 +90,6 @@ There is also a semi-portable `.zip` archive in [releases page](https://github.c
 
 
 ### Linux
-
 #### Flatpak
 
 Rare is available as a flatpak. See [rare](https://flathub.org/apps/details/io.github.dummerle.rare).
@@ -164,31 +163,24 @@ environment's `PATH`
 
 
 ### Run from source
+1. Clone the repo: `git clone https://github.com/RareDevs/Rare`.
+2. Change your working directory to the project folder: `cd Rare`.
+3. Run `pip install -r misc/requirements.in` to install all required dependencies.
+4. Run `./tools/ui2py.sh --force`, `./tools/qrc2py.sh --force` and `./tools/ts2qm.py` to prepare the UI components.
+5. Finally, run `pip install .`.
+6. Run the application with `python3 -m rare`.
 
-1. Clone the repo: `git clone https://github.com/RareDevs/Rare`
-2. Change your working directory to the project folder: `cd Rare`
-<!--3. Run `pip install -r requirements.txt` to install all required dependencies.
-   * If you want to be able to use the automatic login and Discord pypresence, run 
-     ```lang-default
-     pip install -r requirements-full.txt
-     ```
-   * If you are on Arch you can run
-     ```lang-default
-     sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson
-     ```
-     ```
-     yay -S legendary python-vdf
-     ```
-   * If you are on FreeBSD you have to install py39-qt5 from the packages
-     ```lang-default
-     sudo pkg install py39-qt5
-     ```-->
-4. Run `python3 -m rare`
+#### In Arch Linux
+You can run `sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson` and `yay -S legendary python-vdf`.
 
+#### In FreeBSD
+You can run `sudo pkg install py39-qt5`.
+
+#### For packaging 
+For build and install the package manually, run `python setup.py bdist_wheel` and `python -m installer dist/*.whl`.
 
 
 ## Contributing
-
 There are several options to contribute.
 
 - If you know Python and PyQt, you can implement new features (Some ideas are in the projects tab).
