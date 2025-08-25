@@ -146,7 +146,7 @@ environment's `PATH`
     * If you installed in a virtualenv, you need to activate it before running Rare.
 
 #### In Arch Linux
-You can run 
+You can run
 ```
 sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson
 yay -S legendary python-vdf
