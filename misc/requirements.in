@@ -6,4 +6,7 @@ legendary-gl @ https://github.com/derrod/legendary/archive/3963382b3f33116154399
 orjson
 vdf
 pywin32 ; platform_system == "Windows"
+build
+installer
 pypresence
+ruff

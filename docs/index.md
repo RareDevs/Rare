@@ -26,15 +26,15 @@ A graphical interface for Legendary, a command line alternative to Epic Games la
 
 | Game covers                                   | Vertical list                                 |
 |-----------------------------------------------|-----------------------------------------------|
-| ![alt text](/Rare/assets/RareLibraryIcon.png) | ![alt text](/Rare/assets/RareLibraryList.png) |
+| ![alt text](/docs/assets/RareLibraryIcon.png) | ![alt text](/docs/assets/RareLibraryList.png) |
 
 | Game details                               | Game settings                                  |
 |--------------------------------------------|------------------------------------------------|
-| ![alt text](/Rare/assets/RareGameInfo.png) | ![alt text](/Rare/assets/RareGameSettings.png) |
+| ![alt text](/docs/assets/RareGameInfo.png) | ![alt text](/docs/assets/RareGameSettings.png) |
 
 | Downloads                                   | Application settings                       |
 |---------------------------------------------|--------------------------------------------|
-| ![alt text](/Rare/assets/RareDownloads.png) | ![alt text](/Rare/assets/RareSettings.png) |
+| ![alt text](/docs/assets/RareDownloads.png) | ![alt text](/docs/assets/RareSettings.png) |
 
 
 ## Installation
@@ -130,23 +130,23 @@ environment's `PATH`
 3. *Optional*: keep Rare isolated from your local python installation.
     * Create a virtualenv to install Rare into using `python -m venv venv`
     * Active your virtualenv
-      - Linux/MacOS: `source ./venv/bin/activate`
-      - Windows: `.\venv\scripts\activate.ps1`
+        - Linux/MacOS: `source ./venv/bin/activate`
+        - Windows: `.\venv\scripts\activate.ps1`
 4. *Optional*: make sure all generated files are up to date.
-   * Use `pip install ruff PySide6-Essentials` to install the packages required by the following scripts.
-   * Run
-     ```sh
-     ./tools/ui2py.sh --force
-     ./tools/qrc2py.sh --force
-     ./tools/ts2qm.py
-     ```
+    * Use `pip install ruff PySide6-Essentials` to install the packages required by the following scripts.
+    * Run
+      ```sh
+      ./tools/ui2py.sh --force
+      ./tools/qrc2py.sh --force
+      ./tools/ts2qm.py
+      ```
 5. Use `pip install .` to install Rare and its runtime dependencies.
 6. You can use `pip install .[discordrpc]` or `pip install .[webview]` instead to install optional dependencies for Discord Presence and Webview respectively.
 7. Run the application with `rare` or `python3 -m rare`.
     * If you installed in a virtualenv, you need to activate it before running Rare.
 
 #### In Arch Linux
-You can run 
+You can run
 ```
 sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson
 yay -S legendary python-vdf
@@ -211,7 +211,7 @@ https://discord.gg/YvmABK9YSk
   In that case navigate to one of the following directorories depending on your operating system and delete `user.json`
 
   | OS      | Path                               |
-  |---------|------------------------------------|
+    |---------|------------------------------------|
   | Windows | `%USERPROFILE%\.config\legendary\` |
   | Linux   | `$HOME/.config/legendary/`         |
   | macOS   | `$HOME/.config/legendary/`         |
