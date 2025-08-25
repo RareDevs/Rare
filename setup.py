@@ -1,5 +1,4 @@
 from setuptools import setup
-
 from setuptools_scm import ScmVersion
 
 

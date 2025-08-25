@@ -142,10 +142,16 @@ For build and install the package manually, run `python setup.py bdist_wheel` an
 ## Contributing
 There are several options to contribute.
 
-- If you know Python and PyQt, you can implement new features (Some ideas are in the projects tab).
+- If you know Python and Qt, you can implement new features (Some ideas are in the projects tab).
 - You can translate the application in your language: Check our [transifex](https://www.transifex.com/rare-1/rare) page for that.
 
 More information is available in CONTRIBUTING.md.
+
+### Run from source for developmenmt purposes
+1. Clone the repo: `git clone https://github.com/RareDevs/Rare.git`.
+2. Change your working directory to the project folder: `cd Rare`.
+3. Run `pip install -e .` to install Rare in editable mode along with any required runtime dependencies.
+4. External tools used for development can be installed by running `pip install -e .[dev]` instead.
 
 
 ## Reporting issues

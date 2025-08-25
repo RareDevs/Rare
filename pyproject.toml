@@ -49,6 +49,7 @@ dev = [
     "black[d]",
     "PySide6-stubs",
     "qstylizer",
+    "ruff",
 ]
 packaging = [
     "cx-freeze",
@@ -88,7 +89,7 @@ version = { attr = "rare.__version__" }
 # use only annotated tags ( omit `--tags` argument from `git describe`)
 git_describe_command = [ "git", "describe", "--dirty", "--long" ]
 #tag_regex = "(?P<version>^[0-9]+\\.[0-9]+\\.[0-9]+)(?P<suffix>.[0-9]+)?$"
-version_scheme = "misc.mkversion:mknumeric"
+#version_scheme = "misc.mkversion:mknumeric"
 local_scheme = "no-local-version"
 version_file = "rare/_version.py"
 fallback_version = "1.11.3.0"
