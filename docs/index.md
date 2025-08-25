@@ -132,24 +132,33 @@ environment's `PATH`
     * Active your virtualenv
       - Linux/MacOS: `source ./venv/bin/activate`
       - Windows: `.\venv\scripts\activate.ps1`
-4. Use `pip install .` to install Rare and its runtime dependencies.
-5. You can use `pip install .[discordrpc]` or `pip install .[webview]` instead to install optional dependencies for Discord Presence and Webview respectively.
-6. *Optional*: make sure all generated files are up to date.
-   * Use `pip install ruff` to install `ruff` required by the following scripts.
+4. *Optional*: make sure all generated files are up to date.
+   * Use `pip install ruff PySide6-Essentials` to install the packages required by the following scripts.
    * Run
      ```sh
      ./tools/ui2py.sh --force
      ./tools/qrc2py.sh --force
      ./tools/ts2qm.py
      ```
+5. Use `pip install .` to install Rare and its runtime dependencies.
+6. You can use `pip install .[discordrpc]` or `pip install .[webview]` instead to install optional dependencies for Discord Presence and Webview respectively.
 7. Run the application with `rare` or `python3 -m rare`.
     * If you installed in a virtualenv, you need to activate it before running Rare.
 
 #### In Arch Linux
-You can run `sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson` and `yay -S legendary python-vdf`.
+You can run 
+```
+sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson
+yay -S legendary python-vdf
+```
 
-#### For packaging 
-For build and install the package manually, run `python setup.py bdist_wheel` and `python -m installer dist/*.whl`.
+#### Packaging
+Packaging is done in accordance to [PEP-517](https://peps.python.org/pep-0517/). For that you need the `build` and
+`installer` packages. After you ensure these are installed, Rare can be built and installed using
+```
+python -m build
+python -m installer dist/rare-*.whl
+```
 
 
 ## Contributing
