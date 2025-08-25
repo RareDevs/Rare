@@ -124,13 +124,26 @@ environment's `PATH`
 | macOS   | `/Users/<username>/Library/Python/3.x/bin` |
 
 
-### Run from source
+### Running from source (advanced)
 1. Clone the repo: `git clone https://github.com/RareDevs/Rare`.
 2. Change your working directory to the project folder: `cd Rare`.
-3. Run `pip install -r misc/requirements.in` to install all required dependencies.
-4. Run `./tools/ui2py.sh --force`, `./tools/qrc2py.sh --force` and `./tools/ts2qm.py` to prepare the UI components.
-5. Finally, run `pip install .`.
-6. Run the application with `python3 -m rare`.
+3. *Optional*: keep Rare isolated from your local python installation.
+    * Create a virtualenv to install Rare into using `python -m venv venv`
+    * Active your virtualenv
+      - Linux/MacOS: `source ./venv/bin/activate`
+      - Windows: `.\venv\scripts\activate.ps1`
+4. Use `pip install .` to install Rare and its runtime dependencies.
+5. You can use `pip install .[discordrpc]` or `pip install .[webview]` instead to install optional dependencies for Discord Presence and Webview respectively.
+6. *Optional*: make sure all generated files are up to date.
+   * Use `pip install ruff` to install `ruff` required by the following scripts.
+   * Run
+     ```sh
+     ./tools/ui2py.sh --force
+     ./tools/qrc2py.sh --force
+     ./tools/ts2qm.py
+     ```
+7. Run the application with `rare` or `python3 -m rare`.
+    * If you installed in a virtualenv, you need to activate it before running Rare.
 
 #### In Arch Linux
 You can run `sudo pacman --needed -S python-wheel python-setuptools python-setuptools-scm python-pyside6 python-qtawesome python-requests python-orjson` and `yay -S legendary python-vdf`.
@@ -142,10 +155,16 @@ For build and install the package manually, run `python setup.py bdist_wheel` an
 ## Contributing
 There are several options to contribute.
 
-- If you know Python and PyQt, you can implement new features (Some ideas are in the projects tab).
+- If you know Python and Qt, you can implement new features (Some ideas are in the projects tab).
 - You can translate the application in your language: Check our [transifex](https://www.transifex.com/rare-1/rare) page for that.
 
 More information is available in CONTRIBUTING.md.
+
+### Running from source for developmenmt purposes
+1. Clone the repo: `git clone https://github.com/RareDevs/Rare.git`.
+2. Change your working directory to the project folder: `cd Rare`.
+3. Run `pip install -e .` to install Rare in editable mode along with any required runtime dependencies.
+4. External tools used for development can be installed by running `pip install -e .[dev]` instead.
 
 
 ## Reporting issues
