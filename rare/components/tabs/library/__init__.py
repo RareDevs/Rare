@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea,
 
 from rare.models.game import RareGame
 from rare.shared import RareCore
-from rare.models.settings import settings, RareAppSettings
+from rare.models.settings import app_settings, RareAppSettings
 from .details import GameInfoTabs
 from .widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
 from .head_bar import LibraryHeadBar
@@ -16,14 +16,14 @@ logger = getLogger("GamesLibrary")
 
 
 class GamesLibrary(QStackedWidget):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(GamesLibrary, self).__init__(parent=parent)
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
-        self.signals = RareCore.instance().signals()
-        self.args = RareCore.instance().args()
-        self.image_manager = RareCore.instance().image_manager()
-        self.settings = RareAppSettings.instance()
+        self.settings = settings
+        self.rcore = rcore
+        self.signals = rcore.signals()
+        self.image_manager = rcore.image_manager()
+        self.args = rcore.args()
+        self.core = rcore.core()
 
         self.games_page = QWidget(parent=self)
         games_page_layout = QVBoxLayout(self.games_page)
@@ -51,7 +51,7 @@ class GamesLibrary(QStackedWidget):
         self.view_scroll.setFrameShape(QFrame.Shape.StyledPanel)
         self.view_scroll.horizontalScrollBar().setDisabled(True)
 
-        library_view = LibraryView(self.settings.get_value(settings.library_view))
+        library_view = LibraryView(self.settings.get_value(app_settings.library_view))
         self.library_controller = LibraryWidgetController(library_view, self.view_scroll)
         games_page_layout.addWidget(self.view_scroll)
 

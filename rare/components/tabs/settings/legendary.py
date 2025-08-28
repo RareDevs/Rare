@@ -7,7 +7,7 @@ from PySide6.QtCore import QObject, Signal, QThreadPool, Slot, Qt
 from PySide6.QtGui import QShowEvent, QHideEvent
 from PySide6.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
-from rare.models.settings import settings, RareAppSettings
+from rare.models.settings import app_settings, RareAppSettings
 from rare.shared import RareCore
 from rare.shared.workers.worker import Worker
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
@@ -95,30 +95,30 @@ class LegendarySettings(QWidget):
         )
         self.ui.locale_layout.addWidget(self.locale_edit)
 
-        self.ui.fetch_win32_check.setChecked(self.settings.get_value(settings.win32_meta))
+        self.ui.fetch_win32_check.setChecked(self.settings.get_value(app_settings.win32_meta))
         self.ui.fetch_win32_check.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.win32_meta, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.win32_meta, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.fetch_macos_check.setChecked(self.settings.get_value(settings.macos_meta))
+        self.ui.fetch_macos_check.setChecked(self.settings.get_value(app_settings.macos_meta))
         self.ui.fetch_macos_check.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.macos_meta, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.macos_meta, s != Qt.CheckState.Unchecked)
         )
         self.ui.fetch_macos_check.setDisabled(pf.system() == "Darwin")
 
-        self.ui.fetch_unreal_check.setChecked(self.settings.get_value(settings.unreal_meta))
+        self.ui.fetch_unreal_check.setChecked(self.settings.get_value(app_settings.unreal_meta))
         self.ui.fetch_unreal_check.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.unreal_meta, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.unreal_meta, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.exclude_non_asset_check.setChecked(self.settings.get_value(settings.exclude_non_asset))
+        self.ui.exclude_non_asset_check.setChecked(self.settings.get_value(app_settings.exclude_non_asset))
         self.ui.exclude_non_asset_check.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.exclude_non_asset, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.exclude_non_asset, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.exclude_entitlements_check.setChecked(self.settings.get_value(settings.exclude_entitlements))
+        self.ui.exclude_entitlements_check.setChecked(self.settings.get_value(app_settings.exclude_entitlements))
         self.ui.exclude_entitlements_check.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.exclude_entitlements, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.exclude_entitlements, s != Qt.CheckState.Unchecked)
         )
 
         self.ui.refresh_metadata_button.clicked.connect(self.refresh_metadata)

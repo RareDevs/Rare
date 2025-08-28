@@ -7,16 +7,16 @@ from logging import getLogger
 from threading import Lock
 from typing import Dict, List, Optional, Set, Tuple
 
-from legendary.lfs import eos
-from legendary.models.game import Game, InstalledGame
 from PySide6.QtCore import QProcess, QRunnable, QThreadPool, Slot
 from PySide6.QtGui import QPixmap
+from legendary.lfs import eos
+from legendary.models.game import Game, InstalledGame
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameBase, RareGameSlim
 from rare.models.image import ImageSize
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
-from rare.models.settings import settings
+from rare.models.settings import app_settings, RareAppSettings
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils import config_helper as config
@@ -53,7 +53,7 @@ class RareGame(RareGameSlim):
                 queue_pos=data.get("queue_pos", None),
                 last_played=RareGame.Metadata.parse_date(data.get("last_played", "")),
                 grant_date=RareGame.Metadata.parse_date(data.get("grant_date", "")),
-                steam_appid=str(appid) if (appid := data.get("steam_appid", None)) else None,
+                steam_appid=str(appid) if (appid := data.get("steam_appid", "")) else None,
                 steam_grade=data.get("steam_grade", None),
                 steam_date=RareGame.Metadata.parse_date(data.get("steam_date", "")),
                 steam_shortcut=data.get("steam_shortcut", None),
@@ -79,12 +79,13 @@ class RareGame(RareGameSlim):
 
     def __init__(
         self,
+        settings: RareAppSettings,
         legendary_core: LegendaryCore,
         image_manager: ImageManager,
         game: Game,
         parent=None,
     ):
-        super(RareGame, self).__init__(legendary_core, game, parent=parent)
+        super(RareGame, self).__init__(settings, legendary_core, game, parent=parent)
         self.__origin_install_path: Optional[str] = None
         self.__origin_install_size: Optional[int] = None
 
@@ -494,7 +495,7 @@ class RareGame(RareGameSlim):
         if not (entitlements := self.core.lgd.entitlements):
             return self.metadata.grant_date
         if self.metadata.grant_date == datetime.min.replace(tzinfo=timezone.utc) or force:
-            logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
+            logger.info("Grant date for %s not found in metadata, resolving", self.app_name)
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
             entitlement = next(matching, None)
             grant_date = (
@@ -602,7 +603,7 @@ class RareGame(RareGameSlim):
             args.append("--offline")
         if debug:
             args.append("--debug")
-        if self.settings.get_value(settings.log_games):
+        if self.settings.get_value(app_settings.log_games):
             args.append("--show-console")
         if skip_update_check or config.get_boolean(self.app_name, "skip_update_check", fallback=False):
             args.append("--skip-update-check")
@@ -620,7 +621,7 @@ class RareGame(RareGameSlim):
                 "UMU_ID",
                 f"umu-{self.metadata.steam_appid}" if self.metadata.steam_appid else "umu-default",
             )
-        if self.settings.get_with_global(settings.local_shader_cache, self.app_name):
+        if self.settings.get_with_global(app_settings.local_shader_cache, self.app_name):
             config.set_envvar(
                 self.app_name,
                 "STEAM_COMPAT_SHADER_PATH",

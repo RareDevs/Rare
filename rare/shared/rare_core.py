@@ -14,10 +14,11 @@ from requests.exceptions import HTTPError, ConnectionError
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareSaveGame
 from rare.models.game import RareGame, RareEosOverlay
+from rare.models.settings import RareAppSettings
 from rare.models.signals import GlobalSignals
-from rare.utils.metrics import timelogger
 from rare.utils import config_helper
 from rare.utils import steam_shortcuts
+from rare.utils.metrics import timelogger
 from .image_manager import ImageManager
 from .workers import (
     QueueWorker,
@@ -47,10 +48,11 @@ class RareCore(QObject):
     # lk: special case class attribute, this has to be here
     __instance: Optional["RareCore"] = None
 
-    def __init__(self, args: Namespace):
+    def __init__(self, settings: RareAppSettings, args: Namespace):
         if self.__instance is not None:
             raise RuntimeError("RareCore already initialized")
         super(RareCore, self).__init__()
+        self.__settings = settings
         self.__args: Optional[Namespace] = None
         self.__signals: Optional[GlobalSignals] = None
         self.__core: Optional[LegendaryCore] = None
@@ -304,7 +306,7 @@ class RareCore(QObject):
             logger.info(f"Updating Game for {rgame.app_name}")
             rgame.update_rgame()
         else:
-            rgame = RareGame(self.__core, self.__image_manager, game, self)
+            rgame = RareGame(self.__settings, self.__core, self.__image_manager, game, self)
             self.__add_game(rgame)
         return rgame
 
@@ -361,7 +363,7 @@ class RareCore(QObject):
             return
 
         logger.debug("Fetch time %s seconds", time.perf_counter() - self.__start_time)
-        self.__wrappers.import_wrappers(self.__core, [rgame.app_name for rgame in self.games])
+        self.__wrappers.import_wrappers(self.__settings, self.__core, [rgame.app_name for rgame in self.games])
 
         # Look for Rare shortcuts in Steam
         steam_shortcuts.load_steam_shortcuts()
@@ -373,15 +375,15 @@ class RareCore(QObject):
     def fetch(self):
         self.__start_time = time.perf_counter()
 
-        games_dlcs_worker = GamesDlcsWorker(self.__core, self.__args)
+        games_dlcs_worker = GamesDlcsWorker(self.__settings, self.__core, self.__args)
         games_dlcs_worker.signals.progress.connect(self.__on_fetch_progress)
         games_dlcs_worker.signals.result.connect(self.__on_fetch_result)
 
-        entitlements_worker = EntitlementsWorker(self.__core, self.__args)
+        entitlements_worker = EntitlementsWorker(self.__settings, self.__core, self.__args)
         entitlements_worker.signals.progress.connect(self.__on_fetch_progress)
         entitlements_worker.signals.result.connect(self.__on_fetch_result)
 
-        steamappids_worker = SteamAppIdsWorker(self.__core, self.__args)
+        steamappids_worker = SteamAppIdsWorker(self.__settings, self.__core, self.__args)
         steamappids_worker.signals.progress.connect(self.__on_fetch_progress)
         steamappids_worker.signals.result.connect(self.__on_fetch_result)
 

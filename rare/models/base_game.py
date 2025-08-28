@@ -12,7 +12,7 @@ from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import UninstallOptionsModel, InstallOptionsModel
-from rare.models.settings import settings, RareAppSettings
+from rare.models.settings import app_settings, RareAppSettings
 
 logger = getLogger("RareGameBase")
 
@@ -194,9 +194,9 @@ class RareGameBase(QObject):
 
 
 class RareGameSlim(RareGameBase):
-    def __init__(self, legendary_core: LegendaryCore, game: Game, parent=None):
+    def __init__(self, settings: RareAppSettings, legendary_core: LegendaryCore, game: Game, parent=None):
         super(RareGameSlim, self).__init__(legendary_core, game, parent=parent)
-        self.settings = RareAppSettings.instance()
+        self.settings = settings
         # None if origin or not installed
         self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
         self.saves: List[RareSaveGame] = []
@@ -212,7 +212,7 @@ class RareGameSlim(RareGameBase):
 
     @property
     def auto_sync_saves(self):
-        auto_sync_cloud = self.settings.get_with_global(settings.auto_sync_cloud, self.app_name)
+        auto_sync_cloud = self.settings.get_with_global(app_settings.auto_sync_cloud, self.app_name)
         return self.supports_cloud_saves and auto_sync_cloud
 
     @property

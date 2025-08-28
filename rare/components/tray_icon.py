@@ -5,7 +5,7 @@ from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
 
-from rare.models.settings import settings, RareAppSettings
+from rare.models.settings import app_settings, RareAppSettings
 from rare.shared import RareCore
 
 logger = getLogger("TrayIcon")
@@ -17,12 +17,13 @@ class TrayIcon(QSystemTrayIcon):
     # int: exit code
     exit_app: Signal = Signal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(TrayIcon, self).__init__(parent=parent)
         self.__parent = parent
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
-        self.settings = RareAppSettings.instance()
+        self.settings = settings
+        self.rcore = rcore
+        self.signals = rcore.signals()
+        self.core = rcore.core()
 
         self.setIcon(QIcon(":/images/Rare.png"))
         self.setVisible(True)
@@ -50,7 +51,6 @@ class TrayIcon(QSystemTrayIcon):
 
         self.setContextMenu(self.menu)
 
-        self.signals = RareCore.instance().signals()
         self.signals.game.uninstalled.connect(self.remove_button)
         self.signals.application.notify.connect(self.notify)
         self.signals.application.update_tray.connect(self.update_actions)
@@ -62,7 +62,7 @@ class TrayIcon(QSystemTrayIcon):
 
     @Slot(str, str)
     def notify(self, title: str, body: str):
-        if self.settings.get_value(settings.notification):
+        if self.settings.get_value(app_settings.notification):
             self.showMessage(
                 f"{title} - {QApplication.applicationName()}",
                 body,
@@ -76,7 +76,7 @@ class TrayIcon(QSystemTrayIcon):
             action.deleteLater()
         self.game_actions.clear()
         for rgame in self.last_played():
-            a = TrayAction(self.rcore, rgame.app_title, rgame.app_name)
+            a: QAction = TrayAction(self.rcore, rgame.app_title, rgame.app_name)
             self.menu.insertAction(self.separator, a)
             self.game_actions.append(a)
 

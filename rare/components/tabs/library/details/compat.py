@@ -14,7 +14,7 @@ from rare.components.tabs.settings.widgets.overlay import (
 from rare.components.tabs.settings.widgets.runner import RunnerSettingsBase
 from rare.components.tabs.settings.widgets.wine import WineSettings
 from rare.models.game import RareGame
-from rare.models.settings import settings
+from rare.models.settings import app_settings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.utils import steam_grades
@@ -43,12 +43,12 @@ if pf.system() in {"Linux", "FreeBSD"}:
         def load_settings(self, app_name: str):
             self.app_name = app_name
 
-        def _get_compat_path(self, location: ProtonSettings.CompatLocation):
+        def _get_compat_path(self, compat_location: ProtonSettings.CompatLocation):
             folder_name = "default"
-            if location == ProtonSettings.CompatLocation.ISOLATED:
+            if compat_location == ProtonSettings.CompatLocation.ISOLATED:
                 folder_name = RareCore.instance().get_game(self.app_name).folder_name
-            compatdata_path = proton_compat_dir(folder_name)
-            return compatdata_path
+            compat_path = proton_compat_dir(folder_name)
+            return compat_path
 
     class LocalMangoHudSettings(MangoHudSettings):
         def load_settings(self, app_name: str):
@@ -78,7 +78,7 @@ class LocalRunnerSettings(RunnerSettingsBase):
         if a0.spontaneous():
             return super().showEvent(a0)
         _ = QSignalBlocker(self.shader_cache_check)
-        is_local_cache_enabled = self.settings.get_with_global(settings.local_shader_cache, self.rgame.app_name)
+        is_local_cache_enabled = self.settings.get_with_global(app_settings.local_shader_cache, self.rgame.app_name)
         has_local_cache_path = bool(config.get_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", False))
         self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
         self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
@@ -115,7 +115,7 @@ class LocalRunnerSettings(RunnerSettingsBase):
             )
         else:
             config.remove_envvar(self.rgame.app_name, "STEAM_COMPAT_SHADER_PATH")
-        self.settings.set_with_global(settings.local_shader_cache, checked, self.rgame.app_name)
+        self.settings.set_with_global(app_settings.local_shader_cache, checked, self.rgame.app_name)
         self.environ_changed.emit("STEAM_COMPAT_SHADER_PATH")
 
     def load_settings(self, rgame: RareGame):

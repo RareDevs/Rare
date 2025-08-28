@@ -2,6 +2,7 @@ from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShortcut
 from PySide6.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QMessageBox
 
+from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils.misc import qta_icon, ExitCodes
 from .account import AccountWidget
@@ -16,24 +17,25 @@ class MainTabWidget(QTabWidget):
     # int: exit code
     exit_app: Signal = Signal(int)
 
-    def __init__(self, parent):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent):
         super(MainTabWidget, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
 
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
-        self.signals = RareCore.instance().signals()
-        self.args = RareCore.instance().args()
+        self.settings = settings
+        self.rcore = rcore
+        self.core = rcore.core()
+        self.signals = rcore.signals()
+        self.args = rcore.args()
 
         self.tab_bar = MainTabBar(parent=self)
         self.setTabBar(self.tab_bar)
 
         # Generate Tabs
-        self.games_tab = GamesLibrary(self)
+        self.games_tab = GamesLibrary(self.settings, self.rcore, self)
         self.games_index = self.addTab(self.games_tab, self.tr("Games"))
 
         # Downloads Tab after Games Tab to use populated RareCore games list
-        self.downloads_tab = DownloadsTab(self)
+        self.downloads_tab = DownloadsTab(self.settings, self.rcore, self)
         self.downloads_index = self.addTab(self.downloads_tab, "")
         self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
         self.downloads_tab.update_queues_count()
@@ -55,7 +57,7 @@ class MainTabWidget(QTabWidget):
         self.settings_tab.about.update_available_ready.connect(lambda: self.tab_bar.setTabText(self.settings_index, "(!)"))
 
         # Account Button
-        self.account_widget = AccountWidget(self)
+        self.account_widget = AccountWidget(self.signals, self.core, self)
         self.account_widget.exit_app.connect(self.__on_exit_app)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)

@@ -81,7 +81,7 @@ class ProtonSettings(QGroupBox):
         self.wrappers: Wrappers = RareCore.instance().wrappers()
         self.tool_wrapper: Optional[Wrapper] = None
 
-    def _get_compat_path(self, location: CompatLocation):
+    def _get_compat_path(self, compat_location: CompatLocation):
         folder_name = "default"
         compat_path = proton_compat_dir(folder_name)
         return compat_path
@@ -89,14 +89,14 @@ class ProtonSettings(QGroupBox):
     def _update_compat_folder(self, compat_path: str):
         shared_path = str(self._get_compat_path(ProtonSettings.CompatLocation.SHARED))
         isolated_path = str(self._get_compat_path(ProtonSettings.CompatLocation.ISOLATED))
-        compat_type = ProtonSettings.CompatLocation.CUSTOM
+        compat_location = ProtonSettings.CompatLocation.CUSTOM
         if compat_path == isolated_path:
-            compat_type = ProtonSettings.CompatLocation.ISOLATED
+            compat_location = ProtonSettings.CompatLocation.ISOLATED
         if compat_path == shared_path:
-            compat_type = ProtonSettings.CompatLocation.SHARED
-        self.compat_combo.setCurrentIndex(self.compat_combo.findData(compat_type, Qt.ItemDataRole.UserRole))
-        self.compat_edit.setEnabled(compat_type is ProtonSettings.CompatLocation.CUSTOM)
-        return compat_type
+            compat_location = ProtonSettings.CompatLocation.SHARED
+        self.compat_combo.setCurrentIndex(self.compat_combo.findData(compat_location, Qt.ItemDataRole.UserRole))
+        self.compat_edit.setEnabled(compat_location is ProtonSettings.CompatLocation.CUSTOM)
+        return compat_location
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
@@ -127,13 +127,13 @@ class ProtonSettings(QGroupBox):
         compat_path = config.get_proton_compat_data_path(self.app_name, fallback="")
 
         self.compat_combo.blockSignals(True)
-        compat_type = self._update_compat_folder(compat_path)
+        compat_location = self._update_compat_folder(compat_path)
         self.compat_combo.setEnabled(enabled)
         self.compat_combo.blockSignals(False)
 
         self.compat_edit.blockSignals(True)
         self.compat_edit.setText(compat_path)
-        self.compat_edit.setEnabled(enabled and compat_type is ProtonSettings.CompatLocation.CUSTOM)
+        self.compat_edit.setEnabled(enabled and compat_location is ProtonSettings.CompatLocation.CUSTOM)
         self.compat_edit.blockSignals(False)
 
         super().showEvent(a0)
@@ -185,11 +185,11 @@ class ProtonSettings(QGroupBox):
 
     @Slot(int)
     def __on_compat_changed(self, index):
-        compat_type: ProtonSettings.CompatLocation = self.compat_combo.itemData(index, Qt.ItemDataRole.UserRole)
-        compat_path = self._get_compat_path(compat_type)
+        compat_location: ProtonSettings.CompatLocation = self.compat_combo.itemData(index, Qt.ItemDataRole.UserRole)
+        compat_path = self._get_compat_path(compat_location)
         config.adjust_proton_compat_data_path(self.app_name, str(compat_path))
         self.compat_edit.setText(str(compat_path))
-        if compat_type in {
+        if compat_location in {
             ProtonSettings.CompatLocation.SHARED,
             ProtonSettings.CompatLocation.ISOLATED,
         }:

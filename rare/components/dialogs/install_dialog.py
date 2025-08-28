@@ -8,7 +8,7 @@ from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFileDialog, QWidget, QFormLayout
 
-from rare.models.settings import RareAppSettings, settings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.models.game import RareGame
 from rare.models.install import (
     InstallDownloadModel,
@@ -132,7 +132,7 @@ class InstallDialog(ActionDialog):
         self.ui.install_dir_label.setDisabled(rgame.is_installed)
         self.ui.shortcut_label.setDisabled(rgame.is_installed)
         self.ui.shortcut_check.setDisabled(rgame.is_installed)
-        self.ui.shortcut_check.setChecked(not rgame.is_installed and self.settings.get_value(settings.create_shortcut))
+        self.ui.shortcut_check.setChecked(not rgame.is_installed and self.settings.get_value(app_settings.create_shortcut))
         self.ui.shortcut_check.checkStateChanged.connect(self.__option_changed_no_reload)
 
         self.error_box()
@@ -280,7 +280,7 @@ class InstallDialog(ActionDialog):
         if self.sender() is self.advanced.ui.download_only_check:
             self.__options.no_install = state != Qt.CheckState.Unchecked
         elif self.sender() is self.ui.shortcut_check:
-            self.settings.set_value(settings.create_shortcut, state != Qt.CheckState.Unchecked)
+            self.settings.set_value(app_settings.create_shortcut, state != Qt.CheckState.Unchecked)
             self.__options.create_shortcut = state != Qt.CheckState.Unchecked
         elif self.sender() is self.advanced.ui.install_prereqs_check:
             self.__options.install_prereqs = state != Qt.CheckState.Unchecked

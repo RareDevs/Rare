@@ -8,7 +8,7 @@ from requests.exceptions import HTTPError, ConnectionError
 
 from rare.lgndr.core import LegendaryCore
 from rare.utils.metrics import timelogger
-from rare.models.settings import settings, RareAppSettings
+from rare.models.settings import app_settings, RareAppSettings
 from rare.utils import steam_grades
 from .worker import Worker
 
@@ -26,12 +26,12 @@ class FetchWorker(Worker):
         progress = Signal(int, str)
         result = Signal(object, int)
 
-    def __init__(self, core: LegendaryCore, args: Namespace):
+    def __init__(self, settings: RareAppSettings, core: LegendaryCore, args: Namespace):
         super(Worker, self).__init__()
         self.signals = FetchWorker.Signals()
+        self.settings = settings
         self.core = core
         self.args = args
-        self.settings = RareAppSettings.instance()
 
 
 class SteamAppIdsWorker(FetchWorker):
@@ -50,7 +50,7 @@ class SteamAppIdsWorker(FetchWorker):
 
 class EntitlementsWorker(FetchWorker):
     def run_real(self):
-        want_entitlements = not self.settings.get_value(settings.exclude_entitlements)
+        want_entitlements = not self.settings.get_value(app_settings.exclude_entitlements)
 
         entitlements = ()
         if want_entitlements and not self.args.offline:
@@ -74,10 +74,10 @@ class GamesDlcsWorker(FetchWorker):
         # want_unreal = self.settings.get_value(options.unreal_meta) or self.args.debug
         # want_win32 = self.settings.get_value(options.win32_meta) or self.args.debug
         # want_macos = self.settings.get_value(options.macos_meta) or self.args.debug
-        want_unreal = self.settings.get_value(settings.unreal_meta)
-        want_win32 = self.settings.get_value(settings.win32_meta)
-        want_macos = self.settings.get_value(settings.macos_meta)
-        want_non_asset = not self.settings.get_value(settings.exclude_non_asset)
+        want_unreal = self.settings.get_value(app_settings.unreal_meta)
+        want_win32 = self.settings.get_value(app_settings.win32_meta)
+        want_macos = self.settings.get_value(app_settings.macos_meta)
+        want_non_asset = not self.settings.get_value(app_settings.exclude_non_asset)
         need_macos = platform.system() == "Darwin"
         need_windows = not any([want_win32, want_macos, need_macos]) and not self.args.offline
 

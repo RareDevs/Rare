@@ -7,7 +7,7 @@ from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QWidget, QMessageBox
 
 from rare.components.tabs.settings.widgets.discord_rpc import DiscordRPCSettings
-from rare.models.settings import settings, RareAppSettings, LibraryView
+from rare.models.settings import app_settings, RareAppSettings, LibraryView
 from rare.shared import RareCore
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils.misc import (
@@ -37,10 +37,10 @@ class RareSettings(QWidget):
         self.settings = RareAppSettings.instance()
 
         # Select lang
-        self.ui.lang_select.addItem(self.tr("System default"), settings.language.default)
+        self.ui.lang_select.addItem(self.tr("System default"), app_settings.language.default)
         for lang_code, title in get_translations():
             self.ui.lang_select.addItem(title, lang_code)
-        language = self.settings.get_value(settings.language)
+        language = self.settings.get_value(app_settings.language)
         if (index := self.ui.lang_select.findData(language, Qt.ItemDataRole.UserRole)) > 0:
             self.ui.lang_select.setCurrentIndex(index)
         else:
@@ -50,7 +50,7 @@ class RareSettings(QWidget):
         self.ui.color_select.addItem(self.tr("None"), "")
         for item in get_color_schemes():
             self.ui.color_select.addItem(item, item)
-        color = self.settings.get_value(settings.color_scheme)
+        color = self.settings.get_value(app_settings.color_scheme)
         if (index := self.ui.color_select.findData(color, Qt.ItemDataRole.UserRole)) > 0:
             self.ui.color_select.setCurrentIndex(index)
             self.ui.color_select.setDisabled(False)
@@ -62,7 +62,7 @@ class RareSettings(QWidget):
         self.ui.style_select.addItem(self.tr("None"), "")
         for item in get_style_sheets():
             self.ui.style_select.addItem(item, item)
-        style = self.settings.get_value(settings.style_sheet)
+        style = self.settings.get_value(app_settings.style_sheet)
         if (index := self.ui.style_select.findData(style, Qt.ItemDataRole.UserRole)) > 0:
             self.ui.style_select.setCurrentIndex(index)
             self.ui.style_select.setDisabled(False)
@@ -73,7 +73,7 @@ class RareSettings(QWidget):
 
         self.ui.view_combo.addItem(self.tr("Game covers"), LibraryView.COVER)
         self.ui.view_combo.addItem(self.tr("Vertical list"), LibraryView.VLIST)
-        view = LibraryView(self.settings.get_value(settings.library_view))
+        view = LibraryView(self.settings.get_value(app_settings.library_view))
         if (index := self.ui.view_combo.findData(view)) > -1:
             self.ui.view_combo.setCurrentIndex(index)
         else:
@@ -83,14 +83,14 @@ class RareSettings(QWidget):
         self.discord_rpc_settings = DiscordRPCSettings(self)
         self.ui.right_layout.insertWidget(1, self.discord_rpc_settings, alignment=Qt.AlignmentFlag.AlignTop)
 
-        self.ui.sys_tray_close.setChecked(self.settings.get_value(settings.sys_tray_close))
+        self.ui.sys_tray_close.setChecked(self.settings.get_value(app_settings.sys_tray_close))
         self.ui.sys_tray_close.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.sys_tray_close, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.sys_tray_close, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.sys_tray_start.setChecked(self.settings.get_value(settings.sys_tray_start))
+        self.ui.sys_tray_start.setChecked(self.settings.get_value(app_settings.sys_tray_start))
         self.ui.sys_tray_start.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.sys_tray_start, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.sys_tray_start, s != Qt.CheckState.Unchecked)
         )
 
         # Disable starting in system tray if closing to system tray is disabled.
@@ -99,34 +99,34 @@ class RareSettings(QWidget):
             lambda s: self.ui.sys_tray_start.setEnabled(s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.auto_update.setChecked(self.settings.get_value(settings.auto_update))
+        self.ui.auto_update.setChecked(self.settings.get_value(app_settings.auto_update))
         self.ui.auto_update.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.auto_update, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.auto_update, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.confirm_start.setChecked(self.settings.get_value(settings.confirm_start))
+        self.ui.confirm_start.setChecked(self.settings.get_value(app_settings.confirm_start))
         self.ui.confirm_start.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.confirm_start, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.confirm_start, s != Qt.CheckState.Unchecked)
         )
         # TODO: implement use when starting game, disable for now
         self.ui.confirm_start.setDisabled(True)
 
-        self.ui.auto_sync_cloud.setChecked(self.settings.get_value(settings.auto_sync_cloud))
+        self.ui.auto_sync_cloud.setChecked(self.settings.get_value(app_settings.auto_sync_cloud))
         self.ui.auto_sync_cloud.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.auto_sync_cloud, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.auto_sync_cloud, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.notification.setChecked(self.settings.get_value(settings.notification))
+        self.ui.notification.setChecked(self.settings.get_value(app_settings.notification))
         self.ui.notification.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.notification, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.notification, s != Qt.CheckState.Unchecked)
         )
 
-        self.ui.save_size.setChecked(self.settings.get_value(settings.restore_window))
+        self.ui.save_size.setChecked(self.settings.get_value(app_settings.restore_window))
         self.ui.save_size.checkStateChanged.connect(self.save_window_size)
 
-        self.ui.log_games.setChecked(self.settings.get_value(settings.log_games))
+        self.ui.log_games.setChecked(self.settings.get_value(app_settings.log_games))
         self.ui.log_games.checkStateChanged.connect(
-            lambda s: self.settings.set_value(settings.log_games, s != Qt.CheckState.Unchecked)
+            lambda s: self.settings.set_value(app_settings.log_games, s != Qt.CheckState.Unchecked)
         )
 
         if desktop_links_supported():
@@ -213,7 +213,7 @@ class RareSettings(QWidget):
             self.ui.style_select.setDisabled(True)
         else:
             self.ui.style_select.setDisabled(False)
-        self.settings.set_value(settings.color_scheme, scheme)
+        self.settings.set_value(app_settings.color_scheme, scheme)
         set_color_pallete(scheme)
 
     @Slot(int)
@@ -224,13 +224,13 @@ class RareSettings(QWidget):
             self.ui.color_select.setDisabled(True)
         else:
             self.ui.color_select.setDisabled(False)
-        self.settings.set_value(settings.style_sheet, style)
+        self.settings.set_value(app_settings.style_sheet, style)
         set_style_sheet(style)
 
     @Slot(int)
     def on_view_combo_changed(self, index: int):
         view = LibraryView(self.ui.view_combo.itemData(index, Qt.ItemDataRole.UserRole))
-        self.settings.set_value(settings.library_view, view)
+        self.settings.set_value(app_settings.library_view, view)
 
     @Slot()
     def open_directory(self):
@@ -238,14 +238,14 @@ class RareSettings(QWidget):
 
     @Slot(Qt.CheckState)
     def save_window_size(self, state: Qt.CheckState):
-        self.settings.set_value(settings.restore_window, state != Qt.CheckState.Unchecked)
-        self.settings.rem_value(settings.window_width)
-        self.settings.rem_value(settings.window_height)
+        self.settings.set_value(app_settings.restore_window, state != Qt.CheckState.Unchecked)
+        self.settings.rem_value(app_settings.window_width)
+        self.settings.rem_value(app_settings.window_height)
 
     @Slot(int)
     def on_lang_changed(self, index: int):
         lang_code = self.ui.lang_select.itemData(index, Qt.ItemDataRole.UserRole)
         if lang_code == locale.getlocale()[0]:
-            self.settings.rem_value(settings.language)
+            self.settings.rem_value(app_settings.language)
         else:
-            self.settings.set_value(settings.language, lang_code)
+            self.settings.set_value(app_settings.language, lang_code)
