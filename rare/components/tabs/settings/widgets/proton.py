@@ -175,7 +175,7 @@ class ProtonSettings(QGroupBox):
         if steam_tool:
             compat_path = config.get_proton_compat_data_path(self.app_name, fallback="")
             if not compat_path:
-                compat_path = str(self._get_compat_path(ProtonSettings.CompatLocation.SHARED))
+                compat_path = str(self._get_compat_path(ProtonSettings.CompatLocation.NONE))
             self._update_compat_folder(compat_path)
             self.compat_edit.setText(str(compat_path))
         else:

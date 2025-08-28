@@ -18,7 +18,7 @@ from rare.models.settings import app_settings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.utils import steam_grades
-from rare.utils.paths import compat_shaders_dir, proton_compat_dir
+from rare.utils.paths import compat_shaders_dir, proton_compat_dir, wine_prefix_dir
 from rare.widgets.indicator_edit import (
     ColumnCompleter,
     IndicatorLineEdit,
@@ -45,8 +45,12 @@ if pf.system() in {"Linux", "FreeBSD"}:
 
         def _get_compat_path(self, compat_location: ProtonSettings.CompatLocation):
             folder_name = "default"
+            local_folder_name = RareCore.instance().get_game(self.app_name).folder_name
+            if compat_location == ProtonSettings.CompatLocation.NONE:
+                if wine_prefix_dir(local_folder_name).joinpath("system.reg").is_file():
+                    compat_location = ProtonSettings.CompatLocation.ISOLATED
             if compat_location == ProtonSettings.CompatLocation.ISOLATED:
-                folder_name = RareCore.instance().get_game(self.app_name).folder_name
+                folder_name = local_folder_name
             compat_path = proton_compat_dir(folder_name)
             return compat_path
 
