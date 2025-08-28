@@ -28,8 +28,12 @@ class ViewContainer(QWidget):
 
     @staticmethod
     def __visibility(widget: ViewWidget, library_filter, search_text) -> Tuple[bool, float]:
+        name_search = True
+        tag_search = False
         if search_text.startswith("::"):
             search_text = search_text.removeprefix("::")
+            tag_search = True
+            name_search = False
             visible = True
         elif library_filter == LibraryFilter.HIDDEN:
             visible = "hidden" in widget.rgame.metadata.tags
@@ -54,14 +58,16 @@ class ViewContainer(QWidget):
         else:
             visible = True
 
-        if (
-            search_text not in widget.rgame.app_name.lower()
-            and search_text not in widget.rgame.app_title.lower()
-            and search_text not in widget.rgame.metadata.tags
+        opacity = 1.0
+        if search_text and (
+            (
+                name_search
+                and search_text not in widget.rgame.app_name.lower()
+                and search_text not in widget.rgame.app_title.lower()
+            )
+            or (tag_search and search_text not in widget.rgame.metadata.tags)
         ):
             opacity = 0.25
-        else:
-            opacity = 1.0
 
         return visible, opacity
 
@@ -127,7 +133,10 @@ class IconViewContainer(ViewContainer):
             if search_text.startswith("::"):
                 self.layout().sort(lambda x: search_text.removeprefix("::") not in x.widget().rgame.metadata.tags)
             else:
-                self.layout().sort(lambda x: search_text not in x.widget().rgame.app_title.lower())
+                self.layout().sort(
+                    lambda x: search_text not in x.widget().rgame.app_title.lower()
+                    and search_text not in x.widget().rgame.app_name.lower()
+                )
         else:
             if (newest := order_by == LibraryOrder.NEWEST) or order_by == LibraryOrder.OLDEST:
                 # Sort by grant date
@@ -186,7 +195,9 @@ class ListViewContainer(ViewContainer):
             if search_text.startswith("::"):
                 list_widgets.sort(key=lambda x: search_text.removeprefix("::") not in x.rgame.metadata.tags)
             else:
-                list_widgets.sort(key=lambda x: search_text not in x.rgame.app_title.lower())
+                list_widgets.sort(
+                    key=lambda x: search_text not in x.rgame.app_title.lower() and search_text not in x.rgame.app_name.lower()
+                )
         else:
             if (newest := order_by == LibraryOrder.NEWEST) or order_by == LibraryOrder.OLDEST:
                 list_widgets.sort(
