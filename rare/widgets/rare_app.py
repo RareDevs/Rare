@@ -22,7 +22,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 import rare.resources.resources
-from rare.models.settings import RareAppSettings, settings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.utils import paths
 from rare.utils.misc import set_color_pallete, set_style_sheet, get_static_style
 
@@ -111,18 +111,18 @@ class RareApp(QApplication):
 
         self.settings = RareAppSettings(self)
 
-        language = self.settings.get_value(settings.language)
+        language = self.settings.get_value(app_settings.language)
         self.load_translator(language)
 
         # Style
         # lk: this is a bit silly but serves well until we have a class
         # lk: store the default qt style name from the system on startup as a property for later reference
         self.setProperty("rareDefaultQtStyle", self.style().objectName())
-        if color_scheme := self.settings.get_value(settings.color_scheme):
-            self.settings.set_value(settings.style_sheet, "")
+        if color_scheme := self.settings.get_value(app_settings.color_scheme):
+            self.settings.set_value(app_settings.style_sheet, "")
             set_color_pallete(str(color_scheme))
-        elif style_sheet := self.settings.get_value(settings.style_sheet):
-            self.settings.set_value(settings.color_scheme, "")
+        elif style_sheet := self.settings.get_value(app_settings.style_sheet):
+            self.settings.set_value(app_settings.color_scheme, "")
             set_style_sheet(str(style_sheet))
         else:
             self.setStyleSheet(get_static_style())

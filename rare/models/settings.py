@@ -62,7 +62,7 @@ class Settings(Namespace):
     create_shortcut = Setting(key="create_shortcut", default=pf.system() == "Windows", dtype=bool)
 
 
-settings = Settings()
+app_settings = Settings()
 
 
 class RareAppSettings(QSettings):
@@ -115,7 +115,7 @@ class RareAppSettings(QSettings):
 
 
 __all__ = [
-    "settings",
+    "app_settings",
     "RareAppSettings",
     "LibraryFilter",
     "LibraryOrder",

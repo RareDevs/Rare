@@ -40,7 +40,6 @@ class WrapperEntry:
 
 class Wrappers:
     def __init__(self):
-        self.settings = RareAppSettings.instance()
         self._file = os.path.join(config_dir(), "wrappers.json")
         self._wrappers_dict = {}
         try:
@@ -70,12 +69,12 @@ class Wrappers:
         # set current file version
         self._version = 2
 
-    def import_wrappers(self, core: LegendaryCore, app_names: List):
+    def import_wrappers(self, settings: RareAppSettings, core: LegendaryCore, app_names: List):
         for app_name in app_names:
             wrappers = self.get_wrappers(app_name)
-            if not wrappers and (commands := self.settings.value(f"{app_name}/wrapper", [], type=list)):
+            if not wrappers and (commands := settings.value(f"{app_name}/wrapper", [], type=list)):
                 logger.info("Importing wrappers from Rare's config")
-                self.settings.remove(f"{app_name}/wrapper")
+                settings.remove(f"{app_name}/wrapper")
                 for command in commands:
                     wrapper = Wrapper(command=shlex.split(command))
                     wrappers.append(wrapper)
