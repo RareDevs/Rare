@@ -6,8 +6,9 @@ from PySide6.QtCore import Signal, Qt, QSignalBlocker, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFileDialog, QFormLayout, QGroupBox
 
+from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
-from rare.utils import config_helper as config
+from rare.utils import config_helper as lgd_conf
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
 
 logger = getLogger("WineSettings")
@@ -20,9 +21,10 @@ class WineSettings(QGroupBox):
     def __init__(self, parent=None):
         super(WineSettings, self).__init__(parent=parent)
         self.setTitle(self.tr("Wine"))
-
-        self.core = RareCore.instance().core()
+        self.settings = RareAppSettings.instance()
         self.signals = RareCore.instance().signals()
+
+        self.lgd_core = RareCore.instance().core()
 
         self.app_name: Optional[str] = "default"
 
@@ -66,35 +68,45 @@ class WineSettings(QGroupBox):
         self.wine_prefix.setText(self.load_prefix())
         _ = QSignalBlocker(self.wine_exec)
         self.wine_exec.setText(self.load_exec())
-        self.setDisabled(config.get_boolean(self.app_name, "no_wine", fallback=False))
+        self.setDisabled(lgd_conf.get_boolean(self.app_name, "no_wine", fallback=False))
 
         return super().showEvent(a0)
 
     @Slot(bool)
     def tool_enabled(self, enabled: bool):
         if enabled:
-            config.set_boolean(self.app_name, "no_wine", True)
+            lgd_conf.set_boolean(self.app_name, "no_wine", True)
+            if wine_exec := self.load_exec():
+                self.settings.setValue(f"{self.app_name}/wine_exec", wine_exec)
+            self.wine_exec.setText("")
+            if wine_prefix := self.load_prefix():
+                self.settings.setValue(f"{self.app_name}/wine_prefix", wine_prefix)
+            self.wine_prefix.setText("")
         else:
-            config.remove_option(self.app_name, "no_wine")
+            lgd_conf.remove_option(self.app_name, "no_wine")
+            if not self.load_exec():
+                self.wine_exec.setText(self.settings.value(f"{self.app_name}/wine_exec", defaultValue="", type=str))
+            if not self.load_prefix():
+                self.wine_prefix.setText(self.settings.value(f"{self.app_name}/wine_prefix", defaultValue="", type=str))
         self.setDisabled(enabled)
 
     def load_prefix(self) -> str:
         if self.app_name is None:
             raise RuntimeError
-        return config.get_wine_prefix(self.app_name, "")
+        return lgd_conf.get_wine_prefix(self.app_name, "")
 
     def save_prefix(self, path: str) -> None:
         if self.app_name is None:
             raise RuntimeError
-        config.adjust_wine_prefix(self.app_name, path)
+        lgd_conf.adjust_wine_prefix(self.app_name, path)
         self.environ_changed.emit("WINEPREFIX")
 
     def load_exec(self) -> str:
         if self.app_name is None:
             raise RuntimeError
-        return config.get_option(self.app_name, "wine_executable", "")
+        return lgd_conf.get_option(self.app_name, "wine_executable", "")
 
     def save_exec(self, text: str) -> None:
         if self.app_name is None:
             raise RuntimeError
-        config.adjust_option(self.app_name, "wine_executable", text)
+        lgd_conf.adjust_option(self.app_name, "wine_executable", text)
