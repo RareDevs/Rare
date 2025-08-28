@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QCompleter,
 )
 
-from rare.models.settings import settings, RareAppSettings, LibraryFilter, LibraryOrder
+from rare.models.settings import app_settings, RareAppSettings, LibraryFilter, LibraryOrder
 from rare.shared import RareCore
 from rare.utils.misc import qta_icon
 from rare.widgets.button_edit import ButtonLineEdit
@@ -55,15 +55,15 @@ class LibraryHeadBar(QWidget):
         self.filter.addItem(self.tr("Include Unreal"), LibraryFilter.INCLUDE_UE)
 
         try:
-            _filter = LibraryFilter(self.settings.get_value(settings.library_filter))
+            _filter = LibraryFilter(self.settings.get_value(app_settings.library_filter))
             if (index := self.filter.findData(_filter, Qt.ItemDataRole.UserRole)) < 0:
                 raise ValueError(f"Filter '{_filter}' is not available")
             else:
                 self.filter.setCurrentIndex(index)
         except (TypeError, ValueError) as e:
             self.logger.error("Error while loading library: %s", e)
-            self.settings.set_value(settings.library_filter, settings.library_filter.default)
-            _filter = LibraryFilter(settings.library_filter.default)
+            self.settings.set_value(app_settings.library_filter, app_settings.library_filter.default)
+            _filter = LibraryFilter(app_settings.library_filter.default)
             self.filter.setCurrentIndex(self.filter.findData(_filter, Qt.ItemDataRole.UserRole))
         self.filter.currentIndexChanged.connect(self.__filter_changed)
 
@@ -78,15 +78,15 @@ class LibraryHeadBar(QWidget):
             self.order.addItem(text, data)
 
         try:
-            _order = LibraryOrder(self.settings.get_value(settings.library_order))
+            _order = LibraryOrder(self.settings.get_value(app_settings.library_order))
             if (index := self.order.findData(_order, Qt.ItemDataRole.UserRole)) < 0:
                 raise ValueError(f"Order '{_order}' is not available")
             else:
                 self.order.setCurrentIndex(index)
         except (TypeError, ValueError) as e:
             self.logger.error("Error while loading library: %s", e)
-            self.settings.set_value(settings.library_order, settings.library_order.default)
-            _order = LibraryOrder(settings.library_order.default)
+            self.settings.set_value(app_settings.library_order, app_settings.library_order.default)
+            _order = LibraryOrder(app_settings.library_order.default)
             self.order.setCurrentIndex(self.order.findData(_order, Qt.ItemDataRole.UserRole))
         self.order.currentIndexChanged.connect(self.__order_changed)
 
@@ -186,7 +186,7 @@ class LibraryHeadBar(QWidget):
     def __filter_changed(self, index: int):
         data = self.filter.itemData(index, Qt.ItemDataRole.UserRole)
         self.filterChanged.emit(data)
-        self.settings.set_value(settings.library_filter, data)
+        self.settings.set_value(app_settings.library_filter, data)
 
     def current_order(self) -> LibraryOrder:
         return self.order.currentData(Qt.ItemDataRole.UserRole)
@@ -195,7 +195,7 @@ class LibraryHeadBar(QWidget):
     def __order_changed(self, index: int):
         data = self.order.itemData(index, Qt.ItemDataRole.UserRole)
         self.orderChanged.emit(data)
-        self.settings.set_value(settings.library_order, data)
+        self.settings.set_value(app_settings.library_order, data)
 
 
 class SelectViewWidget(QWidget):

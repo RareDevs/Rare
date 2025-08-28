@@ -9,7 +9,7 @@ from PySide6.QtCore import QThreadPool, QTimer, Slot, Qt
 from PySide6.QtWidgets import QApplication, QMessageBox
 from requests import HTTPError
 
-from rare.models.settings import settings
+from rare.models.settings import app_settings
 from rare.components.dialogs.launch_dialog import LaunchDialog
 from rare.components.main_window import RareWindow
 from rare.shared import RareCore
@@ -41,10 +41,10 @@ class Rare(RareApp):
         super(Rare, self).__init__(args, f"{type(self).__name__}_{{0}}.log")
         self._hook.deleteLater()
         self._hook = RareException(self)
-        self.rcore = RareCore(args=args)
-        self.args = RareCore.instance().args()
-        self.signals = RareCore.instance().signals()
-        self.core = RareCore.instance().core()
+        self.rcore = RareCore(self.settings, args=args)
+        self.args = self.rcore.args()
+        self.signals = self.rcore.signals()
+        self.core = self.rcore.core()
 
         # set Application name for settings
         self.main_window: Optional[RareWindow] = None
@@ -73,7 +73,7 @@ class Rare(RareApp):
 
     @Slot()
     def launch_app(self):
-        self.launch_dialog = LaunchDialog(parent=None)
+        self.launch_dialog = LaunchDialog(self.rcore, parent=None)
         self.launch_dialog.rejected.connect(self.__on_exit_app)
         # lk: the reason we use the `start_app` signal here instead of accepted, is to keep the dialog
         # until the main window has been created, then we call `accept()` to close the dialog
@@ -88,10 +88,10 @@ class Rare(RareApp):
         self.relogin_timer.timeout.connect(self.relogin)
         self.poke_timer()
 
-        self.main_window = RareWindow()
+        self.main_window = RareWindow(self.settings, self.rcore)
         self.main_window.exit_app.connect(self.__on_exit_app)
 
-        if (not self.args.silent) and (not self.settings.get_value(settings.sys_tray_start)):
+        if (not self.args.silent) and (not self.settings.get_value(app_settings.sys_tray_start)):
             self.main_window.show()
 
         if self.args.test_start:

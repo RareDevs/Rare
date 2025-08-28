@@ -1,10 +1,10 @@
+from argparse import Namespace
 from logging import getLogger
 
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import QLayout, QMessageBox, QFrame
 from legendary.core import LegendaryCore
 
-from rare.shared import RareCore
 from rare.ui.components.dialogs.login.landing_page import Ui_LandingPage
 from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
 from rare.utils.misc import qta_icon
@@ -25,7 +25,7 @@ class LandingPage(QFrame):
 
 
 class LoginDialog(BaseDialog):
-    def __init__(self, core: LegendaryCore, parent=None):
+    def __init__(self, args: Namespace, core: LegendaryCore, parent=None):
         super(LoginDialog, self).__init__(parent=parent)
         self.setWindowFlags(
             Qt.WindowType.Window
@@ -43,8 +43,8 @@ class LoginDialog(BaseDialog):
 
         self.logged_in: bool = False
 
+        self.args = args
         self.core = core
-        self.args = RareCore.instance().args()
 
         self.login_stack = SlidingStackedWidget(parent=self)
         self.login_stack.setMinimumWidth(480)

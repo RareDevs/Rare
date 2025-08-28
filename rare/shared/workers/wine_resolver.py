@@ -129,11 +129,11 @@ class OriginWineWorker(WinePathResolver):
         t = time.time()
 
         for rgame in self.games:
-            reg_path: str = rgame.game.metadata.get("customAttributes", {}).get("RegistryPath", {}).get("value", None)
+            reg_path: str = rgame.game.metadata.get("customAttributes", {}).get("RegistryPath", {}).get("value", "")
             if not reg_path:
                 continue
 
-            reg_key: str = rgame.game.metadata.get("customAttributes", {}).get("RegistryKey", {}).get("value", None)
+            reg_key: str = rgame.game.metadata.get("customAttributes", {}).get("RegistryKey", {}).get("value", "")
             if not reg_key:
                 continue
 

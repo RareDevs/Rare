@@ -3,7 +3,8 @@ import webbrowser
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 
-from rare.shared import RareCore
+from rare.lgndr.core import LegendaryCore
+from rare.models.signals import GlobalSignals
 from rare.utils.misc import qta_icon, ExitCodes
 
 
@@ -11,10 +12,10 @@ class AccountWidget(QWidget):
     exit_app: Signal = Signal(int)
     logout: Signal = Signal()
 
-    def __init__(self, parent):
+    def __init__(self, signals: GlobalSignals, core: LegendaryCore, parent):
         super(AccountWidget, self).__init__(parent=parent)
-        self.core = RareCore.instance().core()
-        self.signals = RareCore.instance().signals()
+        self.signals = signals
+        self.core = core
 
         username = self.core.lgd.userdata.get("displayName")
         if not username:

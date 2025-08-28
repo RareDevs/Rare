@@ -23,7 +23,7 @@ from rare.models.install import (
     InstallQueueItemModel,
     UninstallOptionsModel,
 )
-from rare.models.settings import RareAppSettings, settings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.shared.workers.uninstall import UninstallWorker
@@ -44,13 +44,13 @@ class DownloadsTab(QWidget):
     # int: number of updates
     update_title = Signal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(DownloadsTab, self).__init__(parent=parent)
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
-        self.signals = RareCore.instance().signals()
-        self.args = RareCore.instance().args()
-        self.settings = RareAppSettings.instance()
+        self.settings = settings
+        self.rcore = rcore
+        self.core = rcore.core()
+        self.signals = rcore.signals()
+        self.args = rcore.args()
 
         self.__thread: Optional[DlThread] = None
 
@@ -117,7 +117,7 @@ class DownloadsTab(QWidget):
         if isinstance(update, str):
             update = self.rcore.get_game(update)
 
-        auto_update = self.settings.get_with_global(settings.auto_update, update.app_name)
+        auto_update = self.settings.get_with_global(app_settings.auto_update, update.app_name)
         if auto_update:
             self.__get_install_options(InstallOptionsModel(app_name=update.app_name, update=True, silent=True))
         else:

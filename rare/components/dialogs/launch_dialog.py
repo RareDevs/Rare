@@ -17,7 +17,7 @@ class LaunchDialog(BaseDialog):
     # until the main window has been created, then we call `accept()` to close the dialog
     start_app = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(LaunchDialog, self).__init__(parent=parent)
         self.setWindowFlags(
             Qt.WindowType.Window
@@ -36,13 +36,13 @@ class LaunchDialog(BaseDialog):
         self.progress_info.setFixedHeight(False)
         self.ui.launch_layout.addWidget(self.progress_info)
 
-        self.rcore = RareCore.instance()
+        self.rcore = rcore
         self.rcore.progress.connect(self.__on_progress)
         self.rcore.completed.connect(self.__on_completed)
         self.core = self.rcore.core()
         self.args = self.rcore.args()
 
-        self.login_dialog = LoginDialog(core=self.core, parent=parent)
+        self.login_dialog = LoginDialog(args=self.args, core=self.core, parent=parent)
         self.login_dialog.rejected.connect(self.reject)
         self.login_dialog.accepted.connect(self.do_launch)
 

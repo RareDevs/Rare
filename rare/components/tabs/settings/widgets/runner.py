@@ -4,7 +4,7 @@ from typing import Type, TypeVar
 from PySide6.QtCore import Signal, Slot, Qt
 from PySide6.QtWidgets import QGroupBox, QVBoxLayout, QCheckBox, QFormLayout
 
-from rare.models.settings import settings, RareAppSettings
+from rare.models.settings import app_settings, RareAppSettings
 from .wine import WineSettings
 
 if pf.system() in {"Linux", "FreeBSD"}:
@@ -52,7 +52,7 @@ class RunnerSettingsBase(QGroupBox):
         font.setItalic(True)
         self.shader_cache_check = QCheckBox(self.tr("Use game-specific shader cache directory"), self)
         self.shader_cache_check.setFont(font)
-        self.shader_cache_check.setChecked(self.settings.get_value(settings.local_shader_cache))
+        self.shader_cache_check.setChecked(self.settings.get_value(app_settings.local_shader_cache))
         self.shader_cache_check.checkStateChanged.connect(self._shader_cache_check_changed)
 
         self.main_layout = QVBoxLayout(self)
@@ -69,7 +69,7 @@ class RunnerSettingsBase(QGroupBox):
 
     @Slot(Qt.CheckState)
     def _shader_cache_check_changed(self, state: Qt.CheckState):
-        self.settings.set_value(settings.local_shader_cache, state != Qt.CheckState.Unchecked)
+        self.settings.set_value(app_settings.local_shader_cache, state != Qt.CheckState.Unchecked)
 
 
 RunnerSettingsType = TypeVar("RunnerSettingsType", bound=RunnerSettingsBase)

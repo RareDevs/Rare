@@ -17,13 +17,13 @@ from PySide6.QtWidgets import (
     QSystemTrayIcon,
 )
 
-from rare.models.settings import settings, RareAppSettings
-from rare.components.tabs import MainTabWidget
-from rare.components.tray_icon import TrayIcon
+from rare.models.settings import app_settings, RareAppSettings
 from rare.shared import RareCore
 from rare.shared.workers.worker import QueueWorkerState
 from rare.utils.paths import lock_file
 from rare.widgets.elide_label import ElideLabel
+from .tabs import MainTabWidget
+from .tray_icon import TrayIcon
 
 logger = getLogger("MainWindow")
 
@@ -32,21 +32,21 @@ class RareWindow(QMainWindow):
     # int: exit code
     exit_app: Signal = Signal(int)
 
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         self.__exit_code = 0
         self.__accept_close = False
         self._window_launched = False
         super(RareWindow, self).__init__(parent=parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
         # self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
-        self.signals = RareCore.instance().signals()
-        self.args = RareCore.instance().args()
-        self.settings = RareAppSettings.instance()
+        self.settings = settings
+        self.rcore = rcore
+        self.core = rcore.core()
+        self.signals = rcore.signals()
+        self.args = rcore.args()
 
         self.setWindowTitle(QApplication.applicationName())
-        self.tab_widget = MainTabWidget(self)
+        self.tab_widget = MainTabWidget(settings, rcore, self)
         self.tab_widget.exit_app.connect(self.__on_exit_app)
         self.setCentralWidget(self.tab_widget)
 
@@ -95,10 +95,10 @@ class RareWindow(QMainWindow):
         # self.status_timer.setInterval(5000)
         # self.status_timer.start()
 
-        width, height = settings.window_width.default, settings.window_height.default
-        if self.settings.get_value(settings.restore_window):
-            width = self.settings.get_value(settings.window_width)
-            height = self.settings.get_value(settings.window_height)
+        width, height = app_settings.window_width.default, app_settings.window_height.default
+        if self.settings.get_value(app_settings.restore_window):
+            width = self.settings.get_value(app_settings.window_width)
+            height = self.settings.get_value(app_settings.window_height)
         self.resize(width, height)
 
         if not self.args.offline:
@@ -114,7 +114,7 @@ class RareWindow(QMainWindow):
         self.singleton_timer.timeout.connect(self.timer_finished)
         self.singleton_timer.start()
 
-        self.tray_icon: TrayIcon = TrayIcon(self)
+        self.tray_icon: TrayIcon = TrayIcon(self.settings, self.rcore, self)
         self.tray_icon.exit_app.connect(self.__on_exit_app)
         self.tray_icon.show_app.connect(self.show)
         self.tray_icon.activated.connect(lambda r: self.toggle() if r == QSystemTrayIcon.ActivationReason.DoubleClick else None)
@@ -155,9 +155,9 @@ class RareWindow(QMainWindow):
         self._window_launched = True
 
     def hide(self) -> None:
-        if self.settings.get_value(settings.restore_window):
-            self.settings.set_value(settings.window_width, self.size().width())
-            self.settings.set_value(settings.window_height, self.size().height())
+        if self.settings.get_value(app_settings.restore_window):
+            self.settings.set_value(app_settings.window_width, self.size().width())
+            self.settings.set_value(app_settings.window_height, self.size().height())
         super(RareWindow, self).hide()
 
     def toggle(self):
@@ -218,7 +218,7 @@ class RareWindow(QMainWindow):
         # lk: `accept_close` is set to `True` by the `close()` method, overrides exiting to tray in `closeEvent()`
         # lk: ensures exiting instead of hiding when `close()` is called programmatically
         if not self.__accept_close:
-            if self.settings.get_value(settings.sys_tray_close):
+            if self.settings.get_value(app_settings.sys_tray_close):
                 self.hide()
                 e.ignore()
                 return
