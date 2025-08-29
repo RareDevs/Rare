@@ -5,6 +5,7 @@ from logging import getLogger
 from typing import Tuple, Optional
 
 from PySide6.QtCore import Signal, Slot
+from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QLayout
 
 from rare.models.install import MoveGameModel
@@ -20,7 +21,7 @@ logger = getLogger("MoveGame")
 
 class MovePathEditReasons(IndicatorReasons):
     MOVEDIALOG_DST_MISSING = auto()
-    MOVEDIALOG_NO_WRITE_PERM = auto()
+    MOVEDIALOG_NO_WRITE = auto()
     MOVEDIALOG_SAME_DIR = auto()
     MOVEDIALOG_DST_IN_SRC = auto()
     MOVEDIALOG_NESTED_DIR = auto()
@@ -38,13 +39,19 @@ class MoveDialog(ActionDialog):
 
         self.rcore = RareCore.instance()
         self.core = RareCore.instance().core()
-        self.rgame: Optional[RareGame] = None
+        self.rgame: Optional[RareGame] = rgame
+        self.options: MoveGameModel = MoveGameModel(rgame.app_name)
 
-        self.path_edit = PathEdit("", QFileDialog.FileMode.Directory, edit_func=self.path_edit_callback)
+        self.path_edit = PathEdit(
+            path="", # path=rgame.install_path,
+            file_mode=QFileDialog.FileMode.Directory,
+            edit_func=self.__path_edit_callback,
+            parent=self
+        )
         self.path_edit.extend_reasons(
             {
                 MovePathEditReasons.MOVEDIALOG_DST_MISSING: self.tr("You need to provide the destination directory."),
-                MovePathEditReasons.MOVEDIALOG_NO_WRITE_PERM: self.tr("No write permission on destination."),
+                MovePathEditReasons.MOVEDIALOG_NO_WRITE: self.tr("No write permission on destination."),
                 MovePathEditReasons.MOVEDIALOG_SAME_DIR: self.tr("Same directory or subdirectory selected."),
                 MovePathEditReasons.MOVEDIALOG_DST_IN_SRC: self.tr("Destination is inside source directory"),
                 MovePathEditReasons.MOVEDIALOG_NESTED_DIR: self.tr("Game install directories cannot be nested."),
@@ -82,9 +89,11 @@ class MoveDialog(ActionDialog):
 
         self.action_button.setHidden(True)
 
-        self.update_game(rgame)
-
-        self.options: MoveGameModel = MoveGameModel(rgame.app_name)
+    def showEvent(self, a0: QShowEvent) -> None:
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        self.update_game(self.rgame)
+        return super().showEvent(a0)
 
     def action_handler(self):
         pass
@@ -100,31 +109,36 @@ class MoveDialog(ActionDialog):
         self.options.accepted = False
         self.options.target_path = ""
 
-    def refresh_indicator(self):
-        # needed so the edit_func gets run again
-        text = self.path_edit.text()
-        self.path_edit.setText(str())
-        self.path_edit.setText(text)
+    @staticmethod
+    def is_game_dir(src_path: str, dst_path: str):
+        # This iterates over the destination dir, then iterates over the current install dir and if the file names
+        # matches, we have an exisiting dir
+        if os.path.isdir(dst_path):
+            for dst_file in os.listdir(dst_path):
+                for src_file in os.listdir(src_path):
+                    if dst_file == src_file:
+                        return True
+        return False
 
-    def path_edit_callback(self, path: str) -> Tuple[bool, str, int]:
+    def __path_edit_callback_return(self, path, reason: int) -> Tuple[bool, str, int]:
+        self.setActive(False)
+        self.accept_button.setEnabled(False)
+        return False, path, reason
+
+    def __path_edit_callback(self, path: str) -> Tuple[bool, str, int]:
         self.setActive(True)
         self.req_space.setText("...")
         self.avail_space.setText("...")
 
-        def helper_func(reason: int) -> Tuple[bool, str, int]:
-            self.setActive(False)
-            self.accept_button.setEnabled(False)
-            return False, path, reason
-
         if not self.rgame.install_path or not path:
-            return helper_func(MovePathEditReasons.MOVEDIALOG_DST_MISSING)
+            return self.__path_edit_callback_return(path, MovePathEditReasons.MOVEDIALOG_DST_MISSING)
 
         src_path = os.path.realpath(self.rgame.install_path)
         dst_path = os.path.realpath(path)
         dst_install_path = os.path.realpath(os.path.join(dst_path, os.path.basename(src_path)))
 
         if not os.path.isdir(dst_path):
-            return helper_func(IndicatorReasonsCommon.DIR_NOT_EXISTS)
+            return self.__path_edit_callback_return(path, IndicatorReasonsCommon.DIR_NOT_EXISTS)
 
         # Get free space on drive and size of game folder
         _, _, free_space = shutil.disk_usage(dst_path)
@@ -135,22 +149,22 @@ class MoveDialog(ActionDialog):
         self.avail_space.setText(format_size(free_space))
 
         if not os.access(path, os.W_OK) or not os.access(self.rgame.install_path, os.W_OK):
-            return helper_func(MovePathEditReasons.MOVEDIALOG_NO_WRITE_PERM)
+            return self.__path_edit_callback_return(path, MovePathEditReasons.MOVEDIALOG_NO_WRITE)
 
         if src_path in {dst_path, dst_install_path}:
-            return helper_func(MovePathEditReasons.MOVEDIALOG_SAME_DIR)
+            return self.__path_edit_callback_return(path, MovePathEditReasons.MOVEDIALOG_SAME_DIR)
 
         if str(src_path) in str(dst_path):
-            return helper_func(MovePathEditReasons.MOVEDIALOG_DST_IN_SRC)
+            return self.__path_edit_callback_return(path, MovePathEditReasons.MOVEDIALOG_DST_IN_SRC)
 
         if str(dst_install_path) in str(src_path):
-            return helper_func(MovePathEditReasons.MOVEDIALOG_DST_IN_SRC)
+            return self.__path_edit_callback_return(path, MovePathEditReasons.MOVEDIALOG_DST_IN_SRC)
 
         for rgame in self.rcore.installed_games:
             if not rgame.is_non_asset and rgame.install_path in path:
-                return helper_func(MovePathEditReasons.MOVEDIALOG_NESTED_DIR)
+                return self.__path_edit_callback_return(path, MovePathEditReasons.MOVEDIALOG_NESTED_DIR)
 
-        is_existing_dir = is_game_dir(src_path, dst_install_path)
+        is_existing_dir = self.is_game_dir(src_path, dst_install_path)
 
         for item in os.listdir(dst_path):
             if os.path.basename(src_path) in os.path.basename(item):
@@ -161,7 +175,7 @@ class MoveDialog(ActionDialog):
                     self.warn_label.setHidden(False)
 
         if free_space <= source_size and not is_existing_dir:
-            return helper_func(MovePathEditReasons.MOVEDIALOG_NO_SPACE)
+            return self.__path_edit_callback_return(path, MovePathEditReasons.MOVEDIALOG_NO_SPACE)
 
         # Fallback
         self.setActive(False)
@@ -185,19 +199,7 @@ class MoveDialog(ActionDialog):
         # FIXME: Make edit_func lighter instead of blocking signals
         # self.path_edit.line_edit.blockSignals(False)
         self.setActive(False)
-        # self.refresh_indicator()
 
     def update_game(self, rgame: RareGame):
         self.rgame = rgame
         self.__update_widget()
-
-
-def is_game_dir(src_path: str, dst_path: str):
-    # This iterates over the destination dir, then iterates over the current install dir and if the file names
-    # matches, we have an exisiting dir
-    if os.path.isdir(dst_path):
-        for dst_file in os.listdir(dst_path):
-            for src_file in os.listdir(src_path):
-                if dst_file == src_file:
-                    return True
-    return False
