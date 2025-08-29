@@ -1,3 +1,4 @@
+import os
 import platform as pf
 import re
 from logging import getLogger
@@ -49,22 +50,24 @@ class LegendarySettings(QWidget):
 
         # Platform specific installation directory for macOS games
         if pf.system() == "Darwin":
-            self.mac_install_dir = PathEdit(
+            self.mac_install_dir_edit = PathEdit(
                 path=self.core.get_default_install_dir("Mac"),
                 placeholder=self.tr("Default installation folder for macOS games"),
                 file_mode=QFileDialog.FileMode.Directory,
-                save_func=self.__mac_path_save,
+                edit_func=self.__path_edit_callback,
+                save_func=self.__path_save_callback_mac,
             )
-            self.ui.install_dir_layout.addWidget(self.mac_install_dir)
+            self.ui.install_dir_layout.addWidget(self.mac_install_dir_edit)
 
         # Platform-independent installation directory
-        self.install_dir = PathEdit(
+        self.install_dir_edit = PathEdit(
             path=self.core.get_default_install_dir(),
             placeholder=self.tr("Default installation folder for Windows games"),
             file_mode=QFileDialog.FileMode.Directory,
-            save_func=self.__win_path_save,
+            edit_func=self.__path_edit_callback,
+            save_func=self.__path_save_callback_win,
         )
-        self.ui.install_dir_layout.addWidget(self.install_dir)
+        self.ui.install_dir_layout.addWidget(self.install_dir_edit)
 
         # Max Workers
         self.ui.max_worker_spin.setValue(self.core.lgd.config["Legendary"].getint("max_workers", fallback=0))
@@ -88,8 +91,8 @@ class LegendarySettings(QWidget):
 
         self.locale_edit = IndicatorLineEdit(
             f"{self.core.language_code}-{self.core.country_code}",
-            edit_func=self.locale_edit_cb,
-            save_func=self.locale_save_cb,
+            edit_func=self.__locale_edit_callback,
+            save_func=self.__locale_save_callback,
             horiz_policy=QSizePolicy.Policy.Minimum,
             parent=self,
         )
@@ -129,6 +132,9 @@ class LegendarySettings(QWidget):
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
             return super().showEvent(a0)
+        if pf.system() == "Darwin":
+            self.mac_install_dir_edit.refresh()
+        self.install_dir_edit.refresh()
         return super().showEvent(a0)
 
     def hideEvent(self, a0: QHideEvent):
@@ -149,7 +155,7 @@ class LegendarySettings(QWidget):
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod
-    def locale_edit_cb(text: str) -> Tuple[bool, str, int]:
+    def __locale_edit_callback(text: str) -> Tuple[bool, str, int]:
         if text:
             if re.match("^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$", text):
                 language, country = text.split("-" if "-" in text else "_")
@@ -161,22 +167,34 @@ class LegendarySettings(QWidget):
         else:
             return True, text, IndicatorReasonsCommon.VALID
 
-    def locale_save_cb(self, text: str):
+    def __locale_save_callback(self, text: str):
         if text:
             self.core.egs.language_code, self.core.egs.country_code = text.split("-")
             self.core.lgd.config.set("Legendary", "locale", text)
         else:
             self.core.lgd.config.remove_option("Legendary", "locale")
 
+    @staticmethod
+    def __path_edit_callback(path: str) -> Tuple[bool, str, int]:
+        if not path:
+            return False, path, IndicatorReasonsCommon.IS_EMPTY
+        try:
+            open(os.path.join(path, ".rare_perms"), "w")
+        except PermissionError as e:
+            return False, path, IndicatorReasonsCommon.PERM_NO_WRITE
+        except FileNotFoundError as e:
+            return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
+        return True, path, IndicatorReasonsCommon.VALID
+
     @Slot(str)
-    def __mac_path_save(self, text: str) -> None:
+    def __path_save_callback_mac(self, text: str) -> None:
         self.__path_save(text, "mac_install_dir")
 
     @Slot(str)
-    def __win_path_save(self, text: str) -> None:
+    def __path_save_callback_win(self, text: str) -> None:
         self.__path_save(text, "install_dir")
         if pf.system() != "Darwin":
-            self.__mac_path_save(text)
+            self.__path_save_callback_mac(text)
 
     def __path_save(self, text: str, option: str):
         if text:
@@ -229,8 +247,8 @@ class LegendarySettings(QWidget):
         if (before - after) > 0:
             QMessageBox.information(
                 self,
-                "Cleanup",
+                self.tr("Cleanup"),
                 self.tr("Cleanup complete! Successfully removed {}").format(format_size(before - after)),
             )
         else:
-            QMessageBox.information(self, "Cleanup", "Nothing to clean")
+            QMessageBox.information(self, self.tr("Cleanup"), self.tr("Nothing to clean"))
