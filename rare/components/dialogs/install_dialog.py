@@ -1,20 +1,20 @@
 import os
 import platform as pf
 import shutil
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Union
 
 from PySide6.QtCore import QThreadPool, Qt
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QFileDialog, QWidget, QFormLayout
+from PySide6.QtWidgets import QFileDialog, QWidget, QFormLayout, QLabel
 
-from rare.models.settings import RareAppSettings, app_settings
 from rare.models.game import RareGame
 from rare.models.install import (
     InstallDownloadModel,
     InstallQueueItemModel,
     InstallOptionsModel,
 )
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared.workers.install_info import InstallInfoWorker
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
@@ -122,6 +122,7 @@ class InstallDialog(ActionDialog):
             save_func=self.install_dir_save_callback,
             parent=self,
         )
+        self.install_dir_edit.validationFinished.connect(self.__on_install_dir_validation)
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)[0],
             QFormLayout.ItemRole.FieldRole,
@@ -135,7 +136,7 @@ class InstallDialog(ActionDialog):
         self.ui.shortcut_check.setChecked(not rgame.is_installed and self.settings.get_value(app_settings.create_shortcut))
         self.ui.shortcut_check.checkStateChanged.connect(self.__option_changed_no_reload)
 
-        self.error_box()
+        self.set_error_box()
 
         self.ui.platform_combo.addItems(reversed(rgame.platforms))
         combo_text = rgame.igame.platform if rgame.is_installed else rgame.default_platform
@@ -205,7 +206,7 @@ class InstallDialog(ActionDialog):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        self.install_dir_save_callback(self.install_dir_edit.text())
+        self.install_dir_edit.refresh()
         super().showEvent(a0)
 
     def execute(self):
@@ -226,12 +227,12 @@ class InstallDialog(ActionDialog):
     def check_incompatible_platform(self, index: int):
         platform = self.ui.platform_combo.itemText(index)
         if platform == "Mac" and pf.system() != "Darwin":
-            self.error_box(
+            self.set_error_box(
                 self.tr("Warning"),
                 self.tr("You will not be able to run the game if you select <b>{}</b> as platform").format(platform),
             )
         else:
-            self.error_box()
+            self.set_error_box()
 
     def get_options(self):
         base_path = os.path.join(self.install_dir_edit.text(), ".overlay" if self.__options.overlay else "")
@@ -256,14 +257,9 @@ class InstallDialog(ActionDialog):
         self.threadpool.start(info_worker)
 
     def action_handler(self):
-        self.error_box()
+        self.set_error_box()
         message = self.tr("Updating...")
-        font = self.font()
-        font.setItalic(True)
-        self.ui.download_size_text.setText(message)
-        self.ui.download_size_text.setFont(font)
-        self.ui.install_size_text.setText(message)
-        self.ui.install_size_text.setFont(font)
+        self.set_size_labels(message, message)
         self.setActive(True)
         self.options_changed = False
         self.get_options()
@@ -285,8 +281,16 @@ class InstallDialog(ActionDialog):
         elif self.sender() is self.advanced.ui.install_prereqs_check:
             self.__options.install_prereqs = state != Qt.CheckState.Unchecked
 
-    def install_dir_edit_callback(self, path: str) -> Tuple[bool, str, int]:
-        self.__option_changed()
+    @staticmethod
+    def install_dir_edit_callback(path: str) -> Tuple[bool, str, int]:
+        if not path:
+            return False, path, IndicatorReasonsCommon.IS_EMPTY
+        try:
+            open(os.path.join(path, ".rare_perms"), "w")
+        except PermissionError as e:
+            return False, path, IndicatorReasonsCommon.PERM_NO_WRITE
+        except FileNotFoundError as e:
+            return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
         return True, path, IndicatorReasonsCommon.VALID
 
     def install_dir_save_callback(self, path: str):
@@ -294,6 +298,15 @@ class InstallDialog(ActionDialog):
             return
         _, _, free_space = shutil.disk_usage(path)
         self.ui.avail_space.setText(format_size(free_space))
+
+    @Slot(bool, str)
+    def __on_install_dir_validation(self, is_valid:bool, reason: str):
+        self.__option_changed()
+        self.action_button.setEnabled(is_valid and not self.active())
+        if not is_valid:
+            self.set_error_box(self.tr("Error"), reason)
+        else:
+            self.set_error_box()
 
     @staticmethod
     def same_platform(download: InstallDownloadModel) -> bool:
@@ -312,19 +325,9 @@ class InstallDialog(ActionDialog):
         download_size = download.analysis.dl_size
         install_size = download.analysis.install_size
         # install_size = self.dl_item.download.analysis.disk_space_delta
-        bold_font = self.font()
-        bold_font.setBold(True)
-        italic_font = self.font()
-        italic_font.setItalic(True)
+        self.set_size_labels(download_size, install_size)
         if download_size or (not download_size and (download.game.is_dlc or download.repair)):
-            self.ui.download_size_text.setText(format_size(download_size))
-            self.ui.download_size_text.setFont(bold_font)
             self.accept_button.setEnabled(not self.options_changed)
-        else:
-            self.ui.download_size_text.setText(self.tr("Game already installed"))
-            self.ui.download_size_text.setFont(italic_font)
-        self.ui.install_size_text.setText(format_size(install_size))
-        self.ui.install_size_text.setFont(bold_font)
         self.action_button.setEnabled(self.options_changed)
         has_prereqs = bool(download.igame.prereq_info) and not download.igame.prereq_info.get("installed", False)
         if has_prereqs:
@@ -344,15 +347,28 @@ class InstallDialog(ActionDialog):
     def on_worker_failed(self, message: str):
         self.setActive(False)
         error_text = self.tr("Error")
-        self.ui.download_size_text.setText(error_text)
-        self.ui.install_size_text.setText(error_text)
-        self.error_box(error_text, message)
+        self.set_size_labels(error_text, error_text)
+        self.set_error_box(error_text, message)
         self.action_button.setEnabled(self.options_changed)
         self.accept_button.setEnabled(False)
         if self.__options.silent:
             self.open()
 
-    def error_box(self, label: str = "", message: str = ""):
+    @staticmethod
+    def __set_size_label(label: QLabel, value: Union[int, float, str]):
+        is_numeric = isinstance(value, (int, float))
+        font = label.font()
+        font.setBold(is_numeric)
+        font.setItalic(not is_numeric)
+        label.setFont(font)
+        text = format_size(value) if is_numeric else value
+        label.setText(text)
+
+    def set_size_labels(self, download: Union[int, float, str], install: Union[int, float, str]):
+        self.__set_size_label(self.ui.download_size_text, download)
+        self.__set_size_label(self.ui.install_size_text, install)
+
+    def set_error_box(self, label: str = "", message: str = ""):
         self.ui.warning_label.setVisible(bool(label))
         self.ui.warning_label.setText(label)
         self.ui.warning_text.setVisible(bool(message))
