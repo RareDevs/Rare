@@ -1,3 +1,4 @@
+import logging
 import sys
 from abc import abstractmethod
 
@@ -34,6 +35,8 @@ class BaseDialog(QDialog):
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
         self.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.CustomizeWindowHint | Qt.WindowType.WindowTitleHint)
         self.setWindowModality(Qt.WindowModality.WindowModal)
+
+        self.logger = logging.getLogger(type(self).__name__)
 
     def setWindowTitle(self, a0):
         super().setWindowTitle(dialog_title(a0))
