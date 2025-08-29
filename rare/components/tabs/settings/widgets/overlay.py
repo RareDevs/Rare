@@ -56,7 +56,15 @@ class OverlayComboBox(QComboBox):
 
 
 class OverlayCheckBox(QCheckBox):
-    def __init__(self, option: str, title: str, desc: str = "", default_enabled: bool = False, values: Tuple = None, parent=None):
+    def __init__(
+        self,
+        option: str,
+        title: str,
+        desc: str = "",
+        default_enabled: bool = False,
+        values: Tuple = None,
+        parent=None,
+    ):
         self.option = option
         super().__init__(title, parent=parent)
         self.setChecked(default_enabled)
@@ -70,7 +78,11 @@ class OverlayCheckBox(QCheckBox):
     def getValue(self) -> Optional[str]:
         # lk: return the check state in case of non-default, otherwise None
         checked = self.isChecked()
-        value = f"{self.option}={self.values[int(checked)] if self.values else int(checked)}" if self.default_enabled or self.values else self.option
+        value = (
+            f"{self.option}={self.values[int(checked)] if self.values else int(checked)}"
+            if self.default_enabled or self.values
+            else self.option
+        )
         return value if checked ^ self.default_enabled else None
 
     def setValue(self, options: Dict[str, str]):
@@ -234,7 +246,10 @@ class OverlaySettings(QGroupBox):
             for widget in self.option_widgets:
                 widget.setValue(opts)
             if opts:
-                logger.info("Remaining options without a gui switch: %s", self.separator.join(opts.keys()))
+                logger.info(
+                    "Remaining options without a gui switch: %s",
+                    self.separator.join(opts.keys()),
+                )
 
         self.ui.options_group.blockSignals(False)
         return super().showEvent(a0)
@@ -260,9 +275,16 @@ class DxvkHudSettings(OverlaySettings):
         form = [
             (OverlayNumberInput("scale", 1.0), self.tr("Scale")),
             (OverlayNumberInput("opacity", 1.0), self.tr("Opacity")),
-
         ]
-        self.setupWidget(grid, form, label=self.tr("Show HUD"), envvar="DXVK_HUD", force_disabled="0", force_defaults="1", separator=",")
+        self.setupWidget(
+            grid,
+            form,
+            label=self.tr("Show HUD"),
+            envvar="DXVK_HUD",
+            force_disabled="0",
+            force_defaults="1",
+            separator=",",
+        )
 
     def update_settings_override(self, state: ActivationStates):
         pass
@@ -272,24 +294,55 @@ class DxvkConfigSettings(OverlaySettings):
     def __init__(self, parent=None):
         super(DxvkConfigSettings, self).__init__(parent=parent)
         self.setTitle(self.tr("DXVK Config"))
-        dxvk_config_trinary = (
-            ("Auto", "Auto"),
-            ("True", "True"),
-            ("False", "False")
-        )
-        grid = [
-
-        ]
+        dxvk_config_trinary = (("Auto", "Auto"), ("True", "True"), ("False", "False"))
+        grid = []
         form = [
-            (OverlayLineEdit("dxvk.deviceFilter", "",), "dxvk.deviceFilter"),
-            (OverlayNumberInput("dxgi.syncInterval", -1,), "dxgi.syncInterval"),
-            (OverlayNumberInput("d3d9.presentInterval", -1, ), "d3d9.presentInterval"),
-            (OverlayNumberInput("dxgi.maxFrameRate", 0,), "dxgi.maxFrameRate"),
-            (OverlayNumberInput("d3d9.maxFrameRate", 0,), "d3d9.maxFrameRate"),
+            (
+                OverlayLineEdit(
+                    "dxvk.deviceFilter",
+                    "",
+                ),
+                "dxvk.deviceFilter",
+            ),
+            (
+                OverlayNumberInput(
+                    "dxgi.syncInterval",
+                    -1,
+                ),
+                "dxgi.syncInterval",
+            ),
+            (
+                OverlayNumberInput(
+                    "d3d9.presentInterval",
+                    -1,
+                ),
+                "d3d9.presentInterval",
+            ),
+            (
+                OverlayNumberInput(
+                    "dxgi.maxFrameRate",
+                    0,
+                ),
+                "dxgi.maxFrameRate",
+            ),
+            (
+                OverlayNumberInput(
+                    "d3d9.maxFrameRate",
+                    0,
+                ),
+                "d3d9.maxFrameRate",
+            ),
             (OverlaySelectInput("dxvk.tearFree", dxvk_config_trinary), "dxvk.tearFree"),
-
         ]
-        self.setupWidget(grid, form, label=self.tr("Mode"), envvar="DXVK_CONFIG", force_disabled="0", force_defaults="", separator=";")
+        self.setupWidget(
+            grid,
+            form,
+            label=self.tr("Mode"),
+            envvar="DXVK_CONFIG",
+            force_disabled="0",
+            force_defaults="",
+            separator=";",
+        )
 
     def update_settings_override(self, state: ActivationStates):
         pass
@@ -300,7 +353,7 @@ class DxvkNvapiDrsSettings(OverlaySettings):
         super(DxvkNvapiDrsSettings, self).__init__(parent=parent)
         self.setTitle(self.tr("DXVK NVAPI Driver Settings"))
 
-        def preset_range(start:str, end:str) -> Tuple[Tuple, ...]:
+        def preset_range(start: str, end: str) -> Tuple[Tuple, ...]:
             return tuple(tuple(f"{p}preset_{chr(c)}" for p in ("", "render_")) for c in range(ord(start), ord(end) + 1))
 
         ngx_rr_presets = (
@@ -316,17 +369,41 @@ class DxvkNvapiDrsSettings(OverlaySettings):
             ("default", "default"),
         )
         grid = [
-            OverlayCheckBox("ngx_dlss_sr_override", self.tr("Super Resolution override"), values=("off", "on")),
-            OverlayCheckBox("ngx_dlss_rr_override", self.tr("Ray Reconstruction override"), values=("off", "on")),
-            OverlayCheckBox("ngx_dlss_fg_override", self.tr("Frame Generation override"), values=("off", "on")),
+            OverlayCheckBox(
+                "ngx_dlss_sr_override",
+                self.tr("Super Resolution override"),
+                values=("off", "on"),
+            ),
+            OverlayCheckBox(
+                "ngx_dlss_rr_override",
+                self.tr("Ray Reconstruction override"),
+                values=("off", "on"),
+            ),
+            OverlayCheckBox(
+                "ngx_dlss_fg_override",
+                self.tr("Frame Generation override"),
+                values=("off", "on"),
+            ),
         ]
         form = [
-            (OverlaySelectInput("ngx_dlss_sr_override_render_preset_selection", ngx_sr_presets),
-             "Super Resolution preset"),
-            (OverlaySelectInput("ngx_dlss_rr_override_render_preset_selection", ngx_rr_presets),
-             "Ray Reconstruction preset"),
+            (
+                OverlaySelectInput("ngx_dlss_sr_override_render_preset_selection", ngx_sr_presets),
+                "Super Resolution preset",
+            ),
+            (
+                OverlaySelectInput("ngx_dlss_rr_override_render_preset_selection", ngx_rr_presets),
+                "Ray Reconstruction preset",
+            ),
         ]
-        self.setupWidget(grid, form, label=self.tr("Mode"), envvar="DXVK_NVAPI_DRS_SETTINGS", force_disabled="0", force_defaults="", separator=",")
+        self.setupWidget(
+            grid,
+            form,
+            label=self.tr("Mode"),
+            envvar="DXVK_NVAPI_DRS_SETTINGS",
+            force_disabled="0",
+            force_defaults="",
+            separator=",",
+        )
 
     def update_settings_override(self, state: ActivationStates):
         pass
@@ -384,11 +461,22 @@ class MangoHudSettings(OverlaySettings):
         form = [
             (OverlayNumberInput("fps_limit", 0), self.tr("FPS limit")),
             (OverlaySelectInput("vsync", mangohud_vsync), self.tr("Vulkan vsync")),
-            (OverlaySelectInput("gl_vsync", mangohud_gl_vsync), self.tr("OpenGL vsync")),
+            (
+                OverlaySelectInput("gl_vsync", mangohud_gl_vsync),
+                self.tr("OpenGL vsync"),
+            ),
             (OverlayNumberInput("font_size", 24), self.tr("Font size")),
             (OverlaySelectInput("position", mangohud_position), self.tr("Position")),
         ]
-        self.setupWidget(grid, form, label=self.tr("Show HUD"), envvar="MANGOHUD_CONFIG", force_disabled="no_display", force_defaults="read_cfg", separator=",")
+        self.setupWidget(
+            grid,
+            form,
+            label=self.tr("Show HUD"),
+            envvar="MANGOHUD_CONFIG",
+            force_disabled="no_display",
+            force_defaults="read_cfg",
+            separator=",",
+        )
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
@@ -420,11 +508,13 @@ if __name__ == "__main__":
 
     global config
     config = Namespace()
+
     def get_envvar(x, y, fallback):
         if y == "DXVK_NVAPI_DRS_SETTINGS":
             return "ngx_dlss_sr_override=off,ngx_dlss_rr_override_render_preset_selection=render_preset_d"
         else:
             return ""
+
     config.get_envvar = get_envvar
     config.set_option = lambda x, y, z: print(x, y, z)
     config.set_envvar = lambda x, y, z: print(x, y, z)

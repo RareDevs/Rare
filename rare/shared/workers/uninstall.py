@@ -13,7 +13,11 @@ from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame
 from rare.models.install import UninstallOptionsModel
 from rare.utils import config_helper as config
-from rare.utils.paths import desktop_links_supported, desktop_link_types, desktop_link_path
+from rare.utils.paths import (
+    desktop_links_supported,
+    desktop_link_types,
+    desktop_link_path,
+)
 from .worker import Worker
 
 logger = getLogger("UninstallWorker")
@@ -21,16 +25,21 @@ logger = getLogger("UninstallWorker")
 
 # TODO: You can use RareGame directly here once this is called inside RareCore and skip metadata fetch
 def uninstall_game(
-    core: LegendaryCore, rgame: RareGame, keep_files=False, keep_folder=True, keep_config=False, keep_overlay_keys=False
+    core: LegendaryCore,
+    rgame: RareGame,
+    keep_files=False,
+    keep_folder=True,
+    keep_config=False,
+    keep_overlay_keys=False,
 ) -> Tuple[bool, str]:
     if rgame.is_overlay:
-        logger.info('Deleting overlay installation...')
+        logger.info("Deleting overlay installation...")
         core.remove_overlay_install()
 
         if keep_overlay_keys:
             return True, ""
 
-        logger.info('Removing registry entries...')
+        logger.info("Removing registry entries...")
         if platform.system() != "Window":
             prefixes = config.get_prefixes()
             if platform.system() == "Darwin":
@@ -49,7 +58,8 @@ def uninstall_game(
     if desktop_links_supported():
         for link_type in desktop_link_types():
             link_path = desktop_link_path(
-                rgame.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value"), link_type
+                rgame.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value"),
+                link_type,
             )
             if link_path.exists():
                 link_path.unlink(missing_ok=True)

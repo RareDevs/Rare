@@ -5,11 +5,10 @@ import shlex
 from typing import List, Dict, Iterable, Set
 from rare.utils import config_helper as config
 
-from PySide6.QtCore import QSettings
-
 from rare.lgndr.core import LegendaryCore
 from rare.models.wrapper import Wrapper, WrapperType
 from rare.utils.paths import config_dir
+from rare.models.settings import RareAppSettings
 
 logger = getLogger("Wrappers")
 
@@ -70,7 +69,7 @@ class Wrappers:
         # set current file version
         self._version = 2
 
-    def import_wrappers(self, core: LegendaryCore, settings: QSettings, app_names: List):
+    def import_wrappers(self, settings: RareAppSettings, core: LegendaryCore, app_names: List):
         for app_name in app_names:
             wrappers = self.get_wrappers(app_name)
             if not wrappers and (commands := settings.value(f"{app_name}/wrapper", [], type=list)):
@@ -80,7 +79,11 @@ class Wrappers:
                     wrapper = Wrapper(command=shlex.split(command))
                     wrappers.append(wrapper)
                     self.set_wrappers(app_name, wrappers)
-                    logger.debug("Imported previous wrappers in %s Rare: %s", app_name, wrapper.name)
+                    logger.debug(
+                        "Imported previous wrappers in %s Rare: %s",
+                        app_name,
+                        wrapper.name,
+                    )
 
             # NOTE: compatibility with Legendary
             # No Rare settings wrappers, but legendary config wrappers, for backwards compatibility
@@ -89,11 +92,15 @@ class Wrappers:
                 wrapper = Wrapper(
                     command=shlex.split(command),
                     name="Imported from Legendary",
-                    wtype=WrapperType.LEGENDARY_IMPORT
+                    wtype=WrapperType.LEGENDARY_IMPORT,
                 )
                 wrappers = [wrapper]
                 self.set_wrappers(app_name, wrappers)
-                logger.debug("Imported existing wrappers in %s legendary: %s", app_name, wrapper.name)
+                logger.debug(
+                    "Imported existing wrappers in %s legendary: %s",
+                    app_name,
+                    wrapper.name,
+                )
 
     @property
     def user_wrappers(self) -> Iterable[Wrapper]:
@@ -122,7 +129,11 @@ class Wrappers:
         for w in _wrappers:
             if (md5sum := w.checksum) in self._wrappers.keys():
                 if w != self._wrappers[md5sum]:
-                    logger.error("Equal csum for unequal wrappers %s, %s", w.name, self._wrappers[md5sum].name)
+                    logger.error(
+                        "Equal csum for unequal wrappers %s, %s",
+                        w.name,
+                        self._wrappers[md5sum].name,
+                    )
                 if w.is_compat_tool:
                     self._wrappers.update({md5sum: w})
             else:

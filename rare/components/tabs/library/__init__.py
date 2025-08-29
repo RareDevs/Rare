@@ -1,18 +1,12 @@
 from logging import getLogger
 
-from PySide6.QtCore import QSettings, Slot
+from PySide6.QtCore import Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
 
 from rare.models.game import RareGame
-from rare.shared import (
-    LegendaryCoreSingleton,
-    GlobalSignalsSingleton,
-    ArgumentsSingleton,
-    ImageManagerSingleton,
-)
 from rare.shared import RareCore
-from rare.models.options import options
+from rare.models.settings import app_settings, RareAppSettings
 from .details import GameInfoTabs
 from .widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
 from .head_bar import LibraryHeadBar
@@ -22,14 +16,14 @@ logger = getLogger("GamesLibrary")
 
 
 class GamesLibrary(QStackedWidget):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(GamesLibrary, self).__init__(parent=parent)
-        self.rcore = RareCore.instance()
-        self.core = LegendaryCoreSingleton()
-        self.signals = GlobalSignalsSingleton()
-        self.args = ArgumentsSingleton()
-        self.image_manager = ImageManagerSingleton()
-        self.settings = QSettings()
+        self.settings = settings
+        self.rcore = rcore
+        self.signals = rcore.signals()
+        self.image_manager = rcore.image_manager()
+        self.args = rcore.args()
+        self.core = rcore.core()
 
         self.games_page = QWidget(parent=self)
         games_page_layout = QVBoxLayout(self.games_page)
@@ -57,7 +51,7 @@ class GamesLibrary(QStackedWidget):
         self.view_scroll.setFrameShape(QFrame.Shape.StyledPanel)
         self.view_scroll.horizontalScrollBar().setDisabled(True)
 
-        library_view = LibraryView(self.settings.value(*options.library_view))
+        library_view = LibraryView(self.settings.get_value(app_settings.library_view))
         self.library_controller = LibraryWidgetController(library_view, self.view_scroll)
         games_page_layout.addWidget(self.view_scroll)
 
@@ -83,9 +77,7 @@ class GamesLibrary(QStackedWidget):
 
     @Slot()
     def scroll_to_top(self):
-        self.view_scroll.verticalScrollBar().setSliderPosition(
-            self.view_scroll.verticalScrollBar().minimum()
-        )
+        self.view_scroll.verticalScrollBar().setSliderPosition(self.view_scroll.verticalScrollBar().minimum())
 
     @Slot()
     @Slot(str)

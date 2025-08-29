@@ -19,10 +19,9 @@ def read_registry(registry: str, prefix: str) -> ConfigParser:
     accepted = ["system.reg", "user.reg"]
     if registry not in accepted:
         raise RuntimeError(f'Unknown target "{registry}" not in {accepted}')
-    reg = ConfigParser(comment_prefixes=(';', '#', '/', 'WINE'), allow_no_value=True,
-                       strict=False)
+    reg = ConfigParser(comment_prefixes=(";", "#", "/", "WINE"), allow_no_value=True, strict=False)
     reg.optionxform = str
-    reg.read(os.path.join(prefix, 'system.reg'))
+    reg.read(os.path.join(prefix, "system.reg"))
     return reg
 
 
@@ -36,7 +35,7 @@ def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[st
         _command = flatpak_command + command
     else:
         _env.update(environment)
-    return  _command[0], _command[1:] if len(_command) > 1 else [], _env
+    return _command[0], _command[1:] if len(_command) > 1 else [], _env
 
 
 def dict_to_qprocenv(env: Dict) -> QProcessEnvironment:
@@ -72,7 +71,10 @@ def get_configured_subprocess(command: List[str], environment: Dict) -> subproce
 def execute_subprocess(command: List[str], arguments: List[str], environment: Mapping) -> Tuple[str, str]:
     proc = get_configured_subprocess(command + arguments, environment)
     out, err = proc.communicate()
-    out, err = out.decode("utf-8", "ignore") if out else "", err.decode("utf-8", "ignore") if err else ""
+    out, err = (
+        out.decode("utf-8", "ignore") if out else "",
+        err.decode("utf-8", "ignore") if err else "",
+    )
 
     # lk: the following is a work-around for wineserver sometimes hanging around after
     proc = get_configured_subprocess(command + ["wineboot", "-e"], environment)
@@ -88,7 +90,7 @@ def execute_qprocess(command: List[str], arguments: List[str], environment: Mapp
     proc.waitForFinished(-1)
     out, err = (
         proc.readAllStandardOutput().data().decode("utf-8", "ignore"),
-        proc.readAllStandardError().data().decode("utf-8", "ignore")
+        proc.readAllStandardError().data().decode("utf-8", "ignore"),
     )
     proc.deleteLater()
 
@@ -119,7 +121,7 @@ def resolve_path(command: List[str], environment: Mapping, path: str) -> str:
     out, err = execute(command, arguments, environment)
     out, err = out.strip(), err.strip()
     if not out:
-        logger.error("Failed to resolve wine path due to \"%s\"", err)
+        logger.error('Failed to resolve wine path due to "%s"', err)
         return out
     return out.strip('"')
 
@@ -133,13 +135,13 @@ def query_reg_key(command: List[str], environment: Mapping, reg_path: str, reg_k
     out, err = execute(command, arguments, environment)
     out, err = out.strip(), err.strip()
     if not out:
-        logger.error("Failed to query registry key due to \"%s\"", err)
+        logger.error('Failed to query registry key due to "%s"', err)
         return out
     lines = out.split("\n")
     keys: Dict = {}
     for line in lines:
-        if line.startswith(" "*4):
-            key = [x for x in line.split(" "*4, 3) if bool(x)]
+        if line.startswith(" " * 4):
+            key = [x for x in line.split(" " * 4, 3) if bool(x)]
             keys.update({key[0]: key[2]})
     return keys.get(reg_key, "")
 
@@ -154,7 +156,7 @@ def convert_to_unix_path(command: List[str], environment: Mapping, path: str) ->
     out, err = execute(command, arguments, environment)
     out, err = out.strip(), err.strip()
     if not out:
-        logger.error("Failed to convert to unix path due to \"%s\"", err)
+        logger.error('Failed to convert to unix path due to "%s"', err)
     return os.path.realpath(out) if (out := out.strip()) else out
 
 
@@ -170,5 +172,5 @@ def get_host_environment(app_environment: Dict, silent: bool = False) -> Dict:
         _environ["WINEDLLOVERRIDES"] = "winemenubuilder=d;mscoree=d;mshtml=d;"
         _environ["WINEDLLOVERRIDES"] += "winex11.drv,winewayland.drv=d;"
         # lk: pressure-vessel complains about this but it doesn't fail due to it
-        #_environ["DISPLAY"] = ""
+        # _environ["DISPLAY"] = ""
     return _environ

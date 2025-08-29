@@ -4,7 +4,6 @@ from .install import InstallOptionsModel, UninstallOptionsModel
 
 
 class GlobalSignals:
-
     # set_main_tab_index = Signal(int)  # tab index
     # update_gamelist = Signal(list)
 

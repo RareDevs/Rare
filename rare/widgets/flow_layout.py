@@ -57,7 +57,7 @@ class FlowLayout(QLayout):
         else:
             return self.smartSpacing(QStyle.PixelMetric.PM_LayoutHorizontalSpacing)
 
-    def setVerticalSpacing(self, a0:  int) -> None:
+    def setVerticalSpacing(self, a0: int) -> None:
         self._vspacing = a0
         self.invalidate()
 
@@ -97,10 +97,7 @@ class FlowLayout(QLayout):
         self.doLayout(a0, False)
 
     def sizeHint(self) -> QSize:
-        return QSize(
-            self.parent().contentsRect().size().width(),
-            self.minimumSize().height()
-        )
+        return QSize(self.parent().contentsRect().size().width(), self.minimumSize().height())
 
     def minimumSize(self) -> QSize:
         size = QSize()
@@ -125,12 +122,16 @@ class FlowLayout(QLayout):
             hspace = self.horizontalSpacing()
             if hspace == -1:
                 hspace = widget.style().layoutSpacing(
-                    QSizePolicy.ControlType.PushButton, QSizePolicy.ControlType.PushButton, Qt.Orientation.Horizontal
+                    QSizePolicy.ControlType.PushButton,
+                    QSizePolicy.ControlType.PushButton,
+                    Qt.Orientation.Horizontal,
                 )
             vspace = self.verticalSpacing()
             if vspace == -1:
                 vspace = widget.style().layoutSpacing(
-                    QSizePolicy.ControlType.PushButton, QSizePolicy.ControlType.PushButton, Qt.Orientation.Vertical
+                    QSizePolicy.ControlType.PushButton,
+                    QSizePolicy.ControlType.PushButton,
+                    Qt.Orientation.Vertical,
                 )
             nextX = x + item.sizeHint().width() + hspace
             if nextX - hspace > effective.right() and lineheight > 0:

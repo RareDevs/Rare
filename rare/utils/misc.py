@@ -148,7 +148,12 @@ def get_translations() -> Tuple[Tuple[str, str], ...]:
     for i in os.listdir(os.path.join(resources_path, "languages")):
         if i.endswith(".qm") and i.startswith("rare_"):
             locale = QLocale(i.removesuffix(".qm").removeprefix("rare_"))
-            langs.append((locale.name(), f"{locale.nativeLanguageName()} ({locale.nativeCountryName()})"))
+            langs.append(
+                (
+                    locale.name(),
+                    f"{locale.nativeLanguageName()} ({locale.nativeCountryName()})",
+                )
+            )
     return tuple(langs)
 
 

@@ -7,20 +7,20 @@ from logging import getLogger
 from threading import Lock
 from typing import Dict, List, Optional, Set, Tuple
 
+from PySide6.QtCore import QProcess, QRunnable, QThreadPool, Slot
+from PySide6.QtGui import QPixmap
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
-from PySide6.QtCore import QProcess, QRunnable, QSettings, QThreadPool, Slot
-from PySide6.QtGui import QPixmap
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameBase, RareGameSlim
 from rare.models.image import ImageSize
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
-from rare.models.options import options
+from rare.models.settings import app_settings, RareAppSettings
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils import config_helper as config
-from rare.utils.paths import data_dir, get_rare_executable
+from rare.utils.paths import data_dir, get_rare_executable, compat_shaders_dir
 from rare.utils.steam_grades import get_rating
 from rare.utils.workarounds import apply_workarounds
 
@@ -53,11 +53,11 @@ class RareGame(RareGameSlim):
                 queue_pos=data.get("queue_pos", None),
                 last_played=RareGame.Metadata.parse_date(data.get("last_played", "")),
                 grant_date=RareGame.Metadata.parse_date(data.get("grant_date", "")),
-                steam_appid=str(appid) if (appid := data.get("steam_appid", None)) else None,
+                steam_appid=str(appid) if (appid := data.get("steam_appid", "")) else None,
                 steam_grade=data.get("steam_grade", None),
                 steam_date=RareGame.Metadata.parse_date(data.get("steam_date", "")),
                 steam_shortcut=data.get("steam_shortcut", None),
-                tags=data.get("tags",()),
+                tags=data.get("tags", ()),
             )
 
         @property
@@ -77,8 +77,15 @@ class RareGame(RareGameSlim):
         def __bool__(self):
             return self.queued or self.queue_pos is not None or self.last_played is not None
 
-    def __init__(self, legendary_core: LegendaryCore, image_manager: ImageManager, game: Game, parent=None):
-        super(RareGame, self).__init__(legendary_core, game, parent=parent)
+    def __init__(
+        self,
+        settings: RareAppSettings,
+        legendary_core: LegendaryCore,
+        image_manager: ImageManager,
+        game: Game,
+        parent=None,
+    ):
+        super(RareGame, self).__init__(settings, legendary_core, game, parent=parent)
         self.__origin_install_path: Optional[str] = None
         self.__origin_install_size: Optional[int] = None
 
@@ -123,7 +130,7 @@ class RareGame(RareGameSlim):
     def __on_progress_update(self, progress: int):
         self.progress = progress
 
-    def worker(self) -> Optional[QRunnable]:
+    def get_worker(self) -> Optional[QRunnable]:
         return self.__worker
 
     def set_worker(self, worker: Optional[QRunnable]):
@@ -186,8 +193,9 @@ class RareGame(RareGameSlim):
 
     def update_game(self):
         self.game = self.core.get_game(
-            self.app_name, update_meta=False,
-            platform=self.igame.platform if self.igame else self.default_platform
+            self.app_name,
+            update_meta=False,
+            platform=self.igame.platform if self.igame else self.default_platform,
         )
 
     def update_igame(self):
@@ -280,8 +288,7 @@ class RareGame(RareGameSlim):
 
         @return bool If the game should be considered installed
         """
-        return (self.igame is not None) \
-            or (self.is_origin and self.__origin_install_path is not None)
+        return (self.igame is not None) or (self.is_origin and self.__origin_install_path is not None)
 
     def set_installed(self, installed: bool) -> None:
         """!
@@ -460,7 +467,7 @@ class RareGame(RareGameSlim):
         self.metadata.steam_appid = appid
         self.__save_metadata()
 
-    def steam_grade(self) -> str:
+    def get_steam_grade(self) -> str:
         if platform.system() == "Windows" or self.is_unreal:
             return "na"
         if self.__steam_grade_pending:
@@ -488,12 +495,14 @@ class RareGame(RareGameSlim):
         if not (entitlements := self.core.lgd.entitlements):
             return self.metadata.grant_date
         if self.metadata.grant_date == datetime.min.replace(tzinfo=timezone.utc) or force:
-            logger.debug("Grant date for %s not found in metadata, resolving", self.app_name)
+            logger.info("Grant date for %s not found in metadata, resolving", self.app_name)
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
             entitlement = next(matching, None)
-            grant_date = datetime.fromisoformat(
-                entitlement["grantDate"].replace("Z", "+00:00")
-            ) if entitlement else datetime.min.replace(tzinfo=timezone.utc)
+            grant_date = (
+                datetime.fromisoformat(entitlement["grantDate"].replace("Z", "+00:00"))
+                if entitlement
+                else datetime.min.replace(tzinfo=timezone.utc)
+            )
             self.metadata.grant_date = grant_date
             self.__save_metadata()
         return self.metadata.grant_date
@@ -538,7 +547,7 @@ class RareGame(RareGameSlim):
             self.signals.widget.update.emit()
 
     def load_pixmaps(self):
-        """ Do not call this function, call set_pixmap instead. This is only used for initial image loading """
+        """Do not call this function, call set_pixmap instead. This is only used for initial image loading"""
         if not self.has_pixmap:
             self.image_manager.download_image(self.game, self.set_pixmap, 0, False)
 
@@ -548,19 +557,13 @@ class RareGame(RareGameSlim):
     def install(self) -> bool:
         if not self.is_idle:
             return False
-        self.signals.game.install.emit(
-            InstallOptionsModel(app_name=self.app_name)
-        )
+        self.signals.game.install.emit(InstallOptionsModel(app_name=self.app_name))
         return True
 
     def modify(self) -> bool:
         if not self.is_idle:
             return False
-        self.signals.game.install.emit(
-            InstallOptionsModel(
-                app_name=self.app_name, reset_sdl=True
-            )
-        )
+        self.signals.game.install.emit(InstallOptionsModel(app_name=self.app_name, reset_sdl=True))
         return True
 
     def repair(self, repair_and_update) -> bool:
@@ -568,7 +571,10 @@ class RareGame(RareGameSlim):
             return False
         self.signals.game.install.emit(
             InstallOptionsModel(
-                app_name=self.app_name, repair_mode=True, repair_and_update=repair_and_update, update=repair_and_update
+                app_name=self.app_name,
+                repair_mode=True,
+                repair_and_update=repair_and_update,
+                update=repair_and_update,
             )
         )
         return True
@@ -576,9 +582,7 @@ class RareGame(RareGameSlim):
     def uninstall(self) -> bool:
         if not self.is_idle:
             return False
-        self.signals.game.uninstall.emit(
-            UninstallOptionsModel(app_name=self.app_name, keep_config=self.sdl_name is not None)
-        )
+        self.signals.game.uninstall.emit(UninstallOptionsModel(app_name=self.app_name, keep_config=self.sdl_name is not None))
         return True
 
     def launch(
@@ -599,7 +603,7 @@ class RareGame(RareGameSlim):
             args.append("--offline")
         if debug:
             args.append("--debug")
-        if QSettings(self).value(*options.log_games):
+        if self.settings.get_value(app_settings.log_games):
             args.append("--show-console")
         if skip_update_check or config.get_boolean(self.app_name, "skip_update_check", fallback=False):
             args.append("--skip-update-check")
@@ -613,9 +617,18 @@ class RareGame(RareGameSlim):
             config.set_envvar(self.app_name, "STORE", "egs")
         if not config.get_envvar(self.app_name, "UMU_ID", False):
             config.set_envvar(
-                self.app_name, "UMU_ID",
-                f"umu-{self.metadata.steam_appid}" if self.metadata.steam_appid else "umu-default"
+                self.app_name,
+                "UMU_ID",
+                f"umu-{self.metadata.steam_appid}" if self.metadata.steam_appid else "umu-default",
             )
+        if self.settings.get_with_global(app_settings.local_shader_cache, self.app_name):
+            config.set_envvar(
+                self.app_name,
+                "STEAM_COMPAT_SHADER_PATH",
+                compat_shaders_dir(self.folder_name).as_posix(),
+            )
+        else:
+            config.remove_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH")
         config.save_config()
 
         logger.info(f"Starting game process: ({executable} {' '.join(args)})")
@@ -675,9 +688,7 @@ class RareEosOverlay(RareGameBase):
             return []
         return installs
 
-    def enable(
-        self, prefix: Optional[str] = None, path: Optional[str] = None
-    ) -> bool:
+    def enable(self, prefix: Optional[str] = None, path: Optional[str] = None) -> bool:
         if self.is_enabled(prefix):
             return False
         if not path:
@@ -721,7 +732,9 @@ class RareEosOverlay(RareGameBase):
             InstallOptionsModel(
                 app_name=self.app_name,
                 base_path=self.core.get_default_install_dir(),
-                platform="Windows", update=self.is_installed, overlay=True
+                platform="Windows",
+                update=self.is_installed,
+                overlay=True,
             )
         )
         return True
@@ -729,7 +742,5 @@ class RareEosOverlay(RareGameBase):
     def uninstall(self) -> bool:
         if not self.is_idle or not self.is_installed:
             return False
-        self.signals.game.uninstall.emit(
-            UninstallOptionsModel(app_name=self.app_name)
-        )
+        self.signals.game.uninstall.emit(UninstallOptionsModel(app_name=self.app_name))
         return True

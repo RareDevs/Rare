@@ -42,9 +42,7 @@ class About(QWidget):
         self.manager = QtRequests(parent=self)
         self.manager.get(self.releases_url, self.update_available_finished)
 
-        self.ui.open_browser.clicked.connect(
-            lambda: webbrowser.open("https://github.com/RareDevs/Rare/releases/latest")
-        )
+        self.ui.open_browser.clicked.connect(lambda: webbrowser.open("https://github.com/RareDevs/Rare/releases/latest"))
 
         self.update_available = False
 

@@ -6,7 +6,7 @@ from itertools import chain
 from logging import getLogger
 from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple, Set
 
-from PySide6.QtCore import QObject, Signal, QSettings, Slot, QThreadPool, QRunnable, QTimer
+from PySide6.QtCore import QObject, Signal, Slot, QThreadPool, QRunnable, QTimer
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile
 from requests.exceptions import HTTPError, ConnectionError
@@ -14,10 +14,11 @@ from requests.exceptions import HTTPError, ConnectionError
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareSaveGame
 from rare.models.game import RareGame, RareEosOverlay
+from rare.models.settings import RareAppSettings
 from rare.models.signals import GlobalSignals
-from rare.utils.metrics import timelogger
 from rare.utils import config_helper
 from rare.utils import steam_shortcuts
+from rare.utils.metrics import timelogger
 from .image_manager import ImageManager
 from .workers import (
     QueueWorker,
@@ -45,27 +46,26 @@ class RareCore(QObject):
     # completed_entitlements = Signal()
 
     # lk: special case class attribute, this has to be here
-    __instance: Optional['RareCore'] = None
+    __instance: Optional["RareCore"] = None
 
-    def __init__(self, args: Namespace):
+    def __init__(self, settings: RareAppSettings, args: Namespace):
         if self.__instance is not None:
             raise RuntimeError("RareCore already initialized")
         super(RareCore, self).__init__()
+        self.__settings = settings
         self.__args: Optional[Namespace] = None
         self.__signals: Optional[GlobalSignals] = None
         self.__core: Optional[LegendaryCore] = None
         self.__image_manager: Optional[ImageManager] = None
-        self.__settings: Optional[QSettings] = None
         self.__wrappers: Optional[Wrappers] = None
 
         self.__start_time = time.perf_counter()
 
-        self.args(args)
+        self.args(args=args)
         self.signals(init=True)
         self.core(init=True)
         config_helper.init_config_handler(self.__core)
         self.image_manager(init=True)
-        self.__settings = QSettings(self)
         self.__wrappers = Wrappers()
 
         self.queue_workers: List[QueueWorker] = []
@@ -118,7 +118,7 @@ class RareCore(QObject):
             yield w.worker_info()
 
     @staticmethod
-    def instance() -> 'RareCore':
+    def instance() -> "RareCore":
         if RareCore.__instance is None:
             raise RuntimeError("Uninitialized use of RareCore")
         return RareCore.__instance
@@ -151,16 +151,18 @@ class RareCore(QObject):
                 self.__core = LegendaryCore()
             except configparser.MissingSectionHeaderError as e:
                 logger.warning("Config is corrupt: %s", e)
-                if config_path := os.environ.get('LEGENDARY_CONFIG_PATH'):
+                if config_path := os.environ.get("LEGENDARY_CONFIG_PATH"):
                     path = config_path
-                elif config_path := os.environ.get('XDG_CONFIG_HOME'):
-                    path = os.path.join(config_path, 'legendary')
+                elif config_path := os.environ.get("XDG_CONFIG_HOME"):
+                    path = os.path.join(config_path, "legendary")
                 else:
-                    path = os.path.expanduser('~/.config/legendary')
+                    path = os.path.expanduser("~/.config/legendary")
                 logger.info("Creating config in path: %s", config_path)
                 with open(os.path.join(path, "config.ini"), "w", encoding="utf-8") as config_file:
                     config_file.write("[Legendary]")
                 self.__core = LegendaryCore()
+
+            self.__core.egs._store_gql_host = "launcher.store.epicgames.com"
 
             # Initialize sections if they don't exist
             for section in ["Legendary", "default", "default.env"]:
@@ -177,12 +179,12 @@ class RareCore(QObject):
             if not check_config("default_platform", {"Windows", "Win32", "Mac"}):
                 self.__core.lgd.config.set("Legendary", "default_platform", self.__core.default_platform)
             if not check_config("install_dir"):
-                self.__core.lgd.config.set(
-                    "Legendary", "install_dir", self.__core.get_default_install_dir()
-                )
+                self.__core.lgd.config.set("Legendary", "install_dir", self.__core.get_default_install_dir())
             if not check_config("mac_install_dir"):
                 self.__core.lgd.config.set(
-                    "Legendary", "mac_install_dir", self.__core.get_default_install_dir(self.__core.default_platform)
+                    "Legendary",
+                    "mac_install_dir",
+                    self.__core.get_default_install_dir(self.__core.default_platform),
                 )
 
             # Always set these options
@@ -217,9 +219,6 @@ class RareCore(QObject):
     def wrappers(self) -> Wrappers:
         return self.__wrappers
 
-    def settings(self) -> QSettings:
-        return self.__settings
-
     def deleteLater(self) -> None:
         self.__image_manager.deleteLater()
         del self.__image_manager
@@ -251,9 +250,7 @@ class RareCore(QObject):
                     logger.info(f'Uninstalling DLC "{dlc.app_name}" ({dlc.app_title})...')
                     uninstall_game(self.__core, dlc, keep_files=True, keep_config=True)
                     dlc.igame = None
-            logger.info(
-                f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...'
-            )
+            logger.info(f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...')
             uninstall_game(self.__core, rgame, keep_files=True, keep_config=True)
             logger.info(f"Uninstalled {rgame.app_title}, because no game files exist")
             rgame.igame = None
@@ -309,7 +306,7 @@ class RareCore(QObject):
             logger.info(f"Updating Game for {rgame.app_name}")
             rgame.update_rgame()
         else:
-            rgame = RareGame(self.__core, self.__image_manager, game, self)
+            rgame = RareGame(self.__settings, self.__core, self.__image_manager, game, self)
             self.__add_game(rgame)
         return rgame
 
@@ -332,7 +329,7 @@ class RareCore(QObject):
                     logger.info(f'Marking "{rgame.app_title}" as not installed because an exception has occurred...')
                     logger.error(e)
                     rgame.set_installed(False)
-            progress = int(idx/length * self.__fetch_progress) + (100 - self.__fetch_progress)
+            progress = int(idx / length * self.__fetch_progress) + (100 - self.__fetch_progress)
             self.progress.emit(progress, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
 
     @Slot(int, str)
@@ -356,13 +353,17 @@ class RareCore(QObject):
         logger.info("Acquired data from %s worker", FetchWorker.Result(result_type).name)
 
         # Return early if there are still things to fetch
-        if not all({self.__fetched_games_dlcs, self.__fetched_entitlements, self.__fetched_steamappids}):
+        if not all(
+            {
+                self.__fetched_games_dlcs,
+                self.__fetched_entitlements,
+                self.__fetched_steamappids,
+            }
+        ):
             return
 
         logger.debug("Fetch time %s seconds", time.perf_counter() - self.__start_time)
-        self.__wrappers.import_wrappers(
-            self.__core, self.__settings, [rgame.app_name for rgame in self.games]
-        )
+        self.__wrappers.import_wrappers(self.__settings, self.__core, [rgame.app_name for rgame in self.games])
 
         # Look for Rare shortcuts in Steam
         steam_shortcuts.load_steam_shortcuts()
@@ -374,22 +375,21 @@ class RareCore(QObject):
     def fetch(self):
         self.__start_time = time.perf_counter()
 
-        games_dlcs_worker = GamesDlcsWorker(self.__core, self.__args)
+        games_dlcs_worker = GamesDlcsWorker(self.__settings, self.__core, self.__args)
         games_dlcs_worker.signals.progress.connect(self.__on_fetch_progress)
         games_dlcs_worker.signals.result.connect(self.__on_fetch_result)
 
-        entitlements_worker = EntitlementsWorker(self.__core, self.__args)
+        entitlements_worker = EntitlementsWorker(self.__settings, self.__core, self.__args)
         entitlements_worker.signals.progress.connect(self.__on_fetch_progress)
         entitlements_worker.signals.result.connect(self.__on_fetch_result)
 
-        steamappids_worker = SteamAppIdsWorker(self.__core, self.__args)
+        steamappids_worker = SteamAppIdsWorker(self.__settings, self.__core, self.__args)
         steamappids_worker.signals.progress.connect(self.__on_fetch_progress)
         steamappids_worker.signals.result.connect(self.__on_fetch_result)
 
         QThreadPool.globalInstance().start(games_dlcs_worker)
         QThreadPool.globalInstance().start(entitlements_worker)
         QThreadPool.globalInstance().start(steamappids_worker)
-
 
     def fetch_saves(self):
         def __fetch() -> None:
@@ -507,4 +507,3 @@ class RareCore(QObject):
         RareGames that have SaveGameFiles associated with them
         """
         return self.__filter_games(lambda game: bool(game.saves))
-

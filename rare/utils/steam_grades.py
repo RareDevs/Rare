@@ -55,10 +55,10 @@ def get_rating(core: LegendaryCore, app_name: str, steam_appid: int = None) -> T
         if steam_appid is None:
             steam_appid = get_steam_id(game.app_title)
             if not steam_appid:
-                raise Exception
+                raise RuntimeError
         grade = get_grade(steam_appid)
     except Exception as e:
-        logger.exception(e)
+        logger.debug(e)
         logger.error("Failed to get ProtonDB rating for %s", game.app_title)
         return 0, "fail"
     else:
@@ -74,7 +74,7 @@ def get_grade(steam_code):
     try:
         app = orjson.loads(res.text)
     except orjson.JSONDecodeError as e:
-        logger.exception(e)
+        logger.debug(e)
         logger.error("Failed to get ProtonDB response for %s", steam_code)
         return "fail"
 

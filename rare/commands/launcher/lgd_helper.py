@@ -95,7 +95,7 @@ def get_game_params(rgame: RareGameSlim, args: InitArgs, launch_args: LaunchArgs
     if (not rgame.igame or not rgame.igame.executable) and rgame.game is not None:
         # override installed game with base title
         if rgame.is_launchable_addon:
-            app_name = rgame.game.metadata['mainGameItem']['releaseInfo'][0]['appId']
+            app_name = rgame.game.metadata["mainGameItem"]["releaseInfo"][0]["appId"]
             rgame.igame = rgame.core.get_installed_game(app_name)
 
     try:
@@ -104,9 +104,7 @@ def get_game_params(rgame: RareGameSlim, args: InitArgs, launch_args: LaunchArgs
         )
     except TypeError:
         logger.warning("Using older get_launch_parameters due to legendary version")
-        params: LaunchParameters = rgame.core.get_launch_parameters(
-            app_name=rgame.igame.app_name, offline=args.offline
-        )
+        params: LaunchParameters = rgame.core.get_launch_parameters(app_name=rgame.igame.app_name, offline=args.offline)
 
     full_params = []
     full_params.extend(params.launch_command)
@@ -126,7 +124,6 @@ def get_game_params(rgame: RareGameSlim, args: InitArgs, launch_args: LaunchArgs
 
 
 def get_launch_args(rgame: RareGameSlim, init_args: InitArgs = None) -> LaunchArgs:
-
     resp = LaunchArgs()
 
     if not rgame.game:
@@ -184,7 +181,7 @@ def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[st
     else:
         _env.update(environ)
 
-    return  _command[0], _command[1:] if len(_command) > 1 else [], _env
+    return _command[0], _command[1:] if len(_command) > 1 else [], _env
 
 
 def dict_to_qprocenv(env: Dict) -> QProcessEnvironment:

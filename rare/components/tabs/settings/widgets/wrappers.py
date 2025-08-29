@@ -28,7 +28,8 @@ from PySide6.QtWidgets import (
     QPushButton,
     QLineEdit,
     QVBoxLayout,
-    QComboBox, QCheckBox,
+    QComboBox,
+    QCheckBox,
 )
 
 from rare.models.wrapper import Wrapper

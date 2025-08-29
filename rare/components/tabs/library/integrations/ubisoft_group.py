@@ -120,7 +120,9 @@ class UbiLinkWidget(QFrame):
         if activated:
             self.redeem_button.setText(self.tr("Already activated"))
             self.redeem_button.setDisabled(True)
-            self.redeem_indicator.setPixmap(qta_icon("fa.check-circle-o", "fa5.check-circle", color="green").pixmap(QSize(20, 20)))
+            self.redeem_indicator.setPixmap(
+                qta_icon("fa.check-circle-o", "fa5.check-circle", color="green").pixmap(QSize(20, 20))
+            )
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(-1, 0, 0, 0)
@@ -137,14 +139,18 @@ class UbiLinkWidget(QFrame):
             worker = UbiConnectWorker(RareCore.instance().core(), None, None)
         else:
             worker = UbiConnectWorker(
-                RareCore.instance().core(), self.ubi_account_id, self.game.partner_link_id
+                RareCore.instance().core(),
+                self.ubi_account_id,
+                self.game.partner_link_id,
             )
         worker.signals.linked.connect(self.worker_finished)
         QThreadPool.globalInstance().start(worker)
 
     def worker_finished(self, error):
         if not error:
-            self.redeem_indicator.setPixmap(qta_icon("fa.check-circle-o", "fa5.check-circle", color="green").pixmap(QSize(20, 20)))
+            self.redeem_indicator.setPixmap(
+                qta_icon("fa.check-circle-o", "fa5.check-circle", color="green").pixmap(QSize(20, 20))
+            )
             self.redeem_button.setDisabled(True)
             self.redeem_button.setText(self.tr("Already activated"))
         else:
@@ -169,9 +175,7 @@ class UbisoftGroup(QGroupBox):
         self.info_label.setText(self.tr("Getting information about your redeemable Ubisoft games."))
         self.link_button = QPushButton(self.tr("Link Ubisoft acccount"), parent=self)
         self.link_button.setMinimumWidth(140)
-        self.link_button.clicked.connect(
-            lambda: webbrowser.open("https://www.epicgames.com/id/link/ubisoft")
-        )
+        self.link_button.clicked.connect(lambda: webbrowser.open("https://www.epicgames.com/id/link/ubisoft"))
         self.link_button.setEnabled(False)
 
         self.loading_widget = LoadingWidget(self)
@@ -206,17 +210,11 @@ class UbisoftGroup(QGroupBox):
         self.worker = None
         self.loading_widget.stop()
         if not redeemed and ubi_account_id != "error":
-            logger.error(
-                "No linked ubisoft account found! Link your accounts via your browser and try again."
-            )
-            self.info_label.setText(
-                self.tr("Your account is not linked with Ubisoft. Please link your account and try again.")
-            )
+            logger.error("No linked ubisoft account found! Link your accounts via your browser and try again.")
+            self.info_label.setText(self.tr("Your account is not linked with Ubisoft. Please link your account and try again."))
             self.link_button.setEnabled(True)
         elif ubi_account_id == "error":
-            self.info_label.setText(
-                self.tr("An error has occurred while requesting your account's Ubisoft information.")
-            )
+            self.info_label.setText(self.tr("An error has occurred while requesting your account's Ubisoft information."))
             self.link_button.setEnabled(True)
         else:
             self.link_button.setEnabled(False)
@@ -233,7 +231,11 @@ class UbisoftGroup(QGroupBox):
                     except (IndexError, KeyError):
                         app_name = "unknown"
 
-                    dlc_game = Game(app_name=app_name, app_title=dlc_data["title"], metadata=dlc_data)
+                    dlc_game = Game(
+                        app_name=app_name,
+                        app_title=dlc_data["title"],
+                        metadata=dlc_data,
+                    )
                     if dlc_game.partner_link_type != "ubisoft":
                         continue
                     if dlc_game.partner_link_id in redeemed:
@@ -252,21 +254,25 @@ class UbisoftGroup(QGroupBox):
                 self.info_label.setText(self.tr("All your Ubisoft games have already been activated."))
             else:
                 self.info_label.setText(
-                    self.tr("You have <b>{}</b> games available to redeem.").format(
-                        len(uplay_games) - activated
-                    )
+                    self.tr("You have <b>{}</b> games available to redeem.").format(len(uplay_games) - activated)
                 )
             logger.info(f"Found {len(uplay_games) - activated} game(s) to redeem.")
 
             for game in uplay_games:
                 widget = UbiLinkWidget(
-                    game, ubi_account_id, activated=game.partner_link_id in redeemed, parent=self
+                    game,
+                    ubi_account_id,
+                    activated=game.partner_link_id in redeemed,
+                    parent=self,
                 )
                 self.layout().addWidget(widget)
 
             if self.args.debug:
                 widget = UbiLinkWidget(
-                    Game(app_name="RareTestGame", app_title="Super Fake Super Rare Super Test (Super?) Game"),
+                    Game(
+                        app_name="RareTestGame",
+                        app_title="Super Fake Super Rare Super Test (Super?) Game",
+                    ),
                     ubi_account_id,
                     activated=False,
                     parent=self,

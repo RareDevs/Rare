@@ -30,7 +30,6 @@ from legendary.models.game import SaveGameStatus
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameSlim
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
-from rare.models.options import options
 from rare.widgets.rare_app import RareApp, RareAppException
 from rare.utils.paths import get_rare_executable
 from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
@@ -43,7 +42,7 @@ DETACHED_APP_NAMES = {
     "afdb5a85efcc45d8ae8e406e2121d81c",  # Fortnite Battle Royale
     "09e442f830a341f698b4da42abd98c9b",  # Fortnite Festival
     "d8f7763e07d74c209d760a679f9ed6ac",  # Lego Fortnite
-    "Fortnite_Studio",                   # Unreal Editor for Fortnite
+    "Fortnite_Studio",  # Unreal Editor for Fortnite
     "dcfccf8d965a4f2281dddf9fead042de",  # Homeworld Remastered Collection (issue#376)
 }
 
@@ -131,11 +130,13 @@ class RareLauncherException(RareAppException):
 
     def _handler(self, exc_type, exc_value, exc_tb) -> bool:
         try:
-            self.__app.send_message(ErrorModel(
-                app_name=self.__args.app_name,
-                action=Actions.error,
-                error_string="".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-            ))
+            self.__app.send_message(
+                ErrorModel(
+                    app_name=self.__args.app_name,
+                    action=Actions.error,
+                    error_string="".join(traceback.format_exception(exc_type, exc_value, exc_tb)),
+                )
+            )
         except RuntimeError:
             pass
         return False
@@ -162,10 +163,7 @@ class RareLauncher(RareApp):
         if not game:
             self.logger.error(f"Game {args.app_name} not found. Exiting")
             return
-        self.rgame = RareGameSlim(self.core, game, self)
-
-        language = self.settings.value(*options.language)
-        self.load_translator(language)
+        self.rgame = RareGameSlim(self.settings, self.core, game, self)
 
         if args.show_console:
             self.console = ConsoleDialog(game.app_title)
@@ -198,15 +196,11 @@ class RareLauncher(RareApp):
 
     @Slot()
     def __proc_log_stdout(self):
-        self.console.log_stdout(
-            self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore")
-        )
+        self.console.log_stdout(self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore"))
 
     @Slot()
     def __proc_log_stderr(self):
-        self.console.log_stderr(
-            self.game_process.readAllStandardError().data().decode("utf-8", "ignore")
-        )
+        self.console.log_stderr(self.game_process.readAllStandardError().data().decode("utf-8", "ignore"))
 
     @Slot()
     def __proc_term(self):
@@ -286,12 +280,14 @@ class RareLauncher(RareApp):
         if self.console:
             self.console.on_process_exit(self.core.get_game(self.rgame.app_name).app_title, exit_code)
 
-        self.send_message(FinishedModel(
-            action=Actions.finished,
-            app_name=self.rgame.app_name,
-            exit_code=exit_code,
-            playtime=int(time.time() - self.start_time),
-        ))
+        self.send_message(
+            FinishedModel(
+                action=Actions.finished,
+                app_name=self.rgame.app_name,
+                exit_code=exit_code,
+                playtime=int(time.time() - self.start_time),
+            )
+        )
         self.stop()
 
     @Slot(object)
@@ -329,7 +325,9 @@ class RareLauncher(RareApp):
                 self.console.log(f"Launching {args.executable} as a detached process")
             subprocess.Popen(
                 (args.executable, *args.arguments),
-                stdin=None, stdout=None, stderr=None,
+                stdin=None,
+                stdout=None,
+                stderr=None,
                 cwd=args.working_directory,
                 env=args.environment,
                 shell=True,
@@ -357,21 +355,19 @@ class RareLauncher(RareApp):
         self.game_process.setProcessEnvironment(dict_to_qprocenv(args.environment))
         # send start message after process started
         self.game_process.started.connect(
-            lambda: self.send_message(StateChangedModel(
-                action=Actions.state_update,
-                app_name=self.rgame.app_name,
-                new_state=StateChangedModel.States.started
-        )))
+            lambda: self.send_message(
+                StateChangedModel(
+                    action=Actions.state_update, app_name=self.rgame.app_name, new_state=StateChangedModel.States.started
+                )
+            )
+        )
         self.game_process.start()
 
     def error_occurred(self, error_str: str):
         self.logger.warning(error_str)
         if self.console:
             self.console.on_process_exit(self.core.get_game(self.rgame.app_name).app_title, error_str)
-        self.send_message(ErrorModel(
-            error_string=error_str, app_name=self.rgame.app_name,
-            action=Actions.error
-        ))
+        self.send_message(ErrorModel(error_string=error_str, app_name=self.rgame.app_name, action=Actions.error))
         self.stop()
 
     def start_prepare(self, sync_action=None):
@@ -495,5 +491,6 @@ def launcher(args: Namespace) -> int:
         # if not sip.isdeleted(app.server):
         #     app.server.close()
     return exit_code
+
 
 __all__ = ["launcher"]

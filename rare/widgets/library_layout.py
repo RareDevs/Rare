@@ -75,12 +75,16 @@ class LibraryLayout(FlowLayout):
         hspace = self.horizontalSpacing()
         if hspace == -1:
             hspace = widget.style().layoutSpacing(
-                QSizePolicy.ControlType.PushButton, QSizePolicy.ControlType.PushButton, Qt.Orientation.Horizontal
+                QSizePolicy.ControlType.PushButton,
+                QSizePolicy.ControlType.PushButton,
+                Qt.Orientation.Horizontal,
             )
         vspace = self.verticalSpacing()
         if vspace == -1:
             vspace = widget.style().layoutSpacing(
-                QSizePolicy.ControlType.PushButton, QSizePolicy.ControlType.PushButton, Qt.Orientation.Vertical
+                QSizePolicy.ControlType.PushButton,
+                QSizePolicy.ControlType.PushButton,
+                Qt.Orientation.Vertical,
             )
 
         # lk: get the remaining space after subtracting the space required for each widget and its static padding

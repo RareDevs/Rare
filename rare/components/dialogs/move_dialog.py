@@ -41,14 +41,16 @@ class MoveDialog(ActionDialog):
         self.rgame: Optional[RareGame] = None
 
         self.path_edit = PathEdit("", QFileDialog.FileMode.Directory, edit_func=self.path_edit_callback)
-        self.path_edit.extend_reasons({
-            MovePathEditReasons.MOVEDIALOG_DST_MISSING: self.tr("You need to provide the destination directory."),
-            MovePathEditReasons.MOVEDIALOG_NO_WRITE_PERM: self.tr("No write permission on destination."),
-            MovePathEditReasons.MOVEDIALOG_SAME_DIR: self.tr("Same directory or subdirectory selected."),
-            MovePathEditReasons.MOVEDIALOG_DST_IN_SRC: self.tr("Destination is inside source directory"),
-            MovePathEditReasons.MOVEDIALOG_NESTED_DIR: self.tr("Game install directories cannot be nested."),
-            MovePathEditReasons.MOVEDIALOG_NO_SPACE: self.tr("Not enough space available on drive."),
-        })
+        self.path_edit.extend_reasons(
+            {
+                MovePathEditReasons.MOVEDIALOG_DST_MISSING: self.tr("You need to provide the destination directory."),
+                MovePathEditReasons.MOVEDIALOG_NO_WRITE_PERM: self.tr("No write permission on destination."),
+                MovePathEditReasons.MOVEDIALOG_SAME_DIR: self.tr("Same directory or subdirectory selected."),
+                MovePathEditReasons.MOVEDIALOG_DST_IN_SRC: self.tr("Destination is inside source directory"),
+                MovePathEditReasons.MOVEDIALOG_NESTED_DIR: self.tr("Game install directories cannot be nested."),
+                MovePathEditReasons.MOVEDIALOG_NO_SPACE: self.tr("Not enough space available on drive."),
+            }
+        )
 
         self.warn_label = ElideLabel("", parent=self)
 
@@ -168,7 +170,7 @@ class MoveDialog(ActionDialog):
 
     @Slot()
     def __update_widget(self):
-        """ React to state updates from RareGame """
+        """React to state updates from RareGame"""
         if not self.rgame.is_installed or self.rgame.is_non_asset:
             self.setDisabled(True)
             return

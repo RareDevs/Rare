@@ -47,7 +47,8 @@ class IndicatorReasonsCommon(IntEnum):
     FILE_NOT_EXISTS = 7
     GAME_NOT_INSTALLED = 8
     GAME_NOT_EXISTS = 9
-    UNDEFINED = 10
+    PERM_NO_WRITE = 10
+    UNDEFINED = 11
 
 
 class IndicatorReasons(IntEnum):
@@ -60,6 +61,7 @@ class IndicatorReasons(IntEnum):
     MyReasons(IndicatorReasons):
         MY_REASON = auto()
     """
+
     @staticmethod
     def _generate_next_value_(name, start, count, last_values):
         """generate consecutive automatic numbers starting from zero"""
@@ -81,6 +83,7 @@ class IndicatorReasonsStrings(QObject):
             IndicatorReasonsCommon.FILE_NOT_EXISTS: self.tr("File does not exist"),
             IndicatorReasonsCommon.GAME_NOT_INSTALLED: self.tr("Game is not installed"),
             IndicatorReasonsCommon.GAME_NOT_EXISTS: self.tr("Game does not exist"),
+            IndicatorReasonsCommon.PERM_NO_WRITE: self.tr("No 'write' access to folder"),
             IndicatorReasonsCommon.UNDEFINED: self.tr("Unset"),
         }
 
@@ -123,6 +126,7 @@ class EditFuncRunnable(QRunnable):
 
 class IndicatorLineEdit(QWidget):
     textChanged = Signal(str)
+    validationFinished = Signal(bool, str)
 
     def __init__(
         self,
@@ -199,7 +203,7 @@ class IndicatorLineEdit(QWidget):
     def setText(self, text: str):
         self.line_edit.setText(text)
 
-    def setInfo(self, text:str):
+    def setInfo(self, text: str):
         text = text.strip()
         self.info_label.setVisible(bool(text))
         self.info_label.setText(text)
@@ -216,6 +220,9 @@ class IndicatorLineEdit(QWidget):
 
     def extend_reasons(self, reasons: Dict):
         self.__reasons.extend(reasons)
+
+    def refresh(self):
+        self.__edit(self.line_edit.text())
 
     def __indicator(self, valid, reason: int = 0):
         color = "gray" if reason == IndicatorReasonsCommon.UNDEFINED else "green" if valid else "red"
@@ -237,6 +244,7 @@ class IndicatorLineEdit(QWidget):
             self.__save(text)
         self.is_valid = is_valid
         self.textChanged.emit(text)
+        self.validationFinished.emit(is_valid, self.__reasons[reason])
 
     def __edit(self, text):
         if self.edit_func is not None:
@@ -258,12 +266,30 @@ class PathEditIconProvider(QAbstractFileIconProvider):
 
     icons = {
         CustomIconType.Unknown: ("mdi.file-cancel", "fa5.file-excel"),  # Unknown
-        QAbstractFileIconProvider.IconType.Computer: ("mdi.desktop-classic", "fa5s.desktop"),  # Computer
-        QAbstractFileIconProvider.IconType.Desktop: ("mdi.desktop-mac", "fa5s.desktop"),  # Desktop
-        QAbstractFileIconProvider.IconType.Trashcan: ("mdi.trash-can", "fa5s.trash"),  # Trashcan
-        QAbstractFileIconProvider.IconType.Network: ("mdi.server-network", "fa5s.server"),  # Network
-        QAbstractFileIconProvider.IconType.Drive: ("mdi.harddisk", "fa5s.desktop"),  # Drive
-        QAbstractFileIconProvider.IconType.Folder: ("mdi.folder", "fa5.folder"),  # Folder
+        QAbstractFileIconProvider.IconType.Computer: (
+            "mdi.desktop-classic",
+            "fa5s.desktop",
+        ),  # Computer
+        QAbstractFileIconProvider.IconType.Desktop: (
+            "mdi.desktop-mac",
+            "fa5s.desktop",
+        ),  # Desktop
+        QAbstractFileIconProvider.IconType.Trashcan: (
+            "mdi.trash-can",
+            "fa5s.trash",
+        ),  # Trashcan
+        QAbstractFileIconProvider.IconType.Network: (
+            "mdi.server-network",
+            "fa5s.server",
+        ),  # Network
+        QAbstractFileIconProvider.IconType.Drive: (
+            "mdi.harddisk",
+            "fa5s.desktop",
+        ),  # Drive
+        QAbstractFileIconProvider.IconType.Folder: (
+            "mdi.folder",
+            "fa5.folder",
+        ),  # Folder
         QAbstractFileIconProvider.IconType.File: ("mdi.file", "fa5.file"),  # File
         CustomIconType.Executable: ("mdi.cog", "fa5s.cog"),  # Executable
     }
@@ -370,7 +396,6 @@ class PathEdit(IndicatorLineEdit):
 
 
 class ColumnCompleter(QCompleter):
-
     def __init__(self, items: ItemsView[str, str], parent=None):
         super(ColumnCompleter, self).__init__(parent)
 

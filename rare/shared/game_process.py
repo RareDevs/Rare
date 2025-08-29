@@ -68,9 +68,8 @@ class GameProcess(QObject):
                 None,
                 self.tr("Error - {}").format(self.game.app_title),
                 self.tr(
-                    "Connection to game launcher failed for <b>{}</b>.\n"
-                    "This normally means that the game is already running."
-                ).format(self.game.app_title)
+                    "Connection to game launcher failed for <b>{}</b>.\nThis normally means that the game is already running."
+                ).format(self.game.app_title),
             )
             self.timer.stop()
             self.tried_connections = 0
@@ -103,8 +102,11 @@ class GameProcess(QObject):
             logger.error(f"Error in game {self.game.app_title}: {model.error_string}")
             self.socket.close()
             self.__game_finished(GameProcess.Code.ERROR)
-            QMessageBox.warning(None, "Error", self.tr(
-                "Error in game {}:\n{}").format(self.game.app_title, model.error_string))
+            QMessageBox.warning(
+                None,
+                "Error",
+                self.tr("Error in game {}:\n{}").format(self.game.app_title, model.error_string),
+            )
         elif action == Actions.state_update:
             model = StateChangedModel.from_json(data)
             if model.new_state == StateChangedModel.States.started:

@@ -1,11 +1,9 @@
-import os.path
 import platform as pf
 from logging import getLogger
 from typing import Tuple
 
 from PySide6.QtCore import QSignalBlocker, Qt, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QCheckBox, QFormLayout
 
 from rare.components.tabs.settings.compat import CompatSettingsBase
 from rare.components.tabs.settings.widgets.overlay import (
@@ -16,10 +14,11 @@ from rare.components.tabs.settings.widgets.overlay import (
 from rare.components.tabs.settings.widgets.runner import RunnerSettingsBase
 from rare.components.tabs.settings.widgets.wine import WineSettings
 from rare.models.game import RareGame
+from rare.models.settings import app_settings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.utils import steam_grades
-from rare.utils.paths import compat_shaders_dir, proton_compat_dir
+from rare.utils.paths import compat_shaders_dir, proton_compat_dir, wine_prefix_dir
 from rare.widgets.indicator_edit import (
     ColumnCompleter,
     IndicatorLineEdit,
@@ -39,16 +38,21 @@ class LocalWineSettings(WineSettings):
 
 
 if pf.system() in {"Linux", "FreeBSD"}:
+
     class LocalProtonSettings(ProtonSettings):
         def load_settings(self, app_name: str):
             self.app_name = app_name
 
-        def _get_compat_path(self, location: ProtonSettings.CompatLocation):
+        def _get_compat_path(self, compat_location: ProtonSettings.CompatLocation):
             folder_name = "default"
-            if location == ProtonSettings.CompatLocation.ISOLATED:
-                folder_name = RareCore.instance().get_game(self.app_name).folder_name
-            compatdata_path = proton_compat_dir(folder_name)
-            return compatdata_path
+            local_folder_name = RareCore.instance().get_game(self.app_name).folder_name
+            if compat_location == ProtonSettings.CompatLocation.NONE:
+                if wine_prefix_dir(local_folder_name).joinpath("system.reg").is_file():
+                    compat_location = ProtonSettings.CompatLocation.ISOLATED
+            if compat_location == ProtonSettings.CompatLocation.ISOLATED:
+                folder_name = local_folder_name
+            compat_path = proton_compat_dir(folder_name)
+            return compat_path
 
     class LocalMangoHudSettings(MangoHudSettings):
         def load_settings(self, app_name: str):
@@ -64,13 +68,6 @@ class LocalRunnerSettings(RunnerSettingsBase):
 
         self.rgame: RareGame = None
 
-        font = self.font()
-        font.setItalic(True)
-
-        self.shader_cache_check = QCheckBox(self.tr("Use game-specific shader cache directory"), self)
-        self.shader_cache_check.setFont(font)
-        self.shader_cache_check.checkStateChanged.connect(self.__shader_cache_check_changed)
-
         self.steam_appid_edit = IndicatorLineEdit(
             placeholder=self.tr("Use in case the SteamAppID was not found automatically"),
             edit_func=self.__steam_appid_edit_callback,
@@ -79,18 +76,16 @@ class LocalRunnerSettings(RunnerSettingsBase):
         )
         self.__steam_appids, self.__steam_titles = steam_grades.load_steam_appids()
         self.steam_appid_edit.setCompleter(ColumnCompleter(items=self.__steam_appids.items()))
-
-        form_layout = QFormLayout()
-        form_layout.addRow(self.tr("Shader cache"), self.shader_cache_check)
-        form_layout.addRow(self.tr("Steam AppID"), self.steam_appid_edit)
-
-        self.main_layout.addLayout(form_layout)
+        self.form_layout.addRow(self.tr("Steam AppID"), self.steam_appid_edit)
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
             return super().showEvent(a0)
         _ = QSignalBlocker(self.shader_cache_check)
-        self.shader_cache_check.setChecked(bool(config.get_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", False)))
+        is_local_cache_enabled = self.settings.get_with_global(app_settings.local_shader_cache, self.rgame.app_name)
+        has_local_cache_path = bool(config.get_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", False))
+        self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
+        self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
         _ = QSignalBlocker(self.steam_appid_edit)
         self.steam_appid_edit.setText(self.rgame.steam_appid if self.rgame.steam_appid else "")
         self.steam_appid_edit.setInfo(self.__steam_titles.get(self.rgame.steam_appid, ""))
@@ -115,11 +110,16 @@ class LocalRunnerSettings(RunnerSettingsBase):
         self.rgame.reset_steam_date()
 
     @Slot(Qt.CheckState)
-    def __shader_cache_check_changed(self, state: Qt.CheckState):
-        if state == Qt.CheckState.Checked:
-            config.set_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", compat_shaders_dir(self.rgame.folder_name).as_posix())
+    def _shader_cache_check_changed(self, state: Qt.CheckState):
+        if checked := (state != Qt.CheckState.Unchecked):
+            config.set_envvar(
+                self.rgame.app_name,
+                "STEAM_COMPAT_SHADER_PATH",
+                compat_shaders_dir(self.rgame.folder_name).as_posix(),
+            )
         else:
-            config.remove_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH")
+            config.remove_envvar(self.rgame.app_name, "STEAM_COMPAT_SHADER_PATH")
+        self.settings.set_with_global(app_settings.local_shader_cache, checked, self.rgame.app_name)
         self.environ_changed.emit("STEAM_COMPAT_SHADER_PATH")
 
     def load_settings(self, rgame: RareGame):
@@ -139,6 +139,7 @@ class LocalDxvkConfigSettings(DxvkConfigSettings):
     def load_settings(self, app_name: str):
         self.app_name = app_name
 
+
 class LocalDxvkNvapiDrsSettings(DxvkNvapiDrsSettings):
     def load_settings(self, app_name: str):
         self.app_name = app_name
@@ -153,7 +154,7 @@ class LocalCompatSettings(CompatSettingsBase):
                 dxvk_nvapi_drs_widget=LocalDxvkNvapiDrsSettings,
                 runner_widget=LocalRunnerSettings,
                 mangohud_widget=LocalMangoHudSettings,
-                parent=parent
+                parent=parent,
             )
         else:
             super(LocalCompatSettings, self).__init__(
@@ -161,9 +162,8 @@ class LocalCompatSettings(CompatSettingsBase):
                 dxvk_config_widget=LocalDxvkConfigSettings,
                 dxvk_nvapi_drs_widget=LocalDxvkNvapiDrsSettings,
                 runner_widget=LocalRunnerSettings,
-                parent=parent
+                parent=parent,
             )
-
 
     def load_settings(self, rgame: RareGame):
         self.set_title.emit(rgame.app_title)

@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.models.signals import GlobalSignals
-from rare.models.library import LibraryFilter, LibraryOrder, LibraryView
+from rare.models.enumerations import LibraryFilter, LibraryOrder, LibraryView
 from rare.shared import RareCore
 from rare.widgets.library_layout import LibraryLayout
 from .icon_game_widget import IconGameWidget
@@ -28,8 +28,12 @@ class ViewContainer(QWidget):
 
     @staticmethod
     def __visibility(widget: ViewWidget, library_filter, search_text) -> Tuple[bool, float]:
+        name_search = True
+        tag_search = False
         if search_text.startswith("::"):
             search_text = search_text.removeprefix("::")
+            tag_search = True
+            name_search = False
             visible = True
         elif library_filter == LibraryFilter.HIDDEN:
             visible = "hidden" in widget.rgame.metadata.tags
@@ -54,18 +58,25 @@ class ViewContainer(QWidget):
         else:
             visible = True
 
-        if (
-            search_text not in widget.rgame.app_name.lower()
-            and search_text not in widget.rgame.app_title.lower()
-            and search_text not in widget.rgame.metadata.tags
+        opacity = 1.0
+        if search_text and (
+            (
+                name_search
+                and search_text not in widget.rgame.app_name.lower()
+                and search_text not in widget.rgame.app_title.lower()
+            )
+            or (tag_search and search_text not in widget.rgame.metadata.tags)
         ):
             opacity = 0.25
-        else:
-            opacity = 1.0
 
         return visible, opacity
 
-    def _filter_view(self, widget_type: Type[ViewWidget], filter_by: LibraryFilter = LibraryFilter.ALL, search_text: str = ""):
+    def _filter_view(
+        self,
+        widget_type: Type[ViewWidget],
+        filter_by: LibraryFilter = LibraryFilter.ALL,
+        search_text: str = "",
+    ):
         widgets = self.findChildren(widget_type)
         for iw in widgets:
             visibility, opacity = self.__visibility(iw, filter_by, search_text)
@@ -120,30 +131,41 @@ class IconViewContainer(ViewContainer):
     def order_view(self, order_by: LibraryOrder, search_text: str = ""):
         if search_text:
             if search_text.startswith("::"):
-                self.layout().sort(
-                    lambda x: search_text.removeprefix("::") not in x.widget().rgame.metadata.tags
-                )
+                self.layout().sort(lambda x: search_text.removeprefix("::") not in x.widget().rgame.metadata.tags)
             else:
                 self.layout().sort(
                     lambda x: search_text not in x.widget().rgame.app_title.lower()
+                    and search_text not in x.widget().rgame.app_name.lower()
                 )
         else:
             if (newest := order_by == LibraryOrder.NEWEST) or order_by == LibraryOrder.OLDEST:
                 # Sort by grant date
                 self.layout().sort(
-                    key=lambda x: (x.widget().rgame.is_installed, not x.widget().rgame.is_non_asset, x.widget().rgame.grant_date()),
+                    key=lambda x: (
+                        x.widget().rgame.is_installed,
+                        not x.widget().rgame.is_non_asset,
+                        x.widget().rgame.grant_date(),
+                    ),
                     reverse=newest,
                 )
             elif order_by == LibraryOrder.RECENT:
                 # Sort by recently played
                 self.layout().sort(
-                    key=lambda x: (x.widget().rgame.is_installed, not x.widget().rgame.is_non_asset, x.widget().rgame.metadata.last_played),
+                    key=lambda x: (
+                        x.widget().rgame.is_installed,
+                        not x.widget().rgame.is_non_asset,
+                        x.widget().rgame.metadata.last_played,
+                    ),
                     reverse=True,
                 )
             else:
                 # Sort by title
                 self.layout().sort(
-                    key=lambda x: (not x.widget().rgame.is_installed, x.widget().rgame.is_non_asset, x.widget().rgame.app_title)
+                    key=lambda x: (
+                        not x.widget().rgame.is_installed,
+                        x.widget().rgame.is_non_asset,
+                        x.widget().rgame.app_title,
+                    )
                 )
 
 
@@ -173,21 +195,35 @@ class ListViewContainer(ViewContainer):
             if search_text.startswith("::"):
                 list_widgets.sort(key=lambda x: search_text.removeprefix("::") not in x.rgame.metadata.tags)
             else:
-                list_widgets.sort(key=lambda x: search_text not in x.rgame.app_title.lower())
+                list_widgets.sort(
+                    key=lambda x: search_text not in x.rgame.app_title.lower() and search_text not in x.rgame.app_name.lower()
+                )
         else:
             if (newest := order_by == LibraryOrder.NEWEST) or order_by == LibraryOrder.OLDEST:
                 list_widgets.sort(
-                    key=lambda x: (x.rgame.is_installed, not x.rgame.is_non_asset, x.rgame.grant_date()),
+                    key=lambda x: (
+                        x.rgame.is_installed,
+                        not x.rgame.is_non_asset,
+                        x.rgame.grant_date(),
+                    ),
                     reverse=newest,
                 )
             elif order_by == LibraryOrder.RECENT:
                 list_widgets.sort(
-                    key=lambda x: (x.rgame.is_installed, not x.rgame.is_non_asset, x.rgame.metadata.last_played),
+                    key=lambda x: (
+                        x.rgame.is_installed,
+                        not x.rgame.is_non_asset,
+                        x.rgame.metadata.last_played,
+                    ),
                     reverse=True,
                 )
             else:
                 list_widgets.sort(
-                    key=lambda x: (not x.rgame.is_installed, x.rgame.is_non_asset, x.rgame.app_title)
+                    key=lambda x: (
+                        not x.rgame.is_installed,
+                        x.rgame.is_non_asset,
+                        x.rgame.app_title,
+                    )
                 )
         for idx, wl in enumerate(list_widgets):
             self.layout().insertWidget(idx, wl)

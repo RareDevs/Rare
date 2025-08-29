@@ -259,9 +259,7 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
         os.path.expanduser("~/.steam/compatibilitytools.d"),
         os.path.expanduser("~/.steam/root/compatibilitytools.d"),
     }
-    compatibilitytools_paths = {
-        os.path.realpath(path) for path in compatibilitytools_paths if os.path.isdir(path)
-    }
+    compatibilitytools_paths = {os.path.realpath(path) for path in compatibilitytools_paths if os.path.isdir(path)}
     tools = []
     for path in compatibilitytools_paths:
         for entry in os.scandir(path):
@@ -305,18 +303,14 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
     return tools
 
 
-def get_runtime(
-    tool: Union[ProtonTool, CompatibilityTool], runtimes: Dict[str, SteamRuntime]
-) -> Optional[SteamRuntime]:
+def get_runtime(tool: Union[ProtonTool, CompatibilityTool], runtimes: Dict[str, SteamRuntime]) -> Optional[SteamRuntime]:
     required_tool = tool.required_tool
     if required_tool is None:
         return None
     return runtimes.get(required_tool, None)
 
 
-def get_umu_environment(
-    tool: Optional[ProtonTool] = None, compat_path: Optional[str] = None
-) -> Dict:
+def get_umu_environment(tool: Optional[ProtonTool] = None, compat_path: Optional[str] = None) -> Dict:
     # If the tool is unset, return all affected env variable names
     # IMPORTANT: keep this in sync with the code below
     environ = {"WINEPREFIX": compat_path if compat_path else ""}
@@ -333,7 +327,8 @@ def get_umu_environment(
 
 
 def get_steam_environment(
-    tool: Optional[Union[ProtonTool, CompatibilityTool]] = None, compat_path: Optional[str] = None
+    tool: Optional[Union[ProtonTool, CompatibilityTool]] = None,
+    compat_path: Optional[str] = None,
 ) -> Dict:
     # If the tool is unset, return all affected env variable names
     # IMPORTANT: keep this in sync with the code below
@@ -419,7 +414,7 @@ def find_umu_launcher() -> Optional[CompatibilityTool]:
     global _tools
     if _tools is None:
         _tools = _find_tools()
-    _umu = list(filter(lambda t: t.layer == "umu-launcher",  _tools))
+    _umu = list(filter(lambda t: t.layer == "umu-launcher", _tools))
     return _umu[0] if _umu else None
 
 
@@ -431,7 +426,6 @@ if __name__ == "__main__":
         pprint(tool)
     umu = find_umu_launcher()
     pprint(umu)
-
 
     for tool in tools:
         print(get_steam_environment(tool))

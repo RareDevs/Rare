@@ -184,11 +184,11 @@ class PromotionsModel:
     def from_dict(cls: Type["PromotionsModel"], src: Dict[str, Any]) -> "PromotionsModel":
         d = src.copy()
         promotional_offers = tuple(map(PromotionalOffersModel.from_list, d.pop("promotionalOffers", [])))
-        upcoming_promotional_offers = tuple(
-            map(PromotionalOffersModel.from_list, d.pop("upcomingPromotionalOffers", []))
-        )
+        upcoming_promotional_offers = tuple(map(PromotionalOffersModel.from_list, d.pop("upcomingPromotionalOffers", [])))
         return cls(
-            promotionalOffers=promotional_offers, upcomingPromotionalOffers=upcoming_promotional_offers, unmapped=d
+            promotionalOffers=promotional_offers,
+            upcomingPromotionalOffers=upcoming_promotional_offers,
+            unmapped=d,
         )
 
 
@@ -421,9 +421,9 @@ class ErrorModel:
         d = src.copy()
         return cls(
             message=d.pop("message", ""),
-            correlationId= d.pop("correlationId", ""),
+            correlationId=d.pop("correlationId", ""),
             serviceResponse=d.pop("serviceResponse", ""),
-            unmapped=d
+            unmapped=d,
         )
 
 

@@ -16,7 +16,9 @@ from PySide6.QtWidgets import (
     QTabBar,
     QTabWidget,
     QVBoxLayout,
-    QScrollArea, QLayout, QSizePolicy,
+    QScrollArea,
+    QLayout,
+    QSizePolicy,
 )
 
 from rare.utils.misc import qta_icon
@@ -74,7 +76,12 @@ class SideTabContentsProtocol(Protocol):
 
 
 class SideTabContainer(QWidget):
-    def __init__(self, widget: Union[QWidget, SideTabContentsProtocol], title: str = "", parent: QWidget = None):
+    def __init__(
+        self,
+        widget: Union[QWidget, SideTabContentsProtocol],
+        title: str = "",
+        parent: QWidget = None,
+    ):
         super(SideTabContainer, self).__init__(parent=parent)
         self.title = QLabel(self)
         self.setTitle(title)
@@ -93,9 +100,7 @@ class SideTabContainer(QWidget):
             scrollarea.setSizeAdjustPolicy(QScrollArea.SizeAdjustPolicy.AdjustToContents)
             scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
             scrollarea.setFrameStyle(QScrollArea.Shape.NoFrame)
-            scrollarea.setMinimumWidth(
-                widget.sizeHint().width() + scrollarea.verticalScrollBar().sizeHint().width()
-            )
+            scrollarea.setMinimumWidth(widget.sizeHint().width() + scrollarea.verticalScrollBar().sizeHint().width())
             scrollarea.setWidgetResizable(True)
             widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
             scrollarea.setWidget(widget)
@@ -122,7 +127,9 @@ class SideTabWidget(QTabWidget):
         self.setTabPosition(QTabWidget.TabPosition.West)
         if show_back:
             super(SideTabWidget, self).addTab(
-                QWidget(self), qta_icon("mdi.keyboard-backspace", "ei.backward"), self.tr("Back")
+                QWidget(self),
+                qta_icon("mdi.keyboard-backspace", "ei.backward"),
+                self.tr("Back"),
             )
             self.tabBarClicked.connect(self.back_func)
 

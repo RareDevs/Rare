@@ -42,7 +42,7 @@ class IconGameWidget(GameWidget):
     def start_progress(self):
         self.showProgress(
             self.rgame.get_pixmap(ImageSize.LibraryTall, True),
-            self.rgame.get_pixmap(ImageSize.LibraryTall, False)
+            self.rgame.get_pixmap(ImageSize.LibraryTall, False),
         )
 
     def enterEvent(self, a0: Optional[QEvent] = None) -> None:

@@ -54,7 +54,7 @@ class InstallDownloadModel:
 
 
 class InstallQueueItemModel:
-    def __init__(self, options: InstallOptionsModel,  download: InstallDownloadModel = None):
+    def __init__(self, options: InstallOptionsModel, download: InstallDownloadModel = None):
         self.options: Optional[InstallOptionsModel] = options
         # lk: internal attribute holders
         self.__download: Optional[InstallDownloadModel] = None
@@ -91,11 +91,23 @@ class UninstallOptionsModel:
 
     @property
     def __values(self) -> Tuple[bool, bool, bool, bool, bool]:
-        return self.accepted, self.keep_files, self.keep_folder, self.keep_config, self.keep_overlay_keys
+        return (
+            self.accepted,
+            self.keep_files,
+            self.keep_folder,
+            self.keep_config,
+            self.keep_overlay_keys,
+        )
 
     @__values.setter
     def __values(self, values: Tuple[bool, bool, bool, bool, bool]):
-        self.accepted, self.keep_files, self.keep_folder, self.keep_config, self.keep_overlay_keys = values
+        (
+            self.accepted,
+            self.keep_files,
+            self.keep_folder,
+            self.keep_config,
+            self.keep_overlay_keys,
+        ) = values
 
     def __bool__(self):
         return bool(self.app_name) and all(map(lambda x: x is not None, self.__values))
@@ -117,11 +129,7 @@ class SelectiveDownloadsModel:
     install_tag: Optional[List[str]] = None
 
     def __bool__(self):
-        return (
-            bool(self.app_name)
-            and (self.accepted is not None)
-            and (self.install_tag is not None)
-        )
+        return bool(self.app_name) and (self.accepted is not None) and (self.install_tag is not None)
 
 
 @dataclass
@@ -131,8 +139,4 @@ class MoveGameModel:
     target_path: Optional[str] = None
 
     def __bool__(self):
-        return (
-            bool(self.app_name)
-            and (self.accepted is not None)
-            and (self.target_path is not None)
-        )
+        return bool(self.app_name) and (self.accepted is not None) and (self.target_path is not None)

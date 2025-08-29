@@ -32,7 +32,10 @@ class MoveWorker(QueueWorker):
 
     def worker_info(self) -> QueueWorkerInfo:
         return QueueWorkerInfo(
-            app_name=self.rgame.app_name, app_title=self.rgame.app_title, worker_type="Move", state=self.state
+            app_name=self.rgame.app_name,
+            app_title=self.rgame.app_title,
+            worker_type="Move",
+            state=self.state,
         )
 
     def progress(self, src_size, dst_size):
@@ -48,9 +51,7 @@ class MoveWorker(QueueWorker):
 
         elif not self.dst_exists:
             src_size = sum(
-                os.stat(os.path.join(dp, f)).st_size
-                for dp, dn, filenames in os.walk(self.rgame.install_path)
-                for f in filenames
+                os.stat(os.path.join(dp, f)).st_size for dp, dn, filenames in os.walk(self.rgame.install_path) for f in filenames
             )
             dst_size = 0
 
@@ -75,8 +76,8 @@ class MoveWorker(QueueWorker):
                 manifest.file_manifest_list.elements,
                 key=lambda a: a.filename.lower(),
             )
-            if config_tags := self.core.lgd.config.get(self.rgame.app_name, 'install_tags', fallback=None):
-                install_tags = set(i.strip() for i in config_tags.split(','))
+            if config_tags := self.core.lgd.config.get(self.rgame.app_name, "install_tags", fallback=None):
+                install_tags = set(i.strip() for i in config_tags.split(","))
                 file_list = [
                     (f.filename, f.sha_hash.hex())
                     for f in files
@@ -85,8 +86,7 @@ class MoveWorker(QueueWorker):
             else:
                 file_list = [(f.filename, f.sha_hash.hex()) for f in files]
 
-            total_size = sum(manifest.file_manifest_list.get_file_by_path(fm[0]).file_size
-                             for fm in file_list)
+            total_size = sum(manifest.file_manifest_list.get_file_by_path(fm[0]).file_size for fm in file_list)
             dst_size = 0
 
             # This method is a copy_func, and only copies the src if it's a dir.
@@ -125,9 +125,7 @@ class MoveWorker(QueueWorker):
                         logger.warning(f"Copying file {src_path} to {dst_path} failed")
                     self.progress(total_size, dst_size)
                 else:
-                    logger.warning(
-                        f"Source dir does not have file {src_path}. File will be missing in the destination dir."
-                    )
+                    logger.warning(f"Source dir does not have file {src_path}. File will be missing in the destination dir.")
                     self.rgame.needs_verification = True
             shutil.rmtree(self.rgame.install_path)
 

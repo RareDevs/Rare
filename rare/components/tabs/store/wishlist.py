@@ -93,9 +93,7 @@ class WishlistWidget(QWidget, SideTabContents):
         self.ui.reload_button.setIcon(qta_icon("fa.refresh", "fa5s.sync", color="white"))
         self.ui.reload_button.clicked.connect(self.__update_widget)
 
-        self.ui.reverse_check.stateChanged.connect(
-            lambda: self.order_wishlist(self.ui.order_combo.currentIndex())
-        )
+        self.ui.reverse_check.stateChanged.connect(lambda: self.order_wishlist(self.ui.order_combo.currentIndex()))
 
         self.setEnabled(False)
 
@@ -113,9 +111,7 @@ class WishlistWidget(QWidget, SideTabContents):
             game.id,
             lambda success: self.__update_widget()
             if success
-            else QMessageBox.warning(
-                self, "Error", self.tr("Could not remove game from wishlist")
-            ),
+            else QMessageBox.warning(self, "Error", self.tr("Could not remove game from wishlist")),
         )
         self.update_wishlist.emit()
 
@@ -141,20 +137,25 @@ class WishlistWidget(QWidget, SideTabContents):
             self.wishlist_layout.removeWidget(w)
 
         if list_order == WishlistOrder.NAME:
+
             def func(x: WishlistItemWidget):
                 return x.catalog_game.title
         elif list_order == WishlistOrder.PRICE:
+
             def func(x: WishlistItemWidget):
                 return x.catalog_game.price.totalPrice.discountPrice
         elif list_order == WishlistOrder.DEVELOPER:
+
             def func(x: WishlistItemWidget):
                 return x.catalog_game.seller["name"]
         elif list_order == WishlistOrder.DISCOUNT:
+
             def func(x: WishlistItemWidget):
                 discount = x.catalog_game.price.totalPrice.discountPrice
                 original = x.catalog_game.price.totalPrice.originalPrice
                 return 1 - (discount / original)
         else:
+
             def func(x: WishlistItemWidget):
                 return x.catalog_game.title
 
