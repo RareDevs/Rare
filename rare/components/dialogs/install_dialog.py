@@ -262,7 +262,6 @@ class InstallDialog(ActionDialog):
         self.set_size_labels(message, message)
         self.setActive(True)
         self.options_changed = False
-        self.centralWidget().setDisabled(True)
         self.get_options()
         self.get_download_info()
 
@@ -324,7 +323,6 @@ class InstallDialog(ActionDialog):
     @Slot(InstallDownloadModel)
     def on_worker_result(self, download: InstallDownloadModel):
         self.setActive(False)
-        self.centralWidget().setDisabled(False)
         self.__download = download
         download_size = download.analysis.dl_size
         install_size = download.analysis.install_size

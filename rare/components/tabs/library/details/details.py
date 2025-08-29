@@ -31,7 +31,7 @@ from rare.ui.components.tabs.library.details.details import Ui_GameDetails
 from rare.utils.misc import format_size, qta_icon, style_hyperlink
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
-from rare.components.dialogs.move_dialog import MoveDialog, is_game_dir
+from rare.components.dialogs.move_dialog import MoveDialog
 from rare.widgets.dialogs import ButtonDialog, game_title
 
 logger = getLogger("GameInfo")
@@ -226,7 +226,7 @@ class GameDetails(QWidget, SideTabContents):
         new_install_path = os.path.join(model.target_path, os.path.basename(self.rgame.install_path))
         dir_exists = False
         if os.path.isdir(new_install_path):
-            dir_exists = is_game_dir(self.rgame.install_path, new_install_path)
+            dir_exists = MoveDialog.is_game_dir(self.rgame.install_path, new_install_path)
 
         if not dir_exists:
             for item in os.listdir(model.target_path):
