@@ -162,7 +162,7 @@ class RareCore(QObject):
                     config_file.write("[Legendary]")
                 self.__core = LegendaryCore()
 
-            self.__core.egs._store_gql_host = "store.epicgames.com"
+            self.__core.egs._store_gql_host = "launcher.store.epicgames.com"
 
             # Initialize sections if they don't exist
             for section in ["Legendary", "default", "default.env"]:
