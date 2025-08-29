@@ -41,11 +41,11 @@ class InstallDialogAdvanced(CollapsibleFrame):
         self.ui.exclude_prefix_button.setVisible(False)
 
 
-class InstallDialogSelective(CollapsibleFrame):
+class InstallDialogSelectable(CollapsibleFrame):
     stateChanged: Signal = Signal()
 
     def __init__(self, rgame: RareGame, parent=None):
-        super(InstallDialogSelective, self).__init__(parent=parent)
+        super(InstallDialogSelectable, self).__init__(parent=parent)
         title = self.tr("Optional downloads")
         self.setTitle(title)
         self.setEnabled(bool(rgame.sdl_name))
@@ -99,8 +99,8 @@ class InstallDialog(ActionDialog):
         self.advanced = InstallDialogAdvanced(parent=self)
         self.ui.advanced_layout.addWidget(self.advanced)
 
-        self.selectable = InstallDialogSelective(rgame, parent=self)
-        self.selectable.stateChanged.connect(self.__option_changed)
+        self.selectable = InstallDialogSelectable(rgame, parent=self)
+        self.selectable.stateChanged.connect(self.__on_option_changed)
         self.ui.selectable_layout.addWidget(self.selectable)
 
         self.options_changed = False
@@ -134,14 +134,14 @@ class InstallDialog(ActionDialog):
         self.ui.shortcut_label.setDisabled(rgame.is_installed)
         self.ui.shortcut_check.setDisabled(rgame.is_installed)
         self.ui.shortcut_check.setChecked(not rgame.is_installed and self.settings.get_value(app_settings.create_shortcut))
-        self.ui.shortcut_check.checkStateChanged.connect(self.__option_changed_no_reload)
+        self.ui.shortcut_check.checkStateChanged.connect(self.__on_option_changed_no_reload)
 
         self.set_error_box()
 
         self.ui.platform_combo.addItems(reversed(rgame.platforms))
         combo_text = rgame.igame.platform if rgame.is_installed else rgame.default_platform
         self.ui.platform_combo.setCurrentIndex(self.ui.platform_combo.findText(combo_text))
-        self.ui.platform_combo.currentIndexChanged.connect(self.__option_changed)
+        self.ui.platform_combo.currentIndexChanged.connect(self.__on_option_changed)
         self.ui.platform_combo.currentIndexChanged.connect(self.check_incompatible_platform)
         self.ui.platform_combo.currentIndexChanged.connect(self.reset_install_dir)
         self.ui.platform_combo.currentTextChanged.connect(self.selectable.update_list)
@@ -155,15 +155,15 @@ class InstallDialog(ActionDialog):
             self.selectable.click()
 
         self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
-        self.advanced.ui.max_workers_spin.valueChanged.connect(self.__option_changed)
+        self.advanced.ui.max_workers_spin.valueChanged.connect(self.__on_option_changed)
 
         self.advanced.ui.max_memory_spin.setValue(self.core.lgd.config.getint("Legendary", "max_memory", fallback=0))
-        self.advanced.ui.max_memory_spin.valueChanged.connect(self.__option_changed)
+        self.advanced.ui.max_memory_spin.valueChanged.connect(self.__on_option_changed)
 
-        self.advanced.ui.dl_optimizations_check.checkStateChanged.connect(self.__option_changed)
-        self.advanced.ui.force_download_check.checkStateChanged.connect(self.__option_changed)
-        self.advanced.ui.ignore_space_check.checkStateChanged.connect(self.__option_changed)
-        self.advanced.ui.download_only_check.checkStateChanged.connect(self.__option_changed_no_reload)
+        self.advanced.ui.dl_optimizations_check.checkStateChanged.connect(self.__on_option_changed)
+        self.advanced.ui.force_download_check.checkStateChanged.connect(self.__on_option_changed)
+        self.advanced.ui.ignore_space_check.checkStateChanged.connect(self.__on_option_changed)
+        self.advanced.ui.download_only_check.checkStateChanged.connect(self.__on_option_changed_no_reload)
 
         self.reset_install_dir(self.ui.platform_combo.currentIndex())
         self.selectable.update_list(self.ui.platform_combo.currentText())
@@ -190,7 +190,7 @@ class InstallDialog(ActionDialog):
 
         self.advanced.ui.install_prereqs_label.setEnabled(False)
         self.advanced.ui.install_prereqs_check.setEnabled(False)
-        self.advanced.ui.install_prereqs_check.checkStateChanged.connect(self.__option_changed_no_reload)
+        self.advanced.ui.install_prereqs_check.checkStateChanged.connect(self.__on_option_changed_no_reload)
         self.advanced.ui.install_prereqs_check.setChecked(self.__options.install_prereqs)
 
         # lk: set object names for CSS properties
@@ -207,7 +207,7 @@ class InstallDialog(ActionDialog):
         if a0.spontaneous():
             return super().showEvent(a0)
         self.install_dir_edit.refresh()
-        super().showEvent(a0)
+        return super().showEvent(a0)
 
     def execute(self):
         if self.__options.silent:
@@ -262,17 +262,18 @@ class InstallDialog(ActionDialog):
         self.set_size_labels(message, message)
         self.setActive(True)
         self.options_changed = False
+        self.centralWidget().setDisabled(True)
         self.get_options()
         self.get_download_info()
 
     @Slot()
-    def __option_changed(self):
+    def __on_option_changed(self):
         self.options_changed = True
         self.accept_button.setEnabled(False)
         self.action_button.setEnabled(not self.active())
 
     @Slot(Qt.CheckState)
-    def __option_changed_no_reload(self, state: Qt.CheckState):
+    def __on_option_changed_no_reload(self, state: Qt.CheckState):
         if self.sender() is self.advanced.ui.download_only_check:
             self.__options.no_install = state != Qt.CheckState.Unchecked
         elif self.sender() is self.ui.shortcut_check:
@@ -303,7 +304,7 @@ class InstallDialog(ActionDialog):
 
     @Slot(bool, str)
     def __on_path_validation(self, is_valid:bool, reason: str):
-        self.__option_changed()
+        self.accept_button.setEnabled(False)
         self.action_button.setEnabled(is_valid and not self.active())
         if not is_valid:
             self.set_error_box(self.tr("Error"), reason)
@@ -323,6 +324,7 @@ class InstallDialog(ActionDialog):
     @Slot(InstallDownloadModel)
     def on_worker_result(self, download: InstallDownloadModel):
         self.setActive(False)
+        self.centralWidget().setDisabled(False)
         self.__download = download
         download_size = download.analysis.dl_size
         install_size = download.analysis.install_size

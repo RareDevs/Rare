@@ -223,6 +223,7 @@ class IndicatorLineEdit(QWidget):
 
     def refresh(self):
         self.__edit(self.line_edit.text())
+        self.__threadpool.waitForDone()
 
     def __indicator(self, valid, reason: int = 0):
         color = "gray" if reason == IndicatorReasonsCommon.UNDEFINED else "green" if valid else "red"
