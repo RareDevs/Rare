@@ -179,7 +179,9 @@ class LegendarySettings(QWidget):
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:
-            open(os.path.join(path, ".rare_perms"), "w")
+            perms_path = os.path.join(path, ".rare_perms")
+            open(perms_path, "w").close()
+            os.unlink(perms_path)
         except PermissionError as e:
             return False, path, IndicatorReasonsCommon.PERM_NO_WRITE
         except FileNotFoundError as e:

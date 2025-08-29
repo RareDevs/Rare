@@ -118,11 +118,11 @@ class InstallDialog(ActionDialog):
         self.install_dir_edit = PathEdit(
             path=base_path,
             file_mode=QFileDialog.FileMode.Directory,
-            edit_func=self.install_dir_edit_callback,
-            save_func=self.install_dir_save_callback,
+            edit_func=self.__path_edit_callback,
+            save_func=self.__path_save_callback,
             parent=self,
         )
-        self.install_dir_edit.validationFinished.connect(self.__on_install_dir_validation)
+        self.install_dir_edit.validationFinished.connect(self.__on_path_validation)
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)[0],
             QFormLayout.ItemRole.FieldRole,
@@ -282,25 +282,27 @@ class InstallDialog(ActionDialog):
             self.__options.install_prereqs = state != Qt.CheckState.Unchecked
 
     @staticmethod
-    def install_dir_edit_callback(path: str) -> Tuple[bool, str, int]:
+    def __path_edit_callback(path: str) -> Tuple[bool, str, int]:
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:
-            open(os.path.join(path, ".rare_perms"), "w")
+            perms_path = os.path.join(path, ".rare_perms")
+            open(perms_path, "w").close()
+            os.unlink(perms_path)
         except PermissionError as e:
             return False, path, IndicatorReasonsCommon.PERM_NO_WRITE
         except FileNotFoundError as e:
             return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
         return True, path, IndicatorReasonsCommon.VALID
 
-    def install_dir_save_callback(self, path: str):
+    def __path_save_callback(self, path: str):
         if not os.path.exists(path):
             return
         _, _, free_space = shutil.disk_usage(path)
         self.ui.avail_space.setText(format_size(free_space))
 
     @Slot(bool, str)
-    def __on_install_dir_validation(self, is_valid:bool, reason: str):
+    def __on_path_validation(self, is_valid:bool, reason: str):
         self.__option_changed()
         self.action_button.setEnabled(is_valid and not self.active())
         if not is_valid:
