@@ -96,12 +96,20 @@ class InstallDialog(ActionDialog):
         self.__download: Optional[InstallDownloadModel] = None
         self.__queue_item: Optional[InstallQueueItemModel] = None
 
-        self.advanced = InstallDialogAdvanced(parent=self)
-        self.ui.advanced_layout.addWidget(self.advanced)
-
         self.selectable = InstallDialogSelectable(rgame, parent=self)
         self.selectable.stateChanged.connect(self.__on_option_changed)
-        self.ui.selectable_layout.addWidget(self.selectable)
+        self.ui.main_layout.insertRow(
+            self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 1,
+            # self.tr("Optional"),
+            self.selectable
+        )
+
+        self.advanced = InstallDialogAdvanced(parent=self)
+        self.ui.main_layout.insertRow(
+            self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 2,
+            # self.tr("Advanced"),
+            self.advanced
+        )
 
         self.options_changed = False
 
@@ -118,11 +126,11 @@ class InstallDialog(ActionDialog):
         self.install_dir_edit = PathEdit(
             path=base_path,
             file_mode=QFileDialog.FileMode.Directory,
-            edit_func=self.__path_edit_callback,
-            save_func=self.__path_save_callback,
+            edit_func=self.__install_dir_edit_callback,
+            save_func=self.__install_dir_save_callback,
             parent=self,
         )
-        self.install_dir_edit.validationFinished.connect(self.__on_path_validation)
+        self.install_dir_edit.validationFinished.connect(self.__on_install_dir_validation)
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)[0],
             QFormLayout.ItemRole.FieldRole,
@@ -252,8 +260,8 @@ class InstallDialog(ActionDialog):
     def get_download_info(self):
         self.__download = None
         info_worker = InstallInfoWorker(self.core, self.__options)
-        info_worker.signals.result.connect(self.on_worker_result)
-        info_worker.signals.failed.connect(self.on_worker_failed)
+        info_worker.signals.result.connect(self.__on_worker_result)
+        info_worker.signals.failed.connect(self.__on_worker_failed)
         self.threadpool.start(info_worker)
 
     def action_handler(self):
@@ -282,7 +290,7 @@ class InstallDialog(ActionDialog):
             self.__options.install_prereqs = state != Qt.CheckState.Unchecked
 
     @staticmethod
-    def __path_edit_callback(path: str) -> Tuple[bool, str, int]:
+    def __install_dir_edit_callback(path: str) -> Tuple[bool, str, int]:
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:
@@ -295,14 +303,14 @@ class InstallDialog(ActionDialog):
             return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
         return True, path, IndicatorReasonsCommon.VALID
 
-    def __path_save_callback(self, path: str):
+    def __install_dir_save_callback(self, path: str):
         if not os.path.exists(path):
             return
         _, _, free_space = shutil.disk_usage(path)
-        self.ui.avail_space.setText(format_size(free_space))
+        self.ui.available_space_text.setText(format_size(free_space))
 
     @Slot(bool, str)
-    def __on_path_validation(self, is_valid:bool, reason: str):
+    def __on_install_dir_validation(self, is_valid: bool, reason: str):
         self.accept_button.setEnabled(False)
         self.action_button.setEnabled(is_valid and not self.active())
         if not is_valid:
@@ -321,7 +329,7 @@ class InstallDialog(ActionDialog):
             return False
 
     @Slot(InstallDownloadModel)
-    def on_worker_result(self, download: InstallDownloadModel):
+    def __on_worker_result(self, download: InstallDownloadModel):
         self.setActive(False)
         self.__download = download
         download_size = download.analysis.dl_size
@@ -346,7 +354,8 @@ class InstallDialog(ActionDialog):
         if self.__options.silent:
             self.accept()
 
-    def on_worker_failed(self, message: str):
+    @Slot(str)
+    def __on_worker_failed(self, message: str):
         self.setActive(False)
         error_text = self.tr("Error")
         self.set_size_labels(error_text, error_text)

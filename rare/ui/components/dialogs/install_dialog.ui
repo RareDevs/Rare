@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>197</width>
-    <height>195</height>
+    <width>182</width>
+    <height>153</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QFormLayout" name="main_layout">
    <property name="labelAlignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
    </property>
    <item row="0" column="0">
     <widget class="QLabel" name="install_dir_label">
@@ -47,7 +47,7 @@
       <string>Create shortcut</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -58,20 +58,14 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
-    <layout class="QVBoxLayout" name="selectable_layout"/>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <layout class="QVBoxLayout" name="advanced_layout"/>
-   </item>
-   <item row="5" column="0">
+   <item row="3" column="0">
     <widget class="QLabel" name="download_size_label">
      <property name="text">
       <string>Download size</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="3" column="1">
     <widget class="QLabel" name="download_size_text">
      <property name="font">
       <font>
@@ -83,14 +77,14 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="install_size_label">
      <property name="text">
       <string>Total install size</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
+   <item row="4" column="1">
     <widget class="QLabel" name="install_size_text">
      <property name="font">
       <font>
@@ -105,34 +99,33 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="avail_space_label">
+   <item row="5" column="0">
+    <widget class="QLabel" name="available_space_label">
      <property name="text">
       <string>Available space</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
-    <widget class="QLabel" name="avail_space">
+   <item row="5" column="1">
+    <widget class="QLabel" name="available_space_text">
      <property name="font">
       <font>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
      <property name="text">
-      <string/>
+      <string notr="true"/>
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="warning_label">
      <property name="text">
       <string>Warning</string>
      </property>
     </widget>
    </item>
-   <item row="8" column="1">
+   <item row="6" column="1">
     <widget class="QLabel" name="warning_text">
      <property name="font">
       <font>
@@ -140,19 +133,19 @@
       </font>
      </property>
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::Shape::StyledPanel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
+      <enum>QFrame::Shadow::Sunken</enum>
      </property>
      <property name="text">
-      <string>None</string>
+      <string notr="true">None</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>
      <property name="textInteractionFlags">
-      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+      <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
      </property>
     </widget>
    </item>
