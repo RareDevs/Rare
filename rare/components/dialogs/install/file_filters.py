@@ -10,7 +10,7 @@ class InstallDialogFileFilters(CollapsibleFrame):
     def __init__(self, parent=None):
         super(InstallDialogFileFilters, self).__init__(parent=parent)
 
-        title = self.tr("Advanced options")
+        title = self.tr("File filters")
         self.setTitle(title)
 
         self.widget = QWidget(parent=self)

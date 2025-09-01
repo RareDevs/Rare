@@ -8,46 +8,16 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (
-    QCoreApplication,
-    QDate,
-    QDateTime,
-    QLocale,
-    QMetaObject,
-    QObject,
-    QPoint,
-    QRect,
-    QSize,
-    Qt,
-    QTime,
-    QUrl,
-)
-from PySide6.QtGui import (
-    QBrush,
-    QColor,
-    QConicalGradient,
-    QCursor,
-    QFont,
-    QFontDatabase,
-    QGradient,
-    QIcon,
-    QImage,
-    QKeySequence,
-    QLinearGradient,
-    QPainter,
-    QPalette,
-    QPixmap,
-    QRadialGradient,
-    QTransform,
-)
-from PySide6.QtWidgets import QApplication, QCheckBox, QFormLayout, QHBoxLayout, QLabel, QSizePolicy, QSpinBox, QWidget
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QCheckBox, QFormLayout, QHBoxLayout, QLabel, QSizePolicy, QSpinBox
 
 
 class Ui_InstallDialogAdvanced(object):
     def setupUi(self, InstallDialogAdvanced):
         if not InstallDialogAdvanced.objectName():
             InstallDialogAdvanced.setObjectName(u"InstallDialogAdvanced")
-        InstallDialogAdvanced.resize(421, 199)
+        InstallDialogAdvanced.resize(409, 228)
         InstallDialogAdvanced.setWindowTitle(u"InstallDialogAdvanced")
         self.main_layout = QFormLayout(InstallDialogAdvanced)
         self.main_layout.setObjectName(u"main_layout")
@@ -117,7 +87,6 @@ class Ui_InstallDialogAdvanced(object):
         self.install_prereqs_check = QCheckBox(InstallDialogAdvanced)
         self.install_prereqs_check.setObjectName(u"install_prereqs_check")
         self.install_prereqs_check.setFont(font)
-        self.install_prereqs_check.setText(u"")
         self.install_prereqs_check.setChecked(False)
 
         self.main_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.install_prereqs_check)
@@ -125,47 +94,69 @@ class Ui_InstallDialogAdvanced(object):
         self.dl_optimizations_label = QLabel(InstallDialogAdvanced)
         self.dl_optimizations_label.setObjectName(u"dl_optimizations_label")
 
-        self.main_layout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.dl_optimizations_label)
+        self.main_layout.setWidget(5, QFormLayout.ItemRole.LabelRole, self.dl_optimizations_label)
 
         self.dl_optimizations_check = QCheckBox(InstallDialogAdvanced)
         self.dl_optimizations_check.setObjectName(u"dl_optimizations_check")
-        self.dl_optimizations_check.setText(u"")
+        self.dl_optimizations_check.setFont(font)
         self.dl_optimizations_check.setChecked(False)
 
-        self.main_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.dl_optimizations_check)
+        self.main_layout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.dl_optimizations_check)
 
         self.force_download_label = QLabel(InstallDialogAdvanced)
         self.force_download_label.setObjectName(u"force_download_label")
 
-        self.main_layout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.force_download_label)
+        self.main_layout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.force_download_label)
 
         self.force_download_check = QCheckBox(InstallDialogAdvanced)
         self.force_download_check.setObjectName(u"force_download_check")
-        self.force_download_check.setText(u"")
+        self.force_download_check.setFont(font)
 
-        self.main_layout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.force_download_check)
+        self.main_layout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.force_download_check)
 
         self.ignore_space_label = QLabel(InstallDialogAdvanced)
         self.ignore_space_label.setObjectName(u"ignore_space_label")
 
-        self.main_layout.setWidget(5, QFormLayout.ItemRole.LabelRole, self.ignore_space_label)
+        self.main_layout.setWidget(7, QFormLayout.ItemRole.LabelRole, self.ignore_space_label)
 
         self.ignore_space_check = QCheckBox(InstallDialogAdvanced)
         self.ignore_space_check.setObjectName(u"ignore_space_check")
         self.ignore_space_check.setFont(font)
 
-        self.main_layout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.ignore_space_check)
+        self.main_layout.setWidget(7, QFormLayout.ItemRole.FieldRole, self.ignore_space_check)
 
         self.download_only_label = QLabel(InstallDialogAdvanced)
         self.download_only_label.setObjectName(u"download_only_label")
 
-        self.main_layout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.download_only_label)
+        self.main_layout.setWidget(8, QFormLayout.ItemRole.LabelRole, self.download_only_label)
 
         self.download_only_check = QCheckBox(InstallDialogAdvanced)
         self.download_only_check.setObjectName(u"download_only_check")
         self.download_only_check.setFont(font)
 
-        self.main_layout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.download_only_check)
+        self.main_layout.setWidget(8, QFormLayout.ItemRole.FieldRole, self.download_only_check)
+
+        self.read_files_label = QLabel(InstallDialogAdvanced)
+        self.read_files_label.setObjectName(u"read_files_label")
+
+        self.main_layout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.read_files_label)
+
+        self.read_files_check = QCheckBox(InstallDialogAdvanced)
+        self.read_files_check.setObjectName(u"read_files_check")
+        self.read_files_check.setFont(font)
+
+        self.main_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.read_files_check)
+
+        self.use_signed_urls_label = QLabel(InstallDialogAdvanced)
+        self.use_signed_urls_label.setObjectName(u"use_signed_urls_label")
+
+        self.main_layout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.use_signed_urls_label)
+
+        self.use_signed_urls_check = QCheckBox(InstallDialogAdvanced)
+        self.use_signed_urls_check.setObjectName(u"use_signed_urls_check")
+        self.use_signed_urls_check.setFont(font)
+
+        self.main_layout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.use_signed_urls_check)
 
 
         self.retranslateUi(InstallDialogAdvanced)
@@ -173,17 +164,51 @@ class Ui_InstallDialogAdvanced(object):
 
     def retranslateUi(self, InstallDialogAdvanced):
         self.max_workers_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Max workers", None))
+#if QT_CONFIG(tooltip)
+        self.max_workers_spin.setToolTip(QCoreApplication.translate("InstallDialogAdvanced", u"Maximum amount of download workers, default: min(2 * CPUs, 16).", None))
+#endif // QT_CONFIG(tooltip)
         self.max_workers_info.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Less is slower. (0: Default)", None))
         self.max_memory_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Max shared memory", None))
+#if QT_CONFIG(tooltip)
+        self.max_memory_spin.setToolTip(QCoreApplication.translate("InstallDialogAdvanced", u"Maximum amount of shared memory to use (in MiB), default: 1 GiB.", None))
+#endif // QT_CONFIG(tooltip)
         self.max_memory_spin.setSuffix(QCoreApplication.translate("InstallDialogAdvanced", u"MiB", None))
         self.max_memory_info.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Less is slower (0: Default)", None))
         self.install_prereqs_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Install prerequisites", None))
+#if QT_CONFIG(tooltip)
+        self.install_prereqs_check.setToolTip("")
+#endif // QT_CONFIG(tooltip)
+        self.install_prereqs_check.setText("")
         self.dl_optimizations_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Enable reordering", None))
+#if QT_CONFIG(tooltip)
+        self.dl_optimizations_check.setToolTip(QCoreApplication.translate("InstallDialogAdvanced", u"Enable reordering optimization to reduce RAM requirements during download (may have adverse results for some titles).", None))
+#endif // QT_CONFIG(tooltip)
+        self.dl_optimizations_check.setText(QCoreApplication.translate("InstallDialogAdvanced", u"May cause issues!", None))
         self.force_download_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Force redownload", None))
+#if QT_CONFIG(tooltip)
+        self.force_download_check.setToolTip(QCoreApplication.translate("InstallDialogAdvanced", u"Download all files / ignore existing (overwrite).", None))
+#endif // QT_CONFIG(tooltip)
+        self.force_download_check.setText("")
         self.ignore_space_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Ignore free space", None))
+#if QT_CONFIG(tooltip)
+        self.ignore_space_check.setToolTip(QCoreApplication.translate("InstallDialogAdvanced", u"Do not abort if not enough free space is available.", None))
+#endif // QT_CONFIG(tooltip)
         self.ignore_space_check.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Use with caution!", None))
         self.download_only_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Download only", None))
+#if QT_CONFIG(tooltip)
+        self.download_only_check.setToolTip(QCoreApplication.translate("InstallDialogAdvanced", u"Do not install app and do not run prerequisite installers after download.", None))
+#endif // QT_CONFIG(tooltip)
         self.download_only_check.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Do not try to install.", None))
+        self.read_files_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Read from files", None))
+#if QT_CONFIG(tooltip)
+        self.read_files_check.setToolTip(QCoreApplication.translate("InstallDialogAdvanced", u"Read duplicated parts from already saved files, do not keep them in memory.", None))
+#endif // QT_CONFIG(tooltip)
+        self.read_files_check.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Increases storage I/O, reduces RAM usage.", None))
+        self.use_signed_urls_label.setText(QCoreApplication.translate("InstallDialogAdvanced", u"Use signed URLs", None))
+#if QT_CONFIG(tooltip)
+        self.use_signed_urls_check.setToolTip(QCoreApplication.translate("InstallDialogAdvanced", u"Always use signed chunk URLs, even if the Epic API indicates not to.", None))
+#endif // QT_CONFIG(tooltip)
+        self.use_signed_urls_check.setText("")
         pass
     # retranslateUi
 

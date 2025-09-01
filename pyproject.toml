@@ -24,7 +24,7 @@ dependencies = [
     "requests < 3.0",
     "PySide6-Essentials >= 6.8.1, != 6.9.2",
     "QtAwesome",
-    "legendary-gl @ https://github.com/RareDevs/legendary/archive/22d531772549793f52a0cabb1aee39e65d4a1cdf.zip",
+    "legendary-gl @ https://github.com/RareDevs/legendary/archive/4074375b789a4c2c87f72307bc9581900e34fa50.zip",
     "orjson",
     "vdf",
     "pywin32 ; platform_system == 'Windows'",
@@ -139,7 +139,7 @@ line-length = 130
 indent-width = 4
 
 [tool.ruff.lint]
-select = ["I"]
+extend-select = ["I"]
 
 [tool.ruff.format]
 quote-style = "double"

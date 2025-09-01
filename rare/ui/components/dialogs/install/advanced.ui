@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>421</width>
-    <height>199</height>
+    <width>409</width>
+    <height>228</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,6 +36,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Maximum amount of download workers, default: min(2 * CPUs, 16).</string>
        </property>
       </widget>
      </item>
@@ -72,6 +75,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Maximum amount of shared memory to use (in MiB), default: 1 GiB.</string>
        </property>
        <property name="suffix">
         <string>MiB</string>
@@ -118,80 +124,149 @@
        <italic>true</italic>
       </font>
      </property>
+     <property name="toolTip">
+      <string/>
+     </property>
      <property name="text">
-      <string notr="true"/>
+      <string/>
      </property>
      <property name="checked">
       <bool>false</bool>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="dl_optimizations_label">
      <property name="text">
       <string>Enable reordering</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="5" column="1">
     <widget class="QCheckBox" name="dl_optimizations_check">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Enable reordering optimization to reduce RAM requirements during download (may have adverse results for some titles).</string>
+     </property>
      <property name="text">
-      <string notr="true"/>
+      <string>May cause issues!</string>
      </property>
      <property name="checked">
       <bool>false</bool>
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="force_download_label">
      <property name="text">
       <string>Force redownload</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="6" column="1">
     <widget class="QCheckBox" name="force_download_check">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Download all files / ignore existing (overwrite).</string>
+     </property>
      <property name="text">
-      <string notr="true"/>
+      <string/>
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="7" column="0">
     <widget class="QLabel" name="ignore_space_label">
      <property name="text">
       <string>Ignore free space</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="7" column="1">
     <widget class="QCheckBox" name="ignore_space_check">
      <property name="font">
       <font>
        <italic>true</italic>
       </font>
      </property>
+     <property name="toolTip">
+      <string>Do not abort if not enough free space is available.</string>
+     </property>
      <property name="text">
       <string>Use with caution!</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
+   <item row="8" column="0">
     <widget class="QLabel" name="download_only_label">
      <property name="text">
       <string>Download only</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
+   <item row="8" column="1">
     <widget class="QCheckBox" name="download_only_check">
      <property name="font">
       <font>
        <italic>true</italic>
       </font>
      </property>
+     <property name="toolTip">
+      <string>Do not install app and do not run prerequisite installers after download.</string>
+     </property>
      <property name="text">
       <string>Do not try to install.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="read_files_label">
+     <property name="text">
+      <string>Read from files</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="read_files_check">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Read duplicated parts from already saved files, do not keep them in memory.</string>
+     </property>
+     <property name="text">
+      <string>Increases storage I/O, reduces RAM usage.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="use_signed_urls_label">
+     <property name="text">
+      <string>Use signed URLs</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QCheckBox" name="use_signed_urls_check">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Always use signed chunk URLs, even if the Epic API indicates not to.</string>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </item>

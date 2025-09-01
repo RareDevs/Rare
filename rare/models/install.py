@@ -18,6 +18,7 @@ class InstallOptionsModel:
     force: bool = False
     platform: str = "Windows"
     install_tag: Optional[List[str]] = None
+    read_files: bool = False
     order_opt: bool = False
     repair_mode: bool = False
     repair_and_update: bool = False
@@ -25,6 +26,7 @@ class InstallOptionsModel:
     ignore_space: bool = False
     reset_sdl: bool = False
     disable_https: bool = False
+    always_use_signed_urls: bool = False
     skip_dlcs: bool = False
     with_dlcs: bool = False
     # Rare's internal arguments
