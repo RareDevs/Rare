@@ -14,8 +14,8 @@ if pf.system() in {"Linux", "FreeBSD"}:
 class RunnerSettingsBase(QGroupBox):
     # str: option key
     environ_changed: Signal = Signal(str)
-    # bool: state
-    tool_enabled: Signal = Signal(bool)
+    # # bool: state, str: path
+    # compat_tool_enabled: Signal = Signal(bool, str)
 
     def __init__(
         self,
@@ -45,8 +45,9 @@ class RunnerSettingsBase(QGroupBox):
         if proton_widget is not None:
             self.ctool = proton_widget(self)
             self.ctool.environ_changed.connect(self.environ_changed)
-            self.ctool.tool_enabled.connect(self.wine.tool_enabled)
-            self.ctool.tool_enabled.connect(self.tool_enabled)
+            self.ctool.compat_tool_enabled.connect(self.wine.compat_tool_enabled)
+            self.ctool.compat_path_changed.connect(self.wine.compat_path_changed)
+            # self.ctool.compat_tool_enabled.connect(self.compat_tool_enabled)
 
         font = self.font()
         font.setItalic(True)

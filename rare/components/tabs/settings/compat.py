@@ -24,8 +24,8 @@ logger = getLogger("GlobalCompatSettings")
 class CompatSettingsBase(QWidget, SideTabContents):
     # str: option key
     environ_changed: Signal = Signal(str)
-    # bool: state
-    tool_enabled: Signal = Signal(bool)
+    # # bool: state, str: path
+    # compat_tool_enabled: Signal = Signal(bool, str)
 
     def __init__(
         self,
@@ -44,7 +44,7 @@ class CompatSettingsBase(QWidget, SideTabContents):
 
         self.runner = runner_widget(self)
         self.runner.environ_changed.connect(self.environ_changed)
-        self.runner.tool_enabled.connect(self.tool_enabled)
+        # self.runner.compat_tool_enabled.connect(self.compat_tool_enabled)
 
         self.dxvk_hud = dxvk_hud_widget(self)
         self.dxvk_hud.environ_changed.connect(self.environ_changed)

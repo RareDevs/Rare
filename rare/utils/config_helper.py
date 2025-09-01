@@ -111,17 +111,17 @@ def get_wine_prefix_with_global(app_name: str, fallback: Any = None) -> str:
     return _prefix
 
 
-def adjust_proton_compat_data_path(app_name: str, value: str) -> None:
+def adjust_compat_data_path(app_name: str, value: str) -> None:
     adjust_envvar(app_name, "STEAM_COMPAT_DATA_PATH", value)
 
 
-def get_proton_compat_data_path(app_name: Optional[str] = None, fallback: Any = None) -> str:
+def get_compat_data_path(app_name: Optional[str] = None, fallback: Any = None) -> str:
     _compat = get_envvar(app_name, "STEAM_COMPAT_DATA_PATH", fallback=fallback)
     # return os.path.join(_compat, "pfx") if _compat else fallback
     return _compat
 
 
-def get_proton_compat_data_path_with_global(app_name: Optional[str] = None, fallback: Any = None) -> str:
+def get_compat_data_path_with_global(app_name: Optional[str] = None, fallback: Any = None) -> str:
     _compat = get_envvar_with_global(app_name, "STEAM_COMPAT_DATA_PATH", fallback=fallback)
     # return os.path.join(_compat, "pfx") if _compat else fallback
     return _compat
