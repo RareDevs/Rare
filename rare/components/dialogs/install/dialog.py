@@ -136,6 +136,8 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.max_memory_spin.setValue(self.core.lgd.config.getint("Legendary", "max_memory", fallback=0))
         self.advanced.ui.max_memory_spin.valueChanged.connect(self.__on_option_changed)
 
+        self.advanced.ui.read_files_check.checkStateChanged.connect(self.__on_option_changed)
+        self.advanced.ui.use_signed_urls_check.checkStateChanged.connect(self.__on_option_changed)
         self.advanced.ui.dl_optimizations_check.checkStateChanged.connect(self.__on_option_changed)
         self.advanced.ui.force_download_check.checkStateChanged.connect(self.__on_option_changed)
         self.advanced.ui.ignore_space_check.checkStateChanged.connect(self.__on_option_changed)
@@ -217,6 +219,8 @@ class InstallDialog(ActionDialog):
         self.__options.create_shortcut = self.ui.shortcut_check.isChecked()
         self.__options.max_workers = self.advanced.ui.max_workers_spin.value()
         self.__options.shared_memory = self.advanced.ui.max_memory_spin.value()
+        self.__options.read_files = self.advanced.ui.read_files_check.isChecked()
+        self.__options.always_use_signed_urls = self.advanced.ui.use_signed_urls_check.isChecked()
         self.__options.order_opt = self.advanced.ui.dl_optimizations_check.isChecked()
         self.__options.force = self.advanced.ui.force_download_check.isChecked()
         self.__options.ignore_space = self.advanced.ui.ignore_space_check.isChecked()
