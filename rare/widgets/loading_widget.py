@@ -40,6 +40,8 @@ class LoadingWidget(QLabel):
         super().showEvent(a0)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
+        if not isinstance(a1, QEvent):
+            return True
         if a0 is self.parent() and a1.type() == QEvent.Type.Resize:
             self.__center_on_parent()
             return a0.event(a1)
