@@ -1,6 +1,6 @@
+import logging
 import platform
 import shutil
-from logging import getLogger
 from typing import Tuple
 
 from PySide6.QtCore import QObject, Signal
@@ -20,13 +20,12 @@ from rare.utils.paths import (
 )
 from .worker import Worker
 
-logger = getLogger("UninstallWorker")
-
 
 # TODO: You can use RareGame directly here once this is called inside RareCore and skip metadata fetch
 def uninstall_game(
     core: LegendaryCore,
     rgame: RareGame,
+    logger: logging.Logger,
     keep_files=False,
     keep_folder=True,
     keep_config=False,
@@ -108,6 +107,7 @@ class UninstallWorker(Worker):
         success, message = uninstall_game(
             self.core,
             self.rgame,
+            self.logger,
             keep_files=self.options.keep_files,
             keep_folder=self.options.keep_folder,
             keep_config=self.options.keep_config,

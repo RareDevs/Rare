@@ -1,6 +1,5 @@
 import os
 from argparse import Namespace
-from logging import getLogger
 
 from PySide6.QtCore import Signal, QObject
 
@@ -10,8 +9,6 @@ from rare.lgndr.glue.arguments import LgndrVerifyGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus, verify_stdout_factory
 from rare.models.game import RareGame
 from .worker import QueueWorker, QueueWorkerInfo
-
-logger = getLogger("VerifyWorker")
 
 
 class VerifyWorker(QueueWorker):
