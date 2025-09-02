@@ -2,7 +2,6 @@ import os
 import platform
 import time
 from configparser import ConfigParser
-from logging import getLogger
 from typing import Union, Iterable, List, Tuple, Dict
 
 from PySide6.QtCore import Signal, QObject
@@ -21,8 +20,6 @@ if platform.system() == "Windows":
     from legendary.lfs import windows_helpers
 else:
     from rare.utils.compat import utils as compat_utils, steam
-
-logger = getLogger("WineResolver")
 
 
 class WinePathResolver(Worker):
@@ -76,19 +73,18 @@ class WinePathResolver(Worker):
 
         return cmd, env
 
-    @staticmethod
-    def _resolve_unix_path(cmd, env, path: str) -> str:
-        logger.info("Resolving path '%s'", path)
+    def _resolve_unix_path(self, cmd, env, path: str) -> str:
+        self.logger.info("Resolving path '%s'", path)
         wine_path = compat_utils.resolve_path(cmd, env, path)
-        logger.info("Resolved Wine path '%s'", wine_path)
+        self.logger.info("Resolved Wine path '%s'", wine_path)
         unix_path = compat_utils.convert_to_unix_path(cmd, env, wine_path)
-        logger.info("Resolved Unix path '%s'", unix_path)
+        self.logger.info("Resolved Unix path '%s'", unix_path)
         return unix_path
 
     def run_real(self):
         command, environ = self._configure_process(self.core, self.app_name)
         if not (command and environ):
-            logger.error("Cannot setup %s, missing infomation", {type(self).__name__})
+            self.logger.error("Cannot setup %s, missing infomation", {type(self).__name__})
             self.signals.result_ready.emit("", self.app_name)
 
         path = self._resolve_unix_path(command, environ, self.path)
@@ -103,10 +99,10 @@ class WineSavePathResolver(WinePathResolver):
         self.rgame = rgame
 
     def run_real(self):
-        logger.info("Resolving save path for %s (%s)", self.rgame.app_title, self.rgame.app_name)
+        self.logger.info("Resolving save path for %s (%s)", self.rgame.app_title, self.rgame.app_name)
         command, environ = self._configure_process(self.core, self.rgame.app_name)
         if not (command and environ):
-            logger.error("Cannot setup %s, missing infomation", {type(self).__name__})
+            self.logger.error("Cannot setup %s, missing infomation", {type(self).__name__})
             self.signals.result_ready.emit("", self.rgame.app_name)
 
         path = self._resolve_unix_path(command, environ, self.path)
@@ -162,17 +158,17 @@ class OriginWineWorker(WinePathResolver):
                     install_dir = compat_utils.query_reg_key(command, environ, f"HKLM\\{reg_path}", reg_key)
 
                 if install_dir:
-                    logger.debug("Found Wine install directory %s", install_dir)
+                    self.logger.debug("Found Wine install directory %s", install_dir)
                     install_dir = compat_utils.convert_to_unix_path(command, environ, install_dir)
                     if install_dir:
-                        logger.debug("Found Unix install directory %s", install_dir)
+                        self.logger.debug("Found Unix install directory %s", install_dir)
                     else:
-                        logger.info(
+                        self.logger.info(
                             "Could not find Unix install directory for '%s'",
                             rgame.app_title,
                         )
                 else:
-                    logger.info(
+                    self.logger.info(
                         "Could not find Wine install directory for '%s'",
                         rgame.app_title,
                     )
@@ -181,18 +177,18 @@ class OriginWineWorker(WinePathResolver):
                 if os.path.isdir(install_dir):
                     install_size = path_size(install_dir)
                     rgame.set_origin_attributes(install_dir, install_size)
-                    logger.info(
+                    self.logger.info(
                         "Origin game '%s' (%s, %s)",
                         rgame.app_title,
                         install_dir,
                         format_size(install_size),
                     )
                 else:
-                    logger.warning(
+                    self.logger.warning(
                         "Origin game '%s' (%s does not exist)",
                         rgame.app_title,
                         install_dir,
                     )
             else:
-                logger.info("Origin game '%s' is not installed", rgame.app_title)
-        logger.info("Origin worker finished in %ss", time.time() - t)
+                self.logger.info("Origin game '%s' is not installed", rgame.app_title)
+        self.logger.info("Origin worker finished in %ss", time.time() - t)
