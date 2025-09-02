@@ -195,9 +195,9 @@ class ActionDialog(ButtonDialog):
     def active(self) -> bool:
         return self.__reject_close
 
-    def setActive(self, active: bool):
+    def setActive(self, active: bool, disable: bool = True):
         if self.centralWidget():
-            self.centralWidget().setDisabled(active)
+            self.centralWidget().setDisabled(active and disable)
         self.reject_button.setDisabled(active)
         self.action_button.setDisabled(active)
         self.accept_button.setDisabled(active)
