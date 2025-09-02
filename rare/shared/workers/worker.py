@@ -1,3 +1,4 @@
+from logging import getLogger, Logger
 from abc import abstractmethod
 from dataclasses import dataclass
 from enum import IntEnum
@@ -19,7 +20,12 @@ class Worker(QRunnable):
     def __init__(self):
         super(Worker, self).__init__()
         self.setAutoDelete(True)
+        self.__logger = getLogger(type(self).__name__)
         self.__signals: Optional[QObject] = None
+
+    @property
+    def logger(self) -> Logger:
+        return self.__logger
 
     @property
     def signals(self) -> QObject:
