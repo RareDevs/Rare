@@ -1,16 +1,96 @@
 import os
 import shutil
-from logging import getLogger
+from enum import auto
+from typing import Union, Iterator
 
 from PySide6.QtCore import Signal, QObject
 from legendary.lfs.utils import validate_files
 from legendary.models.game import VerifyResult
 
-from rare.models.game import RareGame
 from rare.lgndr.core import LegendaryCore
-from .worker import QueueWorker, QueueWorkerInfo
+from rare.models.game import RareGame
+from rare.utils.misc import path_size
+from rare.widgets.indicator_edit import IndicatorReasons, IndicatorReasonsCommon
+from .worker import Worker, QueueWorker, QueueWorkerInfo
 
-logger = getLogger("MoveWorker")
+
+class MovePathEditReasons(IndicatorReasons):
+    MOVEDIALOG_DST_MISSING = auto()
+    MOVEDIALOG_NO_WRITE = auto()
+    MOVEDIALOG_SAME_DIR = auto()
+    MOVEDIALOG_DST_IN_SRC = auto()
+    MOVEDIALOG_NESTED_DIR = auto()
+    MOVEDIALOG_NO_SPACE = auto()
+
+
+class MoveInfoWorker(Worker):
+    class Signals(QObject):
+        result: Signal = Signal(bool, object, object, MovePathEditReasons)
+
+    def __init__(self, rgame: RareGame, igames: Iterator[RareGame], path):
+        super(MoveInfoWorker, self).__init__()
+        self.signals = MoveInfoWorker.Signals()
+
+        self.rgame: RareGame = rgame
+        self.installed_games: Iterator[RareGame] = igames
+        self.path: str = path
+
+    @staticmethod
+    def is_game_dir(src_path: str, dst_path: str):
+        # This iterates over the destination dir, then iterates over the current install dir and if the file names
+        # matches, we have an exisiting dir
+        if os.path.isdir(dst_path):
+            for dst_file in os.listdir(dst_path):
+                for src_file in os.listdir(src_path):
+                    if dst_file == src_file:
+                        return True
+        return False
+
+    def run_real(self):
+        if not self.rgame.install_path or not self.path:
+            self.signals.result.emit(False, 0, 0, MovePathEditReasons.MOVEDIALOG_DST_MISSING)
+            return
+
+        src_path = os.path.realpath(self.rgame.install_path)
+        dst_path = os.path.realpath(self.path)
+        dst_install_path = os.path.realpath(os.path.join(dst_path, os.path.basename(src_path)))
+
+        # Get free space on drive and size of game folder
+        _, _, dst_size = shutil.disk_usage(dst_path)
+        src_size = path_size(src_path)
+
+        if src_path in {dst_path, dst_install_path}:
+            self.signals.result.emit(False, src_size, dst_size, MovePathEditReasons.MOVEDIALOG_SAME_DIR)
+            return
+
+        if str(src_path) in str(dst_path):
+            self.signals.result.emit(False, src_size, dst_size, MovePathEditReasons.MOVEDIALOG_DST_IN_SRC)
+            return
+
+        if str(dst_install_path) in str(src_path):
+            self.signals.result.emit(False, src_size, dst_size, MovePathEditReasons.MOVEDIALOG_DST_IN_SRC)
+            return
+
+        for rgame in self.installed_games:
+            if not rgame.is_non_asset and rgame.install_path in self.path:
+                self.signals.result.emit(False, src_size, dst_size, MovePathEditReasons.MOVEDIALOG_NESTED_DIR)
+                return
+
+        is_existing_dir = self.is_game_dir(src_path, dst_install_path)
+        # for item in os.listdir(dst_path):
+        #     if os.path.basename(src_path) in os.path.basename(item):
+        #         if os.path.isdir(dst_install_path):
+        #             if not is_existing_dir:
+        #                 self.ui.warning_text.setHidden(False)
+        #         elif os.path.isfile(dst_install_path):
+        #             self.ui.warning_text.setHidden(False)
+
+        if dst_size <= src_size and not is_existing_dir:
+            self.signals.result.emit(False, src_size, dst_size, MovePathEditReasons.MOVEDIALOG_NO_SPACE)
+            return
+
+        self.signals.result.emit(True, src_size, dst_size, IndicatorReasonsCommon.VALID)
+        return
 
 
 class MoveWorker(QueueWorker):
@@ -122,10 +202,10 @@ class MoveWorker(QueueWorker):
                             self.signals.error.emit(self.rgame, str(e))
                             return
                     else:
-                        logger.warning(f"Copying file {src_path} to {dst_path} failed")
+                        self.logger.warning(f"Copying file {src_path} to {dst_path} failed")
                     self.progress(total_size, dst_size)
                 else:
-                    logger.warning(f"Source dir does not have file {src_path}. File will be missing in the destination dir.")
+                    self.logger.warning(f"Source dir does not have file {src_path}. File will be missing in the destination dir.")
                     self.rgame.needs_verification = True
             shutil.rmtree(self.rgame.install_path)
 
