@@ -1,5 +1,5 @@
-import logging
 from datetime import datetime, timezone
+from logging import getLogger
 from typing import List
 
 from PySide6.QtCore import Qt, Slot, Signal
@@ -25,7 +25,7 @@ from .widgets.details import StoreDetailsWidget
 from .widgets.groups import StoreGroup
 from .widgets.items import StoreItemWidget
 
-logger = logging.getLogger("StoreLanding")
+logger = getLogger("StoreLanding")
 
 
 class LandingPage(SlidingStackedWidget, SideTabContents):

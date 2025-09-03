@@ -1,4 +1,4 @@
-import logging
+from logging import getLogger
 from typing import List
 
 from PySide6.QtCore import Qt, QUrl, Signal
@@ -25,7 +25,7 @@ from rare.widgets.elide_label import ElideLabel
 from rare.widgets.side_tab import SideTabWidget, SideTabContents
 from .image import LoadingImageWidget
 
-logger = logging.getLogger("StoreDetails")
+logger = getLogger("StoreDetails")
 
 
 class StoreDetailsWidget(QWidget, SideTabContents):

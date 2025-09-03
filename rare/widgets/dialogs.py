@@ -1,6 +1,6 @@
-import logging
 import sys
 from abc import abstractmethod
+from logging import getLogger
 
 from PySide6.QtCore import Qt, Slot, QCoreApplication
 from PySide6.QtGui import QCloseEvent, QKeyEvent, QKeySequence
@@ -36,7 +36,7 @@ class BaseDialog(QDialog):
         self.setWindowFlags(Qt.WindowType.Dialog | Qt.WindowType.CustomizeWindowHint | Qt.WindowType.WindowTitleHint)
         self.setWindowModality(Qt.WindowModality.WindowModal)
 
-        self.logger = logging.getLogger(type(self).__name__)
+        self.logger = getLogger(type(self).__name__)
 
     def setWindowTitle(self, a0):
         super().setWindowTitle(dialog_title(a0))

@@ -1,4 +1,4 @@
-import logging
+from logging import getLogger
 
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QMouseEvent
@@ -10,7 +10,7 @@ from rare.utils.misc import qta_icon
 from rare.utils.qt_requests import QtRequests
 from .image import LoadingImageWidget
 
-logger = logging.getLogger("StoreWidgets")
+logger = getLogger("StoreWidgets")
 
 
 class ItemWidget(LoadingImageWidget):

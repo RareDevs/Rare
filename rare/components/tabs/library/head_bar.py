@@ -1,4 +1,4 @@
-import logging
+from logging import getLogger
 
 from PySide6.QtCore import Signal, Slot, QSize, Qt
 from PySide6.QtGui import QAction
@@ -30,7 +30,7 @@ class LibraryHeadBar(QWidget):
 
     def __init__(self, parent=None):
         super(LibraryHeadBar, self).__init__(parent=parent)
-        self.logger = logging.getLogger(type(self).__name__)
+        self.logger = getLogger(type(self).__name__)
         self.rcore = RareCore.instance()
         self.signals = RareCore.instance().signals()
         self.settings = RareAppSettings.instance()
