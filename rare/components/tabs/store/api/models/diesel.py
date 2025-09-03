@@ -1,8 +1,8 @@
-import logging
 from dataclasses import dataclass, field
+from logging import getLogger
 from typing import List, Dict, Any, Type, Tuple
 
-logger = logging.getLogger("DieselModels")
+logger = getLogger("DieselModels")
 
 # lk: Typing overloads for unimplemented types
 DieselSocialLinks = Dict

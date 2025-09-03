@@ -1,11 +1,11 @@
-import logging
 from dataclasses import dataclass, field
 from datetime import datetime
+from logging import getLogger
 from typing import List, Dict, Any, Type, Tuple
 
 from .utils import parse_date
 
-logger = logging.getLogger("StoreApiModels")
+logger = getLogger("StoreApiModels")
 
 # lk: Typing overloads for unimplemented types
 DieselSocialLinks = Dict

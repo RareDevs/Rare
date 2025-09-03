@@ -1,4 +1,4 @@
-import logging
+from logging import getLogger
 from typing import List
 
 from PySide6.QtCore import Qt, Signal, Slot
@@ -22,7 +22,7 @@ from .store_api import StoreAPI
 from .widgets.details import StoreDetailsWidget
 from .widgets.items import SearchItemWidget
 
-logger = logging.getLogger("Shop")
+logger = getLogger("Shop")
 
 
 class SearchPage(SlidingStackedWidget, SideTabContents):

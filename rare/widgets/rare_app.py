@@ -8,7 +8,6 @@ from argparse import Namespace
 
 import legendary
 from PySide6 import __version__ as PYSIDE_VERSION_STR
-from PySide6.QtCore import __version__ as QT_VERSION_STR
 from PySide6.QtCore import (
     QTranslator,
     QObject,
@@ -18,6 +17,7 @@ from PySide6.QtCore import (
     QLibraryInfo,
     QLocale,
 )
+from PySide6.QtCore import __version__ as QT_VERSION_STR
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMessageBox
 

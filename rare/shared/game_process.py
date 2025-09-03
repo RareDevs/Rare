@@ -1,6 +1,6 @@
 import json
-import logging
 from enum import IntEnum
+from logging import getLogger
 
 from PySide6.QtCore import QObject, Signal, QTimer, Slot
 from PySide6.QtNetwork import QLocalSocket
@@ -9,7 +9,7 @@ from legendary.models.game import Game
 
 from rare.models.launcher import ErrorModel, Actions, FinishedModel, StateChangedModel
 
-logger = logging.getLogger("GameProcess")
+logger = getLogger("GameProcess")
 
 
 class GameProcess(QObject):
