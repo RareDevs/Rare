@@ -15,7 +15,7 @@ from rare.models.install import (
     InstallOptionsModel,
 )
 from rare.models.settings import RareAppSettings, app_settings
-from rare.shared.workers.install_info import InstallInfoWorker
+from rare.shared.workers import InstallInfoWorker
 from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
 from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
 from rare.utils.misc import format_size, qta_icon

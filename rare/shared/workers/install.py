@@ -1,6 +1,5 @@
-from logging import getLogger
-
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject
+from PySide6.QtCore import Signal
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.downloading import ConditionCheckResult
 
@@ -9,10 +8,9 @@ from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrInstallGameArgs
 from rare.lgndr.glue.exception import LgndrException
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
-from rare.models.install import InstallDownloadModel, InstallOptionsModel
+from rare.models.install import InstallDownloadModel
+from rare.models.install import InstallOptionsModel
 from .worker import Worker
-
-logger = getLogger("InstallInfoWorker")
 
 
 class InstallInfoWorker(Worker):

@@ -16,8 +16,6 @@ from rare.lgndr.models.downloading import UIUpdate
 from rare.models.game import RareGame
 from rare.models.install import InstallQueueItemModel, InstallOptionsModel
 
-logger = getLogger("DownloadThread")
-
 
 class DlResultCode(IntEnum):
     ERROR = 1
@@ -50,6 +48,7 @@ class DlThread(QThread):
         debug: bool = False,
     ):
         super(DlThread, self).__init__()
+        self.logger = getLogger(type(self).__name__)
         self.dlm_signals: DLManagerSignals = DLManagerSignals()
         self.core: LegendaryCore = core
         self.item: InstallQueueItemModel = item
@@ -95,8 +94,8 @@ class DlThread(QThread):
             self.kill()
             self.item.download.dlm.join()
             end_t = time.time()
-            logger.error(f"Installation failed after {end_t - start_t:.02f} seconds.")
-            logger.warning(f"The following exception occurred while waiting for the downloader to finish: {e!r}.")
+            self.logger.error(f"Installation failed after {end_t - start_t:.02f} seconds.")
+            self.logger.warning(f"The following exception occurred while waiting for the downloader to finish: {e!r}.")
             result.code = DlResultCode.ERROR
             result.message = f"{e!r}"
             self.__finish(result)
@@ -104,11 +103,11 @@ class DlThread(QThread):
         else:
             end_t = time.time()
             if self.dlm_signals.kill is True:
-                logger.info(f"Download stopped after {end_t - start_t:.02f} seconds.")
+                self.logger.info(f"Download stopped after {end_t - start_t:.02f} seconds.")
                 result.code = DlResultCode.STOPPED
                 self.__finish(result)
                 return
-            logger.info(f"Download finished in {end_t - start_t:.02f} seconds.")
+            self.logger.info(f"Download finished in {end_t - start_t:.02f} seconds.")
 
             result.code = DlResultCode.FINISHED
 
@@ -162,11 +161,11 @@ class DlThread(QThread):
         self.__finish(result)
 
     def _handle_postinstall(self, postinstall, igame):
-        logger.info("This game lists the following prerequisites to be installed:")
-        logger.info(f"- {postinstall['name']}: {' '.join((postinstall['path'], postinstall['args']))}")
+        self.logger.info("This game lists the following prerequisites to be installed:")
+        self.logger.info(f"- {postinstall['name']}: {' '.join((postinstall['path'], postinstall['args']))}")
         if platform.system() == "Windows":
             if self.item.options.install_prereqs:
-                logger.info("Launching prerequisite executable..")
+                self.logger.info("Launching prerequisite executable..")
                 self.core.prereq_installed(igame.app_name)
                 req_path, req_exec = os.path.split(postinstall["path"])
                 work_dir = os.path.join(igame.install_path, req_path)
@@ -174,7 +173,7 @@ class DlThread(QThread):
                 proc = QProcess(self)
                 proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
                 proc.readyReadStandardOutput.connect(
-                    lambda: logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
+                    lambda: self.logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
                 )
                 proc.setProgram(fullpath)
                 proc.setArguments(postinstall.get("args", "").split(" "))
@@ -182,7 +181,7 @@ class DlThread(QThread):
                 proc.start()
                 proc.waitForFinished()  # wait, because it is inside the thread
         else:
-            logger.info("Automatic installation not available on Linux.")
+            self.logger.info("Automatic installation not available on Linux.")
 
     def kill(self):
         self.dlm_signals.kill = True
