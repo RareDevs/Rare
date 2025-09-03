@@ -13,7 +13,7 @@ from rare.models.install import (
     InstallDownloadModel,
 )
 from rare.shared import RareCore
-from rare.shared.workers.install_info import InstallInfoWorker
+from rare.shared.workers.install import InstallInfoWorker
 from rare.ui.components.tabs.downloads.queue_base_widget import Ui_QueueBaseWidget
 from rare.ui.components.tabs.downloads.queue_info_widget import Ui_QueueInfoWidget
 from rare.utils.misc import format_size, widget_object_name, elide_text

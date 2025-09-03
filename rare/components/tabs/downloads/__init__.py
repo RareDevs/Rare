@@ -25,8 +25,7 @@ from rare.models.install import (
 )
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
-from rare.shared.workers.install_info import InstallInfoWorker
-from rare.shared.workers.uninstall import UninstallWorker
+from rare.shared.workers import InstallInfoWorker, UninstallWorker
 from rare.utils.misc import format_size
 from rare.utils.paths import create_desktop_link, desktop_links_supported
 from .download import DownloadWidget
