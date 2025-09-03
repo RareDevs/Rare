@@ -218,10 +218,12 @@ class IndicatorLineEdit(QWidget):
         completer.popup().setAlternatingRowColors(True)
         self.line_edit.setCompleter(completer)
 
+    @property
     def reasons(self):
         return self.__reasons
 
-    def extend_reasons(self, reasons: Dict):
+    @reasons.setter
+    def reasons(self, reasons: Dict):
         self.__reasons.extend(reasons)
 
     def refresh(self):

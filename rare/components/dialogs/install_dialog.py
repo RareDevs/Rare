@@ -144,7 +144,7 @@ class InstallDialog(ActionDialog):
         self.ui.shortcut_check.setChecked(not rgame.is_installed and self.settings.get_value(app_settings.create_shortcut))
         self.ui.shortcut_check.checkStateChanged.connect(self.__on_option_changed_no_reload)
 
-        self.set_error_box()
+        self.set_error_labels()
 
         self.ui.platform_combo.addItems(reversed(rgame.platforms))
         combo_text = rgame.igame.platform if rgame.is_installed else rgame.default_platform
@@ -235,12 +235,12 @@ class InstallDialog(ActionDialog):
     def check_incompatible_platform(self, index: int):
         platform = self.ui.platform_combo.itemText(index)
         if platform == "Mac" and pf.system() != "Darwin":
-            self.set_error_box(
+            self.set_error_labels(
                 self.tr("Warning"),
                 self.tr("You will not be able to run the game if you select <b>{}</b> as platform").format(platform),
             )
         else:
-            self.set_error_box()
+            self.set_error_labels()
 
     def get_options(self):
         base_path = os.path.join(self.install_dir_edit.text(), ".overlay" if self.__options.overlay else "")
@@ -265,7 +265,7 @@ class InstallDialog(ActionDialog):
         self.threadpool.start(info_worker)
 
     def action_handler(self):
-        self.set_error_box()
+        self.set_error_labels()
         message = self.tr("Updating...")
         self.set_size_labels(message, message)
         self.setActive(True)
@@ -314,9 +314,9 @@ class InstallDialog(ActionDialog):
         self.accept_button.setEnabled(False)
         self.action_button.setEnabled(is_valid and not self.active())
         if not is_valid:
-            self.set_error_box(self.tr("Error"), reason)
+            self.set_error_labels(self.tr("Error"), reason)
         else:
-            self.set_error_box()
+            self.set_error_labels()
 
     @staticmethod
     def same_platform(download: InstallDownloadModel) -> bool:
@@ -359,7 +359,7 @@ class InstallDialog(ActionDialog):
         self.setActive(False)
         error_text = self.tr("Error")
         self.set_size_labels(error_text, error_text)
-        self.set_error_box(error_text, message)
+        self.set_error_labels(error_text, message)
         self.action_button.setEnabled(self.options_changed)
         self.accept_button.setEnabled(False)
         if self.__options.silent:
@@ -379,7 +379,7 @@ class InstallDialog(ActionDialog):
         self.__set_size_label(self.ui.download_size_text, download)
         self.__set_size_label(self.ui.install_size_text, install)
 
-    def set_error_box(self, label: str = "", message: str = ""):
+    def set_error_labels(self, label: str = "", message: str = ""):
         self.ui.warning_label.setVisible(bool(label))
         self.ui.warning_label.setText(label)
         self.ui.warning_text.setVisible(bool(message))
