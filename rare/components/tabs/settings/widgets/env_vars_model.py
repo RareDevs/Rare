@@ -283,7 +283,7 @@ if __name__ == "__main__":
     )
 
     from rare.utils.misc import set_style_sheet
-    from legendary.core import LegendaryCore
+    from rare.lgndr.core import LegendaryCore
 
     class MainDialog(QDialog):
         def __init__(self):

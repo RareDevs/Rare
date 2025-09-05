@@ -119,6 +119,7 @@ class RareCore(QObject):
 
     @staticmethod
     def instance() -> "RareCore":
+        raise RuntimeError("RareCore.instance() method is deprecated")
         if RareCore.__instance is None:
             raise RuntimeError("Uninitialized use of RareCore")
         return RareCore.__instance

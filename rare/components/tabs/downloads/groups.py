@@ -15,6 +15,7 @@ from legendary.models.game import Game, InstalledGame
 
 from rare.components.tabs.downloads.widgets import QueueWidget, UpdateWidget
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
+from rare.shared.image_manager import ImageManager
 from rare.utils.misc import widget_object_name
 
 logger = getLogger("QueueGroup")
@@ -24,7 +25,7 @@ class UpdateGroup(QGroupBox):
     update_count = Signal(int)
     enqueue = Signal(InstallOptionsModel)
 
-    def __init__(self, parent=None):
+    def __init__(self, imgmgr: ImageManager, parent=None):
         super(UpdateGroup, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         self.setTitle(self.tr("Updates"))
@@ -40,6 +41,8 @@ class UpdateGroup(QGroupBox):
         layout = QVBoxLayout(self)
         layout.addWidget(self.__text)
         layout.addWidget(self.__container)
+
+        self.imgmgr = imgmgr
 
     def __find_widget(self, app_name: str) -> Optional[UpdateWidget]:
         return self.__container.findChild(UpdateWidget, name=widget_object_name(UpdateWidget, app_name))
@@ -63,7 +66,7 @@ class UpdateGroup(QGroupBox):
         if widget is not None:
             self.__container.layout().removeWidget(widget)
             widget.deleteLater()
-        widget = UpdateWidget(game, igame, parent=self.__container)
+        widget = UpdateWidget(self.imgmgr, game, igame, parent=self.__container)
         widget.destroyed.connect(self.__update_group)
         widget.enqueue.connect(self.enqueue)
         self.__container.layout().addWidget(widget)
@@ -87,7 +90,7 @@ class QueueGroup(QGroupBox):
     removed = Signal(str)
     force = Signal(InstallQueueItemModel)
 
-    def __init__(self, parent=None):
+    def __init__(self, imgmgr: ImageManager, parent=None):
         super(QueueGroup, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         self.setTitle(self.tr("Queue"))
@@ -104,6 +107,7 @@ class QueueGroup(QGroupBox):
         layout.addWidget(self.__text)
         layout.addWidget(self.__container)
 
+        self.imgmgr = imgmgr
         self.__queue: Deque[str] = deque()
 
     def __find_widget(self, app_name: str) -> Optional[QueueWidget]:
@@ -125,7 +129,7 @@ class QueueGroup(QGroupBox):
         self.update_count.emit(count)
 
     def __create_widget(self, item: InstallQueueItemModel, old_igame: InstalledGame) -> QueueWidget:
-        widget: QueueWidget = QueueWidget(item, old_igame, parent=self.__container)
+        widget: QueueWidget = QueueWidget(self.imgmgr, item, old_igame, parent=self.__container)
         widget.toggle_arrows(self.__queue.index(item.options.app_name), len(self.__queue))
         widget.destroyed.connect(self.__update_group)
         widget.destroyed.connect(self.__update_arrows)

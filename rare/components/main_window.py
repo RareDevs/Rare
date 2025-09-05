@@ -105,7 +105,7 @@ class RareWindow(QMainWindow):
             try:
                 from rare.utils.discord_rpc import DiscordRPC
 
-                self.discord_rpc = DiscordRPC()
+                self.discord_rpc = DiscordRPC(settings, rcore, parent=self)
             except ModuleNotFoundError:
                 logger.warning("Discord RPC module not found")
 

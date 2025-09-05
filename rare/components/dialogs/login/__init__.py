@@ -3,8 +3,8 @@ from logging import getLogger
 
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import QLayout, QMessageBox, QFrame
-from legendary.core import LegendaryCore
 
+from rare.lgndr.core import LegendaryCore
 from rare.ui.components.dialogs.login.landing_page import Ui_LandingPage
 from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
 from rare.utils.misc import qta_icon

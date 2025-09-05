@@ -171,8 +171,13 @@ class EosPrefixWidget(QFrame):
 
 
 class EosGroup(QGroupBox):
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(EosGroup, self).__init__(parent=parent)
+        self.rcore = rcore
+        self.core = rcore.core()
+        self.signals = rcore.signals()
+        self.overlay = rcore.get_overlay()
+
         self.ui = Ui_EosWidget()
         self.ui.setupUi(self)
         # lk: set object names for CSS properties
@@ -193,11 +198,6 @@ class EosGroup(QGroupBox):
 
         self.ui.info_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.version)
         self.ui.info_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.install_path)
-
-        self.rcore = RareCore.instance()
-        self.core = self.rcore.core()
-        self.signals = self.rcore.signals()
-        self.overlay = self.rcore.get_overlay()
 
         self.overlay.signals.widget.update.connect(self.update_state)
         self.overlay.signals.game.installed.connect(self.install_finished)

@@ -4,10 +4,10 @@ import shutil
 from typing import Tuple
 
 from PySide6.QtCore import QObject, Signal
-from legendary.core import LegendaryCore
 from legendary.lfs.eos import remove_registry_entries
 
 from rare.lgndr.cli import LegendaryCLI
+from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrUninstallGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus
 from rare.models.game import RareGame

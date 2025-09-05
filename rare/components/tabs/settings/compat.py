@@ -6,10 +6,10 @@ from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QHideEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
+from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.widgets.side_tab import SideTabContents
-from rare.models.settings import RareAppSettings
 from .widgets.overlay import DxvkHudSettings, DxvkConfigSettings, DxvkNvapiDrsSettings
 from .widgets.runner import RunnerSettingsBase, RunnerSettingsType
 from .widgets.wine import WineSettings
@@ -29,6 +29,8 @@ class CompatSettingsBase(QWidget, SideTabContents):
 
     def __init__(
         self,
+        settings: RareAppSettings,
+        rcore: RareCore,
         dxvk_hud_widget: Type[DxvkHudSettings],
         dxvk_config_widget: Type[DxvkConfigSettings],
         dxvk_nvapi_drs_widget: Type[DxvkNvapiDrsSettings],
@@ -38,11 +40,11 @@ class CompatSettingsBase(QWidget, SideTabContents):
     ):
         super(CompatSettingsBase, self).__init__(parent=parent)
 
-        self.core = RareCore.instance().core()
-        self.settings = RareAppSettings.instance()
+        self.settings = settings
+        self.core = rcore.core()
         self.app_name: str = "default"
 
-        self.runner = runner_widget(self)
+        self.runner = runner_widget(settings, rcore, self)
         self.runner.environ_changed.connect(self.environ_changed)
         # self.runner.compat_tool_enabled.connect(self.compat_tool_enabled)
 
@@ -77,17 +79,23 @@ class CompatSettingsBase(QWidget, SideTabContents):
 
 
 class GlobalRunnerSettings(RunnerSettingsBase):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         if pf.system() in {"Linux", "FreeBSD"}:
-            super(GlobalRunnerSettings, self).__init__(WineSettings, ProtonSettings, parent=parent)
+            super(GlobalRunnerSettings, self).__init__(
+                settings, rcore, WineSettings, ProtonSettings, parent=parent
+            )
         else:
-            super(GlobalRunnerSettings, self).__init__(WineSettings, parent=parent)
+            super(GlobalRunnerSettings, self).__init__(
+                settings, rcore, WineSettings, parent=parent
+            )
 
 
 class GlobalCompatSettings(CompatSettingsBase):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         if pf.system() in {"Linux", "FreeBSD"}:
             super(GlobalCompatSettings, self).__init__(
+                settings,
+                rcore,
                 dxvk_hud_widget=DxvkHudSettings,
                 dxvk_config_widget=DxvkConfigSettings,
                 dxvk_nvapi_drs_widget=DxvkNvapiDrsSettings,
@@ -97,6 +105,8 @@ class GlobalCompatSettings(CompatSettingsBase):
             )
         else:
             super(GlobalCompatSettings, self).__init__(
+                settings,
+                rcore,
                 dxvk_hud_widget=DxvkHudSettings,
                 dxvk_config_widget=DxvkConfigSettings,
                 dxvk_nvapi_drs_widget=DxvkNvapiDrsSettings,

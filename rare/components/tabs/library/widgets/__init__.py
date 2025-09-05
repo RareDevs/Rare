@@ -4,10 +4,8 @@ from typing import Tuple, Union, Type, TypeVar
 from PySide6.QtCore import QObject, Slot, Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea
 
-from rare.lgndr.core import LegendaryCore
-from rare.models.game import RareGame
-from rare.models.signals import GlobalSignals
 from rare.models.enumerations import LibraryFilter, LibraryOrder, LibraryView
+from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.widgets.library_layout import LibraryLayout
 from .icon_game_widget import IconGameWidget
@@ -230,11 +228,11 @@ class ListViewContainer(ViewContainer):
 
 
 class LibraryWidgetController(QObject):
-    def __init__(self, view: LibraryView, parent: QScrollArea = None):
+    def __init__(self, rcore: RareCore, view: LibraryView, parent: QScrollArea = None):
         super(LibraryWidgetController, self).__init__(parent=parent)
-        self.rcore = RareCore.instance()
-        self.core: LegendaryCore = self.rcore.core()
-        self.signals: GlobalSignals = self.rcore.signals()
+        self.rcore = rcore
+        self.core = rcore.core()
+        self.signals = rcore.signals()
 
         if view == LibraryView.COVER:
             self._container: IconViewContainer = IconViewContainer(self.rcore, parent)

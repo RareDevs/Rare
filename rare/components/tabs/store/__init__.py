@@ -1,6 +1,6 @@
 from PySide6.QtGui import QShowEvent, QHideEvent
-from legendary.core import LegendaryCore
 
+from rare.lgndr.core import LegendaryCore
 from rare.widgets.side_tab import SideTabWidget
 from .landing import LandingPage
 from .search import SearchPage
@@ -14,7 +14,7 @@ class StoreTab(SideTabWidget):
         self.init = False
 
         self.core = core
-        # self.rcore = RareCore.instance()
+        # self.rcore = rcore
         self.api = StoreAPI(
             self.core.egs.session.headers["Authorization"],
             self.core.language_code,

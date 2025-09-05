@@ -28,12 +28,12 @@ class LibraryHeadBar(QWidget):
     goto_egl_sync = Signal()
     goto_eos_ubisoft = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(LibraryHeadBar, self).__init__(parent=parent)
+        self.settings = settings
+        self.rcore = rcore
+        self.signals = rcore.signals()
         self.logger = getLogger(type(self).__name__)
-        self.rcore = RareCore.instance()
-        self.signals = RareCore.instance().signals()
-        self.settings = RareAppSettings.instance()
 
         self.filter = QComboBox(self)
         filters = {

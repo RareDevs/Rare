@@ -41,7 +41,7 @@ class GameDetails(QWidget, SideTabContents):
     # str: app_name
     import_clicked = Signal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(GameDetails, self).__init__(parent=parent)
         self.ui = Ui_GameDetails()
         self.ui.setupUi(self)
@@ -63,9 +63,9 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.grade.setOpenExternalLinks(True)
         self.ui.install_path.setOpenExternalLinks(True)
 
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
-        self.args = RareCore.instance().args()
+        self.rcore = rcore
+        self.core = rcore.core()
+        self.args = rcore.args()
 
         self.rgame: Optional[RareGame] = None
 
@@ -215,7 +215,7 @@ class GameDetails(QWidget, SideTabContents):
     @Slot()
     def __on_move(self):
         """This method is to be called from the button only"""
-        move_dialog = MoveDialog(self.rgame, parent=self)
+        move_dialog = MoveDialog(self.rcore, self.rgame, parent=self)
         move_dialog.result_ready.connect(self.move_game)
         move_dialog.open()
 

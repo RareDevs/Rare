@@ -35,7 +35,7 @@ from rare.widgets.indicator_edit import (
 logger = getLogger("Import")
 
 
-def find_app_name(path: str, core) -> Optional[str]:
+def find_app_name(core, path: str) -> Optional[str]:
     if os.path.exists(os.path.join(path, ".egstore")):
         for i in os.listdir(os.path.join(path, ".egstore")):
             if i.endswith(".mancpn"):
@@ -114,7 +114,7 @@ class ImportWorker(QRunnable):
     def __try_import(self, path: Path, app_name: str = None) -> ImportedGame:
         result = ImportedGame(ImportResult.ERROR)
         result.path = str(path)
-        if app_name or (app_name := find_app_name(str(path), self.core)):
+        if app_name or (app_name := find_app_name(self.core, str(path))):
             game = self.core.get_game(app_name)
             result.app_name = app_name
             result.app_title = game.app_title
@@ -147,12 +147,13 @@ class ImportWorker(QRunnable):
 
 
 class ImportGroup(QGroupBox):
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(ImportGroup, self).__init__(parent=parent)
+        self.rcore = rcore
+        self.core = rcore.core()
+
         self.ui = Ui_ImportGroup()
         self.ui.setupUi(self)
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
 
         self.worker: Optional[ImportWorker] = None
         self.threadpool = QThreadPool.globalInstance()
@@ -241,7 +242,7 @@ class ImportGroup(QGroupBox):
         self.ui.import_folder_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
         if self.path_edit.is_valid:
-            self.app_name_edit.setText(find_app_name(path, self.core))
+            self.app_name_edit.setText(find_app_name(self.core, path))
         else:
             self.app_name_edit.setText("")
 

@@ -5,7 +5,6 @@ from PySide6.QtCore import Signal, Qt, QThreadPool, Slot
 from PySide6.QtWidgets import QWidget, QFrame
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
-from rare.utils.misc import qta_icon
 
 from rare.models.install import (
     InstallQueueItemModel,
@@ -13,10 +12,12 @@ from rare.models.install import (
     InstallDownloadModel,
 )
 from rare.shared import RareCore
+from rare.shared.image_manager import ImageManager
 from rare.shared.workers.install import InstallInfoWorker
 from rare.ui.components.tabs.downloads.queue_base_widget import Ui_QueueBaseWidget
 from rare.ui.components.tabs.downloads.queue_info_widget import Ui_QueueInfoWidget
 from rare.utils.misc import format_size, widget_object_name, elide_text
+from rare.utils.misc import qta_icon
 from rare.widgets.image_widget import ImageWidget, ImageSize
 
 logger = getLogger("DownloadWidgets")
@@ -25,6 +26,7 @@ logger = getLogger("DownloadWidgets")
 class QueueInfoWidget(QWidget):
     def __init__(
         self,
+        imgmgr: ImageManager,
         game: Optional[Game],
         igame: Optional[InstalledGame],
         analysis: Optional[AnalysisResult] = None,
@@ -32,10 +34,10 @@ class QueueInfoWidget(QWidget):
         parent=None,
     ):
         super(QueueInfoWidget, self).__init__(parent=parent)
+        self.image_manager = imgmgr
+
         self.ui = Ui_QueueInfoWidget()
         self.ui.setupUi(self)
-
-        self.image_manager = RareCore.instance().image_manager()
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.LibraryIcon)
@@ -73,7 +75,7 @@ class QueueInfoWidget(QWidget):
 class UpdateWidget(QFrame):
     enqueue = Signal(InstallOptionsModel)
 
-    def __init__(self, game: Game, igame: InstalledGame, parent=None):
+    def __init__(self, imgmgr: ImageManager, game: Game, igame: InstalledGame, parent=None):
         super(UpdateWidget, self).__init__(parent=parent)
         self.ui = Ui_QueueBaseWidget()
         self.ui.setupUi(self)
@@ -86,7 +88,7 @@ class UpdateWidget(QFrame):
         self.ui.queue_buttons.setVisible(False)
         self.ui.move_buttons.setVisible(False)
 
-        self.info_widget = QueueInfoWidget(game, igame, parent=self)
+        self.info_widget = QueueInfoWidget(imgmgr, game, igame, parent=self)
         self.ui.info_layout.addWidget(self.info_widget)
 
         self.ui.update_button.clicked.connect(lambda: self.update_game(True))
@@ -115,7 +117,7 @@ class QueueWidget(QFrame):
     # InstallQueueItemModel
     force = Signal(InstallQueueItemModel)
 
-    def __init__(self, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None):
+    def __init__(self, imgmgr: ImageManager, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None):
         super(QueueWidget, self).__init__(parent=parent)
         self.ui = Ui_QueueBaseWidget()
         self.ui.setupUi(self)
@@ -132,9 +134,10 @@ class QueueWidget(QFrame):
             worker.signals.failed.connect(lambda m: self.remove.emit(item.options.app_name))
             worker.signals.finished.connect(lambda: logger.info(f"Download requeue worker finished for {item.options.app_name}"))
             QThreadPool.globalInstance().start(worker)
-            self.info_widget = QueueInfoWidget(None, None, None, old_igame, parent=self)
+            self.info_widget = QueueInfoWidget(imgmgr, None, None, None, old_igame, parent=self)
         else:
             self.info_widget = QueueInfoWidget(
+                imgmgr,
                 item.download.game,
                 item.download.igame,
                 item.download.analysis,

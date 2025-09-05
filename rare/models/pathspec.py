@@ -1,9 +1,9 @@
 import os
 from typing import Union, List
 
-from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
 
+from rare.lgndr.core import LegendaryCore
 from rare.utils.config_helper import get_prefixes
 
 

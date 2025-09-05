@@ -1,5 +1,6 @@
 import platform as pf
 
+from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.widgets.side_tab import SideTabWidget
 from .about import About
@@ -11,21 +12,21 @@ from .rare import RareSettings
 
 
 class SettingsTab(SideTabWidget):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(SettingsTab, self).__init__(parent=parent)
-        self.args = RareCore.instance().args()
+        self.args = rcore.args()
 
-        rare_settings = RareSettings(self)
+        rare_settings = RareSettings(settings, rcore, self)
         self.rare_index = self.addTab(rare_settings, "Rare")
 
-        legendary_settings = LegendarySettings(self)
+        legendary_settings = LegendarySettings(settings, rcore, self)
         self.legendary_index = self.addTab(legendary_settings, "Legendary")
 
-        game_settings = GlobalGameSettings(self)
+        game_settings = GlobalGameSettings(settings, rcore, self)
         self.game_index = self.addTab(game_settings, self.tr("Defaults"))
 
         if pf.system() != "Windows":
-            compat_settings = GlobalCompatSettings(self)
+            compat_settings = GlobalCompatSettings(settings, rcore, self)
             self.compat_index = self.addTab(compat_settings, self.tr("Compatibility"))
 
         self.about = About(self)
@@ -35,6 +36,6 @@ class SettingsTab(SideTabWidget):
 
         if self.args.debug:
             title = self.tr("Debug")
-            self.debug_index = self.addTab(DebugSettings(self), title, title)
+            self.debug_index = self.addTab(DebugSettings(rcore, self), title, title)
 
         self.setCurrentIndex(self.rare_index)

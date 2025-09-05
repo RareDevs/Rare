@@ -9,18 +9,18 @@ from PySide6.QtWidgets import (
     QTableView,
 )
 
-from rare.shared import RareCore
+from rare.lgndr.core import LegendaryCore
 from .env_vars_model import EnvVarsTableModel
 
 logger = getLogger("EnvVars")
 
 
 class EnvVars(QGroupBox):
-    def __init__(self, parent):
+    def __init__(self, core: LegendaryCore, parent):
         super(EnvVars, self).__init__(parent=parent)
         self.setTitle(self.tr("Environment"))
 
-        self.core = RareCore.instance().core()
+        self.core = core
         self.app_name: str = "default"
 
         self.table_model = EnvVarsTableModel(self.core)

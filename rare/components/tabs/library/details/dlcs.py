@@ -6,11 +6,11 @@ from PySide6.QtWidgets import QFrame, QMessageBox, QToolBox
 
 from rare.models.game import RareGame
 from rare.shared import RareCore
-from rare.ui.components.tabs.library.details.dlcs import Ui_GameDlcs
 from rare.ui.components.tabs.library.details.dlc_widget import Ui_GameDlcWidget
+from rare.ui.components.tabs.library.details.dlcs import Ui_GameDlcs
+from rare.utils.misc import widget_object_name, qta_icon
 from rare.widgets.image_widget import ImageWidget, ImageSize
 from rare.widgets.side_tab import SideTabContents
-from rare.utils.misc import widget_object_name, qta_icon
 
 
 class GameDlcWidget(QFrame):
@@ -99,13 +99,13 @@ class AvailableGameDlcWidget(GameDlcWidget):
 
 
 class GameDlcs(QToolBox, SideTabContents):
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(GameDlcs, self).__init__(parent=parent)
         self.implements_scrollarea = True
         self.ui = Ui_GameDlcs()
         self.ui.setupUi(self)
-        self.core = RareCore.instance().core()
-        self.signals = RareCore.instance().signals()
+        self.core = rcore.core()
+        self.signals = rcore.signals()
 
         self.rgame: Optional[RareGame] = None
 

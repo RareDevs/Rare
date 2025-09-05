@@ -18,15 +18,14 @@ class WineSettings(QGroupBox):
     # str: option key
     environ_changed = Signal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(WineSettings, self).__init__(parent=parent)
-        self.setTitle(self.tr("Wine"))
-        self.settings = RareAppSettings.instance()
-        self.signals = RareCore.instance().signals()
-
-        self.lgd_core = RareCore.instance().core()
-
+        self.settings = settings
+        self.signals = rcore.signals()
+        self.lgd_core = rcore.core()
         self.app_name: Optional[str] = "default"
+
+        self.setTitle(self.tr("Wine"))
 
         # Wine prefix
         self.wine_prefix_edit = PathEdit(

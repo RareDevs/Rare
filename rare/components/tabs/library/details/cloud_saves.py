@@ -38,16 +38,16 @@ logger = getLogger("CloudSaves")
 
 
 class CloudSaves(QWidget, SideTabContents):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(CloudSaves, self).__init__(parent=parent)
 
         self.sync_widget = QWidget(self)
         self.sync_ui = Ui_CloudSyncWidget()
         self.sync_ui.setupUi(self.sync_widget)
 
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
-        self.settings = RareAppSettings.instance()
+        self.settings = settings
+        self.rcore = rcore
+        self.core = rcore.core()
 
         self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa5s.desktop").pixmap(128, 128))
         self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "fa5s.cloud").pixmap(128, 128))

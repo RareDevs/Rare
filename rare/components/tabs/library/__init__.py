@@ -5,12 +5,12 @@ from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
 
 from rare.models.game import RareGame
-from rare.shared import RareCore
 from rare.models.settings import app_settings, RareAppSettings
+from rare.shared import RareCore
 from .details import GameInfoTabs
-from .widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
 from .head_bar import LibraryHeadBar
 from .integrations import IntegrationsTabs
+from .widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
 
 logger = getLogger("GamesLibrary")
 
@@ -21,28 +21,25 @@ class GamesLibrary(QStackedWidget):
         self.settings = settings
         self.rcore = rcore
         self.signals = rcore.signals()
-        self.image_manager = rcore.image_manager()
-        self.args = rcore.args()
-        self.core = rcore.core()
 
         self.games_page = QWidget(parent=self)
         games_page_layout = QVBoxLayout(self.games_page)
         self.addWidget(self.games_page)
 
-        self.head_bar = LibraryHeadBar(parent=self.games_page)
+        self.head_bar = LibraryHeadBar(settings, rcore, parent=self.games_page)
         self.head_bar.goto_import.connect(self.show_import)
         self.head_bar.goto_egl_sync.connect(self.show_egl_sync)
         self.head_bar.goto_eos_ubisoft.connect(self.show_eos_ubisoft)
         games_page_layout.addWidget(self.head_bar)
 
-        self.game_info_page = GameInfoTabs(self)
+        self.game_info_page = GameInfoTabs(settings, rcore, self)
         self.game_info_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
         # Update visibility of hidden games
         self.game_info_page.back_clicked.connect(lambda: self.filter_games(self.head_bar.current_filter()))
         self.game_info_page.import_clicked.connect(self.show_import)
         self.addWidget(self.game_info_page)
 
-        self.integrations_page = IntegrationsTabs(self)
+        self.integrations_page = IntegrationsTabs(rcore, self)
         self.integrations_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
         self.addWidget(self.integrations_page)
 
@@ -52,7 +49,7 @@ class GamesLibrary(QStackedWidget):
         self.view_scroll.horizontalScrollBar().setDisabled(True)
 
         library_view = LibraryView(self.settings.get_value(app_settings.library_view))
-        self.library_controller = LibraryWidgetController(library_view, self.view_scroll)
+        self.library_controller = LibraryWidgetController(rcore, library_view, self.view_scroll)
         games_page_layout.addWidget(self.view_scroll)
 
         self.head_bar.search_bar.textChanged.connect(self.search_games)

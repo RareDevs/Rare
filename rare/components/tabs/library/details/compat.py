@@ -14,6 +14,7 @@ from rare.components.tabs.settings.widgets.overlay import (
 from rare.components.tabs.settings.widgets.runner import RunnerSettingsBase
 from rare.components.tabs.settings.widgets.wine import WineSettings
 from rare.models.game import RareGame
+from rare.models.settings import RareAppSettings
 from rare.models.settings import app_settings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
@@ -45,7 +46,7 @@ if pf.system() in {"Linux", "FreeBSD"}:
 
         def _get_compat_path(self, compat_location: ProtonSettings.CompatLocation):
             folder_name = "default"
-            local_folder_name = RareCore.instance().get_game(self.app_name).folder_name
+            local_folder_name = self.rcore.get_game(self.app_name).folder_name
             if compat_location == ProtonSettings.CompatLocation.NONE:
                 if wine_prefix_dir(local_folder_name).joinpath("system.reg").is_file():
                     compat_location = ProtonSettings.CompatLocation.ISOLATED
@@ -60,11 +61,15 @@ if pf.system() in {"Linux", "FreeBSD"}:
 
 
 class LocalRunnerSettings(RunnerSettingsBase):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         if pf.system() in {"Linux", "FreeBSD"}:
-            super(LocalRunnerSettings, self).__init__(LocalWineSettings, LocalProtonSettings, parent=parent)
+            super(LocalRunnerSettings, self).__init__(
+                settings, rcore, LocalWineSettings, LocalProtonSettings, parent=parent
+            )
         else:
-            super(LocalRunnerSettings, self).__init__(LocalWineSettings, parent=parent)
+            super(LocalRunnerSettings, self).__init__(
+                settings, rcore, LocalWineSettings, parent=parent
+            )
 
         self.rgame: RareGame = None
 
@@ -146,9 +151,11 @@ class LocalDxvkNvapiDrsSettings(DxvkNvapiDrsSettings):
 
 
 class LocalCompatSettings(CompatSettingsBase):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         if pf.system() in {"Linux", "FreeBSD"}:
             super(LocalCompatSettings, self).__init__(
+                settings,
+                rcore,
                 dxvk_hud_widget=LocalDxvkHudSettings,
                 dxvk_config_widget=LocalDxvkConfigSettings,
                 dxvk_nvapi_drs_widget=LocalDxvkNvapiDrsSettings,
@@ -158,6 +165,8 @@ class LocalCompatSettings(CompatSettingsBase):
             )
         else:
             super(LocalCompatSettings, self).__init__(
+                settings,
+                rcore,
                 dxvk_hud_widget=LocalDxvkHudSettings,
                 dxvk_config_widget=LocalDxvkConfigSettings,
                 dxvk_nvapi_drs_widget=LocalDxvkNvapiDrsSettings,

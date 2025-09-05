@@ -8,17 +8,17 @@ from PySide6.QtWidgets import QFileDialog, QWidget, QFormLayout, QLabel
 from rare.models.game import RareGame
 from rare.models.install import MoveGameModel
 from rare.shared import RareCore
+from rare.shared.workers.move import MoveInfoWorker, MovePathEditReasons
 from rare.ui.components.dialogs.move_dialog import Ui_MoveDialog
 from rare.utils.misc import format_size, qta_icon
 from rare.widgets.dialogs import ActionDialog, game_title
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
-from rare.shared.workers.move import MoveInfoWorker, MovePathEditReasons
 
 
 class MoveDialog(ActionDialog):
     result_ready = Signal(RareGame, MoveGameModel)
 
-    def __init__(self, rgame: RareGame, parent=None):
+    def __init__(self, rcore: RareCore, rgame: RareGame, parent=None):
         super(MoveDialog, self).__init__(parent=parent)
         header = self.tr("Move")
         self.setWindowTitle(game_title(header, rgame.app_title))
@@ -31,8 +31,8 @@ class MoveDialog(ActionDialog):
         self.ui = Ui_MoveDialog()
         self.ui.setupUi(move_widget)
 
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
+        self.rcore = rcore
+        self.core = rcore.core()
         self.rgame: Optional[RareGame] = rgame
         self.options: MoveGameModel = MoveGameModel(rgame.app_name)
 

@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 from legendary.models.egl import EGLManifest
 from legendary.models.game import InstalledGame
 
+from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.exception import LgndrException
 from rare.models.pathspec import PathSpec
 from rare.shared import RareCore
@@ -32,11 +33,12 @@ logger = getLogger("EGLSync")
 
 
 class EGLSyncGroup(QGroupBox):
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(EGLSyncGroup, self).__init__(parent=parent)
+        self.core = rcore.core()
+
         self.ui = Ui_EGLSyncGroup()
         self.ui.setupUi(self)
-        self.core = RareCore.instance().core()
 
         self.egl_path_edit = PathEdit(
             path=self.core.egl.programdata_path,
@@ -77,9 +79,9 @@ class EGLSyncGroup(QGroupBox):
         self.ui.egl_sync_check_label.setHidden(True)
         self.ui.egl_sync_check.setHidden(True)
 
-        self.import_list = EGLSyncImportGroup(parent=self)
+        self.import_list = EGLSyncImportGroup(rcore, parent=self)
         self.ui.import_export_layout.addWidget(self.import_list)
-        self.export_list = EGLSyncExportGroup(parent=self)
+        self.export_list = EGLSyncExportGroup(rcore, parent=self)
         self.ui.import_export_layout.addWidget(self.export_list)
 
         # self.egl_watcher = QFileSystemWatcher([self.egl_path_edit.text()], self)
@@ -191,12 +193,13 @@ class EGLSyncGroup(QGroupBox):
 
 
 class EGLSyncListItem(QListWidgetItem):
-    def __init__(self, game: Union[EGLManifest, InstalledGame]):
+    def __init__(self, core: LegendaryCore, game: Union[EGLManifest, InstalledGame]):
         super(EGLSyncListItem, self).__init__()
+        self.core = core
+        self.game = game
+
         self.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsUserCheckable)
         self.setCheckState(Qt.CheckState.Unchecked)
-        self.core = RareCore.instance().core()
-        self.game = game
         self.setText(self.app_title)
 
     def is_checked(self) -> bool:
@@ -217,8 +220,8 @@ class EGLSyncListItem(QListWidgetItem):
 
 
 class EGLSyncExportItem(EGLSyncListItem):
-    def __init__(self, game: InstalledGame):
-        super(EGLSyncExportItem, self).__init__(game=game)
+    def __init__(self, core: LegendaryCore, game: InstalledGame):
+        super(EGLSyncExportItem, self).__init__(core, game=game)
 
     def action(self) -> Union[str, bool]:
         error = False
@@ -234,8 +237,8 @@ class EGLSyncExportItem(EGLSyncListItem):
 
 
 class EGLSyncImportItem(EGLSyncListItem):
-    def __init__(self, game: EGLManifest):
-        super(EGLSyncImportItem, self).__init__(game=game)
+    def __init__(self, core: LegendaryCore, game: EGLManifest):
+        super(EGLSyncImportItem, self).__init__(core, game=game)
 
     def action(self) -> Union[str, bool]:
         error = False
@@ -253,13 +256,14 @@ class EGLSyncImportItem(EGLSyncListItem):
 class EGLSyncListGroup(QGroupBox):
     action_errors = Signal(list)
 
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(EGLSyncListGroup, self).__init__(parent=parent)
+        self.rcore = rcore
+        self.core = rcore.core()
+
         self.ui = Ui_EGLSyncListGroup()
         self.ui.setupUi(self)
         self.ui.list.setFrameShape(QFrame.Shape.NoFrame)
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
 
         self.ui.list.itemDoubleClicked.connect(
             lambda item: item.setCheckState(Qt.CheckState.Unchecked)
@@ -309,8 +313,8 @@ class EGLSyncListGroup(QGroupBox):
 
 
 class EGLSyncExportGroup(EGLSyncListGroup):
-    def __init__(self, parent=None):
-        super(EGLSyncExportGroup, self).__init__(parent=parent)
+    def __init__(self, rcore: RareCore, parent=None):
+        super(EGLSyncExportGroup, self).__init__(rcore, parent=parent)
         self.setTitle(self.tr("Exportable games"))
         self.ui.label.setText(self.tr("No games to export to EGL"))
         self.ui.action_button.setText(self.tr("Export"))
@@ -320,7 +324,7 @@ class EGLSyncExportGroup(EGLSyncListGroup):
             self.ui.list.clear()
             for item in self.core.egl_get_exportable():
                 try:
-                    i = EGLSyncExportItem(item)
+                    i = EGLSyncExportItem(self.core, item)
                 except AttributeError as e:
                     logger.error(
                         "%s(%s) constructor failed with %s",
@@ -352,8 +356,8 @@ class EGLSyncExportGroup(EGLSyncListGroup):
 
 
 class EGLSyncImportGroup(EGLSyncListGroup):
-    def __init__(self, parent=None):
-        super(EGLSyncImportGroup, self).__init__(parent=parent)
+    def __init__(self, rcore: RareCore, parent=None):
+        super(EGLSyncImportGroup, self).__init__(rcore, parent=parent)
         self.setTitle(self.tr("Importable games"))
         self.ui.label.setText(self.tr("No games to import from EGL"))
         self.ui.action_button.setText(self.tr("Import"))
@@ -363,7 +367,7 @@ class EGLSyncImportGroup(EGLSyncListGroup):
             self.ui.list.clear()
             for item in self.core.egl_get_importable():
                 try:
-                    i = EGLSyncImportItem(item)
+                    i = EGLSyncImportItem(self.core, item)
                 except AttributeError as e:
                     logger.error(
                         "%s(%s) constructor failed with %s",

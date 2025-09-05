@@ -21,11 +21,11 @@ from .wrappers import WrapperSettings
 
 
 class LaunchSettingsBase(QGroupBox):
-    def __init__(self, wrapper_widget: Type[WrapperSettings], parent=None):
+    def __init__(self, rcore: RareCore, wrapper_widget: Type[WrapperSettings], parent=None):
         super(LaunchSettingsBase, self).__init__(parent=parent)
         self.setTitle(self.tr("Launch"))
 
-        self.core = RareCore.instance().core()
+        self.core = rcore.core()
         self.app_name: str = "default"
 
         self.prelaunch_cmd = PathEdit(
@@ -58,7 +58,7 @@ class LaunchSettingsBase(QGroupBox):
         self.main_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.main_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
 
-        self.wrappers_widget = wrapper_widget(self)
+        self.wrappers_widget = wrapper_widget(rcore, self)
 
         self.main_layout.addRow(self.tr("Wrappers"), self.wrappers_widget)
         self.main_layout.addRow(self.tr("Pre-launch"), prelaunch_layout)
