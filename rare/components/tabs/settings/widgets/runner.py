@@ -5,6 +5,7 @@ from PySide6.QtCore import Signal, Slot, Qt
 from PySide6.QtWidgets import QGroupBox, QVBoxLayout, QCheckBox, QFormLayout
 
 from rare.models.settings import app_settings, RareAppSettings
+from rare.shared import RareCore
 from .wine import WineSettings
 
 if pf.system() in {"Linux", "FreeBSD"}:
@@ -19,21 +20,23 @@ class RunnerSettingsBase(QGroupBox):
 
     def __init__(
         self,
+        settings: RareAppSettings,
+        rcore: RareCore,
         wine_widget: Type["WineSettings"],
         proton_widget: Type["ProtonSettings"] = None,
         parent=None,
     ):
         super().__init__(parent=parent)
-        self.setTitle(self.tr("Compatibility"))
-        self.settings = RareAppSettings.instance()
-
+        self.settings = settings
         self.app_name: str = "default"
+
+        self.setTitle(self.tr("Compatibility"))
 
         # self.compat_label = QLabel(self.tr("Runner"))
         # self.compat_combo = QComboBox(self)
         # self.compat_stack = QStackedWidget(self)
 
-        self.wine = wine_widget(self)
+        self.wine = wine_widget(settings, rcore, self)
         self.wine.environ_changed.connect(self.environ_changed)
         # self.compat_layout = QFormLayout(self.compat)
         # self.compat_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.compat_label)
@@ -43,7 +46,7 @@ class RunnerSettingsBase(QGroupBox):
 
         self.ctool = False
         if proton_widget is not None:
-            self.ctool = proton_widget(self)
+            self.ctool = proton_widget(rcore, self)
             self.ctool.environ_changed.connect(self.environ_changed)
             self.ctool.compat_tool_enabled.connect(self.wine.compat_tool_enabled)
             self.ctool.compat_path_changed.connect(self.wine.compat_path_changed)

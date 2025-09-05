@@ -38,8 +38,14 @@ class ProtonSettings(QGroupBox):
         ISOLATED = 2
         CUSTOM = 3
 
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(ProtonSettings, self).__init__(parent=parent)
+        self.rcore = rcore
+        self.core = rcore.core()
+        self.wrappers: Wrappers = rcore.wrappers()
+        self.tool_wrapper: Optional[Wrapper] = None
+        self.app_name: str = "default"
+
         self.setTitle(self.tr("Proton"))
 
         self.tool_combo = QComboBox(self)
@@ -77,11 +83,6 @@ class ProtonSettings(QGroupBox):
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
         # layout.addRow(button_layout)
-
-        self.app_name: str = "default"
-        self.core = RareCore.instance().core()
-        self.wrappers: Wrappers = RareCore.instance().wrappers()
-        self.tool_wrapper: Optional[Wrapper] = None
 
     def _get_compat_path(self, compat_location: CompatLocation):
         folder_name = "default"
@@ -147,7 +148,7 @@ class ProtonSettings(QGroupBox):
         steam_environ = steam.get_steam_environment(steam_tool, self.compat_edit.text())
         library_paths = steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] if "STEAM_COMPAT_LIBRARY_PATHS" in steam_environ else ""
         if self.app_name != "default":
-            install_path = RareCore.instance().get_game(self.app_name).install_path
+            install_path = self.rcore.get_game(self.app_name).install_path
             library_paths = (
                 ":".join([library_paths, os.path.dirname(install_path)]) if library_paths else os.path.dirname(install_path)
             )

@@ -1,7 +1,7 @@
 import os
 import shutil
 from enum import auto
-from typing import Union, Iterator
+from typing import Iterator
 
 from PySide6.QtCore import Signal, QObject
 from legendary.lfs.utils import validate_files

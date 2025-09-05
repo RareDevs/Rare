@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel, QSizePolicy
 
 from rare.widgets.side_tab import SideTabWidget
+from rare.shared import RareCore
 from .egl_sync_group import EGLSyncGroup
 from .eos_group import EosGroup
 from .import_group import ImportGroup
@@ -11,9 +12,9 @@ from .ubisoft_group import UbisoftGroup
 
 
 class IntegrationsTabs(SideTabWidget):
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(IntegrationsTabs, self).__init__(show_back=True, parent=parent)
-        self.import_group = ImportGroup(self)
+        self.import_group = ImportGroup(rcore, self)
         self.import_widget = IntegrationsWidget(
             self.import_group,
             self.tr("To import games from Epic Games Store, please enable EGL Sync."),
@@ -21,7 +22,7 @@ class IntegrationsTabs(SideTabWidget):
         )
         self.import_index = self.addTab(self.import_widget, self.tr("Import Games"))
 
-        self.egl_sync_group = EGLSyncGroup(self)
+        self.egl_sync_group = EGLSyncGroup(rcore, self)
         self.egl_sync_widget = IntegrationsWidget(
             self.egl_sync_group,
             self.tr("To import EGL games from directories, please use Import Game."),
@@ -34,8 +35,8 @@ class IntegrationsTabs(SideTabWidget):
             self.tr(""),
             self,
         )
-        self.eos_group = EosGroup(self.eos_ubisoft)
-        self.ubisoft_group = UbisoftGroup(self.eos_ubisoft)
+        self.eos_group = EosGroup(rcore, self.eos_ubisoft)
+        self.ubisoft_group = UbisoftGroup(rcore, self.eos_ubisoft)
         self.eos_ubisoft.addWidget(self.eos_group)
         self.eos_ubisoft.addWidget(self.ubisoft_group)
         self.eos_ubisoft_index = self.addTab(self.eos_ubisoft, self.tr("Epic Overlay and Ubisoft"))

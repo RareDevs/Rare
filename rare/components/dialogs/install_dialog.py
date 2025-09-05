@@ -67,8 +67,9 @@ class InstallDialogSelectable(CollapsibleFrame):
 class InstallDialog(ActionDialog):
     result_ready = Signal(InstallQueueItemModel)
 
-    def __init__(self, rgame: RareGame, options: InstallOptionsModel, parent=None):
+    def __init__(self, settings: RareAppSettings, rgame: RareGame, options: InstallOptionsModel, parent=None):
         super(InstallDialog, self).__init__(parent=parent)
+        self.settings = settings
 
         header = self.tr("Install")
         bicon = qta_icon("ri.install-line")
@@ -84,7 +85,6 @@ class InstallDialog(ActionDialog):
             bicon = qta_icon("fa.gear", "mdi.content-save-edit-outline")
         self.setWindowTitle(game_title(header, rgame.app_title))
         self.setSubtitle(game_title(header, rgame.app_title))
-        self.settings = RareAppSettings.instance()
 
         install_widget = QWidget(self)
         self.ui = Ui_InstallDialog()
@@ -297,9 +297,9 @@ class InstallDialog(ActionDialog):
             perms_path = os.path.join(path, ".rare_perms")
             open(perms_path, "w").close()
             os.unlink(perms_path)
-        except PermissionError as e:
+        except PermissionError:
             return False, path, IndicatorReasonsCommon.PERM_NO_WRITE
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
         return True, path, IndicatorReasonsCommon.VALID
 

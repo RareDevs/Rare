@@ -74,13 +74,13 @@ class DownloadsTab(QWidget):
         queue_contents_layout = QVBoxLayout(queue_contents)
         queue_contents_layout.setContentsMargins(0, 0, 3, 0)
 
-        self.queue_group = QueueGroup(self)
+        self.queue_group = QueueGroup(rcore.image_manager(), self)
         self.queue_group.update_count.connect(self.update_queues_count)
         self.queue_group.removed.connect(self.__on_queue_removed)
         self.queue_group.force.connect(self.__on_queue_force)
         queue_contents_layout.addWidget(self.queue_group)
 
-        self.updates_group = UpdateGroup(self)
+        self.updates_group = UpdateGroup(rcore.image_manager(), self)
         self.updates_group.update_count.connect(self.update_queues_count)
         self.updates_group.enqueue.connect(self.__get_install_options)
         queue_contents_layout.addWidget(self.updates_group)
@@ -295,6 +295,7 @@ class DownloadsTab(QWidget):
         rgame = self.rcore.get_game(options.app_name)
         rgame.state = RareGame.State.DOWNLOADING
         install_dialog = InstallDialog(
+            self.settings,
             rgame,
             options=options,
             parent=self,

@@ -52,7 +52,7 @@ class MainTabWidget(QTabWidget):
         self.tab_bar.expanded = space_index
 
         # Settings Tab
-        self.settings_tab = SettingsTab(self)
+        self.settings_tab = SettingsTab(settings, rcore, self)
         self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), "")
         self.settings_tab.about.update_available_ready.connect(lambda: self.tab_bar.setTabText(self.settings_index, "(!)"))
 

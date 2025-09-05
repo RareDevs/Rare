@@ -5,9 +5,9 @@ from logging import getLogger
 
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QDialog
-from legendary.core import LegendaryCore
 from legendary.models.game import InstalledGame
 
+from rare.lgndr.core import LegendaryCore
 from rare.ui.components.tabs.library.details.cloud_sync_widget import Ui_CloudSyncWidget
 from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title

@@ -1,8 +1,9 @@
 import os
 from typing import Callable, Optional, Set, Any, Tuple
 
-from legendary.core import LegendaryCore
 from legendary.models.config import LGDConf
+
+from rare.lgndr.core import LegendaryCore
 
 _config: Optional[LGDConf] = None
 _save_config: Optional[Callable[[], None]] = None

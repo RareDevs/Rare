@@ -5,8 +5,9 @@ from rare.utils.misc import ExitCodes
 
 
 class DebugSettings(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(DebugSettings, self).__init__(parent=parent)
+        self.rcore = rcore
 
         self.raise_runtime_exception_button = QPushButton("Raise Exception", self)
         self.raise_runtime_exception_button.clicked.connect(self.raise_exception)
@@ -25,4 +26,4 @@ class DebugSettings(QWidget):
         raise RuntimeError("Debug Crash")
 
     def send_notification(self):
-        RareCore.instance().signals().application.notify.emit("Debug", "Test notification")
+        self.rcore.signals().application.notify.emit("Debug", "Test notification")

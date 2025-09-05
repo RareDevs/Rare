@@ -21,7 +21,7 @@ logger = getLogger("ListGameWidget")
 
 
 class ListGameWidget(GameWidget):
-    def __init__(self, rgame: RareGame, parent=None):
+    def __init__(self,rgame: RareGame, parent=None):
         super().__init__(rgame, parent)
         self.setObjectName(f"{rgame.app_name}")
         self.ui = ListWidget()

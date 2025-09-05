@@ -238,8 +238,11 @@ class WrapperSettingsScroll(QScrollArea):
 
 
 class WrapperSettings(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(WrapperSettings, self).__init__(parent=parent)
+        self.core = rcore.core()
+        self.wrappers = rcore.wrappers()
+        self.app_name: str = "default"
 
         self.add_button = QPushButton(self.tr("Add wrapper"), self)
         self.add_button.clicked.connect(self.__on_add)
@@ -266,10 +269,6 @@ class WrapperSettings(QWidget):
         main_layout.addWidget(self.add_button, alignment=Qt.AlignmentFlag.AlignTop)
 
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-
-        self.app_name: str = "default"
-        self.core = RareCore.instance().core()
-        self.wrappers = RareCore.instance().wrappers()
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():

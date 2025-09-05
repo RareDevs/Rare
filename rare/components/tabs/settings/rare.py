@@ -1,5 +1,5 @@
-import os
 import locale
+import os
 from logging import getLogger
 
 from PySide6.QtCore import Qt, Slot, QUrl
@@ -29,12 +29,14 @@ logger = getLogger("RareSettings")
 
 
 class RareSettings(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(RareSettings, self).__init__(parent=parent)
+        self.settings = settings
+        self.rcore = rcore
+        self.core = rcore.core()
+
         self.ui = Ui_RareSettings()
         self.ui.setupUi(self)
-        self.core = RareCore.instance().core()
-        self.settings = RareAppSettings.instance()
 
         # Select lang
         self.ui.lang_select.addItem(self.tr("System default"), app_settings.language.default)
@@ -80,7 +82,7 @@ class RareSettings(QWidget):
             self.ui.view_combo.setCurrentIndex(0)
         self.ui.view_combo.currentIndexChanged.connect(self.on_view_combo_changed)
 
-        self.discord_rpc_settings = DiscordRPCSettings(self)
+        self.discord_rpc_settings = DiscordRPCSettings(settings, rcore.signals(), self)
         self.ui.right_layout.insertWidget(1, self.discord_rpc_settings, alignment=Qt.AlignmentFlag.AlignTop)
 
         self.ui.sys_tray_close.setChecked(self.settings.get_value(app_settings.sys_tray_close))

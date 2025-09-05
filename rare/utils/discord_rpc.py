@@ -14,13 +14,14 @@ logger = getLogger("DiscordRPC")
 
 
 class DiscordRPC(QObject):
-    def __init__(self):
-        super(DiscordRPC, self).__init__()
-        self.rpc = None
-        self.core = RareCore.instance().core()
-        self.signals = RareCore.instance().signals()
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
+        super(DiscordRPC, self).__init__(parent=parent)
+        self.settings = settings
+        self.core = rcore.core()
+        self.signals = rcore.signals()
 
-        self.settings = RareAppSettings.instance()
+        self.rpc = None
+
         rpc_mode = DiscordRPCMode(self.settings.get_value(app_settings.discord_rpc_mode))
         if rpc_mode == DiscordRPCMode.ALWAYS:  # show always
             self.set_discord_rpc()

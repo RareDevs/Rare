@@ -8,6 +8,7 @@ from PySide6.QtCore import QObject, Signal, QThreadPool, Slot, Qt
 from PySide6.QtGui import QShowEvent, QHideEvent
 from PySide6.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
 
+from rare.lgndr.core import LegendaryCore
 from rare.models.settings import app_settings, RareAppSettings
 from rare.shared import RareCore
 from rare.shared.workers.worker import Worker
@@ -26,10 +27,10 @@ class RefreshGameMetaWorker(Worker):
     class Signals(QObject):
         finished = Signal()
 
-    def __init__(self, platforms: Set[str], include_unreal: bool):
+    def __init__(self, core: LegendaryCore, platforms: Set[str], include_unreal: bool):
         super(RefreshGameMetaWorker, self).__init__()
+        self.core = core
         self.signals = RefreshGameMetaWorker.Signals()
-        self.core = RareCore.instance().core()
         self.platforms = platforms if platforms else {"Windows"}
         self.skip_ue = not include_unreal
 
@@ -40,13 +41,14 @@ class RefreshGameMetaWorker(Worker):
 
 
 class LegendarySettings(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(LegendarySettings, self).__init__(parent=parent)
         self.ui = Ui_LegendarySettings()
         self.ui.setupUi(self)
 
-        self.core = RareCore.instance().core()
-        self.settings = RareAppSettings.instance()
+        self.settings = settings
+        self.rcore = rcore
+        self.core = rcore.core()
 
         # Platform specific installation directory for macOS games
         if pf.system() == "Darwin":
@@ -182,9 +184,9 @@ class LegendarySettings(QWidget):
             perms_path = os.path.join(path, ".rare_perms")
             open(perms_path, "w").close()
             os.unlink(perms_path)
-        except PermissionError as e:
+        except PermissionError:
             return False, path, IndicatorReasonsCommon.PERM_NO_WRITE
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
         return True, path, IndicatorReasonsCommon.VALID
 

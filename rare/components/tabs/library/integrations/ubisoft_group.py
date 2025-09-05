@@ -98,14 +98,14 @@ class UbiConnectWorker(Worker):
 
 
 class UbiLinkWidget(QFrame):
-    def __init__(self, game: Game, ubi_account_id, activated: bool = False, parent=None):
+    def __init__(self, rcore: RareCore, game: Game, ubi_account_id, activated: bool = False, parent=None):
         super(UbiLinkWidget, self).__init__(parent=parent)
-        self.setFrameShape(QFrame.Shape.StyledPanel)
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-
-        self.args = RareCore.instance().args()
+        self.args = rcore.args()
         self.game = game
         self.ubi_account_id = ubi_account_id
+
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         self.redeem_indicator = QLabel(parent=self)
         self.redeem_indicator.setPixmap(qta_icon("fa.circle-o", "fa5.circle", color="grey").pixmap(20, 20))
@@ -161,12 +161,13 @@ class UbiLinkWidget(QFrame):
 
 
 class UbisoftGroup(QGroupBox):
-    def __init__(self, parent=None):
+    def __init__(self, rcore: RareCore, parent=None):
         super(UbisoftGroup, self).__init__(parent=parent)
+        self.rcore = rcore
+        self.core = rcore.core()
+        self.args = rcore.args()
+
         self.setTitle(self.tr("Link Ubisoft Games"))
-        self.rcore = RareCore.instance()
-        self.core = RareCore.instance().core()
-        self.args = RareCore.instance().args()
 
         self.thread_pool = QThreadPool.globalInstance()
         self.worker: Optional[UbiGetInfoWorker] = None

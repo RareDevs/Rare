@@ -5,9 +5,9 @@ from logging import getLogger
 
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import QFrame, QFileDialog
-from legendary.core import LegendaryCore
 from legendary.lfs.wine_helpers import get_shell_folders, read_registry
 
+from rare.lgndr.core import LegendaryCore
 from rare.ui.components.dialogs.login.import_login import Ui_ImportLogin
 
 logger = getLogger("ImportLogin")
