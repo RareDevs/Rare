@@ -100,6 +100,7 @@ class UbiConnectWorker(Worker):
 class UbiLinkWidget(QFrame):
     def __init__(self, rcore: RareCore, game: Game, ubi_account_id, activated: bool = False, parent=None):
         super(UbiLinkWidget, self).__init__(parent=parent)
+        self.core = rcore.core()
         self.args = rcore.args()
         self.game = game
         self.ubi_account_id = ubi_account_id
@@ -136,13 +137,9 @@ class UbiLinkWidget(QFrame):
         self.redeem_indicator.setPixmap(qta_icon("mdi.transit-connection-horizontal", color="grey").pixmap(20, 20))
 
         if self.args.debug:
-            worker = UbiConnectWorker(RareCore.instance().core(), None, None)
+            worker = UbiConnectWorker(self.core, None, None)
         else:
-            worker = UbiConnectWorker(
-                RareCore.instance().core(),
-                self.ubi_account_id,
-                self.game.partner_link_id,
-            )
+            worker = UbiConnectWorker(self.core, self.ubi_account_id, self.game.partner_link_id)
         worker.signals.linked.connect(self.worker_finished)
         QThreadPool.globalInstance().start(worker)
 

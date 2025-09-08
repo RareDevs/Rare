@@ -1,18 +1,18 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 
-from rare.shared import RareCore
+from rare.models.signals import GlobalSignals
 from rare.utils.misc import ExitCodes
 
 
 class DebugSettings(QWidget):
-    def __init__(self, rcore: RareCore, parent=None):
+    def __init__(self, signals: GlobalSignals, parent=None):
         super(DebugSettings, self).__init__(parent=parent)
-        self.rcore = rcore
+        self.signals = signals
 
         self.raise_runtime_exception_button = QPushButton("Raise Exception", self)
         self.raise_runtime_exception_button.clicked.connect(self.raise_exception)
         self.restart_button = QPushButton("Restart", self)
-        self.restart_button.clicked.connect(lambda: RareCore.instance().signals().application.quit.emit(ExitCodes.LOGOUT))
+        self.restart_button.clicked.connect(lambda: self.signals.application.quit.emit(ExitCodes.LOGOUT))
         self.send_notification_button = QPushButton("Notify", self)
         self.send_notification_button.clicked.connect(self.send_notification)
 
@@ -26,4 +26,4 @@ class DebugSettings(QWidget):
         raise RuntimeError("Debug Crash")
 
     def send_notification(self):
-        self.rcore.signals().application.notify.emit("Debug", "Test notification")
+        self.signals.application.notify.emit("Debug", "Test notification")

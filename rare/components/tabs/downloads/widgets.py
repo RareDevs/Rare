@@ -6,12 +6,12 @@ from PySide6.QtWidgets import QWidget, QFrame
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
 
+from rare.lgndr.core import LegendaryCore
 from rare.models.install import (
     InstallQueueItemModel,
     InstallOptionsModel,
     InstallDownloadModel,
 )
-from rare.shared import RareCore
 from rare.shared.image_manager import ImageManager
 from rare.shared.workers.install import InstallInfoWorker
 from rare.ui.components.tabs.downloads.queue_base_widget import Ui_QueueBaseWidget
@@ -117,7 +117,7 @@ class QueueWidget(QFrame):
     # InstallQueueItemModel
     force = Signal(InstallQueueItemModel)
 
-    def __init__(self, imgmgr: ImageManager, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None):
+    def __init__(self, core: LegendaryCore, imgmgr: ImageManager, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None):
         super(QueueWidget, self).__init__(parent=parent)
         self.ui = Ui_QueueBaseWidget()
         self.ui.setupUi(self)
@@ -126,7 +126,7 @@ class QueueWidget(QFrame):
 
         if not item:
             self.ui.queue_buttons.setEnabled(False)
-            worker = InstallInfoWorker(RareCore.instance().core(), item.options)
+            worker = InstallInfoWorker(core, item.options)
             worker.signals.result.connect(self.__update_info)
             worker.signals.failed.connect(
                 lambda m: logger.error(f"Failed to requeue download for {item.options.app_name} with error: {m}")
