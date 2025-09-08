@@ -14,7 +14,6 @@ from .rare import RareSettings
 class SettingsTab(SideTabWidget):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(SettingsTab, self).__init__(parent=parent)
-        self.args = rcore.args()
 
         rare_settings = RareSettings(settings, rcore, self)
         self.rare_index = self.addTab(rare_settings, "Rare")
@@ -34,8 +33,8 @@ class SettingsTab(SideTabWidget):
         self.about_index = self.addTab(self.about, title, title)
         self.about.update_available_ready.connect(lambda: self.tabBar().setTabText(self.about_index, "About (!)"))
 
-        if self.args.debug:
+        if rcore.args().debug:
             title = self.tr("Debug")
-            self.debug_index = self.addTab(DebugSettings(rcore, self), title, title)
+            self.debug_index = self.addTab(DebugSettings(rcore.signals(), self), title, title)
 
         self.setCurrentIndex(self.rare_index)

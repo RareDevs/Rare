@@ -74,7 +74,7 @@ class DownloadsTab(QWidget):
         queue_contents_layout = QVBoxLayout(queue_contents)
         queue_contents_layout.setContentsMargins(0, 0, 3, 0)
 
-        self.queue_group = QueueGroup(rcore.image_manager(), self)
+        self.queue_group = QueueGroup(rcore.core(), rcore.image_manager(), self)
         self.queue_group.update_count.connect(self.update_queues_count)
         self.queue_group.removed.connect(self.__on_queue_removed)
         self.queue_group.force.connect(self.__on_queue_force)

@@ -23,16 +23,16 @@ class RareException(RareAppException):
         super(RareException, self).__init__(parent=parent)
 
     def _handler(self, exc_type, exc_value, exc_tb) -> bool:
-        if exc_type == HTTPError:
-            try:
-                if RareCore.instance() is not None:
-                    if RareCore.instance().core().login():
-                        return True
-                raise ValueError
-            except Exception as e:
-                self.logger.fatal(str(e))
-                QMessageBox.warning(None, "Error", self.tr("Failed to login"))
-                QApplication.quit()
+        # if exc_type == HTTPError:
+        #     try:
+        #         if RareCore.instance() is not None:
+        #             if RareCore.instance().core().login():
+        #                 return True
+        #         raise ValueError
+        #     except Exception as e:
+        #         self.logger.fatal(str(e))
+        #         QMessageBox.warning(None, "Error", self.tr("Failed to login"))
+        #         QApplication.quit()
         return False
 
 

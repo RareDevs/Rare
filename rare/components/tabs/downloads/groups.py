@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 )
 from legendary.models.game import Game, InstalledGame
 
+from rare.lgndr.core import LegendaryCore
 from rare.components.tabs.downloads.widgets import QueueWidget, UpdateWidget
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
 from rare.shared.image_manager import ImageManager
@@ -90,7 +91,7 @@ class QueueGroup(QGroupBox):
     removed = Signal(str)
     force = Signal(InstallQueueItemModel)
 
-    def __init__(self, imgmgr: ImageManager, parent=None):
+    def __init__(self, core: LegendaryCore, imgmgr: ImageManager, parent=None):
         super(QueueGroup, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         self.setTitle(self.tr("Queue"))
@@ -107,6 +108,7 @@ class QueueGroup(QGroupBox):
         layout.addWidget(self.__text)
         layout.addWidget(self.__container)
 
+        self.core = core
         self.imgmgr = imgmgr
         self.__queue: Deque[str] = deque()
 
@@ -129,7 +131,7 @@ class QueueGroup(QGroupBox):
         self.update_count.emit(count)
 
     def __create_widget(self, item: InstallQueueItemModel, old_igame: InstalledGame) -> QueueWidget:
-        widget: QueueWidget = QueueWidget(self.imgmgr, item, old_igame, parent=self.__container)
+        widget: QueueWidget = QueueWidget(self.core, self.imgmgr, item, old_igame, parent=self.__container)
         widget.toggle_arrows(self.__queue.index(item.options.app_name), len(self.__queue))
         widget.destroyed.connect(self.__update_group)
         widget.destroyed.connect(self.__update_arrows)
