@@ -42,6 +42,7 @@ class DLManager(DLManagerReal):
         self.writer_queue = MPQueue(-1)
         self.dl_result_q = MPQueue(-1)
         self.writer_result_q = MPQueue(-1)
+        self.signed_chunks_q = MPQueue(-1)
 
         self.log.info(f'Starting download workers...')
 
@@ -78,11 +79,13 @@ class DLManager(DLManagerReal):
         # synchronization conditions
         shm_cond = Condition()
         task_cond = Condition()
-        self.conditions = [shm_cond, task_cond]
+        sig_chunks_cond = Condition()
+        self.conditions = [shm_cond, task_cond, sig_chunks_cond]
 
         # start threads
         s_time = time.perf_counter()
-        self.threads.append(Thread(target=self.download_job_manager, args=(task_cond, shm_cond)))
+        self.threads.append(Thread(target=self.chunk_signing_manager, args=(sig_chunks_cond,)))
+        self.threads.append(Thread(target=self.download_job_manager, args=(task_cond, shm_cond, sig_chunks_cond)))
         self.threads.append(Thread(target=self.dl_results_handler, args=(task_cond,)))
         self.threads.append(Thread(target=self.fw_results_handler, args=(shm_cond,)))
 
@@ -202,6 +205,7 @@ class DLManager(DLManagerReal):
 
         self.log.info('Waiting for installation to finish...')
         self.writer_queue.put_nowait(TerminateWorkerTask())
+        self.signed_chunks_q.put_nowait((TerminateWorkerTask(), None))
 
         writer_p.join(timeout=10.0)
         if writer_p.exitcode is None:

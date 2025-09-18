@@ -24,6 +24,7 @@ class InstallOptionsModel:
     no_install: bool = False
     ignore_space: bool = False
     reset_sdl: bool = False
+    disable_https: bool = False
     skip_dlcs: bool = False
     with_dlcs: bool = False
     # Rare's internal arguments

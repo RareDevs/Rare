@@ -75,11 +75,13 @@ class LegendaryCore(LegendaryCoreReal):
                          override_old_manifest: str = '', override_base_url: str = '',
                          platform: str = 'Windows', file_prefix_filter: list = None,
                          file_exclude_filter: list = None, file_install_tag: list = None,
+                         read_files: bool = False,
                          dl_optimizations: bool = False, dl_timeout: int = 10,
                          repair: bool = False, repair_use_latest: bool = False,
                          disable_delta: bool = False, override_delta_manifest: str = '',
                          egl_guid: str = '', preferred_cdn: str = None,
-                         disable_https: bool = False, bind_ip: str = None) -> (DLManager, AnalysisResult, ManifestMeta):
+                         disable_https: bool = False, bind_ip: str = None, always_use_signed_urls: bool = False
+                         ) -> tuple[DLManager, AnalysisResult, InstalledGame]:
         dlm, analysis, igame = super(LegendaryCore, self).prepare_download(
             game=game, base_game=base_game, base_path=base_path,
             status_q=status_q, max_shm=max_shm, max_workers=max_workers,
@@ -88,11 +90,12 @@ class LegendaryCore(LegendaryCoreReal):
             override_old_manifest=override_old_manifest, override_base_url=override_base_url,
             platform=platform, file_prefix_filter=file_prefix_filter,
             file_exclude_filter=file_exclude_filter, file_install_tag=file_install_tag,
+            read_files=read_files,
             dl_optimizations=dl_optimizations, dl_timeout=dl_timeout,
             repair=repair, repair_use_latest=repair_use_latest,
             disable_delta=disable_delta, override_delta_manifest=override_delta_manifest,
             egl_guid=egl_guid, preferred_cdn=preferred_cdn,
-            disable_https=disable_https, bind_ip=bind_ip,
+            disable_https=disable_https, bind_ip=bind_ip, always_use_signed_urls=always_use_signed_urls
         )
         # lk: monkeypatch run_real (the method that emits the stats) into DLManager
         # pylint: disable=E1111
