@@ -1,13 +1,14 @@
 from abc import abstractmethod
-from typing import Tuple, Union, Type, TypeVar
+from typing import Tuple, Type, TypeVar, Union
 
-from PySide6.QtCore import QObject, Slot, Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtCore import QObject, Qt, Slot
+from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget
 
 from rare.models.enumerations import LibraryFilter, LibraryOrder, LibraryView
 from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.widgets.library_layout import LibraryLayout
+
 from .icon_game_widget import IconGameWidget
 from .list_game_widget import ListGameWidget
 

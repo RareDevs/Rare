@@ -1,18 +1,19 @@
 from logging import getLogger
 
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication
 
 from rare.components.tabs.store.constants import (
-    wishlist_query,
     search_query,
     wishlist_add_query,
+    wishlist_query,
     wishlist_remove_query,
 )
 from rare.utils.paths import cache_dir
 from rare.utils.qt_requests import QtRequests
-from .api.models.query import SearchStoreQuery
+
 from .api.models.diesel import DieselProduct
+from .api.models.query import SearchStoreQuery
 from .api.models.response import (
     ResponseModel,
 )

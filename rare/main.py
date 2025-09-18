@@ -133,7 +133,7 @@ def main() -> int:
         return 0
 
     if args.version:
-        from rare import __version__, __codename__
+        from rare import __codename__, __version__
 
         print(f"Rare {__version__} Codename: {__codename__}")
         return 0

@@ -1,5 +1,5 @@
 import os
-from typing import Union, Type
+from typing import Type, Union
 
 import qstylizer.style
 from PySide6.QtCore import QObject

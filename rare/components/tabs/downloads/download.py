@@ -1,12 +1,12 @@
 from PySide6.QtCore import QRect, Qt
 from PySide6.QtGui import (
-    QPixmap,
-    QImage,
-    QPainter,
     QBrush,
+    QImage,
     QLinearGradient,
+    QPainter,
     QPaintEvent,
     QPalette,
+    QPixmap,
 )
 
 from rare.ui.components.tabs.downloads.download_widget import Ui_DownloadWidget

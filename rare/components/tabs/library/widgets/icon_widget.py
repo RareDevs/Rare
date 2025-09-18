@@ -1,13 +1,13 @@
-from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QSize, Qt
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
     QGraphicsOpacityEffect,
-    QSpacerItem,
-    QSizePolicy,
     QHBoxLayout,
     QLabel,
     QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from rare.utils.misc import qta_icon

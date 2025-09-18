@@ -2,34 +2,34 @@ import platform as pf
 import shlex
 import shutil
 from logging import getLogger
-from typing import Optional, Tuple, Iterable
+from typing import Iterable, Optional, Tuple
 
-from PySide6.QtCore import Signal, QSize, Qt, QMimeData, Slot, QObject, QEvent
+from PySide6.QtCore import QEvent, QMimeData, QObject, QSize, Qt, Signal, Slot
 from PySide6.QtGui import (
+    QAction,
     QDrag,
-    QDropEvent,
     QDragEnterEvent,
     QDragMoveEvent,
+    QDropEvent,
     QFont,
-    QAction,
     QMouseEvent,
-    QShowEvent,
     QResizeEvent,
+    QShowEvent,
 )
 from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFrame,
     QHBoxLayout,
     QLabel,
-    QFrame,
-    QMessageBox,
-    QSizePolicy,
-    QWidget,
-    QScrollArea,
-    QMenu,
-    QPushButton,
     QLineEdit,
+    QMenu,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
     QVBoxLayout,
-    QComboBox,
-    QCheckBox,
+    QWidget,
 )
 
 from rare.models.wrapper import Wrapper

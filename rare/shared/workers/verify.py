@@ -1,13 +1,14 @@
 import os
 from argparse import Namespace
 
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import QObject, Signal
 
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.arguments import LgndrVerifyGameArgs
 from rare.lgndr.glue.monkeys import LgndrIndirectStatus, verify_stdout_factory
 from rare.models.game import RareGame
+
 from .worker import QueueWorker, QueueWorkerInfo
 
 

@@ -7,20 +7,20 @@ from logging import getLogger
 from threading import Lock
 from typing import Dict, List, Optional, Set, Tuple
 
-from PySide6.QtCore import QProcess, QRunnable, QThreadPool, Slot
-from PySide6.QtGui import QPixmap
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
+from PySide6.QtCore import QProcess, QRunnable, QThreadPool, Slot
+from PySide6.QtGui import QPixmap
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameBase, RareGameSlim
 from rare.models.image import ImageSize
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
-from rare.models.settings import app_settings, RareAppSettings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils import config_helper as config
-from rare.utils.paths import data_dir, get_rare_executable, compat_shaders_dir
+from rare.utils.paths import compat_shaders_dir, data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
 from rare.utils.workarounds import apply_workarounds
 

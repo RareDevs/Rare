@@ -1,11 +1,11 @@
 import locale
 import platform as pf
 from argparse import Namespace
-from typing import Any, Type, Optional
+from typing import Any, Optional, Type
 
 from PySide6.QtCore import QSettings
 
-from .enumerations import LibraryFilter, LibraryOrder, LibraryView, DiscordRPCMode
+from .enumerations import DiscordRPCMode, LibraryFilter, LibraryOrder, LibraryView
 
 
 class Setting(Namespace):

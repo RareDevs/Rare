@@ -5,10 +5,10 @@ import shutil
 from argparse import Namespace
 from dataclasses import dataclass, field
 from logging import getLogger
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
 
-from PySide6.QtCore import QProcess, QProcessEnvironment
 from legendary.models.game import LaunchParameters
+from PySide6.QtCore import QProcess, QProcessEnvironment
 
 from rare.models.base_game import RareGameSlim
 from rare.utils.paths import setup_compat_shaders_dir

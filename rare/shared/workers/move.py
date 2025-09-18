@@ -3,15 +3,16 @@ import shutil
 from enum import auto
 from typing import Iterator
 
-from PySide6.QtCore import Signal, QObject
 from legendary.lfs.utils import validate_files
 from legendary.models.game import VerifyResult
+from PySide6.QtCore import QObject, Signal
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.utils.misc import path_size
 from rare.widgets.indicator_edit import IndicatorReasons, IndicatorReasonsCommon
-from .worker import Worker, QueueWorker, QueueWorkerInfo
+
+from .worker import QueueWorker, QueueWorkerInfo, Worker
 
 
 class MovePathEditReasons(IndicatorReasons):

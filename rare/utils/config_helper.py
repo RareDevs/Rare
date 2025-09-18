@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Optional, Set, Any, Tuple
+from typing import Any, Callable, Optional, Set, Tuple
 
 from legendary.models.config import LGDConf
 

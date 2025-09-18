@@ -2,13 +2,12 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import (
     QProxyStyle,
-    QTabBar,
     QStyle,
     QStyleOption,
-    QWidget,
     QStyleOptionTab,
+    QTabBar,
+    QWidget,
 )
-
 
 # NOTE: possible styling conflicts
 #

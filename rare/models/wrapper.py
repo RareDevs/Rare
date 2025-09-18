@@ -1,7 +1,7 @@
 import os
 import shlex
-from hashlib import md5
 from enum import IntEnum
+from hashlib import md5
 from typing import Dict, List, Union
 
 

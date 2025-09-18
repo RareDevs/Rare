@@ -1,15 +1,15 @@
 import os
 from enum import IntEnum
 from logging import getLogger
-from typing import Tuple, Union, Optional
+from typing import Optional, Tuple, Union
 
-from PySide6.QtCore import Signal, Slot, Qt
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
-    QGroupBox,
+    QComboBox,
     QFileDialog,
     QFormLayout,
-    QComboBox,
+    QGroupBox,
     QHBoxLayout,
 )
 
@@ -19,7 +19,7 @@ from rare.shared.wrappers import Wrappers
 from rare.utils import config_helper as lgd_conf
 from rare.utils.compat import steam
 from rare.utils.paths import proton_compat_dir
-from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 logger = getLogger("ProtonSettings")
 
@@ -191,7 +191,8 @@ class ProtonSettings(QGroupBox):
         lgd_conf.adjust_compat_data_path(self.app_name, compat_path)
         self.compat_edit.setText(compat_path)
         self.compat_edit.setEnabled(
-            compat_location not in {
+            compat_location
+            not in {
                 ProtonSettings.CompatLocation.SHARED,
                 ProtonSettings.CompatLocation.ISOLATED,
             }

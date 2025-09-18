@@ -13,14 +13,13 @@ readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 classifiers = [
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent"
 ]
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 dependencies = [
     "requests < 3.0",
     "PySide6-Essentials >= 6.8.1, != 6.9.2",
@@ -122,16 +121,29 @@ windows-console-mode = "disable"
 windows-icon-from-ico = "rare/resources/images/Rare.ico"
 
 [tool.black]
-line-length = 120
-target-version = ['py39', 'py310', 'py311', 'py312', 'py313']
+line-length = 130
+indent-width = 4
 include = '\.py$'
 force-exclude = '''
 /(
     | rare/ui
-    | rare/legendary
+    | rare/lgndr
     | rare/resources
 )/
 '''
+
+[tool.ruff]
+include = ["pyproject.toml", "rare/*.py"]
+exclude = ["rare/ui", "rare/lgndr"]
+line-length = 130
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["I"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.poetry]
 name = "Rare"
@@ -148,7 +160,6 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "^3.9"
 requests = "^2.28.1"
 PySide6-Essentials = "^6.8.1"
 QtAwesome = "^1.1.1"

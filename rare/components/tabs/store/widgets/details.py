@@ -4,11 +4,11 @@ from typing import List
 from PySide6.QtCore import Qt, QUrl, Signal
 from PySide6.QtGui import QDesktopServices, QKeyEvent
 from PySide6.QtWidgets import (
-    QWidget,
+    QGridLayout,
     QLabel,
     QPushButton,
-    QGridLayout,
     QSizePolicy,
+    QWidget,
 )
 
 from rare.components.tabs.store.api.models.diesel import (
@@ -22,7 +22,8 @@ from rare.models.image import ImageSize
 from rare.ui.components.tabs.store.details import Ui_StoreDetailsWidget
 from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
-from rare.widgets.side_tab import SideTabWidget, SideTabContents
+from rare.widgets.side_tab import SideTabContents, SideTabWidget
+
 from .image import LoadingImageWidget
 
 logger = getLogger("StoreDetails")

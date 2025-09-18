@@ -1,7 +1,8 @@
-from PySide6.QtGui import QShowEvent, QHideEvent
+from PySide6.QtGui import QHideEvent, QShowEvent
 
 from rare.lgndr.core import LegendaryCore
 from rare.widgets.side_tab import SideTabWidget
+
 from .landing import LandingPage
 from .search import SearchPage
 from .store_api import StoreAPI

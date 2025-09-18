@@ -3,16 +3,16 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 
-from PySide6.QtCore import QObject, Signal, QRunnable, QThreadPool
 from legendary.lfs import eos
-from legendary.models.game import SaveGameFile, SaveGameStatus, Game, InstalledGame
+from legendary.models.game import Game, InstalledGame, SaveGameFile, SaveGameStatus
 from legendary.utils.selective_dl import get_sdl_appname
+from PySide6.QtCore import QObject, QRunnable, QThreadPool, Signal
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.install import UninstallOptionsModel, InstallOptionsModel
-from rare.models.settings import app_settings, RareAppSettings
+from rare.models.install import InstallOptionsModel, UninstallOptionsModel
+from rare.models.settings import RareAppSettings, app_settings
 
 logger = getLogger("RareGameBase")
 
@@ -236,7 +236,9 @@ class RareGameSlim(RareGameBase):
             latest = self.latest_save
             # lk: if the save path wasn't known at startup, dt_local will be None
             # In that case resolve the save again before returning
-            latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(self.save_path, self.igame.save_timestamp, latest.file)
+            latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
+                self.save_path, self.igame.save_timestamp, latest.file
+            )
             return latest.status, (latest.dt_local, latest.dt_remote)
         return SaveGameStatus.NO_SAVE, (None, None)
 

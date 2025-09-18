@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from logging import getLogger
-from typing import List, Dict, Any, Type, Tuple
+from typing import Any, Dict, List, Tuple, Type
 
 from .utils import parse_date
 

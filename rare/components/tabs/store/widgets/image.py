@@ -1,15 +1,15 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import (
-    QPixmap,
     QImage,
+    QPixmap,
 )
 from PySide6.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
-    QSpacerItem,
-    QSizePolicy,
     QHBoxLayout,
     QLabel,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from rare.utils.qt_requests import QtRequests

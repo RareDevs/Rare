@@ -6,7 +6,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QWidget
 
-from rare import __version__, __codename__
+from rare import __codename__, __version__
 from rare.ui.components.tabs.settings.about import Ui_About
 from rare.utils.qt_requests import QtRequests
 

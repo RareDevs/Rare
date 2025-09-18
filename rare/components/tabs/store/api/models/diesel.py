@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from logging import getLogger
-from typing import List, Dict, Any, Type, Tuple
+from typing import Any, Dict, List, Tuple, Type
 
 logger = getLogger("DieselModels")
 

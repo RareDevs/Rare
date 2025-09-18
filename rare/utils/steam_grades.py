@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from enum import Enum
 from logging import getLogger
-from typing import Tuple, Dict
+from typing import Dict, Tuple
 
 import orjson
 import requests

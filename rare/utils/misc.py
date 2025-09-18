@@ -1,19 +1,19 @@
 import os
 from enum import IntEnum
 from logging import getLogger
-from typing import Union, Type, Dict, Tuple, Iterable
+from typing import Dict, Iterable, Tuple, Type, Union
 
 import qtawesome
 from PySide6.QtCore import (
+    QDirIterator,
+    QFile,
+    QLocale,
     QObject,
     QSettings,
-    QFile,
     Qt,
-    QLocale,
-    QDirIterator,
 )
-from PySide6.QtGui import QPalette, QColor, QFontMetrics
-from PySide6.QtWidgets import QApplication, QStyleFactory, QLabel
+from PySide6.QtGui import QColor, QFontMetrics, QPalette
+from PySide6.QtWidgets import QApplication, QLabel, QStyleFactory
 from shiboken6.Shiboken import Object as ShibokenObject
 
 from rare.utils.paths import resources_path

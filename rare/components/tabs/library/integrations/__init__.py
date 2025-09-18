@@ -1,10 +1,11 @@
 from typing import Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel, QSizePolicy
+from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
 
-from rare.widgets.side_tab import SideTabWidget
 from rare.shared import RareCore
+from rare.widgets.side_tab import SideTabWidget
+
 from .egl_sync_group import EGLSyncGroup
 from .eos_group import EosGroup
 from .import_group import ImportGroup

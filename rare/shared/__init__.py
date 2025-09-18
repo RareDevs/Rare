@@ -7,4 +7,4 @@ and only ONCE!
 
 from .rare_core import RareCore
 
-__all__ = ['RareCore']
+__all__ = ["RareCore"]

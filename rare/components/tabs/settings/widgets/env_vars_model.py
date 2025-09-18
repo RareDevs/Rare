@@ -4,7 +4,7 @@ import sys
 from collections import ChainMap
 from typing import Any, Union
 
-from PySide6.QtCore import Qt, QModelIndex, QAbstractTableModel, Slot
+from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt, Slot
 from PySide6.QtGui import QFont
 
 from rare.lgndr.core import LegendaryCore
@@ -277,13 +277,13 @@ if __name__ == "__main__":
     from PySide6.QtWidgets import (
         QApplication,
         QDialog,
-        QVBoxLayout,
-        QTableView,
         QHeaderView,
+        QTableView,
+        QVBoxLayout,
     )
 
-    from rare.utils.misc import set_style_sheet
     from rare.lgndr.core import LegendaryCore
+    from rare.utils.misc import set_style_sheet
 
     class MainDialog(QDialog):
         def __init__(self):

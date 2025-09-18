@@ -3,10 +3,10 @@ import time
 from logging import getLogger
 from typing import List
 
-from PySide6.QtCore import QObject, Slot
 from pypresence import Presence, exceptions
+from PySide6.QtCore import QObject, Slot
 
-from rare.models.settings import app_settings, RareAppSettings, DiscordRPCMode
+from rare.models.settings import DiscordRPCMode, RareAppSettings, app_settings
 from rare.shared import RareCore
 
 client_id = "830732538225360908"

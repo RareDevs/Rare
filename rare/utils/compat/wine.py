@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 from logging import getLogger
-from typing import Dict, Tuple, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 logger = getLogger("Wine")
 

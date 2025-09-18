@@ -2,10 +2,10 @@ import os
 from logging import getLogger
 from typing import Tuple
 
+from legendary.models.game import Game, InstalledGame
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QFileDialog, QComboBox, QLineEdit
-from legendary.models.game import Game, InstalledGame
+from PySide6.QtWidgets import QComboBox, QFileDialog, QLineEdit
 
 from rare.components.tabs.settings.game import GameSettingsBase
 from rare.components.tabs.settings.widgets.env_vars import EnvVars
@@ -15,7 +15,7 @@ from rare.models.game import RareGame
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
-from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 logger = getLogger("LocalGameSettings")
 
@@ -144,11 +144,7 @@ class LocalEnvVars(EnvVars):
 class LocalGameSettings(GameSettingsBase):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(LocalGameSettings, self).__init__(
-            settings,
-            rcore,
-            launch_widget=LocalLaunchSettings,
-            envvar_widget=LocalEnvVars,
-            parent=parent
+            settings, rcore, launch_widget=LocalLaunchSettings, envvar_widget=LocalEnvVars, parent=parent
         )
 
     def load_settings(self, rgame: RareGame):

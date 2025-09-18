@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from hashlib import md5
 from logging import getLogger
-from typing import Optional, Union, List, Dict, Set
+from typing import Dict, List, Optional, Set, Union
 
 import vdf
 

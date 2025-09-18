@@ -5,7 +5,7 @@ import shutil
 import sys
 from logging import getLogger
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 
 from PySide6.QtCore import QStandardPaths
 

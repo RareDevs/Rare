@@ -4,26 +4,26 @@ from logging import getLogger
 from typing import Optional
 
 from PySide6.QtCore import (
-    QRunnable,
     QObject,
-    Signal,
-    QThreadPool,
-    Qt,
-    Slot,
+    QRunnable,
     QSize,
+    Qt,
+    QThreadPool,
     QUrl,
+    Signal,
+    Slot,
 )
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
-    QGroupBox,
-    QMessageBox,
-    QFrame,
-    QHBoxLayout,
-    QSizePolicy,
-    QLabel,
-    QPushButton,
-    QFormLayout,
     QComboBox,
+    QFormLayout,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QPushButton,
+    QSizePolicy,
 )
 
 from rare.lgndr.core import LegendaryCore

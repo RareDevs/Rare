@@ -1,21 +1,21 @@
 import os
 import platform
 import shutil
+from dataclasses import asdict
 from logging import getLogger
 from pathlib import Path
-from typing import Optional, List, Dict
-from dataclasses import asdict
+from typing import Dict, List, Optional
 
 import vdf
 
+from rare.models.steam import SteamShortcut, SteamUser
 from rare.utils.paths import (
-    image_icon_path,
-    image_wide_path,
-    image_tall_path,
     desktop_icon_path,
     get_rare_executable,
+    image_icon_path,
+    image_tall_path,
+    image_wide_path,
 )
-from rare.models.steam import SteamUser, SteamShortcut
 
 if platform.system() == "Windows":
     # noinspection PyUnresolvedReferences

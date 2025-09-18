@@ -1,20 +1,20 @@
 from collections import deque
 from enum import IntEnum
 from logging import getLogger
-from typing import Optional, Deque
+from typing import Deque, Optional
 
-from PySide6.QtCore import Signal, Slot, Qt
+from legendary.models.game import Game, InstalledGame
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
-    QWidget,
     QGroupBox,
-    QVBoxLayout,
     QLabel,
     QSizePolicy,
+    QVBoxLayout,
+    QWidget,
 )
-from legendary.models.game import Game, InstalledGame
 
-from rare.lgndr.core import LegendaryCore
 from rare.components.tabs.downloads.widgets import QueueWidget, UpdateWidget
+from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, InstallQueueItemModel
 from rare.shared.image_manager import ImageManager
 from rare.utils.misc import widget_object_name

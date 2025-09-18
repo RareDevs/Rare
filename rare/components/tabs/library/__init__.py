@@ -2,15 +2,16 @@ from logging import getLogger
 
 from PySide6.QtCore import Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QScrollArea, QFrame
+from PySide6.QtWidgets import QFrame, QScrollArea, QStackedWidget, QVBoxLayout, QWidget
 
 from rare.models.game import RareGame
-from rare.models.settings import app_settings, RareAppSettings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
+
 from .details import GameInfoTabs
 from .head_bar import LibraryHeadBar
 from .integrations import IntegrationsTabs
-from .widgets import LibraryWidgetController, LibraryFilter, LibraryOrder, LibraryView
+from .widgets import LibraryFilter, LibraryOrder, LibraryView, LibraryWidgetController
 
 logger = getLogger("GamesLibrary")
 

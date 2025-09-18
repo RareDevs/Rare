@@ -3,7 +3,7 @@ import platform as pf
 import subprocess
 from configparser import ConfigParser
 from logging import getLogger
-from typing import Mapping, Dict, List, Tuple
+from typing import Dict, List, Mapping, Tuple
 
 from PySide6.QtCore import QProcess, QProcessEnvironment
 

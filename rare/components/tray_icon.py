@@ -2,10 +2,10 @@ from logging import getLogger
 from typing import List
 
 from PySide6.QtCore import Signal, Slot
-from PySide6.QtGui import QIcon, QAction
-from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 
-from rare.models.settings import app_settings, RareAppSettings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 
 logger = getLogger("TrayIcon")

@@ -5,6 +5,7 @@ from PySide6.QtCore import QEvent, Slot
 
 from rare.models.game import RareGame
 from rare.models.image import ImageSize
+
 from .game_widget import GameWidget
 from .icon_widget import IconWidget
 

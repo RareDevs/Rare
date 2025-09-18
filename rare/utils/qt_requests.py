@@ -1,16 +1,15 @@
 from dataclasses import dataclass, field
 from email.message import Message
 from logging import getLogger
-from typing import Callable, Dict, TypeVar, List, Tuple
-from typing import Union
+from typing import Callable, Dict, List, Tuple, TypeVar, Union
 
 import orjson
-from PySide6.QtCore import QObject, Signal, QUrl, QUrlQuery, Slot
+from PySide6.QtCore import QObject, QUrl, QUrlQuery, Signal, Slot
 from PySide6.QtNetwork import (
     QNetworkAccessManager,
-    QNetworkRequest,
-    QNetworkReply,
     QNetworkDiskCache,
+    QNetworkReply,
+    QNetworkRequest,
 )
 
 user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"

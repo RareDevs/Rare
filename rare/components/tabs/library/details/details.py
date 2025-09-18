@@ -6,31 +6,31 @@ from logging import getLogger
 from typing import Optional, Tuple
 
 from PySide6.QtCore import (
-    Qt,
-    Slot,
-    Signal,
-    QUrl,
     QCoreApplication,
+    Qt,
+    QUrl,
+    Signal,
+    Slot,
 )
-from PySide6.QtGui import QShowEvent, QFontMetrics, QHideEvent
+from PySide6.QtGui import QFontMetrics, QHideEvent, QShowEvent
 from PySide6.QtWidgets import (
-    QWidget,
-    QMessageBox,
-    QLineEdit,
     QCheckBox,
-    QVBoxLayout,
+    QLineEdit,
+    QMessageBox,
     QSizePolicy,
+    QVBoxLayout,
+    QWidget,
 )
 
-from rare.components.dialogs import SelectiveDialog, MoveDialog
+from rare.components.dialogs import MoveDialog, SelectiveDialog
 from rare.models.game import RareGame
-from rare.models.install import SelectiveDownloadsModel, MoveGameModel
+from rare.models.install import MoveGameModel, SelectiveDownloadsModel
 from rare.shared import RareCore
-from rare.shared.workers import VerifyWorker, MoveInfoWorker, MoveWorker
+from rare.shared.workers import MoveInfoWorker, MoveWorker, VerifyWorker
 from rare.ui.components.tabs.library.details.details import Ui_GameDetails
 from rare.utils.misc import format_size, qta_icon, style_hyperlink
 from rare.widgets.dialogs import ButtonDialog, game_title
-from rare.widgets.image_widget import ImageWidget, ImageSize
+from rare.widgets.image_widget import ImageSize, ImageWidget
 from rare.widgets.side_tab import SideTabContents
 
 logger = getLogger("GameInfo")

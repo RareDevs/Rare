@@ -1,7 +1,7 @@
 from argparse import Namespace
 
 from PySide6.QtCore import Qt, Slot
-from PySide6.QtWidgets import QLayout, QMessageBox, QFrame
+from PySide6.QtWidgets import QFrame, QLayout, QMessageBox
 
 from rare.lgndr.core import LegendaryCore
 from rare.ui.components.dialogs.login.landing_page import Ui_LandingPage
@@ -9,6 +9,7 @@ from rare.ui.components.dialogs.login.login_dialog import Ui_LoginDialog
 from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import BaseDialog
 from rare.widgets.sliding_stack import SlidingStackedWidget
+
 from .browser_login import BrowserLogin
 from .import_login import ImportLogin
 

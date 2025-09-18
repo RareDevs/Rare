@@ -1,5 +1,5 @@
 from PySide6.QtCore import QEvent, QObject, Qt
-from PySide6.QtGui import QShowEvent, QMovie
+from PySide6.QtGui import QMovie, QShowEvent
 from PySide6.QtWidgets import QLabel
 
 

@@ -3,9 +3,9 @@ from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
 
-from PySide6.QtCore import Signal, Slot
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QDialog
 from legendary.models.game import InstalledGame
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout, QWidget
 
 from rare.lgndr.core import LegendaryCore
 from rare.ui.components.tabs.library.details.cloud_sync_widget import Ui_CloudSyncWidget

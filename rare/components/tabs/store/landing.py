@@ -2,15 +2,15 @@ from datetime import datetime, timezone
 from logging import getLogger
 from typing import List
 
-from PySide6.QtCore import Qt, Slot, Signal
-from PySide6.QtGui import QShowEvent, QHideEvent
+from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtGui import QHideEvent, QShowEvent
 from PySide6.QtWidgets import (
-    QWidget,
-    QSizePolicy,
-    QVBoxLayout,
-    QSpacerItem,
-    QScrollArea,
     QFrame,
+    QScrollArea,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from rare.components.tabs.store.api.models.response import (
@@ -20,6 +20,7 @@ from rare.components.tabs.store.api.models.response import (
 from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
+
 from .store_api import StoreAPI
 from .widgets.details import StoreDetailsWidget
 from .widgets.groups import StoreGroup

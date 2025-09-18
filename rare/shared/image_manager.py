@@ -6,44 +6,43 @@ import zlib
 # from concurrent import futures
 from logging import getLogger
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Set, Any
-from typing import Tuple, Dict, Union, Type, List, Callable
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
 
 import requests
+from legendary.models.game import Game
 from PySide6.QtCore import (
-    Qt,
-    Signal,
     QObject,
-    QSize,
-    QThreadPool,
-    QRunnable,
     QRect,
     QRectF,
+    QRunnable,
+    QSize,
+    Qt,
+    QThreadPool,
+    Signal,
     Slot,
 )
 from PySide6.QtGui import (
-    QPixmap,
+    QBrush,
     QImage,
     QPainter,
     QPainterPath,
-    QBrush,
-    QTransform,
     QPen,
+    QPixmap,
+    QTransform,
 )
-from legendary.models.game import Game
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.image import ImageSize, ImageType
 from rare.models.signals import GlobalSignals
 from rare.utils.paths import (
+    desktop_icon_path,
+    desktop_icon_suffix,
     image_dir,
     image_dir_game,
+    image_icon_path,
     image_tall_path,
     image_wide_path,
-    image_icon_path,
     resources_path,
-    desktop_icon_suffix,
-    desktop_icon_path,
 )
 
 # from requests_futures.sessions import FuturesSession

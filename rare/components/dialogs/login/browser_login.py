@@ -2,10 +2,10 @@ import json
 from logging import getLogger
 from typing import Tuple
 
-from PySide6.QtCore import Signal, QUrl, QProcess, Slot
-from PySide6.QtGui import QDesktopServices
-from PySide6.QtWidgets import QFrame, QApplication, QFormLayout, QLineEdit
 from legendary.utils import webview_login
+from PySide6.QtCore import QProcess, QUrl, Signal, Slot
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QApplication, QFormLayout, QFrame, QLineEdit
 
 from rare.lgndr.core import LegendaryCore
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin

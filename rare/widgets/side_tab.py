@@ -1,24 +1,24 @@
 from logging import getLogger
-from typing import Union, Protocol
+from typing import Protocol, Union
 
 from PySide6.QtCore import (
-    Qt,
     QSize,
+    Qt,
     Signal,
 )
 from PySide6.QtGui import QFontMetrics
 from PySide6.QtWidgets import (
-    QStyle,
     QLabel,
-    QWidget,
+    QLayout,
+    QScrollArea,
+    QSizePolicy,
+    QStyle,
     QStyleOptionTab,
     QStylePainter,
     QTabBar,
     QTabWidget,
     QVBoxLayout,
-    QScrollArea,
-    QLayout,
-    QSizePolicy,
+    QWidget,
 )
 
 from rare.utils.misc import qta_icon

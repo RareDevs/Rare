@@ -9,13 +9,13 @@ from argparse import Namespace
 import legendary
 from PySide6 import __version__ as PYSIDE_VERSION_STR
 from PySide6.QtCore import (
-    QTranslator,
-    QObject,
-    Signal,
-    Slot,
-    Qt,
     QLibraryInfo,
     QLocale,
+    QObject,
+    Qt,
+    QTranslator,
+    Signal,
+    Slot,
 )
 from PySide6.QtCore import __version__ as QT_VERSION_STR
 from PySide6.QtGui import QIcon
@@ -24,7 +24,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 import rare.resources.resources
 from rare.models.settings import RareAppSettings, app_settings
 from rare.utils import paths
-from rare.utils.misc import set_color_pallete, set_style_sheet, get_static_style
+from rare.utils.misc import get_static_style, set_color_pallete, set_style_sheet
 
 
 class RareAppException(QObject):

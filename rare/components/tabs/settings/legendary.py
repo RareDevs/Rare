@@ -2,22 +2,22 @@ import os
 import platform as pf
 import re
 from logging import getLogger
-from typing import Tuple, Set
+from typing import Set, Tuple
 
-from PySide6.QtCore import QObject, Signal, QThreadPool, Slot, Qt
-from PySide6.QtGui import QShowEvent, QHideEvent
-from PySide6.QtWidgets import QSizePolicy, QWidget, QFileDialog, QMessageBox
+from PySide6.QtCore import QObject, Qt, QThreadPool, Signal, Slot
+from PySide6.QtGui import QHideEvent, QShowEvent
+from PySide6.QtWidgets import QFileDialog, QMessageBox, QSizePolicy, QWidget
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.settings import app_settings, RareAppSettings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.shared.workers.worker import Worker
 from rare.ui.components.tabs.settings.legendary import Ui_LegendarySettings
 from rare.utils.misc import format_size
 from rare.widgets.indicator_edit import (
-    PathEdit,
     IndicatorLineEdit,
     IndicatorReasonsCommon,
+    PathEdit,
 )
 
 logger = getLogger("LegendarySettings")

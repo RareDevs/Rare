@@ -3,12 +3,13 @@ from argparse import Namespace
 from enum import IntEnum
 
 from PySide6.QtCore import QObject, Signal
-from requests.exceptions import HTTPError, ConnectionError
+from requests.exceptions import ConnectionError, HTTPError
 
 from rare.lgndr.core import LegendaryCore
-from rare.utils.metrics import timelogger
-from rare.models.settings import app_settings, RareAppSettings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.utils import steam_grades
+from rare.utils.metrics import timelogger
+
 from .worker import Worker
 
 

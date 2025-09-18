@@ -1,6 +1,6 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from PySide6.QtCore import Qt, Slot, Signal
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFrame, QMessageBox, QToolBox
 
@@ -8,8 +8,8 @@ from rare.models.game import RareGame
 from rare.shared import RareCore
 from rare.ui.components.tabs.library.details.dlc_widget import Ui_GameDlcWidget
 from rare.ui.components.tabs.library.details.dlcs import Ui_GameDlcs
-from rare.utils.misc import widget_object_name, qta_icon
-from rare.widgets.image_widget import ImageWidget, ImageSize
+from rare.utils.misc import qta_icon, widget_object_name
+from rare.widgets.image_widget import ImageSize, ImageWidget
 from rare.widgets.side_tab import SideTabContents
 
 
