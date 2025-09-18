@@ -6,7 +6,7 @@ from typing import Tuple, Optional, Union
 from PySide6.QtCore import QThreadPool, Qt
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QFileDialog, QWidget, QFormLayout, QLabel
+from PySide6.QtWidgets import QFileDialog, QWidget, QFormLayout, QLabel, QListWidgetItem
 
 from rare.models.game import RareGame
 from rare.models.install import (
@@ -16,52 +16,12 @@ from rare.models.install import (
 )
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared.workers import InstallInfoWorker
-from rare.ui.components.dialogs.install_dialog import Ui_InstallDialog
-from rare.ui.components.dialogs.install_dialog_advanced import Ui_InstallDialogAdvanced
+from rare.ui.components.dialogs.install.dialog import Ui_InstallDialog
 from rare.utils.misc import format_size, qta_icon
-from rare.widgets.collapsible_widget import CollapsibleFrame
 from rare.widgets.dialogs import ActionDialog, game_title
 from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
-from rare.widgets.selective_widget import SelectiveWidget
-
-
-class InstallDialogAdvanced(CollapsibleFrame):
-    def __init__(self, parent=None):
-        super(InstallDialogAdvanced, self).__init__(parent=parent)
-
-        title = self.tr("Advanced options")
-        self.setTitle(title)
-
-        self.widget = QWidget(parent=self)
-        self.ui = Ui_InstallDialogAdvanced()
-        self.ui.setupUi(self.widget)
-        self.setWidget(self.widget)
-        self.ui.exclude_prefix_label.setVisible(False)
-        self.ui.exclude_prefix_info.setVisible(False)
-        self.ui.exclude_prefix_button.setVisible(False)
-
-
-class InstallDialogSelectable(CollapsibleFrame):
-    stateChanged: Signal = Signal()
-
-    def __init__(self, rgame: RareGame, parent=None):
-        super(InstallDialogSelectable, self).__init__(parent=parent)
-        title = self.tr("Optional downloads")
-        self.setTitle(title)
-        self.setEnabled(bool(rgame.sdl_name))
-
-        self.widget: SelectiveWidget = None
-        self.rgame = rgame
-
-    def update_list(self, platform: str):
-        if self.widget is not None:
-            self.widget.deleteLater()
-        self.widget = SelectiveWidget(self.rgame, platform, parent=self)
-        self.widget.stateChanged.connect(self.stateChanged)
-        self.setWidget(self.widget)
-
-    def install_tags(self):
-        return self.widget.install_tags()
+from .advanced import InstallDialogAdvanced
+from .selective import InstallDialogSelective
 
 
 class InstallDialog(ActionDialog):
@@ -96,7 +56,7 @@ class InstallDialog(ActionDialog):
         self.__download: Optional[InstallDownloadModel] = None
         self.__queue_item: Optional[InstallQueueItemModel] = None
 
-        self.selectable = InstallDialogSelectable(rgame, parent=self)
+        self.selectable = InstallDialogSelective(rgame, parent=self)
         self.selectable.stateChanged.connect(self.__on_option_changed)
         self.ui.main_layout.insertRow(
             self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 1,
@@ -351,6 +311,13 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.install_prereqs_label.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setChecked(has_prereqs and self.same_platform(download))
+        self.advanced.ui.exclude_list.clear()
+        new_manifest_data, _, _ = self.core.get_cdn_manifest(download.game, download.igame.platform, self.__options.disable_https)
+        new_manifest = self.core.load_manifest(new_manifest_data)
+        for e in new_manifest.file_manifest_list.elements:
+            li = QListWidgetItem(e.filename.lower(), self.advanced.ui.exclude_list)
+            li.setCheckState(Qt.CheckState.Unchecked)
+            self.advanced.ui.exclude_list.addItem(li)
         if self.__options.silent:
             self.accept()
 
