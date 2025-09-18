@@ -1,15 +1,11 @@
-from logging import getLogger
-
 from PySide6.QtCore import Qt, Signal, Slot
 from requests.exceptions import ConnectionError, HTTPError
 
-from rare.components.dialogs.login import LoginDialog
 from rare.shared import RareCore
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.widgets.dialogs import BaseDialog
 from rare.widgets.elide_label import ElideLabel
-
-logger = getLogger("LaunchDialog")
+from .login import LoginDialog
 
 
 class LaunchDialog(BaseDialog):
@@ -55,16 +51,16 @@ class LaunchDialog(BaseDialog):
                 # self.core.force_show_update = True
                 if not self.core.login(force_refresh=True):
                     raise ValueError("You are not logged in. Opening login window.")
-                logger.info("You are logged in")
+                self.logger.info("You are logged in")
                 self.login_dialog.close()
         except ValueError as e:
-            logger.info(str(e))
+            self.logger.info(str(e))
             # Do not set parent, because it won't show a task bar icon
             # Update: Inherit the same parent as LaunchDialog
             can_launch = False
             self.login_dialog.open()
         except (HTTPError, ConnectionError) as e:
-            logger.warning(e)
+            self.logger.warning(e)
             self.args.offline = True
         finally:
             if can_launch:
@@ -86,5 +82,5 @@ class LaunchDialog(BaseDialog):
         self.progress_info.setText(m)
 
     def __on_completed(self):
-        logger.info("App starting")
+        self.logger.info("Application starting")
         self.start_app.emit()
