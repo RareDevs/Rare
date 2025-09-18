@@ -1,5 +1,4 @@
 from argparse import Namespace
-from logging import getLogger
 
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import QLayout, QMessageBox, QFrame
@@ -12,8 +11,6 @@ from rare.widgets.dialogs import BaseDialog
 from rare.widgets.sliding_stack import SlidingStackedWidget
 from .browser_login import BrowserLogin
 from .import_login import ImportLogin
-
-logger = getLogger("LoginDialog")
 
 
 class LandingPage(QFrame):
@@ -150,7 +147,7 @@ class LoginDialog(BaseDialog):
             self.logged_in = True
             self.accept()
         except Exception as e:
-            logger.error(str(e))
+            self.logger.error(str(e))
             self.core.lgd.invalidate_userdata()
             self.ui.next_button.setEnabled(False)
             self.logged_in = False

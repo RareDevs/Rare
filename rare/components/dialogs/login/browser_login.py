@@ -13,8 +13,6 @@ from rare.utils.misc import qta_icon
 from rare.utils.paths import get_rare_executable
 from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon
 
-logger = getLogger("BrowserLogin")
-
 
 class BrowserLogin(QFrame):
     success = Signal()
@@ -22,6 +20,8 @@ class BrowserLogin(QFrame):
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(BrowserLogin, self).__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
+
         self.setFrameStyle(QFrame.Shape.StyledPanel)
         self.ui = Ui_BrowserLogin()
         self.ui.setupUi(self)
@@ -72,18 +72,18 @@ class BrowserLogin(QFrame):
         auth_code = self.sid_edit.text()
         try:
             if self.core.auth_code(auth_code):
-                logger.info("Successfully logged in as %s", self.core.lgd.userdata["displayName"])
+                self.logger.info("Successfully logged in as %s", self.core.lgd.userdata["displayName"])
                 self.success.emit()
             else:
                 self.ui.status_label.setText(self.tr("Login failed."))
-                logger.warning("Failed to login through browser")
+                self.logger.warning("Failed to login through browser")
         except Exception as e:
-            logger.warning(e)
+            self.logger.warning(e)
 
     @Slot()
     def open_browser(self):
         if not webview_login.webview_available:
-            logger.warning("You don't have webengine installed, you will need to manually copy the authorizationCode.")
+            self.logger.warning("You don't have webengine installed, you will need to manually copy the authorizationCode.")
             QDesktopServices.openUrl(QUrl(self.login_url))
         else:
             cmd = get_rare_executable() + ["login", self.core.get_egl_version()]
@@ -98,7 +98,7 @@ class BrowserLogin(QFrame):
 
             if out:
                 self.core.auth_ex_token(out)
-                logger.info("Successfully logged in as %s", {self.core.lgd.userdata["displayName"]})
+                self.logger.info("Successfully logged in as %s", {self.core.lgd.userdata["displayName"]})
                 self.success.emit()
             else:
-                logger.warning("Failed to login through browser.")
+                self.logger.warning("Failed to login through browser.")
