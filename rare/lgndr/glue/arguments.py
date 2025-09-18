@@ -76,6 +76,7 @@ class LgndrInstallGameArgs:
     file_prefix: List = None
     file_exclude_prefix: List = None
     install_tag: Optional[List[str]] = None
+    read_files: bool = True
     order_opt: bool = False
     dl_timeout: int = 10
     repair_mode: bool = False
@@ -91,6 +92,7 @@ class LgndrInstallGameArgs:
     skip_sdl: bool = False
     disable_https: bool = False
     bind_ip: str = ""
+    always_use_signed_urls: bool = True
     # FIXME: move to LgndrInstallGameRealArgs
     skip_dlcs: bool = False
     with_dlcs: bool = False
@@ -112,6 +114,7 @@ class LgndrInstallGameRealArgs:
     repair_mode: bool = False
     repair_file: str = ""
     no_install: bool = False
+    disable_https: bool = False
     save_path: str = ""
     skip_dlcs: bool = False
     with_dlcs: bool = False

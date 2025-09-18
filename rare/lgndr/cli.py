@@ -1,8 +1,10 @@
 import functools
 import logging
+import multiprocessing
 import os
 import queue
 import subprocess
+import threading
 import time
 from typing import Optional, Union, Tuple
 
@@ -203,6 +205,7 @@ class LegendaryCLI(LegendaryCLIReal):
                                                           file_prefix_filter=args.file_prefix,
                                                           file_exclude_filter=args.file_exclude_prefix,
                                                           file_install_tag=args.install_tag,
+                                                          read_files=args.read_files,
                                                           dl_optimizations=args.order_opt,
                                                           dl_timeout=args.dl_timeout,
                                                           repair=args.repair_mode,
@@ -211,7 +214,8 @@ class LegendaryCLI(LegendaryCLIReal):
                                                           override_delta_manifest=args.override_delta_manifest,
                                                           preferred_cdn=args.preferred_cdn,
                                                           disable_https=args.disable_https,
-                                                          bind_ip=args.bind_ip)
+                                                          bind_ip=args.bind_ip,
+                                                          always_use_signed_urls=args.always_use_signed_urls)
 
         # game is either up-to-date or hasn't changed, so we have nothing to do
         if not analysis.dl_size and not game.is_dlc:
@@ -241,13 +245,43 @@ class LegendaryCLI(LegendaryCLIReal):
                          'install/import/move applications at a time.')
             return ret
 
+        ticket_a, ticket_b = multiprocessing.Pipe()
+        sign_a, sign_b = multiprocessing.Pipe()
+
+        def ticket_creator_thread():
+            t = threading.current_thread()
+            while not getattr(t, 'stop', False):
+                if ticket_b.poll(1):
+                    catalog_item_id, build_version, app_name, namespace, label, platform = ticket_b.recv()
+                    ticket_b.send(self.core.egs.get_download_ticket(catalog_item_id, build_version, app_name,
+                                                                    namespace, label, platform))
+
+        def chunk_url_sign_thread():
+            t = threading.current_thread()
+            while not getattr(t, 'stop', False):
+                if sign_b.poll(1):
+                    ticket, chunk_paths = sign_b.recv()
+                    signed_chunk_urls = self.core.egs.get_signed_chunk_urls(ticket, chunk_paths)
+                    if args.disable_https:
+                        for key in signed_chunk_urls:
+                            signed_chunk_urls[key] = signed_chunk_urls[key].replace('https://', 'http://')
+                    sign_b.send(signed_chunk_urls)
+
+
+        ticket_thread = threading.Thread(target=ticket_creator_thread)
+        sign_thread = threading.Thread(target=chunk_url_sign_thread)
+
         start_t = time.time()
 
         try:
             # set up logging stuff (should be moved somewhere else later)
             dlm.logging_queue = self.logging_queue
             dlm.proc_debug = args.dlm_debug
+            dlm.ticket_pipe = ticket_a
+            dlm.sign_pipe = sign_a
 
+            ticket_thread.start()
+            sign_thread.start()
             dlm.start()
             while dlm.is_alive():
                 try:
@@ -314,7 +348,11 @@ class LegendaryCLI(LegendaryCLIReal):
             self.install_game_cleanup(game, igame, args.repair_mode, args.repair_file)
 
             logger.info(f'Finished installation process in {end_t - start_t:.02f} seconds.')
-
+        finally:
+            ticket_thread.stop = True
+            sign_thread.stop = True
+            ticket_thread.join()
+            sign_thread.join()
             return ret
 
     @unlock_installed.__func__
@@ -478,7 +516,7 @@ class LegendaryCLI(LegendaryCLIReal):
 
                 logger.warning('No manifest could be loaded, the file may be missing. Downloading the latest manifest.')
                 game = self.core.get_game(args.app_name, platform=igame.platform)
-                manifest_data, _ = self.core.get_cdn_manifest(game, igame.platform)
+                manifest_data, _, _ = self.core.get_cdn_manifest(game, igame.platform)
                 # Rare: Save the manifest if we downloaded it because it was missing
                 self.core.lgd.save_manifest(game.app_name, manifest_data,
                                             version=self.core.load_manifest(manifest_data).meta.build_version,
