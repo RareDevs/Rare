@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from requests import HTTPError
 
 from rare.models.settings import app_settings
-from rare.components.dialogs.launch_dialog import LaunchDialog
+from rare.components.dialogs import LaunchDialog
 from rare.components.main_window import RareWindow
 from rare.shared import RareCore
 from rare.utils import paths
