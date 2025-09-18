@@ -10,8 +10,6 @@ from legendary.lfs.wine_helpers import get_shell_folders, read_registry
 from rare.lgndr.core import LegendaryCore
 from rare.ui.components.dialogs.login.import_login import Ui_ImportLogin
 
-logger = getLogger("ImportLogin")
-
 
 class ImportLogin(QFrame):
     success = Signal()
@@ -27,6 +25,8 @@ class ImportLogin(QFrame):
 
     def __init__(self, core: LegendaryCore, parent=None):
         super(ImportLogin, self).__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
+
         self.setFrameStyle(QFrame.Shape.StyledPanel)
         self.ui = Ui_ImportLogin()
         self.ui.setupUi(self)
@@ -98,15 +98,15 @@ class ImportLogin(QFrame):
     def do_login(self):
         self.ui.status_label.setText(self.tr("Loading..."))
         if os.name != "nt":
-            logger.info("Using EGL appdata path at %s", {self.egl_appdata})
+            self.logger.info("Using EGL appdata path at %s", {self.egl_appdata})
             self.core.egl.appdata_path = self.egl_appdata
         try:
             if self.core.auth_import():
-                logger.info("Logged in as %s", {self.core.lgd.userdata["displayName"]})
+                self.logger.info("Logged in as %s", {self.core.lgd.userdata["displayName"]})
                 self.success.emit()
             else:
                 self.ui.status_label.setText(self.tr("Login failed."))
-                logger.warning("Failed to import existing session.")
+                self.logger.warning("Failed to import existing session.")
         except Exception as e:
             self.ui.status_label.setText(self.tr("Login failed. {}").format(str(e)))
-            logger.warning("Failed to import existing session: %s", e)
+            self.logger.warning("Failed to import existing session: %s", e)
