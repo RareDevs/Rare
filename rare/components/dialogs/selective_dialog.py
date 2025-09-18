@@ -5,7 +5,7 @@ from rare.models.game import RareGame
 from rare.models.install import SelectiveDownloadsModel
 from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title
-from rare.widgets.selective_widget import SelectiveWidget
+from .install.selective import SelectiveWidget
 
 
 class SelectiveDialog(ButtonDialog):

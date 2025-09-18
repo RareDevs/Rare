@@ -1,15 +1,20 @@
 from typing import List, Union
 
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QCheckBox, QWidget, QVBoxLayout
 from legendary.utils.selective_dl import get_sdl_appname
 
 from rare.models.game import RareGame
+from rare.widgets.collapsible_widget import CollapsibleFrame
 
 
 class InstallTagCheckBox(QCheckBox):
     def __init__(self, text, desc, tags: List[str], parent=None):
         super(InstallTagCheckBox, self).__init__(parent)
+        font = self.font()
+        font.setStyleHint(QFont.StyleHint.Monospace)
+        self.setFont(font)
         self.setText(text)
         self.setToolTip(desc)
         self.tags = tags
@@ -56,3 +61,29 @@ class SelectiveWidget(QWidget):
                 # noinspection PyTypeChecker
                 install_tags.extend(data)
         return install_tags
+
+
+class InstallDialogSelective(CollapsibleFrame):
+    stateChanged: Signal = Signal()
+
+    def __init__(self, rgame: RareGame, parent=None):
+        super(InstallDialogSelective, self).__init__(parent=parent)
+        title = self.tr("Optional downloads")
+        self.setTitle(title)
+        self.setEnabled(bool(rgame.sdl_name))
+
+        self.widget: SelectiveWidget = None
+        self.rgame = rgame
+
+    def update_list(self, platform: str):
+        if self.widget is not None:
+            self.widget.deleteLater()
+        self.widget = SelectiveWidget(self.rgame, platform, parent=self)
+        self.widget.stateChanged.connect(self.stateChanged)
+        self.setWidget(self.widget)
+
+    def install_tags(self):
+        return self.widget.install_tags()
+
+
+__all__ = ["InstallDialogSelective", "SelectiveWidget"]
