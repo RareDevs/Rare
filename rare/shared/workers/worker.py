@@ -1,10 +1,10 @@
-from logging import getLogger, Logger
 from abc import abstractmethod
 from dataclasses import dataclass
 from enum import IntEnum
+from logging import Logger, getLogger
 from typing import Optional
 
-from PySide6.QtCore import QRunnable, QObject, Slot, Signal
+from PySide6.QtCore import QObject, QRunnable, Signal, Slot
 
 
 class Worker(QRunnable):

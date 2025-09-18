@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QTreeView, QDialog, QVBoxLayout
+from PySide6.QtWidgets import QDialog, QTreeView, QVBoxLayout
 
 from rare.utils.json_formatter import QJsonModel
 

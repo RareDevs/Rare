@@ -1,6 +1,6 @@
 from PySide6.QtCore import QEvent, QPoint
 from PySide6.QtGui import QIcon, QResizeEvent
-from PySide6.QtWidgets import QTabBar, QPushButton, QSizePolicy
+from PySide6.QtWidgets import QPushButton, QSizePolicy, QTabBar
 
 
 class MainTabBar(QTabBar):

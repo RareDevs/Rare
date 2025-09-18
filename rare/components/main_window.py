@@ -1,27 +1,28 @@
 import os
 from logging import getLogger
 
-from PySide6.QtCore import Qt, QTimer, QSize, Signal, Slot
+from PySide6.QtCore import QSize, Qt, QTimer, Signal, Slot
 from PySide6.QtGui import QCloseEvent, QCursor
 from PySide6.QtWidgets import (
-    QMainWindow,
     QApplication,
-    QStatusBar,
+    QComboBox,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QMessageBox,
     QScrollArea,
     QScroller,
-    QComboBox,
-    QMessageBox,
-    QLabel,
-    QWidget,
-    QHBoxLayout,
+    QStatusBar,
     QSystemTrayIcon,
+    QWidget,
 )
 
-from rare.models.settings import app_settings, RareAppSettings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.shared.workers.worker import QueueWorkerState
 from rare.utils.paths import lock_file
 from rare.widgets.elide_label import ElideLabel
+
 from .tabs import MainTabWidget
 from .tray_icon import TrayIcon
 

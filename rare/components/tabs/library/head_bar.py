@@ -1,20 +1,20 @@
 from logging import getLogger
 
-from PySide6.QtCore import Signal, Slot, QSize, Qt
+from PySide6.QtCore import QSize, Qt, Signal, Slot
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QWidget,
-    QPushButton,
-    QLabel,
     QComboBox,
-    QMenu,
-    QSpacerItem,
-    QSizePolicy,
     QCompleter,
+    QHBoxLayout,
+    QLabel,
+    QMenu,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QWidget,
 )
 
-from rare.models.settings import app_settings, RareAppSettings, LibraryFilter, LibraryOrder
+from rare.models.settings import LibraryFilter, LibraryOrder, RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.utils.misc import qta_icon
 from rare.widgets.button_edit import ButtonLineEdit

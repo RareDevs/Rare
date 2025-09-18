@@ -1,10 +1,11 @@
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShortcut
-from PySide6.QtWidgets import QMenu, QTabWidget, QWidget, QWidgetAction, QMessageBox
+from PySide6.QtWidgets import QMenu, QMessageBox, QTabWidget, QWidget, QWidgetAction
 
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
-from rare.utils.misc import qta_icon, ExitCodes
+from rare.utils.misc import ExitCodes, qta_icon
+
 from .account import AccountWidget
 from .downloads import DownloadsTab
 from .library import GamesLibrary

@@ -4,30 +4,30 @@ import time
 from argparse import Namespace
 from itertools import chain
 from logging import getLogger
-from typing import Dict, Iterator, Callable, Optional, List, Union, Iterable, Tuple, Set
+from typing import Callable, Dict, Iterable, Iterator, List, Optional, Set, Tuple, Union
 
-from PySide6.QtCore import QObject, Signal, Slot, QThreadPool, QRunnable, QTimer
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile
-from requests.exceptions import HTTPError, ConnectionError
+from PySide6.QtCore import QObject, QRunnable, QThreadPool, QTimer, Signal, Slot
+from requests.exceptions import ConnectionError, HTTPError
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareSaveGame
-from rare.models.game import RareGame, RareEosOverlay
+from rare.models.game import RareEosOverlay, RareGame
 from rare.models.settings import RareAppSettings
 from rare.models.signals import GlobalSignals
-from rare.utils import config_helper
-from rare.utils import steam_shortcuts
+from rare.utils import config_helper, steam_shortcuts
 from rare.utils.metrics import timelogger
+
 from .image_manager import ImageManager
 from .workers import (
-    QueueWorker,
-    VerifyWorker,
-    MoveWorker,
+    EntitlementsWorker,
     FetchWorker,
     GamesDlcsWorker,
-    EntitlementsWorker,
+    MoveWorker,
     OriginWineWorker,
+    QueueWorker,
+    VerifyWorker,
 )
 from .workers.fetch import SteamAppIdsWorker
 from .workers.uninstall import uninstall_game

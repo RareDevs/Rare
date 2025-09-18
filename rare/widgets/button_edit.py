@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QStyle, QPushButton, QLineEdit
+from PySide6.QtWidgets import QLineEdit, QPushButton, QStyle
 
 from rare.utils.misc import qta_icon
 

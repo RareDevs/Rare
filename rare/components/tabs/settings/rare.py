@@ -2,27 +2,27 @@ import locale
 import os
 from logging import getLogger
 
-from PySide6.QtCore import Qt, Slot, QUrl
+from PySide6.QtCore import Qt, QUrl, Slot
 from PySide6.QtGui import QDesktopServices
-from PySide6.QtWidgets import QWidget, QMessageBox
+from PySide6.QtWidgets import QMessageBox, QWidget
 
 from rare.components.tabs.settings.widgets.discord_rpc import DiscordRPCSettings
-from rare.models.settings import app_settings, RareAppSettings, LibraryView
+from rare.models.settings import LibraryView, RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.ui.components.tabs.settings.rare import Ui_RareSettings
 from rare.utils.misc import (
-    get_translations,
-    get_color_schemes,
-    set_color_pallete,
-    get_style_sheets,
-    set_style_sheet,
     format_size,
+    get_color_schemes,
+    get_style_sheets,
+    get_translations,
+    set_color_pallete,
+    set_style_sheet,
 )
 from rare.utils.paths import (
     create_desktop_link,
     desktop_link_path,
-    log_dir,
     desktop_links_supported,
+    log_dir,
 )
 
 logger = getLogger("RareSettings")

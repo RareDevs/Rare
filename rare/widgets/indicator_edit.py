@@ -1,34 +1,34 @@
 import os
-from enum import IntEnum, Enum
-from logging import getLogger
-from typing import Callable, Optional, Dict, Tuple
 from collections.abc import ItemsView
+from enum import Enum, IntEnum
+from logging import getLogger
+from typing import Callable, Dict, Optional, Tuple
 
 from PySide6.QtCore import (
-    Qt,
-    QSize,
-    Signal,
-    QFileInfo,
-    QRunnable,
-    QObject,
-    QThreadPool,
-    Slot,
     QDir,
+    QFileInfo,
+    QObject,
+    QRunnable,
+    QSize,
+    Qt,
+    QThreadPool,
+    Signal,
+    Slot,
 )
 from PySide6.QtGui import QAbstractFileIconProvider, QStandardItemModel
 from PySide6.QtWidgets import (
     QCompleter,
-    QTreeView,
-    QHeaderView,
-    QSizePolicy,
-    QLabel,
     QFileDialog,
-    QHBoxLayout,
-    QWidget,
-    QLineEdit,
     QFileSystemModel,
-    QStyledItemDelegate,
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
     QPushButton,
+    QSizePolicy,
+    QStyledItemDelegate,
+    QTreeView,
+    QWidget,
 )
 
 from rare.utils.misc import qta_icon

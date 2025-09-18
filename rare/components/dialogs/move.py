@@ -1,9 +1,9 @@
 import os
-from typing import Tuple, Optional, Union
+from typing import Optional, Tuple, Union
 
-from PySide6.QtCore import Signal, Slot, QThreadPool
+from PySide6.QtCore import QThreadPool, Signal, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QFileDialog, QWidget, QFormLayout, QLabel
+from PySide6.QtWidgets import QFileDialog, QFormLayout, QLabel, QWidget
 
 from rare.models.game import RareGame
 from rare.models.install import MoveGameModel
@@ -12,7 +12,7 @@ from rare.shared.workers.move import MoveInfoWorker, MovePathEditReasons
 from rare.ui.components.dialogs.move_dialog import Ui_MoveDialog
 from rare.utils.misc import format_size, qta_icon
 from rare.widgets.dialogs import ActionDialog, game_title
-from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 
 class MoveDialog(ActionDialog):
@@ -40,7 +40,7 @@ class MoveDialog(ActionDialog):
             path=rgame.install_path,
             file_mode=QFileDialog.FileMode.Directory,
             edit_func=self.__target_dir_edit_callback,
-            parent=self
+            parent=self,
         )
         self.target_dir_edit.reasons = {
             MovePathEditReasons.MOVEDIALOG_DST_MISSING: self.tr("You need to provide the destination directory."),
@@ -77,11 +77,7 @@ class MoveDialog(ActionDialog):
         message = self.tr("Updating...")
         self.set_size_labels(message, message)
         self.setActive(True, disable=False)
-        info_worker = MoveInfoWorker(
-            self.rgame,
-            self.rcore.installed_games,
-            self.target_dir_edit.text()
-        )
+        info_worker = MoveInfoWorker(self.rgame, self.rcore.installed_games, self.target_dir_edit.text())
         info_worker.signals.result.connect(self.__on_worker_result)
         self.threadpool.start(info_worker)
 
@@ -114,7 +110,7 @@ class MoveDialog(ActionDialog):
 
     @Slot(bool, object, object, MovePathEditReasons)
     def __on_worker_result(
-            self, is_valid: bool, src_size: Union[int, float], dst_size: Union[int, float], reason: MovePathEditReasons
+        self, is_valid: bool, src_size: Union[int, float], dst_size: Union[int, float], reason: MovePathEditReasons
     ):
         self.setActive(False, disable=False)
         self.set_size_labels(src_size, dst_size)

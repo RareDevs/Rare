@@ -1,8 +1,8 @@
 import os
-from typing import Union, Type
+from typing import Type, Union
 
-import qstylizer.style
 import qstylizer.parser
+import qstylizer.style
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QColor
 from PySide6.scripts.pyside_tool import qt_tool_wrapper

@@ -1,19 +1,20 @@
 from logging import getLogger
 
-from PySide6.QtCore import Qt, QEvent, QRect, Slot
+from PySide6.QtCore import QEvent, QRect, Qt, Slot
 from PySide6.QtGui import (
-    QPalette,
     QBrush,
-    QPaintEvent,
-    QPainter,
-    QLinearGradient,
-    QPixmap,
     QImage,
+    QLinearGradient,
+    QPainter,
+    QPaintEvent,
+    QPalette,
+    QPixmap,
 )
 
 from rare.models.game import RareGame
 from rare.models.image import ImageSize
 from rare.utils.misc import format_size
+
 from .game_widget import GameWidget
 from .list_widget import ListWidget
 
@@ -21,7 +22,7 @@ logger = getLogger("ListGameWidget")
 
 
 class ListGameWidget(GameWidget):
-    def __init__(self,rgame: RareGame, parent=None):
+    def __init__(self, rgame: RareGame, parent=None):
         super().__init__(rgame, parent)
         self.setObjectName(f"{rgame.app_name}")
         self.ui = ListWidget()

@@ -3,8 +3,8 @@ import platform
 import shutil
 from typing import Tuple
 
-from PySide6.QtCore import QObject, Signal
 from legendary.lfs.eos import remove_registry_entries
+from PySide6.QtCore import QObject, Signal
 
 from rare.lgndr.cli import LegendaryCLI
 from rare.lgndr.core import LegendaryCore
@@ -14,10 +14,11 @@ from rare.models.game import RareGame
 from rare.models.install import UninstallOptionsModel
 from rare.utils import config_helper as config
 from rare.utils.paths import (
-    desktop_links_supported,
-    desktop_link_types,
     desktop_link_path,
+    desktop_link_types,
+    desktop_links_supported,
 )
+
 from .worker import Worker
 
 

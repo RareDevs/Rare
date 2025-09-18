@@ -3,6 +3,7 @@ import platform as pf
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.widgets.side_tab import SideTabWidget
+
 from .about import About
 from .compat import GlobalCompatSettings
 from .debug import DebugSettings

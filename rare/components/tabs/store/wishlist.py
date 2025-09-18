@@ -1,16 +1,17 @@
 from enum import IntEnum
 from typing import List
 
-from PySide6.QtCore import Signal, Qt, Slot
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QMessageBox, QWidget, QSizePolicy
+from PySide6.QtWidgets import QMessageBox, QSizePolicy, QWidget
 
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
 from rare.utils.misc import qta_icon
 from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
-from .api.models.response import WishlistItemModel, CatalogOfferModel
+
+from .api.models.response import CatalogOfferModel, WishlistItemModel
 from .store_api import StoreAPI
 from .widgets.details import StoreDetailsWidget
 from .widgets.items import WishlistItemWidget

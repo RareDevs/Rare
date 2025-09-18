@@ -1,14 +1,14 @@
 import json
 import os
-from logging import getLogger
 import shlex
-from typing import List, Dict, Iterable, Set
-from rare.utils import config_helper as config
+from logging import getLogger
+from typing import Dict, Iterable, List, Set
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.wrapper import Wrapper, WrapperType
-from rare.utils.paths import config_dir
 from rare.models.settings import RareAppSettings
+from rare.models.wrapper import Wrapper, WrapperType
+from rare.utils import config_helper as config
+from rare.utils.paths import config_dir
 
 logger = getLogger("Wrappers")
 
@@ -162,8 +162,8 @@ class Wrappers:
 
 
 if __name__ == "__main__":
-    from pprint import pprint
     from argparse import Namespace
+    from pprint import pprint
 
     from rare.utils.compat import steam
 

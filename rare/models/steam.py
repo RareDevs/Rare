@@ -1,9 +1,9 @@
-import platform
 import binascii
+import platform
 import shlex
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, List, Type, Any
+from typing import Any, Dict, List, Type
 
 
 class SteamUser:

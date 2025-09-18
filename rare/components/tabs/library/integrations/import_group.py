@@ -4,18 +4,18 @@ from dataclasses import dataclass
 from enum import IntEnum
 from logging import getLogger
 from pathlib import Path
-from typing import List, Tuple, Optional, Set, Dict
+from typing import Dict, List, Optional, Set, Tuple
 
-from PySide6.QtCore import Qt, Signal, QRunnable, QObject, QThreadPool, Slot
+from PySide6.QtCore import QObject, QRunnable, Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QFileDialog,
+    QFormLayout,
     QGroupBox,
     QMessageBox,
-    QStackedWidget,
     QProgressBar,
     QSizePolicy,
-    QFormLayout,
+    QStackedWidget,
 )
 
 from rare.lgndr.cli import LegendaryCLI
@@ -26,10 +26,10 @@ from rare.shared import RareCore
 from rare.ui.components.tabs.library.integrations.import_group import Ui_ImportGroup
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import (
+    ColumnCompleter,
     IndicatorLineEdit,
     IndicatorReasonsCommon,
     PathEdit,
-    ColumnCompleter,
 )
 
 logger = getLogger("Import")

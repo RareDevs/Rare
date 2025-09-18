@@ -14,8 +14,7 @@ from rare.components.tabs.settings.widgets.overlay import (
 from rare.components.tabs.settings.widgets.runner import RunnerSettingsBase
 from rare.components.tabs.settings.widgets.wine import WineSettings
 from rare.models.game import RareGame
-from rare.models.settings import RareAppSettings
-from rare.models.settings import app_settings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.utils import steam_grades
@@ -63,13 +62,9 @@ if pf.system() in {"Linux", "FreeBSD"}:
 class LocalRunnerSettings(RunnerSettingsBase):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         if pf.system() in {"Linux", "FreeBSD"}:
-            super(LocalRunnerSettings, self).__init__(
-                settings, rcore, LocalWineSettings, LocalProtonSettings, parent=parent
-            )
+            super(LocalRunnerSettings, self).__init__(settings, rcore, LocalWineSettings, LocalProtonSettings, parent=parent)
         else:
-            super(LocalRunnerSettings, self).__init__(
-                settings, rcore, LocalWineSettings, parent=parent
-            )
+            super(LocalRunnerSettings, self).__init__(settings, rcore, LocalWineSettings, parent=parent)
 
         self.rgame: RareGame = None
 

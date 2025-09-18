@@ -9,14 +9,15 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QFileDialog,
     QFormLayout,
-    QVBoxLayout,
     QGroupBox,
     QLineEdit,
+    QVBoxLayout,
 )
 
 import rare.utils.config_helper as config
 from rare.shared import RareCore
-from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
+
 from .wrappers import WrapperSettings
 
 

@@ -3,8 +3,8 @@ import importlib.util
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGroupBox
 
+from rare.models.settings import DiscordRPCMode, RareAppSettings, app_settings
 from rare.models.signals import GlobalSignals
-from rare.models.settings import app_settings, RareAppSettings, DiscordRPCMode
 from rare.ui.components.tabs.settings.widgets.discord_rpc import Ui_DiscordRPCSettings
 
 

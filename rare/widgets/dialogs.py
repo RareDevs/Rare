@@ -2,20 +2,20 @@ import sys
 from abc import abstractmethod
 from logging import getLogger
 
-from PySide6.QtCore import Qt, Slot, QCoreApplication
+from PySide6.QtCore import QCoreApplication, Qt, Slot
 from PySide6.QtGui import QCloseEvent, QKeyEvent, QKeySequence
 from PySide6.QtWidgets import (
+    QApplication,
     QDialog,
     QDialogButtonBox,
-    QApplication,
-    QPushButton,
-    QVBoxLayout,
     QHBoxLayout,
-    QWidget,
-    QLayout,
-    QSpacerItem,
-    QSizePolicy,
     QLabel,
+    QLayout,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
 )
 
 from rare.utils.misc import qta_icon
@@ -113,7 +113,6 @@ class ButtonDialog(BaseDialog):
 
         self.__central_widget: QWidget = None
         self.__central_layout: QLayout = None
-
 
     def close(self):
         raise RuntimeError(f"Don't use `close()` with {type(self).__name__}")

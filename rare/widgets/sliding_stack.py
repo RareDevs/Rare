@@ -1,14 +1,14 @@
 from PySide6.QtCore import (
-    Slot,
-    QEvent,
-    QEasingCurve,
-    QParallelAnimationGroup,
     QAbstractAnimation,
+    QEasingCurve,
+    QEvent,
+    QParallelAnimationGroup,
+    QPoint,
     QPropertyAnimation,
     Qt,
-    QPoint,
+    Slot,
 )
-from PySide6.QtWidgets import QStackedWidget, QGestureEvent, QSwipeGesture
+from PySide6.QtWidgets import QGestureEvent, QStackedWidget, QSwipeGesture
 
 
 class SlidingStackedWidget(QStackedWidget):

@@ -5,11 +5,12 @@ from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QGroupBox,
     QHeaderView,
-    QVBoxLayout,
     QTableView,
+    QVBoxLayout,
 )
 
 from rare.lgndr.core import LegendaryCore
+
 from .env_vars_model import EnvVarsTableModel
 
 logger = getLogger("EnvVars")

@@ -3,18 +3,18 @@ import webbrowser
 from logging import getLogger
 from typing import Optional
 
-from PySide6.QtCore import QObject, Signal, QThreadPool, QSize, Slot, Qt
+from legendary.models.game import Game
+from PySide6.QtCore import QObject, QSize, Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QFrame,
-    QLabel,
-    QHBoxLayout,
-    QSizePolicy,
-    QPushButton,
     QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
     QVBoxLayout,
 )
-from legendary.models.game import Game
 
 from rare.lgndr.core import LegendaryCore
 from rare.shared import RareCore

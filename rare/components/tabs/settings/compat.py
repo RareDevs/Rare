@@ -2,21 +2,22 @@ import platform as pf
 from logging import getLogger
 from typing import Type
 
-from PySide6.QtCore import Signal, Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QHideEvent
-from PySide6.QtWidgets import QWidget, QVBoxLayout
+from PySide6.QtWidgets import QVBoxLayout, QWidget
 
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.widgets.side_tab import SideTabContents
-from .widgets.overlay import DxvkHudSettings, DxvkConfigSettings, DxvkNvapiDrsSettings
+
+from .widgets.overlay import DxvkConfigSettings, DxvkHudSettings, DxvkNvapiDrsSettings
 from .widgets.runner import RunnerSettingsBase, RunnerSettingsType
 from .widgets.wine import WineSettings
 
 if pf.system() in {"Linux", "FreeBSD"}:
-    from .widgets.proton import ProtonSettings
     from .widgets.overlay import MangoHudSettings
+    from .widgets.proton import ProtonSettings
 
 logger = getLogger("GlobalCompatSettings")
 
@@ -81,13 +82,9 @@ class CompatSettingsBase(QWidget, SideTabContents):
 class GlobalRunnerSettings(RunnerSettingsBase):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         if pf.system() in {"Linux", "FreeBSD"}:
-            super(GlobalRunnerSettings, self).__init__(
-                settings, rcore, WineSettings, ProtonSettings, parent=parent
-            )
+            super(GlobalRunnerSettings, self).__init__(settings, rcore, WineSettings, ProtonSettings, parent=parent)
         else:
-            super(GlobalRunnerSettings, self).__init__(
-                settings, rcore, WineSettings, parent=parent
-            )
+            super(GlobalRunnerSettings, self).__init__(settings, rcore, WineSettings, parent=parent)
 
 
 class GlobalCompatSettings(CompatSettingsBase):

@@ -1,13 +1,13 @@
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
-from PySide6.QtCore import Qt, QEvent, QObject
+from PySide6.QtCore import QEvent, QObject, Qt
 from PySide6.QtGui import (
-    QPainter,
-    QPixmap,
-    QFontMetrics,
-    QImage,
     QBrush,
     QColor,
+    QFontMetrics,
+    QImage,
+    QPainter,
+    QPixmap,
     QShowEvent,
 )
 from PySide6.QtWidgets import QLabel

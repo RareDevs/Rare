@@ -1,16 +1,16 @@
 import datetime
 import platform
 from logging import getLogger
-from typing import Union, Optional
+from typing import Optional, Union
 
-from PySide6.QtCore import Signal, Slot, QThreadPool, Qt
+from PySide6.QtCore import Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
-    QWidget,
     QMessageBox,
     QScrollArea,
-    QVBoxLayout,
     QSizePolicy,
+    QVBoxLayout,
+    QWidget,
 )
 
 from rare.components.dialogs import InstallDialog, UninstallDialog
@@ -27,9 +27,10 @@ from rare.shared import RareCore
 from rare.shared.workers import InstallInfoWorker, UninstallWorker
 from rare.utils.misc import format_size
 from rare.utils.paths import create_desktop_link, desktop_links_supported
+
 from .download import DownloadWidget
-from .groups import UpdateGroup, QueueGroup
-from .thread import DlThread, DlResultModel, DlResultCode
+from .groups import QueueGroup, UpdateGroup
+from .thread import DlResultCode, DlResultModel, DlThread
 
 logger = getLogger("Download")
 

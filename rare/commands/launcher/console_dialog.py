@@ -1,23 +1,24 @@
-from typing import Union, Dict
+from typing import Dict, Union
 
-from PySide6.QtCore import QProcessEnvironment, Signal, QSize, Qt
-from PySide6.QtGui import QTextCursor, QFont, QCursor, QCloseEvent
+from PySide6.QtCore import QProcessEnvironment, QSize, Qt, Signal
+from PySide6.QtGui import QCloseEvent, QCursor, QFont, QTextCursor
 from PySide6.QtWidgets import (
-    QPlainTextEdit,
-    QDialog,
-    QPushButton,
-    QFileDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QSpacerItem,
-    QSizePolicy,
-    QTableWidgetItem,
-    QHeaderView,
     QApplication,
+    QDialog,
+    QFileDialog,
+    QHBoxLayout,
+    QHeaderView,
+    QPlainTextEdit,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QTableWidgetItem,
+    QVBoxLayout,
 )
 
 from rare.ui.commands.launcher.console_env import Ui_ConsoleEnv
 from rare.widgets.dialogs import dialog_title, game_title
+
 from .lgd_helper import dict_to_qprocenv
 
 

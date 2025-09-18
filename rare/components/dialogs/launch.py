@@ -5,6 +5,7 @@ from rare.shared import RareCore
 from rare.ui.components.dialogs.launch_dialog import Ui_LaunchDialog
 from rare.widgets.dialogs import BaseDialog
 from rare.widgets.elide_label import ElideLabel
+
 from .login import LoginDialog
 
 

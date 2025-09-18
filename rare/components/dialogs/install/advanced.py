@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 
-from rare.widgets.collapsible_widget import CollapsibleFrame
 from rare.ui.components.dialogs.install.advanced import Ui_InstallDialogAdvanced
+from rare.widgets.collapsible_widget import CollapsibleFrame
 
 
 class InstallDialogAdvanced(CollapsibleFrame):

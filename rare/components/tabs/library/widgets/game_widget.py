@@ -3,25 +3,26 @@ import random
 from abc import abstractmethod
 from logging import getLogger
 
-from PySide6.QtCore import Signal, Qt, Slot, QObject, QEvent
-from PySide6.QtGui import QMouseEvent, QShowEvent, QPaintEvent, QAction
+from PySide6.QtCore import QEvent, QObject, Qt, Signal, Slot
+from PySide6.QtGui import QAction, QMouseEvent, QPaintEvent, QShowEvent
 from PySide6.QtWidgets import QMessageBox
 
 from rare.models.game import RareGame
 from rare.utils.paths import (
-    desktop_links_supported,
-    desktop_link_path,
     create_desktop_link,
+    desktop_link_path,
+    desktop_links_supported,
 )
 from rare.utils.steam_shortcuts import (
-    steam_shortcuts_supported,
-    steam_shortcut_exists,
-    remove_steam_shortcut,
-    remove_steam_coverart,
-    add_steam_shortcut,
     add_steam_coverart,
+    add_steam_shortcut,
+    remove_steam_coverart,
+    remove_steam_shortcut,
     save_steam_shortcuts,
+    steam_shortcut_exists,
+    steam_shortcuts_supported,
 )
+
 from .library_widget import LibraryWidget
 
 logger = getLogger("GameWidget")

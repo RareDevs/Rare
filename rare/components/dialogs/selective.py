@@ -1,10 +1,11 @@
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QVBoxLayout, QGroupBox
+from PySide6.QtWidgets import QGroupBox, QVBoxLayout
 
 from rare.models.game import RareGame
 from rare.models.install import SelectiveDownloadsModel
 from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title
+
 from .install.selective import SelectiveWidget
 
 

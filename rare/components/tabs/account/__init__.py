@@ -1,11 +1,11 @@
 import webbrowser
 
 from PySide6.QtCore import Signal, Slot
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.signals import GlobalSignals
-from rare.utils.misc import qta_icon, ExitCodes
+from rare.utils.misc import ExitCodes, qta_icon
 
 
 class AccountWidget(QWidget):

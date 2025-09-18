@@ -1,9 +1,10 @@
 import sys
 
 from PySide6.QtCore import QSize
-from PySide6.QtWidgets import QDialog, QApplication, QVBoxLayout
+from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout
 
 from rare.lgndr.core import LegendaryCore
+
 from . import StoreTab
 
 

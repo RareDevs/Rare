@@ -1,17 +1,17 @@
 from enum import Enum
-from typing import Tuple, Optional, Union
+from typing import Optional, Tuple, Union
 
-from PySide6.QtCore import Qt, QRectF, QSize
+from PySide6.QtCore import QRectF, QSize, Qt
 from PySide6.QtGui import (
-    QPaintEvent,
+    QBrush,
+    QColor,
+    QLinearGradient,
     QPainter,
+    QPainterPath,
+    QPaintEvent,
+    QPalette,
     QPixmap,
     QTransform,
-    QBrush,
-    QPalette,
-    QPainterPath,
-    QLinearGradient,
-    QColor,
 )
 from PySide6.QtWidgets import QWidget
 

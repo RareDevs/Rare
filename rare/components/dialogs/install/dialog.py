@@ -1,25 +1,25 @@
 import os
 import platform as pf
 import shutil
-from typing import Tuple, Optional, Union
+from typing import Optional, Tuple, Union
 
-from PySide6.QtCore import QThreadPool, Qt
-from PySide6.QtCore import Signal, Slot
+from PySide6.QtCore import Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QFileDialog, QWidget, QFormLayout, QLabel, QListWidgetItem
+from PySide6.QtWidgets import QFileDialog, QFormLayout, QLabel, QListWidgetItem, QWidget
 
 from rare.models.game import RareGame
 from rare.models.install import (
     InstallDownloadModel,
-    InstallQueueItemModel,
     InstallOptionsModel,
+    InstallQueueItemModel,
 )
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared.workers import InstallInfoWorker
 from rare.ui.components.dialogs.install.dialog import Ui_InstallDialog
 from rare.utils.misc import format_size, qta_icon
 from rare.widgets.dialogs import ActionDialog, game_title
-from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
+
 from .advanced import InstallDialogAdvanced
 from .selective import InstallDialogSelective
 
@@ -61,14 +61,14 @@ class InstallDialog(ActionDialog):
         self.ui.main_layout.insertRow(
             self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 1,
             # self.tr("Optional"),
-            self.selectable
+            self.selectable,
         )
 
         self.advanced = InstallDialogAdvanced(parent=self)
         self.ui.main_layout.insertRow(
             self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 2,
             # self.tr("Advanced"),
-            self.advanced
+            self.advanced,
         )
 
         self.options_changed = False

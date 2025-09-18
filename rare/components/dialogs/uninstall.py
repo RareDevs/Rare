@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
-    QVBoxLayout,
     QCheckBox,
+    QVBoxLayout,
 )
 
 from rare.models.game import RareGame

@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PySide6.QtCore import Signal, Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QPushButton
 
@@ -8,6 +8,7 @@ from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.models.image import ImageSize
 from rare.utils.misc import qta_icon
 from rare.utils.qt_requests import QtRequests
+
 from .image import LoadingImageWidget
 
 logger = getLogger("StoreWidgets")

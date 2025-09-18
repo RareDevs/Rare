@@ -2,20 +2,20 @@ import os
 import platform
 from abc import abstractmethod
 from logging import getLogger
-from typing import Tuple, Iterable, List, Union
+from typing import Iterable, List, Tuple, Union
 
-from PySide6.QtCore import Qt, QThreadPool, QRunnable, Slot, Signal
-from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import (
-    QGroupBox,
-    QListWidgetItem,
-    QFileDialog,
-    QMessageBox,
-    QFrame,
-    QFormLayout,
-)
 from legendary.models.egl import EGLManifest
 from legendary.models.game import InstalledGame
+from PySide6.QtCore import QRunnable, Qt, QThreadPool, Signal, Slot
+from PySide6.QtGui import QShowEvent
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QFormLayout,
+    QFrame,
+    QGroupBox,
+    QListWidgetItem,
+    QMessageBox,
+)
 
 from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.exception import LgndrException
@@ -27,7 +27,7 @@ from rare.ui.components.tabs.library.integrations.egl_sync_list_group import (
     Ui_EGLSyncListGroup,
 )
 from rare.widgets.elide_label import ElideLabel
-from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 logger = getLogger("EGLSync")
 

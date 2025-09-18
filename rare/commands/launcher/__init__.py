@@ -6,35 +6,37 @@ import time
 import traceback
 from argparse import Namespace
 from logging import getLogger
-from signal import signal, SIGINT, SIGTERM, strsignal
+from signal import SIGINT, SIGTERM, signal, strsignal
 from typing import Optional
+
+from legendary.models.game import SaveGameStatus
 
 # from PySide6.import sip
 from PySide6.QtCore import (
+    QMetaMethod,
     QObject,
     QProcess,
-    Signal,
-    QUrl,
     QRunnable,
-    QThreadPool,
     Qt,
-    Slot,
+    QThreadPool,
     QTimer,
-    QMetaMethod,
+    QUrl,
+    Signal,
+    Slot,
 )
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
 from PySide6.QtWidgets import QApplication
-from legendary.models.game import SaveGameStatus
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameSlim
-from rare.models.launcher import ErrorModel, Actions, FinishedModel, BaseModel, StateChangedModel
-from rare.widgets.rare_app import RareApp, RareAppException
+from rare.models.launcher import Actions, BaseModel, ErrorModel, FinishedModel, StateChangedModel
 from rare.utils.paths import get_rare_executable
+from rare.widgets.rare_app import RareApp, RareAppException
+
 from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
 from .console_dialog import ConsoleDialog
-from .lgd_helper import get_launch_args, InitArgs, LaunchArgs, dict_to_qprocenv, get_configured_qprocess
+from .lgd_helper import InitArgs, LaunchArgs, dict_to_qprocenv, get_configured_qprocess, get_launch_args
 
 DETACHED_APP_NAMES = {
     "0a2d9f6403244d12969e11da6713137b",  # Fall Guys

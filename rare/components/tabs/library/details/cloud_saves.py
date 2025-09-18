@@ -4,24 +4,24 @@ from datetime import datetime
 from logging import getLogger
 from typing import Tuple
 
-from PySide6.QtCore import QThreadPool, Slot, Qt
+from legendary.models.game import SaveGameStatus
+from PySide6.QtCore import Qt, QThreadPool, Slot
 from PySide6.QtWidgets import (
-    QWidget,
     QFileDialog,
+    QFormLayout,
+    QGroupBox,
     QLabel,
+    QMessageBox,
     QPushButton,
     QSizePolicy,
-    QMessageBox,
-    QGroupBox,
-    QVBoxLayout,
     QSpacerItem,
-    QFormLayout,
+    QVBoxLayout,
+    QWidget,
 )
-from legendary.models.game import SaveGameStatus
 
 from rare.models.game import RareGame
 from rare.models.pathspec import PathSpec
-from rare.models.settings import app_settings, RareAppSettings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.shared.workers.wine_resolver import WineSavePathResolver
 from rare.ui.components.tabs.library.details.cloud_settings_widget import (
@@ -30,7 +30,7 @@ from rare.ui.components.tabs.library.details.cloud_settings_widget import (
 from rare.ui.components.tabs.library.details.cloud_sync_widget import Ui_CloudSyncWidget
 from rare.utils.metrics import timelogger
 from rare.utils.misc import qta_icon
-from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 from rare.widgets.loading_widget import LoadingWidget
 from rare.widgets.side_tab import SideTabContents
 
@@ -97,7 +97,7 @@ class CloudSaves(QWidget, SideTabContents):
         # Validate against raw_save_path (usefull when the user types the path manually)
         path = os.path.normpath(text.lower()).split("/")
         spec = os.path.normpath(self.save_path_spec.lower()).split("/")
-        depth = min((len(spec) - 1),  (len(path) - 1))
+        depth = min((len(spec) - 1), (len(path) - 1))
         depth = depth if depth > 0 else 1
         if path[-depth:] != spec[-depth:]:
             return False, text, IndicatorReasonsCommon.INVALID

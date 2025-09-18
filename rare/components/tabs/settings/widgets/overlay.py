@@ -1,11 +1,11 @@
 from abc import abstractmethod
 from enum import IntEnum
 from logging import getLogger
-from typing import List, Dict, Tuple, Union, Optional
+from typing import Dict, List, Optional, Tuple, Union
 
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtGui import QIntValidator, QDoubleValidator, QShowEvent
-from PySide6.QtWidgets import QGroupBox, QCheckBox, QLineEdit, QComboBox
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QDoubleValidator, QIntValidator, QShowEvent
+from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QLineEdit
 
 from rare.ui.components.tabs.settings.widgets.overlay import Ui_OverlaySettings
 from rare.utils import config_helper as config
@@ -504,6 +504,7 @@ class MangoHudSettings(OverlaySettings):
 if __name__ == "__main__":
     import sys
     from argparse import Namespace
+
     from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout
 
     global config

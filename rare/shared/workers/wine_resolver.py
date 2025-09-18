@@ -2,24 +2,27 @@ import os
 import platform
 import time
 from configparser import ConfigParser
-from typing import Union, Iterable, List, Tuple, Dict
+from typing import Dict, Iterable, List, Tuple, Union
 
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import QObject, Signal
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
 from rare.models.pathspec import PathSpec
 from rare.shared.wrappers import Wrappers
 from rare.utils import config_helper as config
-from rare.utils.misc import path_size, format_size
+from rare.utils.misc import format_size, path_size
+
 from .worker import Worker
 
 if platform.system() == "Windows":
     # noinspection PyUnresolvedReferences
     import winreg  # pylint: disable=E0401
+
     from legendary.lfs import windows_helpers
 else:
-    from rare.utils.compat import utils as compat_utils, steam
+    from rare.utils.compat import steam
+    from rare.utils.compat import utils as compat_utils
 
 
 class WinePathResolver(Worker):

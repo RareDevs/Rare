@@ -1,6 +1,6 @@
 from typing import Callable
 
-from PySide6.QtCore import Qt, QRect, QPoint
+from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtWidgets import QSizePolicy
 
 from .flow_layout import FlowLayout

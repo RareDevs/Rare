@@ -2,21 +2,21 @@ from abc import abstractmethod
 from typing import Optional
 
 from PySide6.QtCore import (
-    QParallelAnimationGroup,
-    Qt,
-    QPropertyAnimation,
     QAbstractAnimation,
+    QParallelAnimationGroup,
+    QPropertyAnimation,
     QSize,
+    Qt,
 )
 from PySide6.QtWidgets import (
-    QWidget,
     QFrame,
-    QToolButton,
-    QVBoxLayout,
     QGridLayout,
-    QSizePolicy,
     QGroupBox,
     QLabel,
+    QSizePolicy,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
 )
 
 from rare.utils.misc import qta_icon
@@ -192,7 +192,9 @@ class CollapsibleGroupBox(QGroupBox, CollapsibleBase):
 
 if __name__ == "__main__":
     import sys
+
     from PySide6.QtWidgets import QApplication, QDialog
+
     from rare.ui.components.dialogs.install_dialog_advanced import (
         Ui_InstallDialogAdvanced,
     )

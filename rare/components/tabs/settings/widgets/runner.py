@@ -1,11 +1,12 @@
 import platform as pf
 from typing import Type, TypeVar
 
-from PySide6.QtCore import Signal, Slot, Qt
-from PySide6.QtWidgets import QGroupBox, QVBoxLayout, QCheckBox, QFormLayout
+from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtWidgets import QCheckBox, QFormLayout, QGroupBox, QVBoxLayout
 
-from rare.models.settings import app_settings, RareAppSettings
+from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
+
 from .wine import WineSettings
 
 if pf.system() in {"Linux", "FreeBSD"}:

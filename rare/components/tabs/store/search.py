@@ -4,10 +4,10 @@ from typing import List
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
     QCheckBox,
-    QWidget,
-    QSizePolicy,
-    QScrollArea,
     QLabel,
+    QScrollArea,
+    QSizePolicy,
+    QWidget,
 )
 
 from rare.ui.components.tabs.store.search import Ui_SearchWidget
@@ -15,6 +15,7 @@ from rare.widgets.button_edit import ButtonLineEdit
 from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
+
 from .api.models.query import SearchStoreQuery
 from .api.models.response import CatalogOfferModel
 from .constants import Constants

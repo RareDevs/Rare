@@ -1,24 +1,23 @@
 from logging import getLogger
 from typing import Optional
 
-from PySide6.QtCore import Signal, Qt, QThreadPool, Slot
-from PySide6.QtWidgets import QWidget, QFrame
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
+from PySide6.QtCore import Qt, QThreadPool, Signal, Slot
+from PySide6.QtWidgets import QFrame, QWidget
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import (
-    InstallQueueItemModel,
-    InstallOptionsModel,
     InstallDownloadModel,
+    InstallOptionsModel,
+    InstallQueueItemModel,
 )
 from rare.shared.image_manager import ImageManager
 from rare.shared.workers.install import InstallInfoWorker
 from rare.ui.components.tabs.downloads.queue_base_widget import Ui_QueueBaseWidget
 from rare.ui.components.tabs.downloads.queue_info_widget import Ui_QueueInfoWidget
-from rare.utils.misc import format_size, widget_object_name, elide_text
-from rare.utils.misc import qta_icon
-from rare.widgets.image_widget import ImageWidget, ImageSize
+from rare.utils.misc import elide_text, format_size, qta_icon, widget_object_name
+from rare.widgets.image_widget import ImageSize, ImageWidget
 
 logger = getLogger("DownloadWidgets")
 
@@ -117,7 +116,9 @@ class QueueWidget(QFrame):
     # InstallQueueItemModel
     force = Signal(InstallQueueItemModel)
 
-    def __init__(self, core: LegendaryCore, imgmgr: ImageManager, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None):
+    def __init__(
+        self, core: LegendaryCore, imgmgr: ImageManager, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None
+    ):
         super(QueueWidget, self).__init__(parent=parent)
         self.ui = Ui_QueueBaseWidget()
         self.ui.setupUi(self)

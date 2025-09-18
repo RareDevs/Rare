@@ -1,5 +1,5 @@
 import os
-from typing import Union, List
+from typing import List, Union
 
 from legendary.models.game import InstalledGame
 

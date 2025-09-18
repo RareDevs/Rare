@@ -2,14 +2,14 @@ import os
 from logging import getLogger
 from typing import Optional
 
-from PySide6.QtCore import Signal, Qt, QSignalBlocker, Slot
+from PySide6.QtCore import QSignalBlocker, Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFileDialog, QFormLayout, QGroupBox
 
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils import config_helper as lgd_conf
-from rare.widgets.indicator_edit import PathEdit, IndicatorReasonsCommon
+from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 logger = getLogger("WineSettings")
 
