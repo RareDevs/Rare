@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot
 from PySide6.QtWidgets import QApplication, QMessageBox
 from requests import HTTPError
 
-from rare.components.dialogs import LaunchDialog
+from rare.components.dialogs.launch import LaunchDialog
 from rare.components.main_window import RareWindow
 from rare.models.settings import app_settings
 from rare.shared import RareCore

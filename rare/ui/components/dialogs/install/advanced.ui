@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
-    <height>246</height>
+    <width>421</width>
+    <height>199</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string notr="true">InstallDialogAdvanced</string>
   </property>
-  <layout class="QFormLayout" name="install_dialog_advanced_layout">
+  <layout class="QFormLayout" name="main_layout">
    <property name="labelAlignment">
     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
    </property>
@@ -194,43 +194,6 @@
       <string>Do not try to install.</string>
      </property>
     </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="exclude_prefix_label">
-     <property name="text">
-      <string>Excluded files</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <layout class="QHBoxLayout" name="exclude_prefix_layout" stretch="1,0">
-     <item>
-      <widget class="QLabel" name="exclude_prefix_info">
-       <property name="frameShape">
-        <enum>QFrame::Shape::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Shadow::Sunken</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="exclude_prefix_button">
-       <property name="text">
-        <string>Select...</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="8" column="1">
-    <widget class="QListWidget" name="exclude_list"/>
    </item>
   </layout>
  </widget>
