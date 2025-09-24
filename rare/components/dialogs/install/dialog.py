@@ -5,7 +5,7 @@ from typing import Optional, Tuple, Union
 
 from PySide6.QtCore import Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QFileDialog, QFormLayout, QLabel, QListWidgetItem, QWidget
+from PySide6.QtWidgets import QFileDialog, QFormLayout, QLabel, QWidget
 
 from rare.models.game import RareGame
 from rare.models.install import (
@@ -21,13 +21,14 @@ from rare.widgets.dialogs import ActionDialog, game_title
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 from .advanced import InstallDialogAdvanced
+from .file_filters import InstallDialogFileFilters
 from .selective import InstallDialogSelective
 
 
 class InstallDialog(ActionDialog):
     result_ready = Signal(InstallQueueItemModel)
 
-    def __init__(self, settings: RareAppSettings, rgame: RareGame, options: InstallOptionsModel, parent=None):
+    def __init__(self, settings: RareAppSettings, rgame: "RareGame", options: InstallOptionsModel, parent=None):
         super(InstallDialog, self).__init__(parent=parent)
         self.settings = settings
 
@@ -69,6 +70,13 @@ class InstallDialog(ActionDialog):
             self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 2,
             # self.tr("Advanced"),
             self.advanced,
+        )
+
+        self.file_filters = InstallDialogFileFilters(parent=self)
+        self.ui.main_layout.insertRow(
+            self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 3,
+            # self.tr("Advanced"),
+            self.file_filters,
         )
 
         self.options_changed = False
@@ -311,13 +319,13 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.install_prereqs_label.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setChecked(has_prereqs and self.same_platform(download))
-        self.advanced.ui.exclude_list.clear()
+
         new_manifest_data, _, _ = self.core.get_cdn_manifest(download.game, download.igame.platform, self.__options.disable_https)
         new_manifest = self.core.load_manifest(new_manifest_data)
+        self.file_filters.clear()
         for e in new_manifest.file_manifest_list.elements:
-            li = QListWidgetItem(e.filename.lower(), self.advanced.ui.exclude_list)
-            li.setCheckState(Qt.CheckState.Unchecked)
-            self.advanced.ui.exclude_list.addItem(li)
+            self.file_filters.add_item(e.filename.lower())
+
         if self.__options.silent:
             self.accept()
 

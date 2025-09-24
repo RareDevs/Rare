@@ -13,7 +13,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from rare.components.dialogs import InstallDialog, UninstallDialog
+from rare.components.dialogs.install import InstallDialog
+from rare.components.dialogs.uninstall import UninstallDialog
 from rare.lgndr.models.downloading import UIUpdate
 from rare.models.game import RareGame
 from rare.models.image import ImageSize

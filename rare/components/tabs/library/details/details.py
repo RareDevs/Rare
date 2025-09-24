@@ -22,7 +22,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from rare.components.dialogs import MoveDialog, SelectiveDialog
+from rare.components.dialogs.move import MoveDialog
+from rare.components.dialogs.selective import SelectiveDialog
 from rare.models.game import RareGame
 from rare.models.install import MoveGameModel, SelectiveDownloadsModel
 from rare.shared import RareCore
