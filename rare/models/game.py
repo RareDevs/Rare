@@ -428,6 +428,10 @@ class RareGame(RareGameSlim):
         return not self.game.asset_infos or not next(iter(self.game.asset_infos.values())).app_name
 
     @property
+    def is_android_only(self) -> bool:
+        return self.is_non_asset and self.is_android
+
+    @property
     def is_ubisoft(self) -> bool:
         return self.game.partner_link_type == "ubisoft"
 

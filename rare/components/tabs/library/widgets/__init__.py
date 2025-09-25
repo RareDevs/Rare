@@ -51,9 +51,9 @@ class ViewContainer(QWidget):
         elif library_filter == LibraryFilter.INSTALLABLE:
             visible = not widget.rgame.is_non_asset and not widget.rgame.is_unreal
         elif library_filter == LibraryFilter.INCLUDE_UE:
-            visible = True
+            visible = not widget.rgame.is_android_only
         elif library_filter == LibraryFilter.ALL:
-            visible = not widget.rgame.is_unreal
+            visible = not widget.rgame.is_unreal and not widget.rgame.is_android_only
         else:
             visible = True
 
