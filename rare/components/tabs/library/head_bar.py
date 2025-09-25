@@ -47,11 +47,11 @@ class LibraryHeadBar(QWidget):
             self.filter.addItem(text, data)
 
         if self.rcore.bit32_games:
-            self.filter.addItem(self.tr("32bit games"), LibraryFilter.WIN32)
+            self.filter.addItem(self.tr("Only 32bit"), LibraryFilter.WIN32)
         if self.rcore.mac_games:
-            self.filter.addItem(self.tr("macOS games"), LibraryFilter.MAC)
-        if self.rcore.origin_games:
-            self.filter.addItem(self.tr("Exclude Origin"), LibraryFilter.INSTALLABLE)
+            self.filter.addItem(self.tr("Only macOS"), LibraryFilter.MAC)
+        if self.rcore.non_asset_games:
+            self.filter.addItem(self.tr("Exclude non-asset"), LibraryFilter.INSTALLABLE)
         self.filter.addItem(self.tr("Include Unreal"), LibraryFilter.INCLUDE_UE)
 
         try:

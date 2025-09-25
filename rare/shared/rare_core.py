@@ -320,8 +320,8 @@ class RareCore(QObject):
                     rdlc = self.__create_or_update_rgame(dlc)
                     if rdlc not in rgame.owned_dlcs:
                         rgame.add_dlc(rdlc)
-            # lk: since loading has to know about game state,
-            # validate installation just adding each RareGamesu
+            # lk: since loading has to know about the game's state,
+            # validate installation just by trying to add each RareGame
             # TODO: this should probably be moved into RareGame
             if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
                 try:
