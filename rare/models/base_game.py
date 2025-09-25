@@ -26,7 +26,7 @@ class RareSaveGame:
     description: Optional[str] = ""
 
 
-class RareGameBase(QObject):
+class RareGameBase:
     class State(IntEnum):
         IDLE = 0
         RUNNING = 1
@@ -36,7 +36,7 @@ class RareGameBase(QObject):
         UNINSTALLING = 5
         SYNCING = 6
 
-    class Signals(QObject):
+    class Signals:
         class Progress(QObject):
             start = Signal()
             update = Signal(int)
@@ -57,16 +57,14 @@ class RareGameBase(QObject):
             launched = Signal(str)
             finished = Signal(str)
 
-        def __init__(self, parent=None):
-            super(RareGameBase.Signals, self).__init__(parent=parent)
-            self.progress = RareGameBase.Signals.Progress(self)
-            self.widget = RareGameBase.Signals.Widget(self)
-            self.download = RareGameBase.Signals.Download(self)
-            self.game = RareGameBase.Signals.Game(self)
+        def __init__(self):
+            self.progress = RareGameBase.Signals.Progress()
+            self.widget = RareGameBase.Signals.Widget()
+            self.download = RareGameBase.Signals.Download()
+            self.game = RareGameBase.Signals.Game()
 
-    def __init__(self, legendary_core: LegendaryCore, game: Game, parent=None):
-        super(RareGameBase, self).__init__(parent=parent)
-        self.signals = RareGameBase.Signals(self)
+    def __init__(self, legendary_core: LegendaryCore, game: Game):
+        self.signals = RareGameBase.Signals()
         self.core = legendary_core
         self.game: Game = game
         self.igame: InstalledGame = None
@@ -201,8 +199,8 @@ class RareGameBase(QObject):
 
 
 class RareGameSlim(RareGameBase):
-    def __init__(self, settings: RareAppSettings, legendary_core: LegendaryCore, game: Game, parent=None):
-        super(RareGameSlim, self).__init__(legendary_core, game, parent=parent)
+    def __init__(self, settings: RareAppSettings, legendary_core: LegendaryCore, game: Game):
+        super(RareGameSlim, self).__init__(legendary_core, game)
         self.settings = settings
         # None if origin or not installed
         self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)

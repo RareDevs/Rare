@@ -83,9 +83,8 @@ class RareGame(RareGameSlim):
         legendary_core: LegendaryCore,
         image_manager: ImageManager,
         game: Game,
-        parent=None,
     ):
-        super(RareGame, self).__init__(settings, legendary_core, game, parent=parent)
+        super(RareGame, self).__init__(settings, legendary_core, game)
         self.__origin_install_path: Optional[str] = None
         self.__origin_install_size: Optional[int] = None
 
@@ -645,8 +644,8 @@ class RareGame(RareGameSlim):
 
 
 class RareEosOverlay(RareGameBase):
-    def __init__(self, legendary_core: LegendaryCore, game: Game, parent=None):
-        super(RareEosOverlay, self).__init__(legendary_core, game, parent=parent)
+    def __init__(self, legendary_core: LegendaryCore, game: Game):
+        super(RareEosOverlay, self).__init__(legendary_core, game)
         self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
 
     @property
