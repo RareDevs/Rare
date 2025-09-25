@@ -148,6 +148,13 @@ class RareGameBase(QObject):
         return self.game.third_party_store in {"Origin", "the EA app"}
 
     @property
+    def is_android(self) -> bool:
+        release_info = self.game.metadata.get("releaseInfo")
+        if not release_info:
+            return False
+        return "Android" in release_info[0]["platform"]
+
+    @property
     def is_overlay(self):
         return self.app_name == eos.EOSOverlayApp.app_name
 
