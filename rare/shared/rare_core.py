@@ -392,28 +392,28 @@ class RareCore(QObject):
         QThreadPool.globalInstance().start(entitlements_worker)
         QThreadPool.globalInstance().start(steamappids_worker)
 
-    def fetch_saves(self):
-        def __fetch() -> None:
-            saves_dict: Dict[str, List[SaveGameFile]] = {}
-            try:
-                with timelogger(logger, "Request saves"):
-                    saves_list = self.__core.get_save_games()
-                for s in saves_list:
-                    if s.app_name not in saves_dict.keys():
-                        saves_dict[s.app_name] = [s]
-                    else:
-                        saves_dict[s.app_name].append(s)
-                for app_name, saves in saves_dict.items():
-                    if app_name not in self.__library.keys():
-                        continue
-                    self.__library[app_name].load_saves(saves)
-            except (HTTPError, ConnectionError) as e:
-                logger.error("Exception while fetching saves from EGS.")
-                logger.error(e)
-                return
-            logger.info(f"Saves: {len(saves_dict)}")
+    def __fetch_saves(self) -> None:
+        saves_dict: Dict[str, List[SaveGameFile]] = {}
+        try:
+            with timelogger(logger, "Request saves"):
+                saves_list = self.__core.get_save_games()
+            for s in saves_list:
+                if s.app_name not in saves_dict.keys():
+                    saves_dict[s.app_name] = [s]
+                else:
+                    saves_dict[s.app_name].append(s)
+            for app_name, saves in saves_dict.items():
+                if app_name not in self.__library.keys():
+                    continue
+                self.__library[app_name].load_saves(saves)
+        except (HTTPError, ConnectionError) as e:
+            logger.error("Exception while fetching saves from EGS.")
+            logger.error(e)
+            return
+        logger.info(f"Saves: {len(saves_dict)}")
 
-        saves_worker = QRunnable.create(__fetch)
+    def fetch_saves(self):
+        saves_worker = QRunnable.create(self.__fetch_saves)
         QThreadPool.globalInstance().start(saves_worker)
 
     def resolve_origin(self) -> None:

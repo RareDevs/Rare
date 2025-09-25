@@ -126,13 +126,13 @@ class GamesDlcsWorker(FetchWorker):
                 with timelogger(self.logger, "Request non-asset"):
                     na_games, na_dlc_dict = self.core.get_non_asset_library_items(force_refresh=False, skip_ue=False)
             except (HTTPError, ConnectionError) as e:
-                self.logger.error("Network error while fetching non asset games")
+                self.logger.error("Network error while updating non-asset games")
                 self.logger.error(e)
                 na_games, na_dlc_dict = ([], {})
             # NOTE: This is here because of broken appIds from Epic
             # https://discord.com/channels/826881530310819914/884510635642216499/1111321692703305729
             except Exception as e:
-                self.logger.error("General exception while fetching non asset games from EGS.")
+                self.logger.error("General exception while updating non-asset games from EGS.")
                 self.logger.error(e)
                 na_games, na_dlc_dict = ([], {})
             self.logger.info(
