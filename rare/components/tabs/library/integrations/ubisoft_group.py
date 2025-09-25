@@ -258,6 +258,7 @@ class UbisoftGroup(QGroupBox):
 
             for game in uplay_games:
                 widget = UbiLinkWidget(
+                    self.rcore,
                     game,
                     ubi_account_id,
                     activated=game.partner_link_id in redeemed,
@@ -267,6 +268,7 @@ class UbisoftGroup(QGroupBox):
 
             if self.args.debug:
                 widget = UbiLinkWidget(
+                    self.rcore,
                     Game(
                         app_name="RareTestGame",
                         app_title="Super Fake Super Rare Super Test (Super?) Game",
