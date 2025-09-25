@@ -149,6 +149,8 @@ class LandingWidget(QWidget, SideTabContents):
                 logger.warning(str(e))
 
             if item.promotions is not None:
+                if not item.promotions.upcomingPromotionalOffers and not item.promotions.promotionalOffers:
+                    continue
                 if not item.promotions.promotionalOffers:
                     start_date = item.promotions.upcomingPromotionalOffers[0].promotionalOffers[0].startDate
                 else:
