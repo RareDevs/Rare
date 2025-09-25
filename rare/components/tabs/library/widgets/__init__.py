@@ -25,8 +25,19 @@ class ViewContainer(QWidget):
         self.layout().addWidget(widget)
         return widget
 
-    @staticmethod
-    def __visibility(widget: ViewWidget, library_filter, search_text) -> Tuple[bool, float]:
+    __is_visible = {
+        LibraryFilter.HIDDEN: lambda x: "hidden" in x.metadata.tags,
+        LibraryFilter.FAVORITES: lambda x: "favorite" in x.metadata.tags,
+        LibraryFilter.INSTALLED: lambda x: x.is_installed and not x.is_unreal and "hidden" not in x.metadata.tags,
+        LibraryFilter.OFFLINE: lambda x: x.can_run_offline and not x.is_unreal and "hidden" not in x.metadata.tags,
+        LibraryFilter.WIN32: lambda x: x.is_win32 and not x.is_unreal and "hidden" not in x.metadata.tags,
+        LibraryFilter.MAC: lambda x: x.is_mac and not x.is_unreal and "hidden" not in x.metadata.tags,
+        LibraryFilter.INSTALLABLE: lambda x: not x.is_non_asset and not x.is_unreal and "hidden" not in x.metadata.tags,
+        LibraryFilter.INCLUDE_UE: lambda x: not x.is_android_only and "hidden" not in x.metadata.tags,
+        LibraryFilter.ALL: lambda x: not x.is_unreal and not x.is_android_only and "hidden" not in x.metadata.tags,
+    }
+
+    def __visibility(self, widget: ViewWidget, library_filter, search_text) -> Tuple[bool, float]:
         name_search = True
         tag_search = False
         if search_text.startswith("::"):
@@ -34,28 +45,8 @@ class ViewContainer(QWidget):
             tag_search = True
             name_search = False
             visible = True
-        elif library_filter == LibraryFilter.HIDDEN:
-            visible = "hidden" in widget.rgame.metadata.tags
-        elif library_filter == LibraryFilter.FAVORITES:
-            visible = "favorite" in widget.rgame.metadata.tags
-        elif "hidden" in widget.rgame.metadata.tags:
-            visible = False
-        elif library_filter == LibraryFilter.INSTALLED:
-            visible = widget.rgame.is_installed and not widget.rgame.is_unreal
-        elif library_filter == LibraryFilter.OFFLINE:
-            visible = widget.rgame.can_run_offline and not widget.rgame.is_unreal
-        elif library_filter == LibraryFilter.WIN32:
-            visible = widget.rgame.is_win32 and not widget.rgame.is_unreal
-        elif library_filter == LibraryFilter.MAC:
-            visible = widget.rgame.is_mac and not widget.rgame.is_unreal
-        elif library_filter == LibraryFilter.INSTALLABLE:
-            visible = not widget.rgame.is_non_asset and not widget.rgame.is_unreal
-        elif library_filter == LibraryFilter.INCLUDE_UE:
-            visible = not widget.rgame.is_android_only
-        elif library_filter == LibraryFilter.ALL:
-            visible = not widget.rgame.is_unreal and not widget.rgame.is_android_only
         else:
-            visible = True
+            visible = self.__is_visible[library_filter](widget.rgame)
 
         opacity = 1.0
         if search_text and (
