@@ -73,7 +73,7 @@ class RareCore(QObject):
         self.queue_threadpool.setMaxThreadCount(2)
 
         self.__library: Dict[str, RareGame] = {}
-        self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp, self)
+        self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp)
         self.__eos_overlay.signals.game.install.connect(self.__signals.game.install)
         self.__eos_overlay.signals.game.uninstall.connect(self.__signals.game.uninstall)
 
@@ -307,7 +307,7 @@ class RareCore(QObject):
             logger.info(f"Updating Game for {rgame.app_name}")
             rgame.update_rgame()
         else:
-            rgame = RareGame(self.__settings, self.__core, self.__image_manager, game, self)
+            rgame = RareGame(self.__settings, self.__core, self.__image_manager, game)
             self.__add_game(rgame)
         return rgame
 

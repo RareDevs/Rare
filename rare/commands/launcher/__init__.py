@@ -165,7 +165,7 @@ class RareLauncher(RareApp):
         if not game:
             self.logger.error(f"Game {args.app_name} not found. Exiting")
             return
-        self.rgame = RareGameSlim(self.settings, self.core, game, self)
+        self.rgame = RareGameSlim(self.settings, self.core, game)
 
         if args.show_console:
             self.console = ConsoleDialog(game.app_title)
