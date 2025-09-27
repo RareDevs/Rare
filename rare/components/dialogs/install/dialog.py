@@ -72,12 +72,12 @@ class InstallDialog(ActionDialog):
             self.advanced,
         )
 
-        self.file_filters = InstallDialogFileFilters(parent=self)
-        self.ui.main_layout.insertRow(
-            self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 3,
-            # self.tr("Advanced"),
-            self.file_filters,
-        )
+        # self.file_filters = InstallDialogFileFilters(parent=self)
+        # self.ui.main_layout.insertRow(
+        #     self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 3,
+        #     # self.tr("Filters"),
+        #     self.file_filters,
+        # )
 
         self.options_changed = False
 
@@ -324,11 +324,11 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.install_prereqs_check.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setChecked(has_prereqs and self.same_platform(download))
 
-        new_manifest_data, _, _ = self.core.get_cdn_manifest(download.game, download.igame.platform, self.__options.disable_https)
-        new_manifest = self.core.load_manifest(new_manifest_data)
-        self.file_filters.clear()
-        for e in new_manifest.file_manifest_list.elements:
-            self.file_filters.add_item(e.filename.lower())
+        # new_manifest_data, _, _ = self.core.get_cdn_manifest(download.game, download.igame.platform, self.__options.disable_https)
+        # new_manifest = self.core.load_manifest(new_manifest_data)
+        # self.file_filters.clear()
+        # for e in new_manifest.file_manifest_list.elements:
+        #     self.file_filters.add_item(e.filename.lower())
 
         if self.__options.silent:
             self.accept()
