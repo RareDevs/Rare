@@ -115,10 +115,10 @@ class ConsoleDialog(QDialog):
     def log_stdout(self, text: str):
         self.console_edit.log(text)
 
-    def error(self, text):
+    def error(self, text: str):
         self.console_edit.error(f"Rare: {text}")
 
-    def log_stderr(self, text):
+    def log_stderr(self, text: str):
         self.console_edit.error(text)
 
     def on_process_exit(self, app_title: str, status: Union[int, str]):

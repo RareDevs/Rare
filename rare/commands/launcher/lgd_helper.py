@@ -20,7 +20,7 @@ class GameArgsError(Exception):
     pass
 
 
-class InitArgs(Namespace):
+class InitParams(Namespace):
     app_name: str
     offline: bool = False
     debug: bool = False
@@ -45,7 +45,7 @@ class InitArgs(Namespace):
 
 
 @dataclass
-class LaunchArgs:
+class LaunchParams:
     executable: str = ""
     arguments: List[str] = field(default_factory=list)
     working_directory: str = ""
@@ -58,32 +58,32 @@ class LaunchArgs:
         return bool(self.executable)
 
 
-def get_origin_params(rgame: RareGameSlim, init_args: InitArgs, launch_args: LaunchArgs) -> LaunchArgs:
+def get_origin_params(rgame: RareGameSlim, init: InitParams, launch: LaunchParams) -> LaunchParams:
     core = rgame.core
     app_name = rgame.app_name
 
-    origin_uri = core.get_origin_uri(app_name, init_args.offline)
+    origin_uri = core.get_origin_uri(app_name, init.offline)
     if platform.system() == "Windows":
         command = [origin_uri]
     else:
         command = core.get_app_launch_command(app_name)
         if not os.path.exists(command[0]) and shutil.which(command[0]) is None:
-            return launch_args
+            return launch
         command.append(origin_uri)
 
     exe, args, env = prepare_process(command, core.get_app_environment(app_name))
 
-    launch_args.is_origin_game = True
-    launch_args.executable = exe
-    launch_args.arguments = args
-    launch_args.environment = env
+    launch.is_origin_game = True
+    launch.executable = exe
+    launch.arguments = args
+    launch.environment = env
 
-    return launch_args
+    return launch
 
 
-def get_game_params(rgame: RareGameSlim, args: InitArgs, launch_args: LaunchArgs) -> LaunchArgs:
-    if not args.offline:  # skip for update
-        if not args.skip_update_check and not rgame.core.is_noupdate_game(rgame.app_name):
+def get_game_params(rgame: RareGameSlim, init: InitParams, launch: LaunchParams) -> LaunchParams:
+    if not init.offline:  # skip for update
+        if not init.skip_update_check and not rgame.core.is_noupdate_game(rgame.app_name):
             try:
                 latest = rgame.core.get_asset(rgame.app_name, rgame.igame.platform, update=False)
             except ValueError:
@@ -100,11 +100,11 @@ def get_game_params(rgame: RareGameSlim, args: InitArgs, launch_args: LaunchArgs
 
     try:
         params: LaunchParameters = rgame.core.get_launch_parameters(
-            app_name=rgame.igame.app_name, offline=args.offline, addon_app_name=rgame.game.app_name
+            app_name=rgame.igame.app_name, offline=init.offline, addon_app_name=rgame.game.app_name
         )
     except TypeError:
         logger.warning("Using older get_launch_parameters due to legendary version")
-        params: LaunchParameters = rgame.core.get_launch_parameters(app_name=rgame.igame.app_name, offline=args.offline)
+        params: LaunchParameters = rgame.core.get_launch_parameters(app_name=rgame.igame.app_name, offline=init.offline)
 
     full_params = []
     full_params.extend(params.launch_command)
@@ -113,24 +113,24 @@ def get_game_params(rgame: RareGameSlim, args: InitArgs, launch_args: LaunchArgs
     full_params.extend(params.egl_parameters)
     full_params.extend(params.user_parameters)
 
-    exe, args, env = prepare_process(full_params, params.environment)
+    exe, init, env = prepare_process(full_params, params.environment)
 
-    launch_args.executable = exe
-    launch_args.arguments = args
-    launch_args.environment = env
-    launch_args.working_directory = params.working_directory
+    launch.executable = exe
+    launch.arguments = init
+    launch.environment = env
+    launch.working_directory = params.working_directory
 
-    return launch_args
+    return launch
 
 
-def get_launch_args(rgame: RareGameSlim, init_args: InitArgs = None) -> LaunchArgs:
-    resp = LaunchArgs()
+def get_launch_params(rgame: RareGameSlim, init: InitParams = None) -> LaunchParams:
+    resp = LaunchParams()
 
     if not rgame.game:
         raise GameArgsError(f"Could not find metadata for {rgame.app_title}")
 
     if rgame.is_origin:
-        init_args.offline = False
+        init.offline = False
     else:
         if not rgame.is_installed:
             raise GameArgsError("Game is not installed or has unsupported format")
@@ -141,11 +141,11 @@ def get_launch_args(rgame: RareGameSlim, init_args: InitArgs = None) -> LaunchAr
             raise GameArgsError("Game path does not exist")
 
     if rgame.is_origin:
-        resp = get_origin_params(rgame, init_args, resp)
+        resp = get_origin_params(rgame, init, resp)
     else:
-        resp = get_game_params(rgame, init_args, resp)
+        resp = get_game_params(rgame, init, resp)
 
-    pre_cmd, wait = rgame.core.get_pre_launch_command(init_args.app_name)
+    pre_cmd, wait = rgame.core.get_pre_launch_command(init.app_name)
     resp.pre_launch_command, resp.pre_launch_wait = pre_cmd, wait
     return resp
 

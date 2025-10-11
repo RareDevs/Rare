@@ -1,4 +1,5 @@
 import json
+import os
 import platform
 import shlex
 import subprocess
@@ -36,7 +37,7 @@ from rare.widgets.rare_app import RareApp, RareAppException
 
 from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
 from .console_dialog import ConsoleDialog
-from .lgd_helper import InitArgs, LaunchArgs, dict_to_qprocenv, get_configured_qprocess, get_launch_args
+from .lgd_helper import InitParams, LaunchParams, dict_to_qprocenv, get_configured_qprocess, get_launch_params
 
 DETACHED_APP_NAMES = {
     "0a2d9f6403244d12969e11da6713137b",  # Fall Guys
@@ -51,12 +52,12 @@ DETACHED_APP_NAMES = {
 
 class PreLaunch(QRunnable):
     class Signals(QObject):
-        ready_to_launch = Signal(LaunchArgs)
+        ready_to_launch = Signal(LaunchParams)
         pre_launch_command_started = Signal()
         pre_launch_command_finished = Signal(int)  # exit_code
         error_occurred = Signal(str)
 
-    def __init__(self, args: InitArgs, rgame: RareGameSlim, sync_action=None):
+    def __init__(self, args: InitParams, rgame: RareGameSlim, sync_action=None):
         super(PreLaunch, self).__init__()
         self.signals = self.Signals()
         self.logger = getLogger(type(self).__name__)
@@ -78,30 +79,30 @@ class PreLaunch(QRunnable):
         else:
             return
 
-    def prepare_launch(self, args: InitArgs) -> Optional[LaunchArgs]:
+    def prepare_launch(self, args: InitParams) -> Optional[LaunchParams]:
         try:
-            launch_args = get_launch_args(self.rgame, args)
+            launch = get_launch_params(self.rgame, args)
         except Exception as e:
             self.signals.error_occurred.emit(str(e))
             return None
-        if not launch_args:
+        if not launch:
             return None
 
-        if launch_args.pre_launch_command:
-            proc = get_configured_qprocess(shlex.split(launch_args.pre_launch_command), launch_args.environment)
+        if launch.pre_launch_command:
+            proc = get_configured_qprocess(shlex.split(launch.pre_launch_command), launch.environment)
             proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
             proc.readyReadStandardOutput.connect(
                 lambda: self.logger.info(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
             )
             self.signals.pre_launch_command_started.emit()
             self.logger.info("Running pre-launch command %s, %s", proc.program(), proc.arguments())
-            if launch_args.pre_launch_wait:
+            if launch.pre_launch_wait:
                 proc.start()
                 self.logger.info("Waiting for pre-launch command to finish")
                 proc.waitForFinished(-1)
             else:
                 proc.startDetached()
-        return launch_args
+        return launch
 
 
 class SyncCheckWorker(QRunnable):
@@ -147,7 +148,7 @@ class RareLauncherException(RareAppException):
 class RareLauncher(RareApp):
     exit_app = Signal()
 
-    def __init__(self, args: InitArgs):
+    def __init__(self, args: InitParams):
         super(RareLauncher, self).__init__(args, f"{type(self).__name__}_{args.app_name}_{{0}}.log")
         self.socket: Optional[QLocalSocket] = None
         self.console: Optional[ConsoleDialog] = None
@@ -293,68 +294,75 @@ class RareLauncher(RareApp):
         self.stop()
 
     @Slot(object)
-    def launch_game(self, args: LaunchArgs):
+    def launch_game(self, params: LaunchParams):
         # should never happen
-        if not args:
+        if not params:
             self.stop()
             return
         if self.console:
-            self.console.set_env(args.environment)
+            self.console.set_env(params.environment)
         self.start_time = time.time()
 
         if self.args.dry_run:
             self.logger.info("Dry run %s (%s)", self.rgame.app_title, self.rgame.app_name)
-            self.logger.info("Command: %s, %s", args.executable, " ".join(args.arguments))
+            self.logger.info("Command: %s, %s", params.executable, " ".join(params.arguments))
             if self.console:
                 self.console.log(f"Dry run {self.rgame.app_title} ({self.rgame.app_name})")
-                self.console.log(f"{shlex.join((args.executable, *args.arguments))}")
+                self.console.log(f"{shlex.join((params.executable, *params.arguments))}")
                 self.console.accept_close = True
             self.stop()
             return
 
-        if platform.system() == "Windows" and args.is_origin_game:
+        if platform.system() == "Windows" and params.is_origin_game:
             # executable is a protocol link (link2ea://launchgame/...)
-            QDesktopServices.openUrl(QUrl(args.executable))
+            QDesktopServices.openUrl(QUrl(params.executable))
             self.stop()  # stop because it is not a subprocess
             return
 
         self.logger.info("Starting %s (%s)", self.rgame.app_title, self.rgame.app_name)
-        self.logger.info("Command: %s, %s", args.executable, " ".join(args.arguments))
-        self.logger.debug("Working directory %s", args.working_directory)
+        self.logger.info("Command: %s, %s", params.executable, " ".join(params.arguments))
+        self.logger.debug("Working directory %s", params.working_directory)
 
         if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
             if self.console:
-                self.console.log(f"Launching {args.executable} as a detached process")
+                self.console.log(f"Launching {params.executable} as a detached process")
             subprocess.Popen(
-                (args.executable, *args.arguments),
+                (params.executable, *params.arguments),
                 stdin=None,
                 stdout=None,
                 stderr=None,
-                cwd=args.working_directory,
-                env=args.environment,
+                cwd=params.working_directory,
+                env=params.environment,
                 shell=True,
                 creationflags=subprocess.DETACHED_PROCESS,
             )
             self.stop()  # stop because we do not attach to the output
             return
 
-        if platform.system() == "Linux":
+        if platform.system() in {"Linux", "FreeBSD"}:
             cmd_line = get_rare_executable()
             executable, arguments = cmd_line[0], cmd_line[1:]
 
-            workdir = []
-            if args.working_directory:
-                workdir = ["--workdir", args.working_directory]
+            if appid := os.environ.get("SteamGameId", False):
+                params.environment["SteamGameId"] = appid
 
             self.game_process.setProgram(executable)
-            self.game_process.setArguments([*arguments, "subreaper", *workdir, args.executable, *args.arguments])
+            # TODO: Add "SteamLauch" and "AppId=xxxxxx" here for steamdeck/gamescope
+            self.game_process.setArguments(
+                [*arguments, "subreaper", "SteamLaunch", f"AppId={int(appid) >> 32}", "--", params.executable, *params.arguments]
+            )
         else:
-            self.game_process.setProgram(args.executable)
-            self.game_process.setArguments(args.arguments)
-            if args.working_directory:
-                self.game_process.setWorkingDirectory(args.working_directory)
+            self.game_process.setProgram(params.executable)
+            self.game_process.setArguments(params.arguments)
 
-        self.game_process.setProcessEnvironment(dict_to_qprocenv(args.environment))
+        if params.working_directory:
+            self.game_process.setWorkingDirectory(params.working_directory)
+
+        if self.args.debug and self.console:
+            self.console.log(str(self.game_process.program()))
+            self.console.log(str(self.game_process.arguments()))
+
+        self.game_process.setProcessEnvironment(dict_to_qprocenv(params.environment))
         # send start message after process started
         self.game_process.started.connect(
             lambda: self.send_message(
@@ -459,7 +467,7 @@ class RareLauncher(RareApp):
 
 
 def launcher(args: Namespace) -> int:
-    args = InitArgs.from_argparse(args)
+    args = InitParams.from_argparse(args)
 
     QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
     QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
