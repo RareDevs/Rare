@@ -2,7 +2,7 @@ build
 installer
 setuptools-scm
 requests < 3.0
-PySide6-Essentials >= 6.8.1, != 6.9.2
+PySide6-Essentials >= 6.8.1, < 6.9.2
 QtAwesome
 legendary-gl @ https://github.com/RareDevs/legendary/archive/4074375b789a4c2c87f72307bc9581900e34fa50.zip
 orjson
