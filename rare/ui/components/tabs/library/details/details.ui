@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>814</width>
-    <height>598</height>
+    <width>795</width>
+    <height>404</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,8 +53,11 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="right_layout">
-     <item>
+    <layout class="QGridLayout" name="right_layout" rowstretch="0,1" columnstretch="0,1">
+     <property name="spacing">
+      <number>24</number>
+     </property>
+     <item row="0" column="0">
       <layout class="QFormLayout" name="details_layout">
        <property name="sizeConstraint">
         <enum>QLayout::SizeConstraint::SetFixedSize</enum>
@@ -72,19 +75,10 @@
         <number>12</number>
        </property>
        <property name="leftMargin">
-        <number>6</number>
-       </property>
-       <property name="topMargin">
-        <number>6</number>
-       </property>
-       <property name="rightMargin">
-        <number>6</number>
-       </property>
-       <property name="bottomMargin">
-        <number>6</number>
+        <number>12</number>
        </property>
        <item row="0" column="0">
-        <widget class="QLabel" name="lbl_dev">
+        <widget class="QLabel" name="dev_label">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -115,7 +109,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="lbl_app_name">
+        <widget class="QLabel" name="app_name_label">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -146,7 +140,7 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="lbl_version">
+        <widget class="QLabel" name="version_label">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -177,7 +171,7 @@
         </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QLabel" name="lbl_grade">
+        <widget class="QLabel" name="grade_label">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -208,7 +202,7 @@
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QLabel" name="lbl_install_size">
+        <widget class="QLabel" name="install_size_label">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -239,7 +233,7 @@
         </widget>
        </item>
        <item row="5" column="0">
-        <widget class="QLabel" name="lbl_install_path">
+        <widget class="QLabel" name="install_path_label">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -273,7 +267,7 @@
         </widget>
        </item>
        <item row="6" column="0">
-        <widget class="QLabel" name="lbl_platform">
+        <widget class="QLabel" name="platform_label">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -301,7 +295,7 @@
         </widget>
        </item>
        <item row="7" column="0">
-        <widget class="QLabel" name="lbl_game_actions">
+        <widget class="QLabel" name="actions_label">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -322,7 +316,7 @@
         </widget>
        </item>
        <item row="7" column="1">
-        <widget class="QStackedWidget" name="game_actions_stack">
+        <widget class="QStackedWidget" name="actions_stack">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -331,13 +325,13 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>250</width>
+           <width>300</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>250</width>
+           <width>300</width>
            <height>16777215</height>
           </size>
          </property>
@@ -552,14 +546,15 @@
        </item>
       </layout>
      </item>
-     <item>
-      <widget class="QFrame" name="requirements_group">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+     <item row="0" column="1">
+      <widget class="QTextBrowser" name="description_label">
+       <property name="openExternalLinks">
+        <bool>true</bool>
        </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2" alignment="Qt::AlignmentFlag::AlignBottom">
+      <widget class="QFrame" name="requirements_group">
        <property name="frameShape">
         <enum>QFrame::Shape::StyledPanel</enum>
        </property>
