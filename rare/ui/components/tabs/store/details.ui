@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>630</width>
-    <height>382</height>
+    <width>706</width>
+    <height>302</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string notr="true">StoreDetailsWidget</string>
   </property>
-  <layout class="QHBoxLayout" name="main_layout" stretch="0,1">
+  <layout class="QHBoxLayout" name="main_layout" stretch="0,0">
    <item>
     <layout class="QVBoxLayout" name="left_layout">
      <item>
@@ -41,17 +41,20 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="right_layout">
-     <item>
+    <layout class="QGridLayout" name="right_layout" rowstretch="0,1" columnstretch="0,1">
+     <property name="spacing">
+      <number>24</number>
+     </property>
+     <item row="0" column="0">
       <layout class="QFormLayout" name="details_layout">
        <property name="sizeConstraint">
-        <enum>QLayout::SetFixedSize</enum>
+        <enum>QLayout::SizeConstraint::SetFixedSize</enum>
        </property>
        <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+        <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
        </property>
        <property name="labelAlignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
        <property name="horizontalSpacing">
         <number>12</number>
@@ -60,22 +63,12 @@
         <number>12</number>
        </property>
        <property name="leftMargin">
-        <number>6</number>
-       </property>
-       <property name="topMargin">
-        <number>6</number>
-       </property>
-       <property name="rightMargin">
-        <number>6</number>
-       </property>
-       <property name="bottomMargin">
-        <number>6</number>
+        <number>12</number>
        </property>
        <item row="0" column="0">
         <widget class="QLabel" name="title_label">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -83,7 +76,7 @@
           <string>Title</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -93,7 +86,7 @@
           <string notr="true">title</string>
          </property>
          <property name="textInteractionFlags">
-          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
@@ -101,7 +94,6 @@
         <widget class="QLabel" name="developer_label">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -109,7 +101,7 @@
           <string>Developer</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -119,7 +111,7 @@
           <string notr="true">developer</string>
          </property>
          <property name="textInteractionFlags">
-          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
@@ -127,7 +119,6 @@
         <widget class="QLabel" name="publisher_label">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -135,7 +126,7 @@
           <string>Publisher</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -145,7 +136,7 @@
           <string notr="true">publisher</string>
          </property>
          <property name="textInteractionFlags">
-          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
@@ -153,7 +144,6 @@
         <widget class="QLabel" name="status_label">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -161,7 +151,7 @@
           <string>Status</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -176,7 +166,6 @@
         <widget class="QLabel" name="price_label">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -184,7 +173,7 @@
           <string>Price</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -192,7 +181,6 @@
         <widget class="QLabel" name="tags_label">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -200,7 +188,7 @@
           <string>Tags</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -215,7 +203,6 @@
         <widget class="QLabel" name="social_links_label">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -223,7 +210,7 @@
           <string>Links</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -231,7 +218,6 @@
         <widget class="QLabel" name="actions_label">
          <property name="font">
           <font>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -239,7 +225,7 @@
           <string>Actions</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -247,7 +233,7 @@
         <widget class="QWidget" name="social_links" native="true">
          <layout class="QHBoxLayout" name="social_links_layout">
           <property name="sizeConstraint">
-           <enum>QLayout::SetFixedSize</enum>
+           <enum>QLayout::SizeConstraint::SetFixedSize</enum>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -265,7 +251,7 @@
         </widget>
        </item>
        <item row="7" column="1">
-        <widget class="QWidget" name="actions" native="true">
+        <widget class="QWidget" name="actions_widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -274,8 +260,14 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>250</width>
+           <width>300</width>
            <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
           </size>
          </property>
          <layout class="QVBoxLayout" name="actions_layout">
@@ -318,7 +310,7 @@
          </property>
          <layout class="QHBoxLayout" name="price_layout">
           <property name="sizeConstraint">
-           <enum>QLayout::SetFixedSize</enum>
+           <enum>QLayout::SizeConstraint::SetFixedSize</enum>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -338,7 +330,7 @@
              <string notr="true">orignal</string>
             </property>
             <property name="textInteractionFlags">
-             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+             <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
             </property>
            </widget>
           </item>
@@ -354,7 +346,14 @@
        </item>
       </layout>
      </item>
-     <item>
+     <item row="0" column="1">
+      <widget class="QTextBrowser" name="description_label">
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2" alignment="Qt::AlignmentFlag::AlignBottom">
       <widget class="QFrame" name="requirements_frame">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -363,10 +362,10 @@
         </sizepolicy>
        </property>
        <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
+        <enum>QFrame::Shape::StyledPanel</enum>
        </property>
        <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
+        <enum>QFrame::Shadow::Sunken</enum>
        </property>
        <layout class="QHBoxLayout" name="requirements_layout">
         <property name="leftMargin">
@@ -382,13 +381,6 @@
          <number>0</number>
         </property>
        </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTextBrowser" name="description_label">
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
       </widget>
      </item>
     </layout>

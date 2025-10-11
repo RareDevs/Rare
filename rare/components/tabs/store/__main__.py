@@ -23,8 +23,12 @@ class StoreWindow(QDialog):
 
 
 if __name__ == "__main__":
+    import logging
+
     # import rare.resources.stylesheets.RareStyle
     from rare.utils.misc import set_style_sheet
+
+    logging.getLogger().setLevel(logging.DEBUG)
 
     app = QApplication(sys.argv)
     app.setApplicationName("Rare")

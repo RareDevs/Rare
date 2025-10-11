@@ -2,13 +2,15 @@ from logging import getLogger
 from typing import List
 
 from PySide6.QtCore import Qt, QUrl, Signal
-from PySide6.QtGui import QDesktopServices, QKeyEvent
+from PySide6.QtGui import QDesktopServices, QKeyEvent, QTextDocument
 from PySide6.QtWidgets import (
     QGridLayout,
     QLabel,
     QPushButton,
     QSizePolicy,
     QWidget,
+    QTabWidget,
+    QFormLayout,
 )
 
 from rare.components.tabs.store.api.models.diesel import (
@@ -59,6 +61,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.requirements_tabs = SideTabWidget(parent=self.ui.requirements_frame)
         self.requirements_tabs.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.ui.requirements_layout.addWidget(self.requirements_tabs)
+        self.ui.requirements_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
 
         self.ui.back_button.setIcon(qta_icon("fa.chevron-left", "fa5s.chevron-left"))
         self.ui.back_button.clicked.connect(self.back_clicked)
@@ -183,7 +186,11 @@ class StoreDetailsWidget(QWidget, SideTabContents):
 
         # self.image_stack.setCurrentIndex(0)
         about = product_data.about
-        self.ui.description_label.setMarkdown(about.desciption)
+        description = about.description
+        description = description.replace("### ", "##### ")
+        description = description.replace("## ", "#### ")
+        description = description.replace("# ", "### ")
+        self.ui.description_label.setMarkdown(description)
         self.ui.developer.setText(about.developerAttribution)
         # try:
         #     if isinstance(aboudeveloper, list):
