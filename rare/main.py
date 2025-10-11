@@ -1,3 +1,4 @@
+import argparse
 import multiprocessing
 import os
 import pathlib
@@ -103,20 +104,6 @@ def main() -> int:
 
     # Subreaper command
     subreaper_parser = subparsers.add_parser("subreaper", aliases=["reaper"])
-    subreaper_parser.add_argument(
-        "--workdir",
-        action="store",
-        dest="workdir",
-        metavar="<workdir>",
-        help="Run command in this directory",
-    )
-
-    subreaper_parser.add_argument(
-        "command",
-        action="store",
-        metavar="<command>",
-        help="Command to execute in the subreaper",
-    )
 
     args, other = parser.parse_known_args()
 
@@ -150,6 +137,11 @@ def main() -> int:
 
     if args.subparser in {"subreaper", "reaper"}:
         from rare.commands.subreaper import subreaper
+
+        sep = other.index("--")
+        other = other[sep + 1 :]
+        args.command = other.pop(0)
+        args.workdir = os.getcwd()
 
         return subreaper(args, other)
 
