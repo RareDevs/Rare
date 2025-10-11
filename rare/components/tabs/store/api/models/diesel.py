@@ -71,7 +71,7 @@ class DieselSystemDetails:
 @dataclass
 class DieselProductAbout:
     _type: str = None
-    desciption: str = None
+    description: str = None
     developerAttribution: str = None
     publisherAttribution: str = None
     shortDescription: str = None
@@ -82,7 +82,7 @@ class DieselProductAbout:
         d = src.copy()
         return cls(
             _type=d.pop("_type", ""),
-            desciption=d.pop("description", ""),
+            description=d.pop("description", ""),
             developerAttribution=d.pop("developerAttribution", ""),
             publisherAttribution=d.pop("publisherAttribution", ""),
             shortDescription=d.pop("shortDescription", ""),

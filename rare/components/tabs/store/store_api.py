@@ -18,7 +18,6 @@ from .api.models.response import (
     ResponseModel,
 )
 
-logger = getLogger("StoreAPI")
 graphql_url = "https://store.epicgames.com/graphql"
 # graphql_url = "https://launcher.store.epicgames.com/graphql"
 
@@ -32,6 +31,7 @@ class StoreAPI(QObject):
 
     def __init__(self, token, language: str, country: str, installed):
         super(StoreAPI, self).__init__()
+        self.logger = getLogger(type(self).__name__)
         self.token = token
         self.language_code: str = language
         self.country_code: str = country
@@ -54,19 +54,18 @@ class StoreAPI(QObject):
         }
         self.manager.get(url, lambda data: self.__handle_free_games(data, callback), params=params)
 
-    @staticmethod
-    def __handle_free_games(data, callback):
+    def __handle_free_games(self, data, callback):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error)
+                    self.logger.error(error)
             elements = response.data.catalog.searchStore.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise e
             elements = False
-            logger.error("Free games request failed with: %s", e)
+            self.logger.error("Free games request failed with: %s", e)
         callback(elements)
 
     def get_wishlist(self, callback):
@@ -83,19 +82,18 @@ class StoreAPI(QObject):
             },
         )
 
-    @staticmethod
-    def __handle_wishlist(data, callback):
+    def __handle_wishlist(self, data, callback):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error)
+                    self.logger.error(error)
             elements = response.data.wishlist.wishlistItems.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise e
             elements = False
-            logger.error("Wishlist request failed with: %s", e)
+            self.logger.error("Wishlist request failed with: %s", e)
         callback(elements)
 
     def search_game(self, name, callback):
@@ -118,19 +116,18 @@ class StoreAPI(QObject):
 
         self.manager.post(graphql_url, lambda data: self.__handle_search(data, callback), payload)
 
-    @staticmethod
-    def __handle_search(data, callback):
+    def __handle_search(self, data, callback):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error)
+                    self.logger.error(error)
             elements = response.data.catalog.searchStore.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise e
             elements = False
-            logger.error("Search request failed with: %s", e)
+            self.logger.error("Search request failed with: %s", e)
         callback(elements)
 
     def browse_games(self, browse_model: SearchStoreQuery, callback):
@@ -154,13 +151,13 @@ class StoreAPI(QObject):
                 response = ResponseModel.from_dict(data)
                 if response.errors:
                     for error in response.errors:
-                        logger.error(error)
+                        self.logger.error(error)
                 elements = response.data.catalog.searchStore.elements
             except (Exception, AttributeError, KeyError) as e:
                 if DEBUG():
                     raise e
                 elements = False
-                logger.error("Browse request failed with: %s", e)
+                self.logger.error("Browse request failed with: %s", e)
             callback(elements)
         else:
             self.browse_games(*self.next_browse_request)  # pylint: disable=E1120
@@ -183,17 +180,17 @@ class StoreAPI(QObject):
     def get_game_config_cms(self, slug: str, is_bundle: bool, callback):
         url = "https://store-content.ak.epicgames.com/api"
         url += f"/{self.locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
+        self.logger.debug("Quering game config: %s", url)
         self.manager.get(url, lambda data: self.__handle_get_game(data, callback))
 
-    @staticmethod
-    def __handle_get_game(data, callback):
+    def __handle_get_game(self, data, callback):
         try:
             product = DieselProduct.from_dict(data)
             callback(product)
         except Exception as e:
             if DEBUG():
                 raise e
-            logger.error(str(e))
+            self.logger.error(str(e))
             # callback({})
 
     # needs a captcha
@@ -218,12 +215,12 @@ class StoreAPI(QObject):
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error)
+                    self.logger.error(error)
             success = response.data.wishlist.addToWishlist.success
         except Exception as e:
             if DEBUG():
                 raise e
-            logger.error("Add to wishlist request failed with: %s", e)
+            self.logger.error("Add to wishlist request failed with: %s", e)
             success = False
         callback(success)
         self.update_wishlist.emit()
@@ -248,12 +245,12 @@ class StoreAPI(QObject):
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    logger.error(error)
+                    self.logger.error(error)
             success = response.data.wishlist.removeFromWishlist.success
         except Exception as e:
             if DEBUG():
                 raise e
-            logger.error("Remove from wishlist request failed with: %s", e)
+            self.logger.error("Remove from wishlist request failed with: %s", e)
             success = False
         callback(success)
         self.update_wishlist.emit()
