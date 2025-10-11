@@ -96,6 +96,7 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.add_tag_button.clicked.connect(self.__on_tag_add)
 
         # lk: hide unfinished things
+        self.ui.description_label.setVisible(False)
         self.ui.requirements_group.setVisible(False)
 
     @Slot()
@@ -308,15 +309,15 @@ class GameDetails(QWidget, SideTabContents):
         """React to state updates from RareGame"""
         self.image.setPixmap(self.rgame.get_pixmap(ImageSize.DisplayTall, True))
 
-        self.ui.lbl_version.setDisabled(self.rgame.is_non_asset)
+        self.ui.version_label.setDisabled(self.rgame.is_non_asset)
         self.ui.version.setDisabled(self.rgame.is_non_asset)
         self.ui.version.setText(self.rgame.version if not self.rgame.is_non_asset else "N/A")
 
-        self.ui.lbl_install_size.setEnabled(bool(self.rgame.install_size))
+        self.ui.install_size_label.setEnabled(bool(self.rgame.install_size))
         self.ui.install_size.setEnabled(bool(self.rgame.install_size))
         self.ui.install_size.setText(format_size(self.rgame.install_size) if self.rgame.install_size else "N/A")
 
-        self.ui.lbl_install_path.setEnabled(bool(self.rgame.install_path))
+        self.ui.install_path_label.setEnabled(bool(self.rgame.install_path))
         self.ui.install_path.setEnabled(bool(self.rgame.install_path))
         self.ui.install_path.setText(
             style_hyperlink(
@@ -331,7 +332,7 @@ class GameDetails(QWidget, SideTabContents):
             self.rgame.igame.platform if self.rgame.is_installed and not self.rgame.is_non_asset else self.rgame.default_platform
         )
 
-        self.ui.lbl_grade.setDisabled(self.rgame.is_unreal or platform.system() == "Windows")
+        self.ui.grade_label.setDisabled(self.rgame.is_unreal or platform.system() == "Windows")
         self.ui.grade.setDisabled(self.rgame.is_unreal or platform.system() == "Windows")
         self.ui.grade.setText(
             style_hyperlink(
@@ -373,9 +374,9 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.uninstall_button.setEnabled(self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle)
 
         if self.rgame.is_installed and not self.rgame.is_non_asset:
-            self.ui.game_actions_stack.setCurrentWidget(self.ui.installed_page)
+            self.ui.actions_stack.setCurrentWidget(self.ui.installed_page)
         else:
-            self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
+            self.ui.actions_stack.setCurrentWidget(self.ui.uninstalled_page)
 
         for w in self.ui.tags_group.findChildren(GameTagCheckBox, options=Qt.FindChildOption.FindDirectChildrenOnly):
             w.deleteLater()
@@ -417,7 +418,7 @@ class GameDetails(QWidget, SideTabContents):
 
         if rgame.is_non_asset:
             self.ui.install_button.setText(self.tr("Link/Launch"))
-            self.ui.game_actions_stack.setCurrentWidget(self.ui.uninstalled_page)
+            self.ui.actions_stack.setCurrentWidget(self.ui.uninstalled_page)
         else:
             self.ui.install_button.setText(self.tr("Install"))
 
