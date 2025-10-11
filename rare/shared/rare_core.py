@@ -34,13 +34,11 @@ from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
 from .wrappers import Wrappers
 
-logger = getLogger("RareCore")
-
 
 class RareCore(QObject):
     progress = Signal(int, str)
     completed = Signal()
-    # lk: these are unused but remain if case they are become relevant
+    # lk: these are unused but remain if case they become relevant
     # completed_saves = Signal()
     # completed_origin = Signal()
     # completed_entitlements = Signal()
@@ -52,6 +50,7 @@ class RareCore(QObject):
         if self.__instance is not None:
             raise RuntimeError("RareCore already initialized")
         super(RareCore, self).__init__()
+        self.logger = getLogger(type(self).__name__)
         self.__settings = settings
         self.__args: Optional[Namespace] = None
         self.__signals: Optional[GlobalSignals] = None
@@ -151,14 +150,14 @@ class RareCore(QObject):
             try:
                 self.__core = LegendaryCore()
             except configparser.MissingSectionHeaderError as e:
-                logger.warning("Config is corrupt: %s", e)
+                self.logger.warning("Config is corrupt: %s", e)
                 if config_path := os.environ.get("LEGENDARY_CONFIG_PATH"):
                     path = config_path
                 elif config_path := os.environ.get("XDG_CONFIG_HOME"):
                     path = os.path.join(config_path, "legendary")
                 else:
                     path = os.path.expanduser("~/.config/legendary")
-                logger.info("Creating config in path: %s", config_path)
+                self.logger.info("Creating config in path: %s", config_path)
                 with open(os.path.join(path, "config.ini"), "w", encoding="utf-8") as config_file:
                     config_file.write("[Legendary]")
                 self.__core = LegendaryCore()
@@ -248,12 +247,12 @@ class RareCore(QObject):
             # lk: to avoid spamming the log with "file not found" errors
             for dlc in rgame.owned_dlcs:
                 if dlc.is_installed:
-                    logger.info(f'Uninstalling DLC "{dlc.app_name}" ({dlc.app_title})...')
-                    uninstall_game(self.__core, dlc, keep_files=True, keep_config=True)
+                    self.logger.info(f'Uninstalling DLC "{dlc.app_name}" ({dlc.app_title})...')
+                    uninstall_game(self.__core, dlc, self.logger, keep_files=True, keep_config=True)
                     dlc.igame = None
-            logger.info(f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...')
-            uninstall_game(self.__core, rgame, keep_files=True, keep_config=True)
-            logger.info(f"Uninstalled {rgame.app_title}, because no game files exist")
+            self.logger.info(f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...')
+            uninstall_game(self.__core, rgame, self.logger, keep_files=True, keep_config=True)
+            self.logger.info(f"Uninstalled {rgame.app_title}, because no game files exist")
             rgame.igame = None
             return
         # lk: games that don't have an override and can't find their executable due to case sensitivity
@@ -270,7 +269,7 @@ class RareCore(QObject):
             rgame.igame.needs_verification = True
             self.__core.lgd.set_installed_game(rgame.app_name, rgame.igame)
             rgame.update_igame()
-            logger.info(f"{rgame.app_title} needs verification")
+            self.logger.info(f"{rgame.app_title} needs verification")
 
     def get_game(self, app_name: str) -> Union[RareEosOverlay, RareGame]:
         if app_name == EOSOverlayApp.app_name:
@@ -303,8 +302,8 @@ class RareCore(QObject):
 
     def __create_or_update_rgame(self, game: Game) -> RareGame:
         if rgame := self.__library.get(game.app_name, False):
-            logger.warning(f"{rgame.app_name} already present in {type(self).__name__}")
-            logger.info(f"Updating Game for {rgame.app_name}")
+            self.logger.warning(f"{rgame.app_name} already present in {type(self).__name__}")
+            self.logger.info(f"Updating Game for {rgame.app_name}")
             rgame.update_rgame()
         else:
             rgame = RareGame(self.__settings, self.__core, self.__image_manager, game)
@@ -327,8 +326,8 @@ class RareCore(QObject):
                 try:
                     self.__validate_install(rgame)
                 except FileNotFoundError as e:
-                    logger.info(f'Marking "{rgame.app_title}" as not installed because an exception has occurred...')
-                    logger.error(e)
+                    self.logger.info(f'Marking "{rgame.app_title}" as not installed because an exception has occurred...')
+                    self.logger.error(e)
                     rgame.set_installed(False)
             progress = int(idx / length * self.__fetch_progress) + (100 - self.__fetch_progress)
             self.progress.emit(progress, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
@@ -351,7 +350,7 @@ class RareCore(QObject):
         if result_type == FetchWorker.Result.STEAMAPPIDS:
             self.__fetched_steamappids = True
 
-        logger.info("Acquired data from %s worker", FetchWorker.Result(result_type).name)
+        self.logger.info("Acquired data from %s worker", FetchWorker.Result(result_type).name)
 
         # Return early if there are still things to fetch
         if not all(
@@ -363,7 +362,7 @@ class RareCore(QObject):
         ):
             return
 
-        logger.debug("Fetch time %s seconds", time.perf_counter() - self.__start_time)
+        self.logger.debug("Fetch time %s seconds", time.perf_counter() - self.__start_time)
         self.__wrappers.import_wrappers(self.__settings, self.__core, [rgame.app_name for rgame in self.games])
 
         # Look for Rare shortcuts in Steam
@@ -395,7 +394,7 @@ class RareCore(QObject):
     def __fetch_saves(self) -> None:
         saves_dict: Dict[str, List[SaveGameFile]] = {}
         try:
-            with timelogger(logger, "Request saves"):
+            with timelogger(self.logger, "Request saves"):
                 saves_list = self.__core.get_save_games()
             for s in saves_list:
                 if s.app_name not in saves_dict.keys():
@@ -407,10 +406,10 @@ class RareCore(QObject):
                     continue
                 self.__library[app_name].load_saves(saves)
         except (HTTPError, ConnectionError) as e:
-            logger.error("Exception while fetching saves from EGS.")
-            logger.error(e)
+            self.logger.error("Exception while fetching saves from EGS.")
+            self.logger.error(e)
             return
-        logger.info(f"Saves: {len(saves_dict)}")
+        self.logger.info(f"Saves: {len(saves_dict)}")
 
     def fetch_saves(self):
         saves_worker = QRunnable.create(self.__fetch_saves)
