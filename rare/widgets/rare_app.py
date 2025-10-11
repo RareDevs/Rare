@@ -48,13 +48,20 @@ class RareAppException(QObject):
         if self._handler(exc_type, exc_value, exc_tb):
             return
         self.logger.fatal(message)
-        action = QMessageBox.warning(
-            None,
+        action = QMessageBox(
+            QMessageBox.Icon.Critical,
             exc_type.__name__,
-            message,
+            self.tr(
+                "An error has occurred!\n\n"
+                "You can report this issue at\n"
+                "https://github.com/RareDevs/Rare/issues\n\n"
+                "Be sure to include the detailed text in your report."
+            ),
+            detailedText=message,
             buttons=QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Abort,
-            defaultButton=QMessageBox.StandardButton.Abort,
+            parent=None,
         )
+        action.exec()
         if action == QMessageBox.StandardButton.Abort:
             QApplication.instance().quit()
 
