@@ -46,9 +46,16 @@ jobs:
         run: |
           python3 freeze.py bdist_appimage
           mv dist/Rare-*.AppImage Rare-${{ inputs.version }}.AppImage
+          mv dist/Rare-*.zsync Rare-${{ inputs.version }}.zsync
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
           name: Rare-${{ inputs.version }}.AppImage
           path: Rare-${{ inputs.version }}.AppImage
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rare-${{ inputs.version }}.zsync
+          path: Rare-${{ inputs.version }}.zsync
