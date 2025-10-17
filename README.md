@@ -82,6 +82,12 @@ There are some AUR packages available:
 - [rare](https://aur.archlinux.org/packages/rare) - for stable releases
 - [rare-git](https://aur.archlinux.org/packages/rare-git) - for the latest development version
 
+#### Nix
+The package is available as [rare](https://search.nixos.org/packages?channel=unstable&show=rare&query=rare):
+```
+nix-shell -p rare
+```
+
 ### macOS
 There is a `.dmg` file available in [releases page](https://github.com/RareDevs/Rare/releases).
 
