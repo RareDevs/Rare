@@ -10,7 +10,10 @@ _icon = "rare/resources/images/Rare"
 _license = "LICENSE"
 
 build_exe_options = {
-    "bin_excludes": ["qpdf.dll", "libqpdf.so", "libqpdf.dylib"],
+    "bin_excludes": [
+        "qpdf.dll", "libqpdf.so", "libqpdf.dylib",
+        "libqgtk3.so",
+    ],
     "excludes": [
         "tkinter",
         "unittest",
