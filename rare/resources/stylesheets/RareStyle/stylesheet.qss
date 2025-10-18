@@ -310,12 +310,6 @@ QProgressBar::chunk {
     margin: 0px;
     background-color: rgb( 39,  66,  66);
 }
-QScrollBar:vertical {
-    width: 11px;
-}
-QScrollBar:horizontal {
-    height: 11px;
-}
 QScrollBar::add-line:vertical {
     border: none;
     height: 0px;
@@ -883,6 +877,12 @@ QScrollArea#WrapperSettingsScroll:disabled {
 }
 QScrollBar#WrapperSettingsScrollBar {
     background-color: rgb( 40,  42,  46);
+}
+QScrollBar:vertical {
+    width: 1em;
+}
+QScrollBar:horizontal {
+    height: 1em;
 }
 QTableView QTableCornerButton::section {
     border-width: 1px;

@@ -179,12 +179,6 @@ QScrollBar {
     padding: 1px;
     background-color: rgb( 40,  42,  46);
 }
-QScrollBar:vertical {
-    width: 11px;
-}
-QScrollBar:horizontal {
-    height: 11px;
-}
 QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical,
 QScrollBar::add-line:horizontal,
