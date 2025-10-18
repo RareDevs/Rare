@@ -48,6 +48,9 @@ style.QPushButton.paddingBottom.setValue("2px")
 style.QToolButton.paddingTop.setValue("2px")
 style.QToolButton.paddingBottom.setValue("2px")
 
+style.QScrollBar.vertical.width.setValue("1em")
+style.QScrollBar.horizontal.height.setValue("1em")
+
 style["QTableView QTableCornerButton::section"].setValues(**common_attributes, **common_attributes_editable)
 
 style.QComboBox.comboboxPopup.setValue(0)
