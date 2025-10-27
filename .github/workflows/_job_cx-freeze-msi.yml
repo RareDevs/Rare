@@ -46,7 +46,7 @@ jobs:
           mv dist/*.msi Rare-${{ inputs.version }}.msi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Rare-${{ inputs.version }}.msi
           path: Rare-${{ inputs.version }}.msi
