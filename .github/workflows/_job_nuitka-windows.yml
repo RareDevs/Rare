@@ -85,7 +85,7 @@ jobs:
           mv Rare-${{ inputs.version }}.zip Rare-${{ inputs.version }}-windows.zip
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Rare-${{ inputs.version }}-windows.zip
           path: Rare-${{ inputs.version }}-windows.zip

@@ -48,7 +48,7 @@ jobs:
           mv dist/Rare-*.AppImage Rare-${{ inputs.version }}.AppImage
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Rare-${{ inputs.version }}.AppImage
           path: Rare-${{ inputs.version }}.AppImage
