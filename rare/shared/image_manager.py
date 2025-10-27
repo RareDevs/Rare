@@ -339,6 +339,10 @@ class ImageManager(QObject):
         image = QImage()
         image.loadFromData(image_data)
         image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
+        if image.height() > image.width() and preset.orientation == ImageType.Wide:
+            image = image.transformed(QTransform().rotate(90.0))
+        if image.height() < image.width() and preset.orientation == ImageType.Tall:
+            image = image.transformed(QTransform().rotate(-90.0))
         # lk: Images are not always at the correct aspect ratio, so crop them to size
         wr, hr = preset.aspect_ratio
         factor = min(image.width() // wr, image.height() // hr)
@@ -428,6 +432,9 @@ class ImageManager(QObject):
             image_tall_path(game.app_name),
             image_tall_path(game.app_name, color=False),
         )
+
+        if wide_data is None:
+            wide_data = tall_data
 
         wide = self.__convert_image(wide_data, logo_data, ImageSize.Wide)
         self.__save_image(
