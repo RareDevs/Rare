@@ -314,7 +314,7 @@ class RareGame(RareGameSlim):
             self.core.egstore_delete(self.igame)
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
-        self.set_pixmap()
+        self.__update_pixmap()
 
     @property
     def can_run_offline(self) -> bool:
@@ -527,7 +527,7 @@ class RareGame(RareGameSlim):
             self.signals.game.installed.emit(self.app_name)
         else:
             self.signals.game.uninstalled.emit(self.app_name)
-        self.set_pixmap()
+        self.__update_pixmap()
 
     @property
     def can_launch(self) -> bool:
@@ -542,20 +542,19 @@ class RareGame(RareGameSlim):
     def get_pixmap(self, preset: ImageSize.Preset, color=True) -> QPixmap:
         return self.image_manager.get_pixmap(self.app_name, preset, color)
 
-    @Slot(object)
-    def set_pixmap(self):
-        # self.pixmap = not self.image_manager.get_pixmap(self.app_name, self.is_installed).isNull()
-        self.has_pixmap = True
+    @Slot()
+    def __update_pixmap(self):
+        self.has_pixmap = self.image_manager.has_pixmaps(self.app_name)
         if self.has_pixmap:
             self.signals.widget.update.emit()
 
     def load_pixmaps(self):
         """Do not call this function, call set_pixmap instead. This is only used for initial image loading"""
         if not self.has_pixmap:
-            self.image_manager.download_image(self.game, self.set_pixmap, 0, False)
+            self.image_manager.download_image(self.game, self.__update_pixmap, 0, False)
 
     def refresh_pixmap(self):
-        self.image_manager.download_image(self.game, self.set_pixmap, 0, True)
+        self.image_manager.download_image(self.game, self.__update_pixmap, 0, True)
 
     def install(self) -> bool:
         if not self.is_idle:

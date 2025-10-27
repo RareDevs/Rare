@@ -83,12 +83,13 @@ class LibraryWidget(ImageWidget):
         self.progress_label = ProgressLabel(self)
         self.progress_label.setVisible(False)
 
+        self.progressPixmap = self.horizontalProgressPixmap
         self._color_pixmap: Optional[QPixmap] = None
         self._gray_pixmap: Optional[QPixmap] = None
         # lk: keep percentage to not over-generate the image
         self._progress: int = -1
 
-    def progressPixmap(self, color: QPixmap, gray: QPixmap, progress: int) -> QPixmap:
+    def horizontalProgressPixmap(self, color: QPixmap, gray: QPixmap, progress: int) -> QPixmap:
         """
         Paints the color image over the gray images based on progress percentage
 
@@ -102,18 +103,40 @@ class LibraryWidget(ImageWidget):
         painter = QPainter(device)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, self._smooth_transform)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
-        # lk: Vertical loading
-        # prog_h = (device.height() * progress // 100)
-        # brush = QBrush(gray)
-        # painter.fillRect(device.rect().adjusted(0, 0, 0, -prog_h), brush)
-        # brush.setTexture(color)
-        # painter.fillRect(device.rect().adjusted(0, device.height() - prog_h, 0, 0), brush)
+
         # lk: Horizontal loading
         prog_w = device.width() * progress // 100
         brush = QBrush(gray)
         painter.fillRect(device.rect().adjusted(prog_w, 0, 0, 0), brush)
         brush.setTexture(color)
         painter.fillRect(device.rect().adjusted(0, 0, prog_w - device.width(), 0), brush)
+
+        painter.end()
+        device.setDevicePixelRatio(color.devicePixelRatioF())
+        return device
+
+    def verticalProgressPixmap(self, color: QPixmap, gray: QPixmap, progress: int) -> QPixmap:
+        """
+        Paints the color image over the gray images based on progress percentage
+
+        @param color:
+        @param gray:
+        @param progress:
+        @return:
+        """
+
+        device = QPixmap(color.size())
+        painter = QPainter(device)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, self._smooth_transform)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
+
+        # lk: Vertical loading
+        prog_h = (device.height() * progress // 100)
+        brush = QBrush(gray)
+        painter.fillRect(device.rect().adjusted(0, 0, 0, -prog_h), brush)
+        brush.setTexture(color)
+        painter.fillRect(device.rect().adjusted(0, device.height() - prog_h, 0, 0), brush)
+
         painter.end()
         device.setDevicePixelRatio(color.devicePixelRatioF())
         return device

@@ -18,12 +18,12 @@ from .dlcs import GameDlcs
 from .game import LocalGameSettings
 
 
-class GameInfoTabs(SideTabWidget):
+class GameDetailsTabs(SideTabWidget):
     # str: app_name
     import_clicked = Signal(str)
 
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
-        super(GameInfoTabs, self).__init__(show_back=True, parent=parent)
+        super(GameDetailsTabs, self).__init__(show_back=True, parent=parent)
         self.rcore = rcore
         self.core = rcore.core()
         self.signals = rcore.signals()
