@@ -34,6 +34,7 @@ class ViewContainer(QWidget):
         LibraryFilter.MAC: lambda x: x.is_mac and not x.is_unreal and "hidden" not in x.metadata.tags,
         LibraryFilter.INSTALLABLE: lambda x: not x.is_non_asset and not x.is_unreal and "hidden" not in x.metadata.tags,
         LibraryFilter.INCLUDE_UE: lambda x: not x.is_android_only and "hidden" not in x.metadata.tags,
+        LibraryFilter.ANDROID: lambda x: x.is_android_only,
         LibraryFilter.ALL: lambda x: not x.is_unreal and not x.is_android_only and "hidden" not in x.metadata.tags,
     }
 

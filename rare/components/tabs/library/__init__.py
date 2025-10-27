@@ -1,14 +1,25 @@
 from logging import getLogger
 
 from PySide6.QtCore import Slot
-from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QFrame, QScrollArea, QStackedWidget, QVBoxLayout, QWidget
+from PySide6.QtGui import QShowEvent  # , Qt, QIcon
+from PySide6.QtWidgets import (
+    QFrame,
+    QScrollArea,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+    QHBoxLayout,
+    # QLineEdit,
+    # QListWidget,
+    # QListWidgetItem,
+)
 
+# from rare.models.image import ImageSize
 from rare.models.game import RareGame
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 
-from .details import GameInfoTabs
+from .details import GameDetailsTabs
 from .head_bar import LibraryHeadBar
 from .integrations import IntegrationsTabs
 from .widgets import LibraryFilter, LibraryOrder, LibraryView, LibraryWidgetController
@@ -23,35 +34,48 @@ class GamesLibrary(QStackedWidget):
         self.rcore = rcore
         self.signals = rcore.signals()
 
-        self.games_page = QWidget(parent=self)
-        games_page_layout = QVBoxLayout(self.games_page)
-        self.addWidget(self.games_page)
+        self.library_page = QWidget(parent=self)
+        library_page_layout = QHBoxLayout(self.library_page)
+        # library_page_left_layout = QVBoxLayout()
+        # library_page_layout.addLayout(library_page_left_layout, stretch=0)
+        library_page_right_layout = QVBoxLayout()
+        library_page_layout.addLayout(library_page_right_layout, stretch=2)
+        self.addWidget(self.library_page)
 
-        self.head_bar = LibraryHeadBar(settings, rcore, parent=self.games_page)
+        # self.library_search = QLineEdit(self.library_page)
+        # library_page_left_layout.addWidget(self.library_search)
+
+        # self.library_list = QListWidget(self.library_page)
+        # self.library_list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        # self.library_list.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        # library_page_left_layout.addWidget(self.library_list)
+
+        self.head_bar = LibraryHeadBar(settings, rcore, parent=self.library_page)
         self.head_bar.goto_import.connect(self.show_import)
         self.head_bar.goto_egl_sync.connect(self.show_egl_sync)
         self.head_bar.goto_eos_ubisoft.connect(self.show_eos_ubisoft)
-        games_page_layout.addWidget(self.head_bar)
+        library_page_right_layout.addWidget(self.head_bar)
 
-        self.game_info_page = GameInfoTabs(settings, rcore, self)
-        self.game_info_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
+        self.details_page = GameDetailsTabs(settings, rcore, self)
+        self.details_page.back_clicked.connect(lambda: self.setCurrentWidget(self.library_page))
         # Update visibility of hidden games
-        self.game_info_page.back_clicked.connect(lambda: self.filter_games(self.head_bar.current_filter()))
-        self.game_info_page.import_clicked.connect(self.show_import)
-        self.addWidget(self.game_info_page)
+        self.details_page.back_clicked.connect(lambda: self.filter_games(self.head_bar.current_filter()))
+        self.details_page.import_clicked.connect(self.show_import)
+        self.addWidget(self.details_page)
 
         self.integrations_page = IntegrationsTabs(rcore, self)
-        self.integrations_page.back_clicked.connect(lambda: self.setCurrentWidget(self.games_page))
+        self.integrations_page.back_clicked.connect(lambda: self.setCurrentWidget(self.library_page))
         self.addWidget(self.integrations_page)
 
-        self.view_scroll = QScrollArea(self.games_page)
+        self.view_scroll = QScrollArea(self.library_page)
         self.view_scroll.setWidgetResizable(True)
         self.view_scroll.setFrameShape(QFrame.Shape.StyledPanel)
         self.view_scroll.horizontalScrollBar().setDisabled(True)
 
         library_view = LibraryView(self.settings.get_value(app_settings.library_view))
+        library_page_right_layout.addWidget(self.view_scroll)
+
         self.library_controller = LibraryWidgetController(rcore, library_view, self.view_scroll)
-        games_page_layout.addWidget(self.view_scroll)
 
         self.head_bar.search_bar.textChanged.connect(self.search_games)
         self.head_bar.search_bar.textChanged.connect(self.scroll_to_top)
@@ -95,8 +119,8 @@ class GamesLibrary(QStackedWidget):
 
     @Slot(RareGame)
     def show_game_info(self, rgame):
-        self.game_info_page.update_game(rgame)
-        self.setCurrentWidget(self.game_info_page)
+        self.details_page.update_game(rgame)
+        self.setCurrentWidget(self.details_page)
 
     @Slot()
     def update_count_games_label(self):
@@ -107,6 +131,7 @@ class GamesLibrary(QStackedWidget):
 
     def setup_game_list(self):
         for rgame in self.rcore.games:
+            # self.library_list.addItem(QListWidgetItem(QIcon(rgame.get_pixmap(ImageSize.Icon)), rgame.app_title))
             widget = self.add_library_widget(rgame)
             if not widget:
                 logger.warning("Excluding %s from the game list", rgame.app_title)

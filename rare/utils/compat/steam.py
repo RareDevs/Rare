@@ -283,6 +283,8 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
                     continue
 
                 install_path = entry_tool["install_path"]
+                # lk: os.path.join understands the leading '/' in the last argument and it returns
+                # only the last argument if it starts with one.
                 tool_path = os.path.abspath(os.path.join(os.path.dirname(tool_vdf), install_path))
                 manifest_vdf = os.path.join(tool_path, "toolmanifest.vdf")
 

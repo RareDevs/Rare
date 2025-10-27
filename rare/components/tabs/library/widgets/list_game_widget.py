@@ -24,6 +24,8 @@ logger = getLogger("ListGameWidget")
 class ListGameWidget(GameWidget):
     def __init__(self, rgame: RareGame, parent=None):
         super().__init__(rgame, parent)
+        self.progressPixmap = self.verticalProgressPixmap
+
         self.setObjectName(f"{rgame.app_name}")
         self.ui = ListWidget()
         self.ui.setupUi(self)
@@ -126,7 +128,7 @@ class ListGameWidget(GameWidget):
         fill_rect = QRect(origin, 0, width, self.height())
         painter.fillRect(fill_rect, brush)
 
-    def progressPixmap(self, color: QPixmap, gray: QPixmap, progress: int) -> QPixmap:
+    def verticalProgressPixmap(self, color: QPixmap, gray: QPixmap, progress: int) -> QPixmap:
         # lk: so about that +1 after the in convertion, casting to int rounds down
         # lk: and that can create a weird line at the bottom, add 1 to round up.
         device = QPixmap(

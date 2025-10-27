@@ -89,7 +89,7 @@ class MainTabWidget(QTabWidget):
 
     def mouse_clicked(self, index):
         if index == self.games_index:
-            self.games_tab.setCurrentWidget(self.games_tab.games_page)
+            self.games_tab.setCurrentWidget(self.games_tab.library_page)
 
     def resizeEvent(self, event):
         self.tab_bar.setMinimumWidth(self.width())

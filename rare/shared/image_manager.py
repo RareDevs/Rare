@@ -1,10 +1,12 @@
 import hashlib
 import json
 import pickle
+import threading
 import zlib
 
 # from concurrent import futures
 from logging import getLogger
+from multiprocessing import cpu_count
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
 
@@ -53,26 +55,27 @@ if TYPE_CHECKING:
 logger = getLogger("ImageManager")
 
 
+class ImageWorker(QRunnable):
+    class Signals(QObject):
+        # object: Game
+        completed = Signal(object)
+
+    def __init__(self, func: Callable, updates: List, json_data: Dict, game: Game):
+        super(ImageWorker, self).__init__()
+        self.signals = ImageWorker.Signals()
+        self.setAutoDelete(True)
+        self.func = func
+        self.updates = updates
+        self.json_data = json_data
+        self.game = game
+
+    def run(self):
+        self.func(self.updates, self.json_data, self.game)
+        logger.debug(f"Emitting singal for {self.game.app_name} ({self.game.app_title})")
+        self.signals.completed.emit(self.game)
+
+
 class ImageManager(QObject):
-    class Worker(QRunnable):
-        class Signals(QObject):
-            # object: Game
-            completed = Signal(object)
-
-        def __init__(self, func: Callable, updates: List, json_data: Dict, game: Game):
-            super(ImageManager.Worker, self).__init__()
-            self.signals = ImageManager.Worker.Signals()
-            self.setAutoDelete(True)
-            self.func = func
-            self.updates = updates
-            self.json_data = json_data
-            self.game = game
-
-        def run(self):
-            self.func(self.updates, self.json_data, self.game)
-            logger.debug(f"Emitting singal for {self.game.app_name} ({self.game.app_title})")
-            self.signals.completed.emit(self.game)
-
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
         self.__cache_version = 2
         # lk: the ordering in __img_types matters for the order of fallbacks
@@ -92,6 +95,7 @@ class ImageManager(QObject):
         self.__img_logo_types: Tuple = ("DieselGameBoxLogo",)
         self.__img_types: Tuple = self.__img_tall_types + self.__img_wide_types + self.__img_logo_types
         self.__dl_retries = 1
+        self.__worker_lock = threading.Lock()
         self.__worker_app_names: Set[str] = set()
         super(ImageManager, self).__init__()
         self.signals = signals
@@ -102,8 +106,8 @@ class ImageManager(QObject):
             self.image_dir.mkdir()
             logger.info(f"Created image directory at {self.image_dir}")
 
-        self.threadpool = QThreadPool()
-        self.threadpool.setMaxThreadCount(6)
+        self.threadpool = QThreadPool(self)
+        self.threadpool.setMaxThreadCount(min(cpu_count() * 2, 16))
 
     @staticmethod
     def __img_json(app_name: str) -> Path:
@@ -124,6 +128,9 @@ class ImageManager(QObject):
             image_icon_path(app_name, color=False),
             desktop_icon_path(app_name),
         )
+
+    def has_pixmaps(self, app_name: str) -> bool:
+        return all(file.is_file() for file in self.__img_all(app_name))
 
     def __prepare_download(self, game: Game, force: bool = False) -> Tuple[List, Dict]:
         if force and image_dir_game(game.app_name).exists():
@@ -167,7 +174,7 @@ class ImageManager(QObject):
         # lk: so everything below it is skipped
         # TODO: Move this into the thread, maybe, concurrency could help here too
         updates = []
-        if not all(file.is_file() for file in self.__img_all(game.app_name)):
+        if not self.has_pixmaps(game.app_name):
             if not candidates:
                 # lk: fast path for games without images, convert Rare's logo
                 cache_data: Dict = dict(zip(self.__img_types, [None] * len(self.__img_types)))
@@ -310,10 +317,9 @@ class ImageManager(QObject):
 
     __icon_overlay: Optional[QPainterPath] = None
 
-    @staticmethod
-    def __generate_icon_overlay(rect: QRect) -> QPainterPath:
-        if ImageManager.__icon_overlay is not None:
-            return ImageManager.__icon_overlay
+    def __generate_icon_overlay(self, rect: QRect) -> QPainterPath:
+        if self.__icon_overlay is not None:
+            return self.__icon_overlay
         rounded_path = QPainterPath()
         margin = 0.05
         rounded_path.addRoundedRect(
@@ -326,11 +332,10 @@ class ImageManager(QObject):
             rect.height() * 0.2,
             rect.height() * 0.2,
         )
-        ImageManager.__icon_overlay = rounded_path
-        return ImageManager.__icon_overlay
+        self.__icon_overlay = rounded_path
+        return self.__icon_overlay
 
-    @staticmethod
-    def __convert_image(image_data, logo_data, preset: ImageSize.Preset) -> QImage:
+    def __convert_image(self, image_data, logo_data, preset: ImageSize.Preset) -> QImage:
         image = QImage()
         image.loadFromData(image_data)
         image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
@@ -366,8 +371,7 @@ class ImageManager(QObject):
             Qt.TransformationMode.SmoothTransformation,
         )
 
-    @staticmethod
-    def __convert_icon(cover: QImage) -> QImage:
+    def __convert_icon(self, cover: QImage) -> QImage:
         icon_size = QSize(128, 128)
         icon = QImage(icon_size, QImage.Format.Format_ARGB32_Premultiplied)
         painter = QPainter(icon)
@@ -375,7 +379,7 @@ class ImageManager(QObject):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
         painter.fillRect(icon.rect(), Qt.GlobalColor.transparent)
-        overlay = ImageManager.__generate_icon_overlay(icon.rect())
+        overlay = self.__generate_icon_overlay(icon.rect())
         brush = QBrush(cover)
         scale = max(icon.width() / cover.width(), icon.height() / cover.height())
         transform = QTransform().scale(scale, scale)
@@ -387,8 +391,7 @@ class ImageManager(QObject):
         painter.end()
         return icon
 
-    @staticmethod
-    def __save_image(image: QImage, color_path: Path, gray_path: Path):
+    def __save_image(self, image: QImage, color_path: Path, gray_path: Path):
         # this is not required if we ever want to re-apply the alpha channel
         # image = image.convertToFormat(QImage.Format_Indexed8)
         # add the alpha channel back to the cover
@@ -420,28 +423,28 @@ class ImageManager(QObject):
         logo_data = find_image_data(self.__img_logo_types)
 
         tall = self.__convert_image(tall_data, logo_data, ImageSize.Tall)
-        wide = self.__convert_image(wide_data, logo_data, ImageSize.Wide)
-
-        icon = self.__convert_icon(tall)
-        icon.save(
-            desktop_icon_path(game.app_name).as_posix(),
-            format=desktop_icon_suffix().upper(),
-        )
-
-        self.__save_image(
-            icon,
-            image_icon_path(game.app_name),
-            image_icon_path(game.app_name, color=False),
-        )
         self.__save_image(
             tall,
             image_tall_path(game.app_name),
             image_tall_path(game.app_name, color=False),
         )
+
+        wide = self.__convert_image(wide_data, logo_data, ImageSize.Wide)
         self.__save_image(
             wide,
             image_wide_path(game.app_name),
             image_wide_path(game.app_name, color=False),
+        )
+
+        icon = self.__convert_icon(tall)
+        self.__save_image(
+            icon,
+            image_icon_path(game.app_name),
+            image_icon_path(game.app_name, color=False),
+        )
+        icon.save(
+            desktop_icon_path(game.app_name).as_posix(),
+            format=desktop_icon_suffix().upper(),
         )
 
     def __compress(self, game: Game, data: Dict) -> None:
@@ -461,41 +464,37 @@ class ImageManager(QObject):
             archive.close()
         return data
 
-    def __append_to_queue(self, game: Game):
-        self.__worker_app_names.add(game.app_name)
+    def __append_to_worker_queue(self, game: Game):
+        self.__worker_lock.acquire()
+        try:
+            self.__worker_app_names.add(game.app_name)
+        finally:
+            self.__worker_lock.release()
 
     @Slot(object)
-    def __remove_from_queue(self, game: Game):
-        self.__worker_app_names.remove(game.app_name)
+    def __remove_from_worker_queue(self, game: Game):
+        self.__worker_lock.acquire()
+        try:
+            self.__worker_app_names.remove(game.app_name)
+        finally:
+            self.__worker_lock.release()
 
-    def download_image(
-        self,
-        game: Game,
-        load_callback: Callable[[], None],
-        priority: int,
-        force: bool = False,
-    ) -> None:
+    def download_image(self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False) -> None:
         if game.app_name in self.__worker_app_names:
             return
-        self.__append_to_queue(game)
+        self.__append_to_worker_queue(game)
         updates, json_data = self.__prepare_download(game, force)
         if not updates:
-            self.__remove_from_queue(game)
+            self.__remove_from_worker_queue(game)
             load_callback()
         else:
             # Copy the data because we are going to be a thread and we modify them later on
-            image_worker = ImageManager.Worker(self.__download, updates.copy(), json_data.copy(), game)
-            image_worker.signals.completed.connect(self.__remove_from_queue)
+            image_worker = ImageWorker(self.__download, updates.copy(), json_data.copy(), game)
+            image_worker.signals.completed.connect(self.__remove_from_worker_queue)
             image_worker.signals.completed.connect(load_callback)
             self.threadpool.start(image_worker, priority)
 
-    def download_image_launch(
-        self,
-        game: Game,
-        callback: Callable[[Game], None],
-        priority: int,
-        force: bool = False,
-    ) -> None:
+    def download_image_launch(self, game: Game, callback: Callable[[Game], None], priority: int, force: bool = False) -> None:
         if self.__img_cache(game.app_name).is_file() and not force:
             return
 
@@ -504,12 +503,13 @@ class ImageManager(QObject):
 
         self.download_image(game, _callback, priority, force)
 
-    def download_image_blocking(self, game: Game, force: bool = False) -> None:
+    def download_image_blocking(self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False) -> None:
         updates, json_data = self.__prepare_download(game, force)
         if not updates:
             return
         if updates:
             self.__download(updates, json_data, game, use_async=True)
+            load_callback()
 
     @staticmethod
     def __get_cover(

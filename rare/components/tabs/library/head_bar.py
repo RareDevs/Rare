@@ -53,6 +53,7 @@ class LibraryHeadBar(QWidget):
         if self.rcore.non_asset_games:
             self.filter.addItem(self.tr("Exclude non-asset"), LibraryFilter.INSTALLABLE)
         self.filter.addItem(self.tr("Include Unreal"), LibraryFilter.INCLUDE_UE)
+        self.filter.addItem(self.tr("Android"), LibraryFilter.ANDROID)
 
         try:
             _filter = LibraryFilter(self.settings.get_value(app_settings.library_filter))

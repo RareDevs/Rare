@@ -16,6 +16,7 @@ class LibraryFilter(IntEnum):
     INSTALLABLE = 7
     INCLUDE_UE = 8
     FAVORITES = 9
+    ANDROID = 10
 
 
 class LibraryOrder(IntEnum):
