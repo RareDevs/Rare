@@ -42,6 +42,10 @@ class RareAppException(QObject):
     def _handler(self, exc_type, exc_value, exc_tb) -> bool:
         return False
 
+    def deleteLater(self):
+        sys.excepthook = sys.__excepthook__
+        super(RareAppException, self).deleteLater()
+
     @Slot(object, object, object)
     def _on_exception(self, exc_type, exc_value, exc_tb):
         message = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
