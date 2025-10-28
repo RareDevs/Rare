@@ -52,7 +52,7 @@ class RareAppException(QObject):
         if self._handler(exc_type, exc_value, exc_tb):
             return
         self.logger.fatal(message)
-        action = QMessageBox(
+        mbox = QMessageBox(
             QMessageBox.Icon.Critical,
             exc_type.__name__,
             self.tr(
@@ -65,7 +65,7 @@ class RareAppException(QObject):
             buttons=QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Abort,
             parent=None,
         )
-        action.exec()
+        action = mbox.exec()
         if action == QMessageBox.StandardButton.Abort:
             QApplication.instance().quit()
 
