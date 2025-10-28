@@ -26,7 +26,36 @@ class RareSaveGame:
     description: Optional[str] = ""
 
 
-class RareGameBase:
+class RareGameSignals(QObject):
+    class Progress(QObject):
+        start = Signal()
+        update = Signal(int)
+        finish = Signal(bool)
+
+    class Widget(QObject):
+        update = Signal()
+
+    class Download(QObject):
+        enqueue = Signal(str)
+        dequeue = Signal(str)
+
+    class Game(QObject):
+        install = Signal(InstallOptionsModel)
+        installed = Signal(str)
+        uninstall = Signal(UninstallOptionsModel)
+        uninstalled = Signal(str)
+        launched = Signal(str)
+        finished = Signal(str)
+
+    def __init__(self, /):
+        super(RareGameSignals, self).__init__()
+        self.progress = RareGameSignals.Progress()
+        self.widget = RareGameSignals.Widget()
+        self.download = RareGameSignals.Download()
+        self.game = RareGameSignals.Game()
+
+
+class RareGameBase(QObject):
     class State(IntEnum):
         IDLE = 0
         RUNNING = 1
@@ -36,35 +65,9 @@ class RareGameBase:
         UNINSTALLING = 5
         SYNCING = 6
 
-    class Signals:
-        class Progress(QObject):
-            start = Signal()
-            update = Signal(int)
-            finish = Signal(bool)
-
-        class Widget(QObject):
-            update = Signal()
-
-        class Download(QObject):
-            enqueue = Signal(str)
-            dequeue = Signal(str)
-
-        class Game(QObject):
-            install = Signal(InstallOptionsModel)
-            installed = Signal(str)
-            uninstall = Signal(UninstallOptionsModel)
-            uninstalled = Signal(str)
-            launched = Signal(str)
-            finished = Signal(str)
-
-        def __init__(self):
-            self.progress = RareGameBase.Signals.Progress()
-            self.widget = RareGameBase.Signals.Widget()
-            self.download = RareGameBase.Signals.Download()
-            self.game = RareGameBase.Signals.Game()
-
     def __init__(self, legendary_core: LegendaryCore, game: Game):
-        self.signals = RareGameBase.Signals()
+        super(RareGameBase, self).__init__()
+        self.signals = RareGameSignals()
         self.core = legendary_core
         self.game: Game = game
         self.igame: InstalledGame = None
