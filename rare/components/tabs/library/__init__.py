@@ -4,14 +4,14 @@ from PySide6.QtCore import Slot
 from PySide6.QtGui import QShowEvent  # , Qt, QIcon
 from PySide6.QtWidgets import (
     QFrame,
-    QScrollArea,
-    QStackedWidget,
-    QVBoxLayout,
-    QWidget,
     QHBoxLayout,
     # QLineEdit,
     # QListWidget,
     # QListWidgetItem,
+    QScrollArea,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
 # from rare.models.image import ImageSize

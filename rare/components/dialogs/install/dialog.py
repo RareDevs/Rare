@@ -21,7 +21,6 @@ from rare.widgets.dialogs import ActionDialog, game_title
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 from .advanced import InstallDialogAdvanced
-from .file_filters import InstallDialogFileFilters
 from .selective import InstallDialogSelective
 
 

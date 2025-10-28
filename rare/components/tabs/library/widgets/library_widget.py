@@ -131,7 +131,7 @@ class LibraryWidget(ImageWidget):
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
 
         # lk: Vertical loading
-        prog_h = (device.height() * progress // 100)
+        prog_h = device.height() * progress // 100
         brush = QBrush(gray)
         painter.fillRect(device.rect().adjusted(0, 0, 0, -prog_h), brush)
         brush.setTexture(color)

@@ -2,15 +2,13 @@ from logging import getLogger
 from typing import List
 
 from PySide6.QtCore import Qt, QUrl, Signal
-from PySide6.QtGui import QDesktopServices, QKeyEvent, QTextDocument
+from PySide6.QtGui import QDesktopServices, QKeyEvent
 from PySide6.QtWidgets import (
     QGridLayout,
     QLabel,
     QPushButton,
     QSizePolicy,
     QWidget,
-    QTabWidget,
-    QFormLayout,
 )
 
 from rare.components.tabs.store.api.models.diesel import (

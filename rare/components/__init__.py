@@ -6,8 +6,7 @@ from typing import Optional
 
 import requests.exceptions
 from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot
-from PySide6.QtWidgets import QApplication, QMessageBox
-from requests import HTTPError
+from PySide6.QtWidgets import QApplication
 
 from rare.components.dialogs.launch import LaunchDialog
 from rare.components.main_window import RareWindow

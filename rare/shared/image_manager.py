@@ -3,8 +3,7 @@ import json
 import pickle
 import threading
 import zlib
-
-from logging import getLogger, Logger
+from logging import getLogger
 from multiprocessing import cpu_count
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
