@@ -4,8 +4,7 @@ import pickle
 import threading
 import zlib
 
-# from concurrent import futures
-from logging import getLogger
+from logging import getLogger, Logger
 from multiprocessing import cpu_count
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
@@ -47,36 +46,32 @@ from rare.utils.paths import (
     resources_path,
 )
 
-# from requests_futures.sessions import FuturesSession
-
 if TYPE_CHECKING:
     pass
 
-logger = getLogger("ImageManager")
+
+class ImageWorkerSignals(QObject):
+    # object: Game
+    completed = Signal(object)
 
 
 class ImageWorker(QRunnable):
-    class Signals(QObject):
-        # object: Game
-        completed = Signal(object)
-
-    def __init__(self, func: Callable, updates: List, json_data: Dict, game: Game):
+    def __init__(self, func: Callable[[Game, bool], None], game: Game, force: bool):
         super(ImageWorker, self).__init__()
-        self.signals = ImageWorker.Signals()
+        self.signals = ImageWorkerSignals()
         self.setAutoDelete(True)
-        self.func = func
-        self.updates = updates
-        self.json_data = json_data
-        self.game = game
+        self.func: Callable[[Game, bool], None] = func
+        self.game: Game = game
+        self.force: bool = force
 
     def run(self):
-        self.func(self.updates, self.json_data, self.game)
-        logger.debug(f"Emitting singal for {self.game.app_name} ({self.game.app_title})")
+        self.func(self.game, self.force)
         self.signals.completed.emit(self.game)
 
 
 class ImageManager(QObject):
     def __init__(self, signals: GlobalSignals, core: LegendaryCore):
+        self.logger = getLogger(type(self).__name__)
         self.__cache_version = 2
         # lk: the ordering in __img_types matters for the order of fallbacks
         # {'AndroidIcon', 'DieselGameBox', 'DieselGameBoxLogo', 'DieselGameBoxTall', 'DieselGameBoxWide',
@@ -104,7 +99,7 @@ class ImageManager(QObject):
         self.image_dir: Path = image_dir()
         if not self.image_dir.is_dir():
             self.image_dir.mkdir()
-            logger.info(f"Created image directory at {self.image_dir}")
+            self.logger.info("Created image directory at %s", self.image_dir)
 
         self.threadpool = QThreadPool(self)
         self.threadpool.setMaxThreadCount(min(cpu_count() * 2, 16))
@@ -203,7 +198,7 @@ class ImageManager(QObject):
 
         return updates, json_data
 
-    def __download(self, updates: List, json_data: Dict, game: Game, use_async: bool = False) -> bool:
+    def __download(self, updates: List, json_data: Dict, game: Game) -> bool:
         # Decompress existing image.cache
         if not self.__img_cache(game.app_name).is_file():
             cache_data: Dict[str, Any] = dict(zip(self.__img_types, [None] * len(self.__img_types)))
@@ -218,30 +213,8 @@ class ImageManager(QObject):
             if (cache_data.get(image["type"], None) is None or json_data[image["type"]] != image["md5"])
         ]
 
-        # Download
-        # # lk: Keep this here, so I don't have to go looking for it again,
-        # # lk: it might be useful in the future.
-        # if use_async:
-        #     session = FuturesSession(max_workers=len(self.__img_types))
-        #     image_requests = []
-        #     for image in downloads:
-        #         logger.info(f"Downloading {image['type']} for {game.app_title}")
-        #         json_data[image["type"]] = image["md5"]
-        #         if image["type"] in self.__img_tall_types:
-        #             payload = {"resize": 1, "w": ImageSize.Image.size.width(), "h": ImageSize.Image.size.height()}
-        #         elif image["type"] in self.__img_wide_types:
-        #             payload = {"resize": 1, "w": ImageSize.ImageWide.size.width(), "h": ImageSize.ImageWide.size.height()}
-        #         else:
-        #             # Set the larger of the sizes for everything else
-        #             payload = {"resize": 1, "w": ImageSize.ImageWide.size.width(), "h": ImageSize.ImageWide.size.height()}
-        #         req = session.get(image["url"], params=payload)
-        #         req.image_type = image["type"]
-        #         image_requests.append(req)
-        #     for req in futures.as_completed(image_requests):
-        #         cache_data[req.image_type] = req.result().content
-        # else:
         for image in downloads:
-            logger.info(
+            self.logger.debug(
                 "Downloading %s for %s (%s)",
                 image["type"],
                 game.app_name,
@@ -270,7 +243,7 @@ class ImageManager(QObject):
             try:
                 cache_data[image["type"]] = requests.get(image["url"], params=payload, timeout=10).content
             except Exception as e:
-                logger.error(e)
+                self.logger.error(e)
                 return False
 
         # lk: test the cached and downloaded data if they describe an image with valid dimensions
@@ -281,7 +254,7 @@ class ImageManager(QObject):
                 with open(resources_path.joinpath("images", "cover.png"), "rb") as fd:
                     cache_data[image["type"]] = fd.read()
                 json_data[image["type"]] = None
-                logger.error(
+                self.logger.error(
                     "Invalid image %s data for %s (%s)",
                     image["type"],
                     game.app_name,
@@ -486,23 +459,23 @@ class ImageManager(QObject):
         finally:
             self.__worker_lock.release()
 
+    def __download_image(self, game, force: bool):
+        updates, json_data = self.__prepare_download(game, force)
+        if updates:
+            self.__download(updates, json_data, game)
+        self.logger.debug("Emitting singal for %s (%s})", game.app_name, game.app_title)
+
     def download_image(self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False) -> None:
         if game.app_name in self.__worker_app_names:
             return
         self.__append_to_worker_queue(game)
-        updates, json_data = self.__prepare_download(game, force)
-        if not updates:
-            self.__remove_from_worker_queue(game)
-            load_callback()
-        else:
-            # Copy the data because we are going to be a thread and we modify them later on
-            image_worker = ImageWorker(self.__download, updates.copy(), json_data.copy(), game)
-            image_worker.signals.completed.connect(self.__remove_from_worker_queue)
-            image_worker.signals.completed.connect(load_callback)
-            self.threadpool.start(image_worker, priority)
+        image_worker = ImageWorker(self.__download_image, game, force)
+        image_worker.signals.completed.connect(load_callback)
+        image_worker.signals.completed.connect(self.__remove_from_worker_queue)
+        self.threadpool.start(image_worker, priority)
 
     def download_image_launch(self, game: Game, callback: Callable[[Game], None], priority: int, force: bool = False) -> None:
-        if self.__img_cache(game.app_name).is_file() and not force:
+        if self.has_pixmaps(game.app_name) and not force:
             return
 
         def _callback():
@@ -511,12 +484,10 @@ class ImageManager(QObject):
         self.download_image(game, _callback, priority, force)
 
     def download_image_blocking(self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False) -> None:
-        updates, json_data = self.__prepare_download(game, force)
-        if not updates:
-            return
-        if updates:
-            self.__download(updates, json_data, game, use_async=True)
-            load_callback()
+        self.__append_to_worker_queue(game)
+        self.__download_image(game, force)
+        load_callback()
+        self.__remove_from_worker_queue(game)
 
     @staticmethod
     def __get_cover(
