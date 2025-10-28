@@ -7,21 +7,25 @@ from argparse import ArgumentParser
 
 
 def main() -> int:
-    # If we are on Windows, and we are in a "compiled" GUI application form
-    # stdout (and stderr?) will be None. So to avoid `'NoneType' object has no attribute 'write'`
-    # errors, redirect both of them to devnull
-    if os.name == "nt" and (getattr(sys, "frozen", False) or ("__compiled__" in globals())):
-        # Check if stdout and stderr are None before redirecting
-        # This is useful in the case of test builds that enable console
-        if sys.stdout is None:
-            sys.stdout = open(os.devnull, "w")
-        if sys.stderr is None:
-            sys.stderr = open(os.devnull, "w")
-    if "MULTIPROCESSING_LAUNCH_TOKEN" in os.environ:
-        if len(sys.argv) == 3 and sys.argv[1] == "-c":
-            exec(sys.argv[2])
-            return 0
-    os.environ["MULTIPROCESSING_LAUNCH_TOKEN"] = "1"
+    if getattr(sys, "frozen", False) or ("__compiled__" in globals()):
+        # If we are on Windows, and we are in a "compiled" GUI application form
+        # stdout (and stderr?) will be None. So to avoid `'NoneType' object has no attribute 'write'`
+        # errors, redirect both of them to devnull
+        if os.name == "nt":
+            # Check if stdout and stderr are None before redirecting
+            # This is useful in the case of test builds that enable console
+            if sys.stdout is None:
+                sys.stdout = open(os.devnull, "w")
+            if sys.stderr is None:
+                sys.stderr = open(os.devnull, "w")
+        # Nuitka and possibly cx_freeze have issues with launching multiprocessing's resource_tracker due
+        # to the way it is invoked. To accomodate for that, check here if the "-c" argument was used, and
+        # execute the incoming command instead of Rare itself.
+        if "MULTIPROCESSING_LAUNCH_TOKEN" in os.environ:
+            if len(sys.argv) == 5 and sys.argv[1:4] == ["-S", "-s", "-c"]:
+                exec(sys.argv[4])
+                return 0
+        os.environ["MULTIPROCESSING_LAUNCH_TOKEN"] = "1"
 
     # remove QT_QPA_PLATFORMTHEME to avoid broken theming
     if "QT_QPA_PLATFORMTHEME" in os.environ:
