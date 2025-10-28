@@ -62,6 +62,7 @@ jobs:
           --enable-plugin=anti-bloat
           --enable-plugin=pyside6
           --enable-plugin=multiprocessing
+          --no-deployment-flag=self-execution
           --show-modules
           --show-anti-bloat-changes
           --follow-stdlib
