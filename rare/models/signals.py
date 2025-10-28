@@ -3,9 +3,7 @@ from PySide6.QtCore import QObject, Signal
 from .install import InstallOptionsModel, UninstallOptionsModel
 
 
-class GlobalSignals:
-    # set_main_tab_index = Signal(int)  # tab index
-    # update_gamelist = Signal(list)
+class GlobalSignals(QObject):
 
     class ApplicationSignals(QObject):
         # int: exit code
@@ -46,6 +44,7 @@ class GlobalSignals:
         update_settings = Signal()
 
     def __init__(self):
+        super(GlobalSignals, self).__init__()
         self.application = GlobalSignals.ApplicationSignals()
         self.game = GlobalSignals.GameSignals()
         self.download = GlobalSignals.DownloadSignals()
@@ -60,3 +59,4 @@ class GlobalSignals:
         del self.download
         self.discord_rpc.deleteLater()
         del self.discord_rpc
+        super(GlobalSignals, self).deleteLater()
