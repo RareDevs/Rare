@@ -238,6 +238,8 @@ class RareCore(QObject):
         # del self.__eos_overlay
         self.__eos_overlay = None
 
+        for rgame in self.__instance.games_and_dlcs:
+            rgame.deleteLater()
         RareCore.__instance = None
         super(RareCore, self).deleteLater()
 
