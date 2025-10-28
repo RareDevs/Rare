@@ -17,6 +17,11 @@ def main() -> int:
             sys.stdout = open(os.devnull, "w")
         if sys.stderr is None:
             sys.stderr = open(os.devnull, "w")
+    if "MULTIPROCESSING_LAUNCH_TOKEN" in os.environ:
+        if len(sys.argv) == 3 and sys.argv[1] == "-c":
+            exec(sys.argv[2])
+            return 0
+    os.environ["MULTIPROCESSING_LAUNCH_TOKEN"] = "1"
 
     # remove QT_QPA_PLATFORMTHEME to avoid broken theming
     if "QT_QPA_PLATFORMTHEME" in os.environ:
