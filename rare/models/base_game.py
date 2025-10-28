@@ -54,6 +54,17 @@ class RareGameSignals(QObject):
         self.download = RareGameSignals.Download()
         self.game = RareGameSignals.Game()
 
+    def deleteLater(self):
+        self.progress.deleteLater()
+        del self.progress
+        self.widget.deleteLater()
+        del self.widget
+        self.download.deleteLater()
+        del self.download
+        self.game.deleteLater()
+        del self.game
+        super(RareGameSignals, self).deleteLater()
+
 
 class RareGameBase(QObject):
     class State(IntEnum):
@@ -72,6 +83,11 @@ class RareGameBase(QObject):
         self.game: Game = game
         self.igame: InstalledGame = None
         self._state = RareGameBase.State.IDLE
+
+    def deleteLater(self):
+        self.signals.deleteLater()
+        del self.signals
+        super(RareGameBase, self).deleteLater()
 
     @property
     def state(self) -> "RareGameBase.State":
