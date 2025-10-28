@@ -4,7 +4,6 @@ from .install import InstallOptionsModel, UninstallOptionsModel
 
 
 class GlobalSignals(QObject):
-
     class ApplicationSignals(QObject):
         # int: exit code
         quit = Signal(int)

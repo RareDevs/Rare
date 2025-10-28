@@ -188,4 +188,3 @@ class CollapsibleGroupBox(QGroupBox, CollapsibleBase):
 
     def sizeHint(self) -> QSize:
         return super(CollapsibleGroupBox, self).sizeHint()
-
