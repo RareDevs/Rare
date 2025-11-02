@@ -291,7 +291,10 @@ class ImportGroup(QGroupBox):
             state != Qt.CheckState.Unchecked
             or (self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(self.app_name_edit.text())))
         )
-        self.ui.import_button.setEnabled(not bool(self.worker) and (state or (not state and self.app_name_edit.is_valid)))
+        self.ui.import_button.setEnabled(
+            not bool(self.worker)
+            and (state != Qt.CheckState.Unchecked or (state == Qt.CheckState.Unchecked and self.app_name_edit.is_valid))
+        )
 
     @Slot(Qt.CheckState)
     def import_dlcs_changed(self, state: Qt.CheckState):
