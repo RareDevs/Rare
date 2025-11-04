@@ -149,14 +149,14 @@ def setup_compat_shaders_dir(path: str) -> Dict:
         "__GL_SHADER_DISK_CACHE_PATH": os.path.join(path, "nvidiav1"),
         "__GL_SHADER_DISK_CACHE_READ_ONLY_APP_NAME": "steam_shader_cache;steamapp_merged_shader_cache",
         "__GL_SHADER_DISK_CACHE_SIZE": "10737418240",  # 10GiB
-        "__GL_SHADER_DISK_CACHE_SKIP_CLEANUP": "1",
+        #"__GL_SHADER_DISK_CACHE_SKIP_CLEANUP": "1",
         # Mesa
         "MESA_DISK_CACHE_READ_ONLY_FOZ_DBS": "steam_cache,steam_precompiled",
         "MESA_DISK_CACHE_SINGLE_FILE": "1",
         "MESA_GLSL_CACHE_DIR": path,
-        "MESA_GLSL_CACHE_MAX_SIZE": "5G",
+        "MESA_GLSL_CACHE_MAX_SIZE": "10G",
         "MESA_SHADER_CACHE_DIR": path,
-        "MESA_SHADER_CACHE_MAX_SIZE": "5G",
+        "MESA_SHADER_CACHE_MAX_SIZE": "10G",
         # AMD VK
         "AMD_VK_PIPELINE_CACHE_FILENAME": shader_cache_name,
         "AMD_VK_PIPELINE_CACHE_PATH": os.path.join(path, "AMDv1"),
