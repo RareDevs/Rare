@@ -349,6 +349,7 @@ def get_steam_environment(
 
     environ["STORE"] = "egs"
     environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = tool.steam_path
+    environ["STEAM_COMPAT_LAUNCHER_SERVICE"] = tool.layer
     if isinstance(tool, ProtonTool):
         environ["STEAM_COMPAT_LIBRARY_PATHS"] = tool.steam_library
     if tool.runtime is not None:
