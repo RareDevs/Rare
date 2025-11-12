@@ -2,12 +2,14 @@
 
 import logging
 import os
+import signal
 import sys
 from argparse import Namespace
 from ctypes import CDLL, byref, c_int, create_string_buffer
 from ctypes.util import find_library
 from logging import getLogger
-from typing import List
+from pathlib import Path
+from typing import List, Generator, Any, Optional
 
 # Constant defined in prctl.h
 # See prctl(2) for more details
@@ -20,7 +22,43 @@ def get_libc() -> str:
     return find_library("c") or ""
 
 
+def _get_pids() -> Generator[int, Any, None]:
+    yield from (int(pid.name) for pid in Path("/proc").glob("*") if pid.name.isdigit())
+
+
+def get_pstree_from_pid(root_pid: int) -> set[int]:
+    """Get descendent PIDs of a PID."""
+    descendants: set[int] = set()
+    pid_to_ppid: dict[int, int] = {}
+
+    for pid in _get_pids():
+        try:
+            path = Path(f"/proc/{pid}/status")
+            with path.open(mode="r", encoding="utf-8") as file:
+                st_ppid = next(line for line in file if line.startswith("PPid:"))
+                st_ppid = st_ppid.removeprefix("PPid:").strip()
+                pid_to_ppid[pid] = int(st_ppid)
+        except (FileNotFoundError, ProcessLookupError, ValueError):
+            continue
+
+    current_pid: list[int] = [root_pid]
+    while current_pid:
+        current = current_pid.pop()
+        # Ignore. mypy flags [arg-type] due to the reuse of pid variable
+        for pid, ppid in pid_to_ppid.items():  # type: ignore
+            if ppid == current and pid not in descendants:
+                descendants.add(pid)  # type: ignore
+                current_pid.append(pid)  # type: ignore
+
+    return descendants
+
+
+__pid: Optional[int] = None
+
+
 def subreaper(args: Namespace, other: List[str]) -> int:
+    global __pid
+
     logger = getLogger("subreaper")
     logging.basicConfig(
         format="[%(name)s] %(levelname)s: %(message)s",
@@ -30,6 +68,15 @@ def subreaper(args: Namespace, other: List[str]) -> int:
 
     logger.debug("command: %s", args)
     logger.debug("arguments: %s", other)
+
+    def signal_handler(sig, frame):
+        logger.info("Caught '%s' signal.", signal.strsignal(sig))
+        pstree = get_pstree_from_pid(os.getpid())
+        for p in pstree:
+            os.kill(p, sig)
+
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
 
     command: List[str] = [args.command, *other]
     workdir: str = args.workdir
@@ -55,11 +102,11 @@ def subreaper(args: Namespace, other: List[str]) -> int:
     prctl_ret = prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0, 0)
     logger.debug("prctl PR_SET_CHILD_SUBREAPER exited with status: %s", prctl_ret)
 
-    pid = os.fork()  # pylint: disable=E1101
-    if pid == -1:
+    __pid = os.fork()  # pylint: disable=E1101
+    if __pid == -1:
         logger.error("Fork failed")
 
-    if pid == 0:
+    if __pid == 0:
         sys.stdout.flush()
         sys.stderr.flush()
         os.chdir(workdir)
