@@ -52,11 +52,6 @@ class MainTabWidget(QTabWidget):
             self.store_index = self.addTab(self.store_tab, self.tr("Store (Beta)"))
             self.setTabEnabled(self.store_index, not self.args.offline)
 
-        # Space Tab
-        space_index = self.addTab(QWidget(self), "Rare")
-        self.setTabEnabled(space_index, False)
-        self.tab_bar.expanded = space_index
-
         # Settings Tab
         self.settings_tab = SettingsTab(settings, rcore, self)
         self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), "")
