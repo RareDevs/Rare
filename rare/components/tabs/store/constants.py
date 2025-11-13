@@ -73,7 +73,16 @@ __CatalogNamespace = """
 parent
 displayName
 store
-"""
+home: mappings(pageType: "productHome") {
+  %s
+}
+addons: mappings(pageType: "addon--cms-hybrid") {
+  %s
+}
+offers: mappings(pageType: "offer") {
+  %s
+}
+""" % (__PageSandboxModel, __PageSandboxModel, __PageSandboxModel)
 
 __CatalogItem = """
 id
@@ -168,10 +177,10 @@ categories {
   path
 }
 catalogNs @include(if: $withMapping) {
-    # Removed due to 404 errors
+    %(catalog_namespace)s
 }
 offerMappings @include(if: $withMapping) {
-    # Removed due to 404 errors
+    %(page_sandbox_model)s
 }
 price(country: $country) @include(if: $withPrice) {
     %(get_price_res)s
