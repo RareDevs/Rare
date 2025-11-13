@@ -388,32 +388,32 @@ QTableView::item:selected {
     background-color: rgb( 39,  66,  66);
 }
 QPushButton {
-    background-color: rgb( 51, 54, 59);
-    border-width: 1px;
+    background-color: transparent;
+    border-width: 0px;
     border-style: solid;
     border-radius: 2px;
-    padding: 3px;
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 QToolButton {
-    background-color: rgb( 51, 54, 59);
-    border-width: 1px;
+    background-color: transparent;
+    border-width: 0px;
     border-style: solid;
     border-radius: 2px;
-    padding: 3px;
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 QPushButton:disabled {
-    background-color: rgb( 41, 43, 47);
+    background-color: transparent;
 }
 QToolButton:disabled {
-    background-color: rgb( 41, 43, 47);
+    background-color: transparent;
 }
 QPushButton:hover {
     background-color: rgb( 60,  63,  65);
