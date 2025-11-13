@@ -365,15 +365,15 @@ QHeaderView::section:vertical:first {
 }
 QListView::item:hover {
     border-color: rgb( 54, 136, 177);
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTreeView::item:hover {
     border-color: rgb( 54, 136, 177);
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTableView::item:hover {
     border-color: rgb( 54, 136, 177);
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QListView::item:selected {
     border-color: rgb( 54, 136, 177);
@@ -416,13 +416,13 @@ QToolButton:disabled {
     background-color: rgb( 41, 43, 47);
 }
 QPushButton:hover {
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QToolButton:hover {
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QHeaderView::section:hover {
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QCheckBox {
     background-color: transparent;
@@ -645,13 +645,13 @@ QTabBar::tab:top:hover {
     border-color: rgb( 54, 136, 177);
     border-left-color: transparent;
     border-right-color: transparent;
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:bottom:hover {
     border-color: rgb( 54, 136, 177);
     border-left-color: transparent;
     border-right-color: transparent;
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:top:selected {
     border-color: rgb( 54, 136, 177);
@@ -697,13 +697,13 @@ QTabBar::tab:left:hover {
     border-color: rgb( 54, 136, 177);
     border-top-color: transparent;
     border-bottom-color: transparent;
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:right:hover {
     border-color: rgb( 54, 136, 177);
     border-top-color: transparent;
     border-bottom-color: transparent;
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:left:selected {
     border-color: rgb( 54, 136, 177);

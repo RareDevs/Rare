@@ -257,7 +257,7 @@ QListView::item:hover,
 QTreeView::item:hover,
 QTableView::item:hover {
     border-color: rgb( 54, 136, 177);
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QListView::item:selected,
 QTreeView::item:selected,
@@ -277,7 +277,7 @@ QToolButton:disabled {
 QPushButton:hover,
 QToolButton:hover,
 QHeaderView::section:hover {
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QPushButton,
 QToolButton {
@@ -465,10 +465,10 @@ QTabBar::tab:bottom {
     background-color: rgb( 32,  34,  37); /* Solid background matching main background */
 }
 QTabBar::tab:top:hover {
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:bottom:hover {
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:top:selected {
     border-color: rgb( 54, 136, 177);
@@ -518,10 +518,10 @@ QTabBar::tab:right {
     background-color: rgb( 32,  34,  37); /* Solid background matching main background */
 }
 QTabBar::tab:left:hover {
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:right:hover {
-    background-color: rgb( 34,  34,  51);
+    background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:left:selected {
     border-color: rgb( 54, 136, 177);
