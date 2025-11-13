@@ -9,4 +9,5 @@ orjson
 vdf @ https://github.com/solsticegamestudios/vdf/archive/be1f7220238022f8b29fe747f0b643f280bfdb6e.zip
 pywin32 ; platform_system == "Windows"
 pypresence
+qstylizer
 
