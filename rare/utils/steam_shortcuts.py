@@ -23,7 +23,11 @@ if platform.system() == "Windows":
 
 logger = getLogger("SteamShortcuts")
 
-steam_client_install_paths = [os.path.expanduser("~/.local/share/Steam")]
+steam_client_install_paths = [
+    os.path.expanduser("~/.local/share/Steam"),
+    os.path.expanduser("~/.steam/steam"),
+    os.path.expanduser("~/.var/app/com.valvesoftware.Steam/data/Steam"), # Flatpak
+]
 
 
 def find_steam() -> Optional[str]:
