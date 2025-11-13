@@ -9,6 +9,7 @@ from rare.utils.misc import ExitCodes, qta_icon
 from .account import AccountWidget
 from .downloads import DownloadsTab
 from .library import GamesLibrary
+from .login import LoginPage # Import LoginPage
 from .settings import SettingsTab
 from .store import StoreTab
 from .tab_widgets import MainTabBar, TabButtonWidget
@@ -32,6 +33,10 @@ class MainTabWidget(QTabWidget):
         self.setTabBar(self.tab_bar)
 
         # Generate Tabs
+        self.login_tab = LoginPage(self.settings, self.rcore, self)
+        self.login_tab.success.connect(self.__on_login_success)
+        self.login_index = self.addTab(self.login_tab, self.tr("Login"))
+
         self.games_tab = GamesLibrary(self.settings, self.rcore, self)
         self.games_index = self.addTab(self.games_tab, self.tr("Games"))
 
@@ -78,6 +83,27 @@ class MainTabWidget(QTabWidget):
             QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(self.store_index))
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
 
+        # Initial tab selection based on login status
+        if not self.core.is_logged_in(): # Assuming this method exists
+            self.setCurrentIndex(self.login_index)
+            # Disable other tabs until logged in
+            self.setTabEnabled(self.games_index, False)
+            self.setTabEnabled(self.downloads_index, False)
+            if not self.args.offline:
+                self.setTabEnabled(self.store_index, False)
+            self.setTabEnabled(self.settings_index, False)
+        else:
+            self.setCurrentIndex(self.games_index)
+
+    @Slot()
+    def __on_login_success(self):
+        # Enable all tabs
+        self.setTabEnabled(self.games_index, True)
+        self.setTabEnabled(self.downloads_index, True)
+        if not self.args.offline:
+            self.setTabEnabled(self.store_index, True)
+        self.setTabEnabled(self.settings_index, True)
+        # Switch to games tab
         self.setCurrentIndex(self.games_index)
 
     @Slot(int)
@@ -117,6 +143,13 @@ class MainTabWidget(QTabWidget):
 
             if reply == QMessageBox.StandardButton.Yes:
                 self.core.lgd.invalidate_userdata()
+                # After logout, switch to login tab and disable others
+                self.setCurrentIndex(self.login_index)
+                self.setTabEnabled(self.games_index, False)
+                self.setTabEnabled(self.downloads_index, False)
+                if not self.args.offline:
+                    self.setTabEnabled(self.store_index, False)
+                self.setTabEnabled(self.settings_index, False)
             else:
                 return
         self.exit_app.emit(exit_code)  # restart exit code
