@@ -13,7 +13,7 @@ alternate: #282a2e rgb( 40,  42,  46)     -- background color for alternating ro
 
 [Border]
 normal:    #3688B1 rgb( 54, 136, 177)     -- border color for most widgets
-                  rgba( 54, 136, 177, 25%) == rgb( 42, 40, 63)
+                  rgba( 54, 136, 177, 25%)
 editable:  #2f4f4f rgb( 47,  79,  79)     -- border color for editable widgets (TextEdits, ProgressBars etc)
 highlight: #3688B1 rgb( 54, 136, 177)     -- border color for dropdown widgets, a bit lighter than border for more separation
 disabled:  #43474d rgb( 67,  71,  77)     -- border for disabled widgets
@@ -414,7 +414,7 @@ QGroupBox::title {
         stop: 0 rgb( 72,  61, 139),
         stop: 1 rgb( 32,  34,  37));
     */
-    background-color: rgb( 42, 40, 63);
+    background-color: rgb( 32,  34,  37);
 }
 QToolBox::tab:disabled,
 QGroupBox::title:disabled {
