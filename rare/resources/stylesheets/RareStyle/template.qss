@@ -454,37 +454,21 @@ QTabBar::tab:bottom:hover {
 }
 QTabBar::tab:top {
     border-top-width: 3px;
-    border-top-color: rgb( 60,  63,  65);
+    border-top-color: transparent; /* Make top border transparent */
     border-bottom-color: rgb( 54, 136, 177);
-    background: qlineargradient(
-        x1: 0, y1: -1,
-        x2: 0, y2:  1,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    background-color: rgb( 32,  34,  37); /* Solid background matching main background */
 }
 QTabBar::tab:bottom {
     border-bottom-width: 3px;
     border-top-color: rgb( 54, 136, 177);
-    border-bottom-color: rgb( 60,  63,  65);
-    background: qlineargradient(
-        x1: 0, y1: 2,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    border-bottom-color: transparent; /* Make bottom border transparent */
+    background-color: rgb( 32,  34,  37); /* Solid background matching main background */
 }
 QTabBar::tab:top:hover {
-    background: qlineargradient(
-        x1: 0, y1: -1,
-        x2: 0, y2:  1,
-        stop: 0 rgb( 54, 136, 177),
-        stop: 1 rgb( 32,  34,  37));
+    background-color: rgb( 34,  34,  51);
 }
 QTabBar::tab:bottom:hover {
-    background: qlineargradient(
-        x1: 0, y1: 2,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 54, 136, 177),
-        stop: 1 rgb( 32,  34,  37));
+    background-color: rgb( 34,  34,  51);
 }
 QTabBar::tab:top:selected {
     border-color: rgb( 54, 136, 177);
@@ -523,37 +507,21 @@ QTabBar::tab:right:hover {
 }
 QTabBar::tab:left {
     border-left-width: 3px;
-    border-left-color: rgb( 60,  63,  65);
+    border-left-color: transparent; /* Make left border transparent */
     border-right-color: rgb( 54, 136, 177);
-    background: qlineargradient(
-        x1: -1, y1: 0,
-        x2:  1, y2: 0,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    background-color: rgb( 32,  34,  37); /* Solid background matching main background */
 }
 QTabBar::tab:right {
     border-right-width: 3px;
-    border-right-color: rgb( 60,  63,  65);
+    border-right-color: transparent; /* Make right border transparent */
     border-left-color: rgb( 54, 136, 177);
-    background: qlineargradient(
-        x1: 2, y1: 0,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    background-color: rgb( 32,  34,  37); /* Solid background matching main background */
 }
 QTabBar::tab:left:hover {
-    background: qlineargradient(
-        x1: -1, y1: 0,
-        x2:  1, y2: 0,
-        stop: 0 rgb( 54, 136, 177),
-        stop: 1 rgb( 32,  34,  37));
+    background-color: rgb( 34,  34,  51);
 }
 QTabBar::tab:right:hover {
-    background: qlineargradient(
-        x1: 2, y1: 0,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 54, 136, 177),
-        stop: 1 rgb( 32,  34,  37));
+    background-color: rgb( 34,  34,  51);
 }
 QTabBar::tab:left:selected {
     border-color: rgb( 54, 136, 177);
