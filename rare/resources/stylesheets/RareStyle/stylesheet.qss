@@ -2,7 +2,7 @@
 
 * {
     color: rgb(238, 238, 238);
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent; /* Changed from rgb( 54, 136, 177) to transparent */
     background-color: rgb( 32,  34,  37);
 }
 *:disabled {
@@ -32,6 +32,7 @@ QMenu {
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
+    border-color: transparent;
 }
 QListView {
     border-width: 1px;
@@ -44,6 +45,7 @@ QListView {
     selection-background-color: transparent;
     background-color: rgb( 32,  34,  37);
     alternate-background-color: rgb( 40,  42,  46);
+    border-color: transparent;
 }
 QListView::item {
     border-width: 1px;
@@ -63,6 +65,7 @@ QTreeView {
     selection-background-color: transparent;
     background-color: rgb( 32,  34,  37);
     alternate-background-color: rgb( 40,  42,  46);
+    border-color: transparent;
 }
 QTreeView::item {
     border-width: 1px;
@@ -82,6 +85,7 @@ QTableView {
     selection-background-color: transparent;
     background-color: rgb( 32,  34,  37);
     alternate-background-color: rgb( 40,  42,  46);
+    border-color: transparent;
 }
 QTableView::item {
     border-width: 1px;
@@ -97,7 +101,7 @@ QHeaderView::section {
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -106,6 +110,7 @@ QFrame[frameShape="6"] {
     border-style: solid;
     border-radius: 4px;
     padding: 2px;
+    border-color: transparent;
 }
 QGroupBox {
     border-width: 1px;
@@ -115,13 +120,14 @@ QGroupBox {
     background-color: transparent;
     font-weight: bold;
     padding-top: 1.2em;
+    border-color: transparent;
 }
 QLineEdit {
     border-width: 1px;
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -130,7 +136,7 @@ QTextEdit {
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -139,7 +145,7 @@ QTimeEdit {
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -148,7 +154,7 @@ QDateEdit {
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -157,7 +163,7 @@ QDateTimeEdit {
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -173,15 +179,16 @@ QComboBox {
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    background-color: rgb( 51, 54, 59);
+    background-color: transparent;
     combobox-popup: 0;
+    border-color: transparent;
 }
 QComboBox:editable {
     border-width: 1px;
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -190,7 +197,7 @@ QSpinBox {
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -199,7 +206,7 @@ QDoubleSpinBox {
     border-style: solid;
     border-radius: 2px;
     padding: 2px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -208,7 +215,7 @@ QProgressBar {
     border-style: solid;
     border-radius: 2px;
     padding: 0px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
     selection-background-color: rgb( 39,  66,  66);
     text-align: center;
@@ -218,7 +225,7 @@ QScrollBar {
     border-style: solid;
     border-radius: 4px;
     padding: 1px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 40,  42,  46);
     selection-background-color: rgb( 39,  66,  66);
 }
@@ -242,8 +249,8 @@ QComboBox:!editable:hover {
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
     subcontrol-position: top right;
-    border-color: rgb( 54, 136, 177);
-    border-left-color: rgb( 54, 136, 177);
+    border-color: transparent;
+    border-left-color: transparent;
     width: 14px;
     image: url(":/stylesheets/RareStyle/drop-down.svg");
 }
@@ -254,7 +261,7 @@ QComboBox:!editable:hover {
     border-radius: 2px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 60,  63,  65);
     width: 14px;
     image: url(":/stylesheets/RareStyle/drop-down.svg");
@@ -266,7 +273,7 @@ QComboBox:!editable:hover {
     border-radius: 2px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 60,  63,  65);
     width: 14px;
     subcontrol-position: top right;
@@ -280,7 +287,7 @@ QComboBox:!editable:hover {
     border-radius: 2px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 60,  63,  65);
     width: 14px;
     subcontrol-position: bottom right;
@@ -431,7 +438,7 @@ QRadioButton {
     background-color: transparent;
 }
 QGroupBox::indicator {
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     border-width: 1px;
     border-style: solid;
     background-color: rgb( 32,  34,  37);
@@ -441,7 +448,7 @@ QGroupBox::indicator {
     border-radius: 2px;
 }
 QCheckBox::indicator {
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     border-width: 1px;
     border-style: solid;
     background-color: rgb( 32,  34,  37);
@@ -450,7 +457,7 @@ QCheckBox::indicator {
     border-radius: 2px;
 }
 QRadioButton::indicator {
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     border-width: 1px;
     border-style: solid;
     background-color: rgb( 32,  34,  37);
@@ -459,7 +466,7 @@ QRadioButton::indicator {
     border-radius: 5%;
 }
 QListView::indicator {
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     border-width: 1px;
     border-style: solid;
     background-color: rgb( 32,  34,  37);
@@ -468,7 +475,7 @@ QListView::indicator {
     border-radius: 2px;
 }
 QTreeView::indicator {
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     border-width: 1px;
     border-style: solid;
     background-color: rgb( 32,  34,  37);
@@ -477,7 +484,7 @@ QTreeView::indicator {
     border-radius: 2px;
 }
 QTableView::indicator {
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     border-width: 1px;
     border-style: solid;
     background-color: rgb( 32,  34,  37);
@@ -590,7 +597,7 @@ QToolBox::tab {
     border-style: solid;
     border-top-left-radius: 4px;
     border-bottom-right-radius: 4px;
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     padding: 1px;
     background-color: rgb( 32,  34,  37);
 }
@@ -601,7 +608,7 @@ QGroupBox::title {
     border-style: solid;
     border-top-left-radius: 4px;
     border-bottom-right-radius: 4px;
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     padding: 1px;
     background-color: rgb( 32,  34,  37);
 }
@@ -630,36 +637,36 @@ QTabBar::tab:top {
     padding-right: 12px;
     border-top-width: 3px;
     border-top-color: transparent;
-    border-bottom-color: rgb( 54, 136, 177);
+    border-bottom-color: transparent;
     background-color: rgb( 32,  34,  37);
 }
 QTabBar::tab:bottom {
     padding-left: 12px;
     padding-right: 12px;
     border-bottom-width: 3px;
-    border-top-color: rgb( 54, 136, 177);
+    border-top-color: transparent;
     border-bottom-color: transparent;
     background-color: rgb( 32,  34,  37);
 }
 QTabBar::tab:top:hover {
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-left-color: transparent;
     border-right-color: transparent;
     background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:bottom:hover {
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-left-color: transparent;
     border-right-color: transparent;
     background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:top:selected {
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-bottom-color: transparent;
     background: rgb( 32,  34,  37);
 }
 QTabBar::tab:bottom:selected {
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-top-color: transparent;
     background: rgb( 32,  34,  37);
 }
@@ -682,7 +689,7 @@ QTabBar::tab:left {
     padding-bottom: 2px;
     border-left-width: 3px;
     border-left-color: transparent;
-    border-right-color: rgb( 54, 136, 177);
+    border-right-color: transparent;
     background-color: rgb( 32,  34,  37);
 }
 QTabBar::tab:right {
@@ -690,28 +697,28 @@ QTabBar::tab:right {
     padding-bottom: 2px;
     border-right-width: 3px;
     border-right-color: transparent;
-    border-left-color: rgb( 54, 136, 177);
+    border-left-color: transparent;
     background-color: rgb( 32,  34,  37);
 }
 QTabBar::tab:left:hover {
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-top-color: transparent;
     border-bottom-color: transparent;
     background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:right:hover {
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-top-color: transparent;
     border-bottom-color: transparent;
     background-color: rgb( 60,  63,  65);
 }
 QTabBar::tab:left:selected {
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-right-color: transparent;
     background: rgb( 32,  34,  37);
 }
 QTabBar::tab:right:selected {
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-left-color: transparent;
     background: rgb( 32,  34,  37);
 }
@@ -733,14 +740,14 @@ QStatusBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    border-top-color: rgb( 54, 136, 177);
-    border-bottom-color: rgb( 60,  63,  65);
+    border-top-color: transparent;
+    border-bottom-color: transparent;
     background-color: rgb( 32,  34,  37);
 }
 QToolTip {
     border-width: 1px;
     border-style: solid;
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-radius: 4px;
     padding: 1px;
     opacity: 200;
@@ -750,7 +757,7 @@ QBalloonTip {
     background-color: rgb( 32,  34,  37);
     border-width: 1px;
     border-style: solid;
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-radius: 4px;
     padding: 1px;
 }
@@ -758,7 +765,7 @@ QTabBar#MainTabBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    border-bottom-color: rgb( 54, 136, 177);
+    border-bottom-color: transparent;
 }
 QTabBar#MainTabBar:disabled {
     border-color: transparent;
@@ -768,14 +775,14 @@ QTabBar#MainTabBar::tab {
     margin-left: 3px;
     margin-right: 3px;
     border-top-color: transparent;
-    border-bottom-color: rgb( 54, 136, 177);
+    border-bottom-color: transparent;
     padding: 3px 5px;
 }
 QTabBar#MainTabBar::tab:top:hover {
-    border-top-color: rgb( 54, 136, 177);
+    border-top-color: transparent;
 }
 QTabBar#MainTabBar::tab:top:selected {
-    border-color: rgb( 54, 136, 177);
+    border-color: transparent;
     border-bottom-color: rgb( 32,  34,  37);
 }
 QPushButton#TabButtonWidget {
@@ -798,7 +805,7 @@ QTabBar#SideTabBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    border-right-color: rgb( 54, 136, 177);
+    border-right-color: transparent;
 }
 QTabBar#SideTabBar:disabled {
     border-color: transparent;
@@ -832,7 +839,7 @@ QToolButton#WrapperWidgetButton:disabled {
     border-color: rgb( 41, 43, 47);
 }
 QScrollArea#WrapperSettingsScroll {
-    border-color: rgb( 47,  79,  79);
+    border-color: transparent;
     background-color: rgb( 38,  38,  51);
 }
 QScrollArea#WrapperSettingsScroll:disabled {
@@ -853,7 +860,7 @@ QTableView QTableCornerButton::section {
     border-style: solid;
     border-radius: 2px;
     padding: 1px;
-    border-color: #2f4f4f;
+    border-color: transparent;
     background-color: #262633;
     selection-background-color: #274242;
 }
@@ -862,7 +869,7 @@ QComboBox QAbstractItemView {
     border-style: solid;
     border-radius: 2px;
     padding: 1px;
-    border-color: #2f4f4f;
+    border-color: transparent;
     background-color: #262633;
     selection-background-color: #274242;
 }

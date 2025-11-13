@@ -9,7 +9,7 @@ from rare.utils.misc import ExitCodes, qta_icon
 from .account import AccountWidget
 from .downloads import DownloadsTab
 from .library import GamesLibrary
-from .login import LoginPage # Import LoginPage
+from .login import LoginPage
 from .settings import SettingsTab
 from .store import StoreTab
 from .tab_widgets import MainTabBar, TabButtonWidget
