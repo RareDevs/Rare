@@ -10,7 +10,7 @@ for f in basedir.iterdir():
         os.system(
             shlex.join(
                 (
-                    "pyside6-lrelease",
+                    "/home/alessio/Progetti/Rare/build_venv/bin/pyside6-lrelease",
                     "-compress",
                     "-removeidentical",
                     f.as_posix(),
