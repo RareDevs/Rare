@@ -735,11 +735,7 @@ QStatusBar {
     border-color: transparent;
     border-top-color: rgb( 54, 136, 177);
     border-bottom-color: rgb( 60,  63,  65);
-    background: qlineargradient(
-        x1: 0, y1: 3,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    background-color: rgb( 32,  34,  37);
 }
 QToolTip {
     border-width: 1px;
