@@ -86,6 +86,7 @@ class MainTabWidget(QTabWidget):
         # Initial tab selection based on login status
         if not self.core.logged_in:
             self.setCurrentIndex(self.login_index)
+            self.setTabVisible(self.login_index, True) # Ensure login tab is visible
             # Disable other tabs until logged in
             self.setTabEnabled(self.games_index, False)
             self.setTabEnabled(self.downloads_index, False)
@@ -94,6 +95,7 @@ class MainTabWidget(QTabWidget):
             self.setTabEnabled(self.settings_index, False)
         else:
             self.setCurrentIndex(self.games_index)
+            self.setTabVisible(self.login_index, False) # Hide login tab if already logged in
 
     @Slot()
     def __on_login_success(self):
@@ -103,6 +105,8 @@ class MainTabWidget(QTabWidget):
         if not self.args.offline:
             self.setTabEnabled(self.store_index, True)
         self.setTabEnabled(self.settings_index, True)
+        # Hide login tab
+        self.setTabVisible(self.login_index, False)
         # Switch to games tab
         self.setCurrentIndex(self.games_index)
 
@@ -143,7 +147,8 @@ class MainTabWidget(QTabWidget):
 
             if reply == QMessageBox.StandardButton.Yes:
                 self.core.lgd.invalidate_userdata()
-                # After logout, switch to login tab and disable others
+                # After logout, show login tab, switch to it and disable others
+                self.setTabVisible(self.login_index, True)
                 self.setCurrentIndex(self.login_index)
                 self.setTabEnabled(self.games_index, False)
                 self.setTabEnabled(self.downloads_index, False)
