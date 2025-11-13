@@ -1,5 +1,6 @@
 import locale
 import os
+import sys
 from logging import getLogger
 
 from PySide6.QtCore import Qt, QUrl, Slot
@@ -154,6 +155,9 @@ class RareSettings(QWidget):
         self.ui.log_dir_open_button.clicked.connect(self.open_directory)
         self.ui.log_dir_clean_button.clicked.connect(self.clean_logdir)
 
+        # Connect logout button
+        self.ui.logout_button.clicked.connect(self.on_logout_clicked)
+
         # get size of logdir
         size = sum(log_dir().joinpath(f).stat().st_size for f in log_dir().iterdir() if log_dir().joinpath(f).is_file())
         self.ui.log_dir_size_label.setText(format_size(size))
@@ -170,6 +174,19 @@ class RareSettings(QWidget):
                 logger.error(e)
         size = sum(log_dir().joinpath(f).stat().st_size for f in log_dir().iterdir() if log_dir().joinpath(f).is_file())
         self.ui.log_dir_size_label.setText(format_size(size))
+
+    @Slot()
+    def on_logout_clicked(self):
+        reply = QMessageBox.question(
+            self,
+            self.tr("Logout"),
+            self.tr("Are you sure you want to log out? This will restart the application."),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+        if reply == QMessageBox.StandardButton.Yes:
+            logger.info("User initiated logout.")
+            # Assuming rcore has a logout method that handles clearing credentials and restarting
+            self.rcore.logout()
 
     @Slot()
     def create_start_menu_link(self):

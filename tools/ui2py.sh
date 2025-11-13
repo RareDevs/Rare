@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
 _uic_cmd() {
-    echo "Generating python file for ${ui}"
-    pyfile="${1%.ui}.py"
-    pyside6-uic "${1}" -a -o "${pyfile}"
-    ruff check --fix "${pyfile}"
+    python3 tools/run_uic.py "${ui}"
 }
 
 force=0

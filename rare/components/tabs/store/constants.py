@@ -64,10 +64,7 @@ sandboxId
 createdDate
 updatedDate
 deletedDate
-mappings {
-  %s
-}
-""" % (__StorePageMapping)
+"""
 
 __CatalogNamespace = """
 parent

@@ -171,6 +171,22 @@
       </widget>
      </item>
      <item>
+      <widget class="QGroupBox" name="account_group">
+       <property name="title">
+        <string>Account</string>
+       </property>
+       <layout class="QVBoxLayout" name="account_layout">
+        <item>
+         <widget class="QPushButton" name="logout_button">
+          <property name="text">
+           <string>Logout</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
       <spacer name="left_vspacer">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>

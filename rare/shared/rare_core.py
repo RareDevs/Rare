@@ -243,6 +243,20 @@ class RareCore(QObject):
         RareCore.__instance = None
         super(RareCore, self).deleteLater()
 
+    def logout(self):
+        self.logger.info("Logging out and restarting application...")
+        config_file_path = os.path.join(self.__core.lgd.config_path, "config.ini")
+        if os.path.exists(config_file_path):
+            try:
+                os.remove(config_file_path)
+                self.logger.info(f"Removed Legendary config file: {config_file_path}")
+            except OSError as e:
+                self.logger.error(f"Error removing config file {config_file_path}: {e}")
+        
+        # Restart the application
+        import sys
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
     def __validate_install(self, rgame: RareGame):
         if not os.path.exists(rgame.igame.install_path):
             # lk: since install_path is lost anyway, set keep_files to True
