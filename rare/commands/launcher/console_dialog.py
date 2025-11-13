@@ -56,11 +56,13 @@ class ConsoleDialog(QDialog):
         # self.terminate_button.setVisible(platform.system() == "Windows")
         button_layout.addWidget(self.terminate_button)
         self.terminate_button.clicked.connect(lambda: self.term.emit())
+        self.terminate_button.setEnabled(False)
 
         self.kill_button = QPushButton(self.tr("Kill"))
         # self.kill_button.setVisible(platform.system() == "Windows")
         button_layout.addWidget(self.kill_button)
         self.kill_button.clicked.connect(lambda: self.kill.emit())
+        self.kill_button.setEnabled(False)
 
         layout.addLayout(button_layout)
 
