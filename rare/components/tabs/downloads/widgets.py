@@ -47,11 +47,11 @@ class QueueInfoWidget(QWidget):
         if game and igame:
             self.update_information(game, igame, analysis, old_igame)
         else:
-            self.ui.title.setText("...")
-            self.ui.remote_version.setText("...")
-            self.ui.local_version.setText("...")
-            self.ui.dl_size.setText("...")
-            self.ui.install_size.setText("...")
+            self.ui.title.setText(self.tr("..."))
+            self.ui.remote_version.setText(self.tr("..."))
+            self.ui.local_version.setText(self.tr("..."))
+            self.ui.dl_size.setText(self.tr("..."))
+            self.ui.install_size.setText(self.tr("..."))
 
         if old_igame:
             self.ui.title.setText(old_igame.title)

@@ -130,7 +130,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
                 self.catalog_offer.id,
                 lambda success: self.ui.wishlist_button.setText(self.tr("Remove from wishlist"))
                 if success
-                else self.ui.wishlist_button.setText("Something went wrong"),
+                else self.ui.wishlist_button.setText(self.tr("Something went wrong")),
             )
         else:
             self.store_api.remove_from_wishlist(
@@ -138,7 +138,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
                 self.catalog_offer.id,
                 lambda success: self.ui.wishlist_button.setText(self.tr("Add to wishlist"))
                 if success
-                else self.ui.wishlist_button.setText("Something went wrong"),
+                else self.ui.wishlist_button.setText(self.tr("Something went wrong")),
             )
 
     def data_received(self, product: DieselProduct):
