@@ -84,7 +84,7 @@ class MainTabWidget(QTabWidget):
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
 
         # Initial tab selection based on login status
-        if not self.core.is_logged_in(): # Assuming this method exists
+        if not self.core.logged_in:
             self.setCurrentIndex(self.login_index)
             # Disable other tabs until logged in
             self.setTabEnabled(self.games_index, False)
