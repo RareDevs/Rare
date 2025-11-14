@@ -61,7 +61,7 @@ __workarounds: Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Set]]]]] = {
     "ff1d9bf6b1304cb9a12b8754afa78ae5": {
         "options": {
             "override_exe": {
-                "value": "EternalThreads.exe",
+                "value": "EternalThreadsBuild/EternalThreads.exe",
                 "os": __os_compat,
             },
         },
