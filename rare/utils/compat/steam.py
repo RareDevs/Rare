@@ -339,6 +339,7 @@ def get_steam_environment(
         environ["STORE"] = ""
         environ["STEAM_COMPAT_DATA_PATH"] = ""
         environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
+        environ["STEAM_COMPAT_LAUNCHER_SERVICE"] = ""
         environ["STEAM_COMPAT_INSTALL_PATH"] = ""
         environ["STEAM_COMPAT_LIBRARY_PATHS"] = ""
         environ["STEAM_COMPAT_MOUNTS"] = ""
