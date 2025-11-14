@@ -79,7 +79,7 @@ class ProtonSettings(QGroupBox):
         folder_layout.addWidget(self.compat_combo)
         folder_layout.addWidget(self.compat_edit)
         layout.addRow(self.tr("Compat folder"), folder_layout)
-        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
         # layout.addRow(button_layout)
