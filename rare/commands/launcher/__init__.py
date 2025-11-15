@@ -10,6 +10,7 @@ from argparse import Namespace
 from logging import getLogger
 from typing import Optional
 
+import shiboken6
 from legendary.models.game import SaveGameStatus
 
 # from PySide6.import sip
@@ -366,8 +367,15 @@ class RareLauncher(RareApp):
 
             self.game_process.setProgram(executable)
             # TODO: Add "SteamLauch" and "AppId=xxxxxx" here for steamdeck/gamescope
+            try:
+                appid = int(appid) >> 32
+            except ValueError:
+                pass
             self.game_process.setArguments(
-                [*arguments, "subreaper", "SteamLaunch", f"AppId={int(appid) >> 32}", "--", params.executable, *params.arguments]
+                [*arguments, "subreaper", "SteamLaunch", f"AppId={appid}", "--", params.executable, *params.arguments]
+            )
+            self.game_process.setUnixProcessParameters(
+                QProcess.UnixProcessFlag.ResetSignalHandlers | QProcess.UnixProcessFlag.CreateNewSession
             )
         else:
             self.game_process.setProgram(params.executable)
@@ -378,7 +386,7 @@ class RareLauncher(RareApp):
 
         if self.args.debug and self.console:
             self.console.log(str(self.game_process.program()))
-            self.console.log(str(shlex.join(self.game_process.arguments())))
+            self.console.log(shlex.join(self.game_process.arguments()))
 
         self.game_process.setProcessEnvironment(dict_to_qprocenv(params.environment))
         # send start message after process started
@@ -467,14 +475,15 @@ class RareLauncher(RareApp):
         except (TypeError, RuntimeError) as e:
             self.logger.error("Failed to disconnect process signals: %s", e)
 
-        if self.game_process.state() != QProcess.ProcessState.NotRunning:
-            if sig == signal.SIGTERM:
-                self.__proc_term()
-            elif sig == signal.SIGINT:
-                self.__proc_kill()
-        self.game_process.waitForFinished()
-        exit_code = self.game_process.exitCode()
-        self.game_process.deleteLater()
+        if shiboken6.isValid(self.game_process):
+            if self.game_process.state() != QProcess.ProcessState.NotRunning:
+                if sig == signal.SIGTERM:
+                    self.__proc_term()
+                elif sig == signal.SIGINT:
+                    self.__proc_kill()
+            self.game_process.waitForFinished()
+            exit_code = self.game_process.exitCode()
+            self.game_process.deleteLater()
 
         self.logger.info("Stopping server %s", self.server.socketDescriptor())
         try:
