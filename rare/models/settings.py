@@ -40,7 +40,7 @@ class Settings(Namespace):
     window_width = Setting(key="window_width", default=1280, dtype=int)
     window_height = Setting(key="window_height", default=720, dtype=int)
     notification = Setting(key="notification", default=True, dtype=bool)
-    log_games = Setting(key="show_console", default=False, dtype=bool)
+    log_games = Setting(key="show_console", default=pf.system() != "Windows", dtype=bool)
 
     color_scheme = Setting(key="color_scheme", default="", dtype=str)
     style_sheet = Setting(key="style_sheet", default="RareStyle", dtype=str)
