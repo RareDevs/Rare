@@ -9,7 +9,7 @@ from ctypes import CDLL, byref, c_int, create_string_buffer
 from ctypes.util import find_library
 from logging import getLogger
 from pathlib import Path
-from typing import List, Generator, Any, Optional
+from typing import Any, Generator, List, Optional
 
 # Constant defined in prctl.h
 # See prctl(2) for more details

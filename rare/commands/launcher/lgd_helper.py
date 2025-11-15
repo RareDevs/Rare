@@ -161,6 +161,9 @@ def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[st
         environ["MANGOHUD"] = "0"
     # ensure shader compat dirs exist
     if platform.system() in {"Linux", "FreeBSD"}:
+        environ["UMU_USE_STEAM"] = "1"
+        if "STEAM_COMPAT_CLIENT_INSTALL_PATH" not in environ:
+            environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
         if "WINEPREFIX" in environ and not os.path.isdir(environ["WINEPREFIX"]):
             os.makedirs(environ["WINEPREFIX"], exist_ok=True)
         if "STEAM_COMPAT_DATA_PATH" in environ:
