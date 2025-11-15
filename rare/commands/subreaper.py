@@ -9,7 +9,7 @@ from ctypes import CDLL, byref, c_int, create_string_buffer
 from ctypes.util import find_library
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Generator, List, Optional
+from typing import Any, Generator, List
 
 # Constant defined in prctl.h
 # See prctl(2) for more details
@@ -53,12 +53,7 @@ def get_pstree_from_pid(root_pid: int) -> set[int]:
     return descendants
 
 
-__pid: Optional[int] = None
-
-
 def subreaper(args: Namespace, other: List[str]) -> int:
-    global __pid
-
     logger = getLogger("subreaper")
     logging.basicConfig(
         format="[%(name)s] %(levelname)s: %(message)s",
@@ -74,9 +69,6 @@ def subreaper(args: Namespace, other: List[str]) -> int:
         pstree = get_pstree_from_pid(os.getpid())
         for p in pstree:
             os.kill(p, sig)
-
-    signal.signal(signal.SIGTERM, signal_handler)
-    signal.signal(signal.SIGINT, signal_handler)
 
     command: List[str] = [args.command, *other]
     workdir: str = args.workdir
@@ -102,15 +94,18 @@ def subreaper(args: Namespace, other: List[str]) -> int:
     prctl_ret = prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0, 0)
     logger.debug("prctl PR_SET_CHILD_SUBREAPER exited with status: %s", prctl_ret)
 
-    __pid = os.fork()  # pylint: disable=E1101
-    if __pid == -1:
+    pid = os.fork()  # pylint: disable=E1101
+    if pid == -1:
         logger.error("Fork failed")
 
-    if __pid == 0:
+    if pid == 0:
         sys.stdout.flush()
         sys.stderr.flush()
         os.chdir(workdir)
         os.execvp(command[0], command)  # noqa: S606
+    else:
+        signal.signal(signal.SIGTERM, signal_handler)
+        signal.signal(signal.SIGINT, signal_handler)
 
     while True:
         try:
