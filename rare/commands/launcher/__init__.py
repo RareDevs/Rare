@@ -475,7 +475,7 @@ class RareLauncher(RareApp):
         except (TypeError, RuntimeError) as e:
             self.logger.error("Failed to disconnect process signals: %s", e)
 
-        if shiboken6.isValid(self.game_process):
+        if shiboken6.isValid(self.game_process):  # pylint: disable=E1101
             if self.game_process.state() != QProcess.ProcessState.NotRunning:
                 if sig == signal.SIGTERM:
                     self.__proc_term()
@@ -484,6 +484,8 @@ class RareLauncher(RareApp):
             self.game_process.waitForFinished()
             exit_code = self.game_process.exitCode()
             self.game_process.deleteLater()
+        else:
+            exit_code = 0
 
         self.logger.info("Stopping server %s", self.server.socketDescriptor())
         try:
