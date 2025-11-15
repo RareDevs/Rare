@@ -4,6 +4,7 @@ import platform
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from logging import getLogger
+from secrets import token_hex
 from threading import Lock
 from typing import Dict, List, Optional, Set, Tuple
 
@@ -465,7 +466,7 @@ class RareGame(RareGameSlim):
     def steam_appid(self, appid: str) -> None:
         config.adjust_envvar(self.app_name, "SteamAppId", appid)
         config.adjust_envvar(self.app_name, "SteamGameId", appid)
-        config.adjust_envvar(self.app_name, "STEAM_COMPAT_APP_ID", appid)
+        config.adjust_envvar(self.app_name, "STEAM_COMPAT_APP_ID", f"rare_{self.app_name}")
         config.adjust_envvar(self.app_name, "UMU_ID", f"umu-{appid}" if appid else "umu-default")
         self.metadata.steam_appid = appid
         self.__save_metadata()

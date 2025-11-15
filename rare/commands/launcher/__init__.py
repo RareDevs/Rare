@@ -2,14 +2,15 @@ import json
 import os
 import platform
 import shlex
+import signal
 import subprocess
 import time
 import traceback
 from argparse import Namespace
 from logging import getLogger
-from signal import SIGINT, SIGTERM, signal, strsignal
 from typing import Optional
 
+import shiboken6
 from legendary.models.game import SaveGameStatus
 
 # from PySide6.import sip
@@ -171,6 +172,16 @@ class RareLauncher(RareApp):
         if args.show_console:
             self.console = ConsoleDialog(game.app_title)
             self.console.show()
+            self.game_process.stateChanged.connect(
+                lambda s: self.console.kill_button.setEnabled(
+                    self.game_process.state() == QProcess.ProcessState.Running
+                )
+            )
+            self.game_process.stateChanged.connect(
+                lambda s: self.console.terminate_button.setEnabled(
+                    self.game_process.state() == QProcess.ProcessState.Running
+                )
+            )
 
         self.sync_dialog: Optional[CloudSyncDialog] = None
 
@@ -207,11 +218,17 @@ class RareLauncher(RareApp):
 
     @Slot()
     def __proc_term(self):
-        self.game_process.terminate()
+        if platform.system() == "Windows":
+            self.game_process.terminate()
+        else:
+            os.kill(self.game_process.processId(), signal.SIGINT)
 
     @Slot()
     def __proc_kill(self):
-        self.game_process.kill()
+        if platform.system() == "Windows":
+            self.game_process.kill()
+        else:
+            os.kill(self.game_process.processId(), signal.SIGINT)
 
     def new_server_connection(self):
         if self.socket is not None:
@@ -345,11 +362,20 @@ class RareLauncher(RareApp):
 
             if appid := os.environ.get("SteamGameId", False):
                 params.environment["SteamGameId"] = appid
+            elif params.environment.get("SteamGameId", False):
+                appid = params.environment["SteamGameId"]
 
             self.game_process.setProgram(executable)
             # TODO: Add "SteamLauch" and "AppId=xxxxxx" here for steamdeck/gamescope
+            try:
+                appid = int(appid) >> 32
+            except ValueError:
+                pass
             self.game_process.setArguments(
-                [*arguments, "subreaper", "SteamLaunch", f"AppId={int(appid) >> 32}", "--", params.executable, *params.arguments]
+                [*arguments, "subreaper", "SteamLaunch", f"AppId={appid}", "--", params.executable, *params.arguments]
+            )
+            self.game_process.setUnixProcessParameters(
+                QProcess.UnixProcessFlag.ResetSignalHandlers | QProcess.UnixProcessFlag.CreateNewSession
             )
         else:
             self.game_process.setProgram(params.executable)
@@ -360,14 +386,16 @@ class RareLauncher(RareApp):
 
         if self.args.debug and self.console:
             self.console.log(str(self.game_process.program()))
-            self.console.log(str(self.game_process.arguments()))
+            self.console.log(shlex.join(self.game_process.arguments()))
 
         self.game_process.setProcessEnvironment(dict_to_qprocenv(params.environment))
         # send start message after process started
         self.game_process.started.connect(
             lambda: self.send_message(
                 StateChangedModel(
-                    action=Actions.state_update, app_name=self.rgame.app_name, new_state=StateChangedModel.States.started
+                    action=Actions.state_update,
+                    app_name=self.rgame.app_name,
+                    new_state=StateChangedModel.States.started,
                 )
             )
         )
@@ -435,7 +463,7 @@ class RareLauncher(RareApp):
         else:
             self.start_prepare()
 
-    def stop(self):
+    def stop(self, sig: int = signal.SIGINT):
         try:
             if self.console:
                 self.game_process.readyReadStandardOutput.disconnect()
@@ -447,10 +475,17 @@ class RareLauncher(RareApp):
         except (TypeError, RuntimeError) as e:
             self.logger.error("Failed to disconnect process signals: %s", e)
 
-        if self.game_process.state() != QProcess.ProcessState.NotRunning:
-            self.game_process.kill()
-        exit_code = self.game_process.exitCode()
-        self.game_process.deleteLater()
+        if shiboken6.isValid(self.game_process):  # pylint: disable=E1101
+            if self.game_process.state() != QProcess.ProcessState.NotRunning:
+                if sig == signal.SIGTERM:
+                    self.__proc_term()
+                elif sig == signal.SIGINT:
+                    self.__proc_kill()
+            self.game_process.waitForFinished()
+            exit_code = self.game_process.exitCode()
+            self.game_process.deleteLater()
+        else:
+            exit_code = 0
 
         self.logger.info("Stopping server %s", self.server.socketDescriptor())
         try:
@@ -477,17 +512,17 @@ def launcher(args: Namespace) -> int:
 
     # This prevents ghost QLocalSockets, which block the name, which makes it unable to start
     # No handling for SIGKILL
-    def sighandler(s, frame):
-        app.logger.info("%s received. Stopping", strsignal(s))
-        app.stop()
+    def signal_handler(sig, frame):
+        app.logger.info("%s received. Stopping", signal.strsignal(sig))
+        app.stop(sig)
         app.exit(1)
         return 1
 
-    signal(SIGINT, sighandler)
-    signal(SIGTERM, sighandler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
 
     if not app.success:
-        app.stop()
+        app.stop(signal.SIGINT)
         app.exit(1)
         return 1
 

@@ -79,7 +79,7 @@ class ProtonSettings(QGroupBox):
         folder_layout.addWidget(self.compat_combo)
         folder_layout.addWidget(self.compat_edit)
         layout.addRow(self.tr("Compat folder"), folder_layout)
-        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
         # layout.addRow(button_layout)
@@ -152,6 +152,7 @@ class ProtonSettings(QGroupBox):
             library_paths = (
                 ":".join([library_paths, os.path.dirname(install_path)]) if library_paths else os.path.dirname(install_path)
             )
+            # https://gitlab.steamos.cloud/steamrt/steam-runtime-tools/-/blob/main/docs/steam-compat-tool-interface.md#non-steam-games
             steam_environ["STEAM_COMPAT_INSTALL_PATH"] = install_path
         steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] = library_paths
         for key, value in steam_environ.items():
