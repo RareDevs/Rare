@@ -18,6 +18,9 @@ on:
     types: [ published ]
 
 
+run-name: "Artifacts (${{ github.event_name }}) (${{ github.event.action }})"
+
+
 permissions:
   contents: write
   discussions: write
