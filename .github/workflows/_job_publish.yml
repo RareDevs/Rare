@@ -12,6 +12,12 @@ on:
       file2:
         type: string
         default: ""
+      file3:
+        type: string
+        default: ""
+      file4:
+        type: string
+        default: ""
 
 jobs:
   release:
@@ -22,6 +28,8 @@ jobs:
         include:
           - file: ${{ inputs.file1 }}
           - file: ${{ inputs.file2 }}
+          - file: ${{ inputs.file3 }}
+          - file: ${{ inputs.file4 }}
     steps:
     - name: Download ${{ matrix.file }} from artifacts
       uses: actions/download-artifact@v6
