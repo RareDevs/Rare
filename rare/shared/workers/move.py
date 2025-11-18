@@ -9,6 +9,7 @@ from PySide6.QtCore import QObject, Signal
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareGame
+from rare.models.install import MoveGameModel
 from rare.utils.misc import path_size
 from rare.widgets.indicator_edit import IndicatorReasons, IndicatorReasonsCommon
 
@@ -28,13 +29,14 @@ class MoveInfoWorker(Worker):
     class Signals(QObject):
         result: Signal = Signal(bool, object, object, MovePathEditReasons)
 
-    def __init__(self, rgame: RareGame, igames: Iterator[RareGame], path):
+    def __init__(self, rgame: RareGame, igames: Iterator[RareGame], options: MoveGameModel):
         super(MoveInfoWorker, self).__init__()
         self.signals = MoveInfoWorker.Signals()
 
         self.rgame: RareGame = rgame
         self.installed_games: Iterator[RareGame] = igames
-        self.path: str = path
+        self.target_path: str = options.target_path
+        self.full_path: str = options.install_path
 
     @staticmethod
     def is_game_dir(src_path: str, dst_path: str):
@@ -48,16 +50,17 @@ class MoveInfoWorker(Worker):
         return False
 
     def run_real(self):
-        if not self.rgame.install_path or not self.path:
+        if not self.rgame.install_path or not self.full_path:
             self.signals.result.emit(False, 0, 0, MovePathEditReasons.MOVEDIALOG_DST_MISSING)
             return
 
         src_path = os.path.realpath(self.rgame.install_path)
-        dst_path = os.path.realpath(self.path)
+        dst_path = os.path.realpath(self.full_path)
+        tgt_path = os.path.realpath(self.target_path)
         dst_install_path = os.path.realpath(os.path.join(dst_path, os.path.basename(src_path)))
 
         # Get free space on drive and size of game folder
-        _, _, dst_size = shutil.disk_usage(dst_path)
+        _, _, dst_size = shutil.disk_usage(tgt_path)
         src_size = path_size(src_path)
 
         if src_path in {dst_path, dst_install_path}:
@@ -73,7 +76,7 @@ class MoveInfoWorker(Worker):
             return
 
         for rgame in self.installed_games:
-            if not rgame.is_non_asset and rgame.install_path in self.path:
+            if not rgame.is_non_asset and rgame.install_path in self.full_path:
                 self.signals.result.emit(False, src_size, dst_size, MovePathEditReasons.MOVEDIALOG_NESTED_DIR)
                 return
 
@@ -103,13 +106,14 @@ class MoveWorker(QueueWorker):
         # str: error message
         error = Signal(RareGame, str)
 
-    def __init__(self, core: LegendaryCore, rgame: RareGame, dst_path: str, dst_exists: bool):
+    def __init__(self, core: LegendaryCore, rgame: RareGame, options: MoveGameModel):
         super(MoveWorker, self).__init__()
         self.signals = MoveWorker.Signals()
         self.core = core
         self.rgame = rgame
-        self.dst_path = dst_path
-        self.dst_exists = dst_exists
+        self.options: MoveGameModel = options
+        self.dst_path = options.install_path
+        self.dst_exists = options.dst_exists
 
     def worker_info(self) -> QueueWorkerInfo:
         return QueueWorkerInfo(
@@ -126,6 +130,12 @@ class MoveWorker(QueueWorker):
 
     def run_real(self):
         self.rgame.signals.progress.start.emit()
+
+        if self.options.dst_delete:
+            if os.path.isdir(self.options.install_path):
+                shutil.rmtree(self.options.install_path)
+            else:
+                os.remove(self.options.install_path)
 
         if os.stat(self.rgame.install_path).st_dev == os.stat(os.path.dirname(self.dst_path)).st_dev:
             shutil.move(self.rgame.install_path, self.dst_path)

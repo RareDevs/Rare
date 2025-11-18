@@ -139,7 +139,22 @@ class SelectiveDownloadsModel:
 class MoveGameModel:
     app_name: str
     accepted: bool = None
+    rename_path: bool = False
+    # where to place the game's installation folder
     target_path: Optional[str] = None
+    # the name of the game's installation folder
+    target_name: Optional[str] = None
+    dst_exists: bool = False
+    dst_delete: bool = False
 
     def __bool__(self):
-        return bool(self.app_name) and (self.accepted is not None) and (self.target_path is not None)
+        return (
+            bool(self.app_name)
+            and (self.accepted is not None)
+            and bool(self.target_path)
+            and (bool(self.target_name) ^ self.rename_path)
+        )
+
+    @property
+    def install_path(self):
+        return os.path.join(self.target_path, self.target_name) if not self.rename_path else self.target_path

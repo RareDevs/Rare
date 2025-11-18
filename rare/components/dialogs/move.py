@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Optional, Tuple, Union
 
 from PySide6.QtCore import QThreadPool, Signal, Slot
@@ -35,14 +36,16 @@ class MoveDialog(ActionDialog):
         self.core = rcore.core()
         self.rgame: Optional[RareGame] = rgame
         self.options: MoveGameModel = MoveGameModel(rgame.app_name)
+        self.options.target_path = os.path.dirname(rgame.install_path)
+        self.options.target_name = os.path.basename(rgame.install_path)
 
-        self.target_dir_edit = PathEdit(
-            path=rgame.install_path,
+        self.target_path_edit = PathEdit(
+            path=self.options.target_path,
             file_mode=QFileDialog.FileMode.Directory,
             edit_func=self.__target_dir_edit_callback,
             parent=self,
         )
-        self.target_dir_edit.reasons = {
+        self.target_path_edit.reasons = {
             MovePathEditReasons.MOVEDIALOG_DST_MISSING: self.tr("You need to provide the destination directory."),
             MovePathEditReasons.MOVEDIALOG_NO_WRITE: self.tr("No write permission on destination."),
             MovePathEditReasons.MOVEDIALOG_SAME_DIR: self.tr("Same directory or subdirectory selected."),
@@ -50,11 +53,11 @@ class MoveDialog(ActionDialog):
             MovePathEditReasons.MOVEDIALOG_NESTED_DIR: self.tr("Game install directories cannot be nested."),
             MovePathEditReasons.MOVEDIALOG_NO_SPACE: self.tr("Not enough space available on drive."),
         }
-        self.target_dir_edit.validationFinished.connect(self.__on_target_dir_validation)
+        self.target_path_edit.validationFinished.connect(self.__on_target_dir_validation)
         self.ui.main_layout.setWidget(
-            self.ui.main_layout.getWidgetPosition(self.ui.target_dir_label)[0],
+            self.ui.main_layout.getWidgetPosition(self.ui.target_path_label)[0],
             QFormLayout.ItemRole.FieldRole,
-            self.target_dir_edit,
+            self.target_path_edit,
         )
 
         self.accept_button.setText(self.tr("Move"))
@@ -69,7 +72,7 @@ class MoveDialog(ActionDialog):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        self.target_dir_edit.refresh()
+        self.target_path_edit.refresh()
         return super().showEvent(a0)
 
     def action_handler(self):
@@ -77,7 +80,8 @@ class MoveDialog(ActionDialog):
         message = self.tr("Updating...")
         self.set_size_labels(message, message)
         self.setActive(True, disable=False)
-        info_worker = MoveInfoWorker(self.rgame, self.rcore.installed_games, self.target_dir_edit.text())
+        self.options.target_path = self.target_path_edit.text()
+        info_worker = MoveInfoWorker(self.rgame, self.rcore.installed_games, self.options)
         info_worker.signals.result.connect(self.__on_worker_result)
         self.threadpool.start(info_worker)
 
@@ -88,7 +92,7 @@ class MoveDialog(ActionDialog):
 
     def accept_handler(self):
         self.options.accepted = True
-        self.options.target_path = self.target_dir_edit.text()
+        self.options.target_path = self.target_path_edit.text()
 
     def reject_handler(self):
         self.options.accepted = False
@@ -116,11 +120,13 @@ class MoveDialog(ActionDialog):
         self.set_size_labels(src_size, dst_size)
         self.action_button.setEnabled(False)
         self.accept_button.setEnabled(is_valid)
-        error, reason = (self.tr("Error"), self.target_dir_edit.reasons[reason]) if not is_valid else ("", "")
+        error, reason = (self.tr("Error"), self.target_path_edit.reasons[reason]) if not is_valid else ("", "")
         self.set_error_labels(error, reason)
 
     @Slot(bool, str)
     def __on_target_dir_validation(self, is_valid: bool, reason: str):
+        path = Path(self.target_path_edit.text())
+        self.ui.install_path_info.setText(str(path.joinpath(self.options.target_name)))
         self.action_button.setEnabled(is_valid and not self.active())
         self.accept_button.setEnabled(False)
         error, reason = (self.tr("Error"), reason) if not is_valid else ("", "")

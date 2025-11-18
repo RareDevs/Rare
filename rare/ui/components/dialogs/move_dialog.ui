@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>148</width>
-    <height>85</height>
+    <width>352</width>
+    <height>126</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,27 +18,51 @@
     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
    </property>
    <item row="0" column="0">
-    <widget class="QLabel" name="target_dir_label">
+    <widget class="QLabel" name="target_path_label">
      <property name="text">
       <string>Target folder</string>
      </property>
     </widget>
    </item>
+   <item row="1" column="1">
+    <widget class="QLabel" name="install_path_info">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string notr="true">None</string>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="0">
+    <widget class="QLabel" name="install_path_label">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Install path</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
     <widget class="QLabel" name="required_space_label">
      <property name="text">
       <string>Required space</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="available_space_label">
      <property name="text">
       <string>Available space</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="3" column="1">
     <widget class="QLabel" name="required_space_text">
      <property name="font">
       <font>
@@ -50,7 +74,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="4" column="1">
     <widget class="QLabel" name="available_space_text">
      <property name="font">
       <font>
@@ -62,14 +86,14 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="warning_label">
      <property name="text">
       <string>Warning</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="5" column="1">
     <widget class="QLabel" name="warning_text">
      <property name="font">
       <font>
@@ -90,6 +114,31 @@
      </property>
      <property name="textInteractionFlags">
       <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="rename_path_check">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Use 'target folder' as the install path</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="rename_path_label">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>Rename folder</string>
      </property>
     </widget>
    </item>
