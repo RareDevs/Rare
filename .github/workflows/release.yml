@@ -3,12 +3,24 @@ name: "Release"
 
 
 on:
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: "Create a pre-release"
+        required: false
+        default: false
+        type: boolean
+  pull_request:
+    branches:
+      - main
+    types: [closed]
   release:
     types: [ published ]
 
 
 permissions:
   contents: write
+  discussions: write
 
 
 jobs:
@@ -17,7 +29,7 @@ jobs:
     name: Prepare
     uses: ./.github/workflows/_job_version.yml
     with:
-      prerelease: false
+      prerelease: ${{ inputs.prerelease || false }}
 
   title:
     needs: version
@@ -34,7 +46,7 @@ jobs:
     secrets: inherit
     with:
       version: ${{ needs.version.outputs.version }}
-      publish: true
+      publish: ${{ github.event_name == 'release' && github.event.action == 'published' }}
 
   nuitka-linux:
     if: ${{ true }}
@@ -44,11 +56,12 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   nuitka-linux-release:
+    if: ${{ inputs.prerelease || (github.event_name == 'release' && github.event.action == 'published') }}
     needs: [version, nuitka-linux]
     name: Nuitka Linux
     uses: ./.github/workflows/_job_publish.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-linux.zip
 
   nuitka-macos:
@@ -59,11 +72,12 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   nuitka-macos-release:
+    if: ${{ inputs.prerelease || (github.event_name == 'release' && github.event.action == 'published') }}
     needs: [version, nuitka-macos]
     name: Nuitka MacOS
     uses: ./.github/workflows/_job_publish.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-arm64-macos.app.zip
       file2: Rare-${{ needs.version.outputs.version }}-x86_64-macos.app.zip
 
@@ -75,11 +89,12 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   nuitka-windows-release:
+    if: ${{ inputs.prerelease || (github.event_name == 'release' && github.event.action == 'published') }}
     needs: [version, nuitka-windows]
     name: Nuitka Windows
     uses: ./.github/workflows/_job_publish.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-windows.zip
 
   cx-freeze-appimage:
@@ -90,11 +105,12 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-appimage-release:
+    if: ${{ inputs.prerelease || (github.event_name == 'release' && github.event.action == 'published') }}
     needs: [version, cx-freeze-appimage]
     name: cx-Freeze AppImage
     uses: ./.github/workflows/_job_publish.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-x86_64.AppImage
       file2: Rare-${{ needs.version.outputs.version }}-x86_64.zsync
 
@@ -106,11 +122,12 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-dmg-release:
+    if: ${{ inputs.prerelease || (github.event_name == 'release' && github.event.action == 'published') }}
     needs: [version, cx-freeze-dmg]
     name: cx-Freeze MacOS
     uses: ./.github/workflows/_job_publish.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-arm64.dmg
       file2: Rare-${{ needs.version.outputs.version }}-x86_64.dmg
 
@@ -122,9 +139,10 @@ jobs:
     with:
       version: ${{ needs.version.outputs.version }}
   cx-freeze-msi-release:
+    if: ${{ inputs.prerelease || (github.event_name == 'release' && github.event.action == 'published') }}
     needs: [version, cx-freeze-msi]
     name: cx-Freeze Windows
     uses: ./.github/workflows/_job_publish.yml
     with:
-      version: ${{ github.ref_name }}
+      version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}.msi
