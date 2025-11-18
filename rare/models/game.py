@@ -4,7 +4,6 @@ import platform
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from logging import getLogger
-from secrets import token_hex
 from threading import Lock
 from typing import Dict, List, Optional, Set, Tuple
 

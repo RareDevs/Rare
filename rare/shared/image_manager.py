@@ -462,7 +462,7 @@ class ImageManager(QObject):
         updates, json_data = self.__prepare_download(game, force)
         if updates:
             self.__download(updates, json_data, game)
-        self.logger.debug("Emitting singal for %s (%s})", game.app_name, game.app_title)
+        self.logger.debug("Emitting singal for %s (%s)", game.app_name, game.app_title)
 
     def download_image(self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False) -> None:
         if game.app_name in self.__worker_app_names:
