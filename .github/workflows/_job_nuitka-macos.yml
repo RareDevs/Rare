@@ -15,10 +15,12 @@ jobs:
         include:
           - arch: arm64
             pyarch: arm64
+            os: macos-15
           - arch: x86_64
             pyarch: x64
+            os: macos-15-intel
     name: Package ${{ matrix.arch }}
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
         with:
