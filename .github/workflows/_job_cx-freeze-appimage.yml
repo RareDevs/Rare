@@ -26,7 +26,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install patchelf fakeroot
-          pip3 install --upgrade git+https://github.com/marcelotduarte/cx_Freeze.git
+          pip3 install --upgrade git+https://github.com/marcelotduarte/cx_Freeze.git@refs/pull/3166/head
           pip3 install --upgrade ruff
       - name: Install target dependencies
         run: |
@@ -47,7 +47,7 @@ jobs:
         run: |
           python3 freeze.py bdist_appimage
           mv dist/Rare-*.AppImage Rare-${{ inputs.version }}.AppImage
-#          mv dist/Rare-*.zsync Rare-${{ inputs.version }}.zsync
+          mv dist/Rare-*.zsync Rare-${{ inputs.version }}.zsync
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
@@ -55,8 +55,8 @@ jobs:
           name: Rare-${{ inputs.version }}.AppImage
           path: Rare-${{ inputs.version }}.AppImage
 
-#      - name: Upload artifact
-#        uses: actions/upload-artifact@v5
-#        with:
-#          name: Rare-${{ inputs.version }}.zsync
-#          path: Rare-${{ inputs.version }}.zsync
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: Rare-${{ inputs.version }}.zsync
+          path: Rare-${{ inputs.version }}.zsync
