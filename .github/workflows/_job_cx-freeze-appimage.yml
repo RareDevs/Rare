@@ -9,8 +9,15 @@ on:
 
 jobs:
   build:
-    name: Package
-    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            pyarch: x64
+            os: ubuntu-22.04
+    name: Package ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -21,12 +28,12 @@ jobs:
           cache: pip
           python-version: '3.12'
           check-latest: true
-          architecture: x64
+          architecture: ${{ matrix.pyarch }}
       - name: Install build dependencies
         run: |
           sudo apt update
           sudo apt install patchelf fakeroot
-          pip3 install --upgrade git+https://github.com/marcelotduarte/cx_Freeze.git
+          pip3 install --upgrade "git+https://github.com/marcelotduarte/cx_Freeze.git@refs/pull/3166/head"
           pip3 install --upgrade ruff
       - name: Install target dependencies
         run: |
@@ -45,18 +52,18 @@ jobs:
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
         run: |
-          python3 freeze.py bdist_appimage
-          mv dist/Rare-*.AppImage Rare-${{ inputs.version }}.AppImage
-#          mv dist/Rare-*.zsync Rare-${{ inputs.version }}.zsync
+          python3 freeze.py bdist_appimage --updateinformation="gh-releases-zsync|RareDevs|Rare|latest-all|Rare*-${{ matrix.arch }}.AppImage.zsync"
+          mv dist/Rare-*.AppImage Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage
+          mv dist/Rare-*.zsync Rare-${{ inputs.version }}-${{ matrix.arch }}.zsync
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
-          name: Rare-${{ inputs.version }}.AppImage
-          path: Rare-${{ inputs.version }}.AppImage
+          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage
+          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage
 
-#      - name: Upload artifact
-#        uses: actions/upload-artifact@v5
-#        with:
-#          name: Rare-${{ inputs.version }}.zsync
-#          path: Rare-${{ inputs.version }}.zsync
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.zsync
+          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.zsync
