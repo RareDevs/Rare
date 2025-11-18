@@ -44,6 +44,7 @@ jobs:
         run: >-
           python -m nuitka
           --assume-yes-for-downloads
+          --disable-ccache
           --show-scons
           --clang
           --lto=no
