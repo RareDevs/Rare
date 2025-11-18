@@ -18,7 +18,7 @@ on:
     types: [ published ]
 
 
-run-name: "Artifacts (${{ github.event_name }}) (${{ github.event.action }})"
+#run-name: "Artifacts (${{ github.event_name }}) (${{ inputs.prerelease && prerelease || github.event.action }})"
 
 
 permissions:
