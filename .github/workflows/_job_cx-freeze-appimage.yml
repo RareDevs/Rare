@@ -54,7 +54,7 @@ jobs:
         run: |
           python3 freeze.py bdist_appimage --updateinformation="gh-releases-zsync|RareDevs|Rare|latest-all|Rare*-${{ matrix.arch }}.AppImage.zsync"
           mv dist/Rare-*.AppImage Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage
-          mv dist/Rare-*.zsync Rare-${{ inputs.version }}-${{ matrix.arch }}.zsync
+          mv dist/Rare-*.AppImage.zsync Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage.zsync
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
@@ -65,5 +65,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
-          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.zsync
-          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.zsync
+          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage.zsync
+          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage.zsync

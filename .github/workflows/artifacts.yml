@@ -115,7 +115,7 @@ jobs:
     with:
       version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-x86_64.AppImage
-      file2: Rare-${{ needs.version.outputs.version }}-x86_64.zsync
+      file2: Rare-${{ needs.version.outputs.version }}-x86_64.AppImage.zsync
 
   cx-freeze-dmg:
     if: ${{ true }}
