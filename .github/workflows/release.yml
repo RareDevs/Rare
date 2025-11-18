@@ -95,8 +95,8 @@ jobs:
     uses: ./.github/workflows/_job_publish.yml
     with:
       version: ${{ github.ref_name }}
-      file1: Rare-${{ needs.version.outputs.version }}.AppImage
-#      file2: Rare-${{ needs.version.outputs.version }}.zsync
+      file1: Rare-${{ needs.version.outputs.version }}-x86_64.AppImage
+      file2: Rare-${{ needs.version.outputs.version }}-x86_64.zsync
 
   cx-freeze-dmg:
     if: ${{ true }}
