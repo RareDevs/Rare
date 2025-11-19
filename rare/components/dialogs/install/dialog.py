@@ -175,7 +175,7 @@ class InstallDialog(ActionDialog):
         self.accept_button.setIcon(bicon)
         self.accept_button.setObjectName("InstallButton")
 
-        self.action_button.setText(self.tr("Verify"))
+        self.action_button.setText(self.tr("Validate"))
         self.action_button.setIcon(qta_icon("fa.check", "fa5s.check"))
 
         self.setCentralWidget(install_widget)

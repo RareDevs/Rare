@@ -64,7 +64,7 @@ class MoveDialog(ActionDialog):
         self.accept_button.setIcon(qta_icon("mdi.folder-move-outline"))
         self.accept_button.setObjectName("MoveButton")
 
-        self.action_button.setText(self.tr("Verify"))
+        self.action_button.setText(self.tr("Validate"))
         self.action_button.setIcon(qta_icon("fa.check", "fa5s.check"))
 
         self.setCentralWidget(move_widget)
