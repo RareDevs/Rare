@@ -48,6 +48,8 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.install_path.setObjectName("LinkLabel")
         self.ui.install_button.setObjectName("InstallButton")
         self.ui.modify_button.setObjectName("InstallButton")
+        self.ui.verify_button.setObjectName("VerifyButton")
+        self.ui.move_button.setObjectName("MoveButton")
         self.ui.uninstall_button.setObjectName("UninstallButton")
 
         self.ui.install_button.setIcon(qta_icon("ri.install-line"))

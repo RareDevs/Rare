@@ -52,6 +52,30 @@ QPushButton#UninstallButton:disabled {
     border-color: #3c0000;
     background-color: #280000;
 }
+QPushButton#VerifyButton {
+    border-color: #6b572c;
+    background-color: #352c16;
+}
+QPushButton#VerifyButton:hover {
+    border-color: #473a1d;
+    background-color: #2b2311;
+}
+QPushButton#VerifyButton:disabled {
+    border-color: #352c16;
+    background-color: #241d0e;
+}
+QPushButton#MoveButton {
+    border-color: #20656c;
+    background-color: #103236;
+}
+QPushButton#MoveButton:hover {
+    border-color: #164348;
+    background-color: #0d282b;
+}
+QPushButton#MoveButton:disabled {
+    border-color: #103236;
+    background-color: #0b2224;
+}
 QLabel#QueueWorkerLabel {
     border-width: 1px;
     border-style: solid;
