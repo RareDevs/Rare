@@ -138,16 +138,14 @@ class GameDetails(QWidget, SideTabContents):
         rgame.update_game()
         ans = False
         if rgame.has_update:
-            ans = (
-                QMessageBox.question(
-                    self,
-                    self.tr("Repair and update? - {}").format(self.rgame.app_title),
-                    self.tr(
-                        "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. Do you want to update the game while repairing it?"
-                    ).format(rgame.app_title, rgame.version, rgame.remote_version),
-                )
-                == QMessageBox.StandardButton.Yes
+            mbox = QMessageBox.question(
+                self,
+                self.tr("Repair and update? - {}").format(self.rgame.app_title),
+                self.tr(
+                    "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. Do you want to update the game while repairing it?"
+                ).format(rgame.app_title, rgame.version, rgame.remote_version),
             )
+            ans = (mbox == QMessageBox.StandardButton.Yes)
         rgame.repair(repair_and_update=ans)
 
     @Slot(RareGame, str)
