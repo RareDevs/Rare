@@ -1,7 +1,7 @@
 import os
 from typing import Optional, Tuple, Union
 
-from PySide6.QtCore import QThreadPool, Signal, Slot, QSignalBlocker
+from PySide6.QtCore import QSignalBlocker, QThreadPool, Signal, Slot
 from PySide6.QtGui import QShowEvent, Qt
 from PySide6.QtWidgets import QFileDialog, QFormLayout, QLabel, QWidget
 
@@ -60,14 +60,14 @@ class MoveDialog(ActionDialog):
             self.target_path_edit,
         )
 
-        self.dest_path_info = ElideLabel(parent=self)
+        self.full_path_info = ElideLabel(parent=self)
         font = self.font()
         font.setItalic(True)
-        self.dest_path_info.setFont(font)
+        self.full_path_info.setFont(font)
         self.ui.main_layout.setWidget(
-            self.ui.main_layout.getWidgetPosition(self.ui.dest_path_label)[0],
+            self.ui.main_layout.getWidgetPosition(self.ui.full_path_label)[0],
             QFormLayout.ItemRole.FieldRole,
-            self.dest_path_info,
+            self.full_path_info,
         )
 
         self.ui.rename_path_check.setChecked(self.options.rename_path)
@@ -117,7 +117,7 @@ class MoveDialog(ActionDialog):
     @Slot(Qt.CheckState)
     def __on_rename_path_changed(self, state: Qt.CheckState):
         self.options.rename_path = (state == Qt.CheckState.Checked)
-        self.dest_path_info.setText(self.options.full_path)
+        self.full_path_info.setText(self.options.full_path)
         _ = QSignalBlocker(self.ui.reset_name_check)
         self.ui.reset_name_check.setChecked(self.options.reset_name)
         self.action_button.setEnabled(True)
@@ -125,7 +125,7 @@ class MoveDialog(ActionDialog):
     @Slot(Qt.CheckState)
     def __on_reset_name_changed(self, state: Qt.CheckState):
         self.options.reset_name = (state == Qt.CheckState.Checked)
-        self.dest_path_info.setText(self.options.full_path)
+        self.full_path_info.setText(self.options.full_path)
         _ = QSignalBlocker(self.ui.rename_path_check)
         self.ui.rename_path_check.setChecked(self.options.rename_path)
         self.action_button.setEnabled(True)
@@ -158,7 +158,7 @@ class MoveDialog(ActionDialog):
     @Slot(bool, str)
     def __on_target_path_validation(self, is_valid: bool, reason: str):
         self.options.target_path = self.target_path_edit.text()
-        self.dest_path_info.setText(self.options.full_path)
+        self.full_path_info.setText(self.options.full_path)
         self.action_button.setEnabled(is_valid and not self.active())
         self.accept_button.setEnabled(False)
         error, reason = (self.tr("Error"), reason) if not is_valid else ("", "")

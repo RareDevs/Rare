@@ -27,13 +27,13 @@ class Ui_MoveDialog(object):
 
         self.main_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.target_path_label)
 
-        self.dest_path_label = QLabel(MoveDialog)
-        self.dest_path_label.setObjectName(u"dest_path_label")
+        self.full_path_label = QLabel(MoveDialog)
+        self.full_path_label.setObjectName(u"full_path_label")
         font = QFont()
         font.setItalic(True)
-        self.dest_path_label.setFont(font)
+        self.full_path_label.setFont(font)
 
-        self.main_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.dest_path_label)
+        self.main_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.full_path_label)
 
         self.required_space_label = QLabel(MoveDialog)
         self.required_space_label.setObjectName(u"required_space_label")
@@ -108,7 +108,7 @@ class Ui_MoveDialog(object):
 
     def retranslateUi(self, MoveDialog):
         self.target_path_label.setText(QCoreApplication.translate("MoveDialog", u"Target folder", None))
-        self.dest_path_label.setText(QCoreApplication.translate("MoveDialog", u"Destination", None))
+        self.full_path_label.setText(QCoreApplication.translate("MoveDialog", u"Destination", None))
         self.required_space_label.setText(QCoreApplication.translate("MoveDialog", u"Required space", None))
         self.available_space_label.setText(QCoreApplication.translate("MoveDialog", u"Available space", None))
         self.warning_label.setText(QCoreApplication.translate("MoveDialog", u"Warning", None))

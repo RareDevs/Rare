@@ -1,7 +1,6 @@
 import os
 import shutil
 from enum import auto
-from os.path import exists
 from typing import Iterator
 
 from legendary.lfs.utils import validate_files
