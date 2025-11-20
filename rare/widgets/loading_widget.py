@@ -22,6 +22,9 @@ class LoadingWidget(QLabel):
         self.setGeometry(rect)
 
     def event(self, e: QEvent) -> bool:
+        # FIXME: investigate why this happens
+        if not isinstance(e, QEvent):
+            return True
         if e.type() == QEvent.Type.ParentAboutToChange:
             if self.parent() is not None:
                 self.parent().removeEventFilter(self)
@@ -32,7 +35,8 @@ class LoadingWidget(QLabel):
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
-            return super().showEvent(a0)
+            super().showEvent(a0)
+            return
         if self.autostart:
             self.movie.start()
             self.autostart = False

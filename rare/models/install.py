@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
@@ -135,11 +136,68 @@ class SelectiveDownloadsModel:
         return bool(self.app_name) and (self.accepted is not None) and (self.install_tag is not None)
 
 
-@dataclass
 class MoveGameModel:
-    app_name: str
-    accepted: bool = None
-    target_path: Optional[str] = None
+
+    def __init__(self, app_name, install_path: str, default_name: str):
+        self.app_name: str = app_name
+        self.default_name: str = default_name
+
+        path = Path(install_path)
+        self._target_path: Path = path.parent
+        self._target_name: str = path.name
+
+        self._rename_path: bool = False
+        self._reset_name: bool = False
+
+        self.dst_exists: bool = False
+        self.dst_delete: bool = False
+        self.accepted: bool = False
+
+    @property
+    def rename_path(self) -> bool:
+        return self._rename_path
+
+    @rename_path.setter
+    def rename_path(self, val: bool):
+        self._rename_path = val
+        self._reset_name = False
+
+    @property
+    def reset_name(self) -> bool:
+        return self._reset_name
+
+    @reset_name.setter
+    def reset_name(self, val: bool):
+        self._rename_path = False
+        self._reset_name = val
+
+    @property
+    def target_path(self) -> str:
+        return str(self._target_path)
+
+    @target_path.setter
+    def target_path(self, path: str):
+        self._target_path = Path(path)
+
+    @property
+    def target_name(self) -> str:
+        if self._rename_path:
+            return ""
+        if self._reset_name:
+            return self.default_name
+        return self._target_name
+
+    @property
+    def full_path(self) -> str:
+        if self._rename_path:
+            return self.target_path
+        else:
+            return str(self._target_path.joinpath(self.target_name))
 
     def __bool__(self):
-        return bool(self.app_name) and (self.accepted is not None) and (self.target_path is not None)
+        return (
+            bool(self.app_name)
+            and (self.accepted is not None)
+            and bool(self.target_path)
+            and (bool(self.target_name) ^ self._rename_path)
+        )

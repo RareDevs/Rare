@@ -48,18 +48,49 @@ style.QLabel["#InfoLabel"].setValues(
     fontWeight="normal",
 )
 
+
+verify_color = QColor("#d6af57")
+move_color = QColor("#41cad9")
+
+
 # [Un]InstallButton
-style.QPushButton["#InstallButton"].setValues(borderColor=QColor(0, 180, 0).name(), backgroundColor=QColor(0, 120, 0).name())
-style.QPushButton["#InstallButton"].hover.setValues(borderColor=QColor(0, 135, 0).name(), backgroundColor=QColor(0, 90, 0).name())
+style.QPushButton["#InstallButton"].setValues(
+    borderColor=QColor(0, 180, 0).name(), backgroundColor=QColor(0, 120, 0).name()
+)
+style.QPushButton["#InstallButton"].hover.setValues(
+    borderColor=QColor(0, 135, 0).name(), backgroundColor=QColor(0, 90, 0).name()
+)
 style.QPushButton["#InstallButton"].disabled.setValues(
     borderColor=QColor(0, 60, 0).name(), backgroundColor=QColor(0, 40, 0).name()
 )
-style.QPushButton["#UninstallButton"].setValues(borderColor=QColor(180, 0, 0).name(), backgroundColor=QColor(120, 0, 0).name())
+style.QPushButton["#UninstallButton"].setValues(
+    borderColor=QColor(180, 0, 0).name(), backgroundColor=QColor(120, 0, 0).name()
+)
 style.QPushButton["#UninstallButton"].hover.setValues(
     borderColor=QColor(135, 0, 0).name(), backgroundColor=QColor(90, 0, 0).name()
 )
 style.QPushButton["#UninstallButton"].disabled.setValues(
     borderColor=QColor(60, 0, 0).name(), backgroundColor=QColor(40, 0, 0).name()
+)
+# VerifyButton
+style.QPushButton["#VerifyButton"].setValues(
+    borderColor=verify_color.darker(200).name(), backgroundColor=verify_color.darker(400).name()
+)
+style.QPushButton["#VerifyButton"].hover.setValues(
+    borderColor=verify_color.darker(300).name(), backgroundColor=verify_color.darker(500).name()
+)
+style.QPushButton["#VerifyButton"].disabled.setValues(
+    borderColor=verify_color.darker(400).name(), backgroundColor=verify_color.darker(600).name()
+)
+# MoveButton
+style.QPushButton["#MoveButton"].setValues(
+    borderColor=move_color.darker(200).name(), backgroundColor=move_color.darker(400).name()
+)
+style.QPushButton["#MoveButton"].hover.setValues(
+    borderColor=move_color.darker(300).name(), backgroundColor=move_color.darker(500).name()
+)
+style.QPushButton["#MoveButton"].disabled.setValues(
+    borderColor=move_color.darker(400).name(), backgroundColor=move_color.darker(600).name()
 )
 
 
@@ -69,12 +100,10 @@ style.QLabel["#QueueWorkerLabel"].setValues(
     borderStyle="solid",
     borderRadius="3px",
 )
-verify_color = QColor("#d6af57")
 style.QLabel["#QueueWorkerLabel"]['[workerType="Verify"]'].setValues(
     borderColor=verify_color.darker(200).name(),
     backgroundColor=verify_color.darker(400).name(),
 )
-move_color = QColor("#41cad9")
 style.QLabel["#QueueWorkerLabel"]['[workerType="Move"]'].setValues(
     borderColor=move_color.darker(200).name(),
     backgroundColor=move_color.darker(400).name(),

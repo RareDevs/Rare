@@ -1,6 +1,5 @@
 import os
 import platform
-import shutil
 from hashlib import sha1
 from logging import getLogger
 from typing import Optional, Tuple
@@ -49,6 +48,8 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.install_path.setObjectName("LinkLabel")
         self.ui.install_button.setObjectName("InstallButton")
         self.ui.modify_button.setObjectName("InstallButton")
+        self.ui.verify_button.setObjectName("VerifyButton")
+        self.ui.move_button.setObjectName("MoveButton")
         self.ui.uninstall_button.setObjectName("UninstallButton")
 
         self.ui.install_button.setIcon(qta_icon("ri.install-line"))
@@ -137,16 +138,14 @@ class GameDetails(QWidget, SideTabContents):
         rgame.update_game()
         ans = False
         if rgame.has_update:
-            ans = (
-                QMessageBox.question(
-                    self,
-                    self.tr("Repair and update? - {}").format(self.rgame.app_title),
-                    self.tr(
-                        "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. Do you want to update the game while repairing it?"
-                    ).format(rgame.app_title, rgame.version, rgame.remote_version),
-                )
-                == QMessageBox.StandardButton.Yes
+            mbox = QMessageBox.question(
+                self,
+                self.tr("Repair and update? - {}").format(self.rgame.app_title),
+                self.tr(
+                    "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. Do you want to update the game while repairing it?"
+                ).format(rgame.app_title, rgame.version, rgame.remote_version),
             )
+            ans = (mbox == QMessageBox.StandardButton.Yes)
         rgame.repair(repair_and_update=ans)
 
     @Slot(RareGame, str)
@@ -220,37 +219,31 @@ class GameDetails(QWidget, SideTabContents):
         move_dialog.result_ready.connect(self.move_game)
         move_dialog.open()
 
-    def move_game(self, rgame: RareGame, model: MoveGameModel):
-        if not model.accepted:
+    def move_game(self, rgame: RareGame, options: MoveGameModel):
+        if not options.accepted:
             return
 
-        new_install_path = os.path.join(model.target_path, os.path.basename(self.rgame.install_path))
-        dir_exists = False
+        new_install_path = options.full_path
         if os.path.isdir(new_install_path):
-            dir_exists = MoveInfoWorker.is_game_dir(self.rgame.install_path, new_install_path)
+            options.dst_exists = MoveInfoWorker.is_game_dir(self.rgame.install_path, new_install_path)
 
-        if not dir_exists:
-            for item in os.listdir(model.target_path):
-                if os.path.basename(self.rgame.install_path) in os.path.basename(item):
-                    ans = QMessageBox.question(
-                        self,
-                        self.tr("Move game? - {}").format(self.rgame.app_title),
-                        self.tr("Destination <b>{}</b> already exists. Are you sure you want to overwrite it?").format(
-                            new_install_path
-                        ),
-                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                        QMessageBox.StandardButton.Yes,
-                    )
+        if not options.dst_exists and options.target_name in os.listdir(options.target_path):
+            ans = QMessageBox.question(
+                self,
+                self.tr("Move game? - {}").format(self.rgame.app_title),
+                self.tr("Destination <b>{}</b> already exists. Are you sure you want to overwrite it?").format(
+                    new_install_path
+                ),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.Yes,
+            )
 
-                    if ans == QMessageBox.StandardButton.Yes:
-                        if os.path.isdir(new_install_path):
-                            shutil.rmtree(new_install_path)
-                        else:
-                            os.remove(new_install_path)
-                    else:
-                        return
+            if ans == QMessageBox.StandardButton.Yes:
+                options.dst_delete = True
+            else:
+                return
 
-        worker = MoveWorker(self.core, rgame=rgame, dst_path=model.target_path, dst_exists=dir_exists)
+        worker = MoveWorker(self.core, rgame=rgame, options=options)
         worker.signals.progress.connect(self.__on_move_progress)
         worker.signals.result.connect(self.__on_move_result)
         worker.signals.error.connect(self.__on_worker_error)
@@ -294,13 +287,15 @@ class GameDetails(QWidget, SideTabContents):
 
     def showEvent(self, event: QShowEvent):
         if event.spontaneous():
-            return super().showEvent(event)
+            super().showEvent(event)
+            return
         self.__update_widget()
         super().showEvent(event)
 
     def hideEvent(self, event: QHideEvent):
         if event.spontaneous():
-            return super().hideEvent(event)
+            super().hideEvent(event)
+            return
         self.rcore.signals().application.update_game_tags.emit()
         super().hideEvent(event)
 

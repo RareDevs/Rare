@@ -33,7 +33,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install patchelf fakeroot
-          pip3 install --upgrade "git+https://github.com/marcelotduarte/cx_Freeze.git@refs/pull/3166/head"
+          pip3 install --upgrade git+https://github.com/marcelotduarte/cx_Freeze.git
           pip3 install --upgrade ruff
       - name: Install target dependencies
         run: |
