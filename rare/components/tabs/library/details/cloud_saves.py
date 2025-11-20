@@ -34,12 +34,11 @@ from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 from rare.widgets.loading_widget import LoadingWidget
 from rare.widgets.side_tab import SideTabContents
 
-logger = getLogger("CloudSaves")
-
 
 class CloudSaves(QWidget, SideTabContents):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(CloudSaves, self).__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
 
         self.sync_widget = QWidget(self)
         self.sync_ui = Ui_CloudSyncWidget()
@@ -125,12 +124,12 @@ class CloudSaves(QWidget, SideTabContents):
     def __compute_save_path(self):
         if self.rgame.is_installed and self.rgame.game.supports_cloud_saves:
             try:
-                with timelogger(logger, "Detecting save path"):
+                with timelogger(self.logger, "Detecting save path"):
                     new_path = self.core.get_save_path(self.rgame.app_name)
                 if platform.system() != "Windows" and not os.path.exists(new_path):
                     raise ValueError(f'Path "{new_path}" does not exist.')
             except Exception as e:
-                logger.warning(str(e))
+                self.logger.warning(str(e))
                 resolver = WineSavePathResolver(self.core, self.rgame)
                 # if not resolver.environ.get("WINEPREFIX"):
                 #     del resolver
@@ -153,8 +152,8 @@ class CloudSaves(QWidget, SideTabContents):
 
     @Slot(str, str)
     def __on_wine_resolver_result(self, path, app_name):
-        logger.info("Wine resolver finished for %s", app_name)
-        logger.info("Computed save path: %s", path)
+        self.logger.info("Wine resolver finished for %s", app_name)
+        self.logger.info("Computed save path: %s", path)
         if app_name == self.rgame.app_name:
             self.cloud_save_path_edit.setDisabled(False)
             self.compute_save_path_button.setDisabled(False)
