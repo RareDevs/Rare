@@ -97,18 +97,20 @@ class MoveInfoWorker(Worker):
         return
 
 
+class MoveWorkerSignals(QObject):
+    # int: percentage, object: source size, object: dest size
+    progress = Signal(RareGame, int, object, object)
+    # str: destination path
+    result = Signal(RareGame, str)
+    # str: error message
+    error = Signal(RareGame, str)
+
+
 class MoveWorker(QueueWorker):
-    class Signals(QObject):
-        # int: percentage, object: source size, object: dest size
-        progress = Signal(RareGame, int, object, object)
-        # str: destination path
-        result = Signal(RareGame, str)
-        # str: error message
-        error = Signal(RareGame, str)
 
     def __init__(self, core: LegendaryCore, rgame: RareGame, options: MoveGameModel):
         super(MoveWorker, self).__init__()
-        self.signals = MoveWorker.Signals()
+        self.signals = MoveWorkerSignals()
         self.core = core
         self.rgame = rgame
         self.options: MoveGameModel = options

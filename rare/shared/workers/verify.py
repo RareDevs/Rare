@@ -12,18 +12,17 @@ from rare.models.game import RareGame
 from .worker import QueueWorker, QueueWorkerInfo
 
 
-class VerifyWorker(QueueWorker):
-    class Signals(QObject):
-        progress = Signal(RareGame, int, int, float, float)
-        result = Signal(RareGame, bool, int, int)
-        error = Signal(RareGame, str)
+class VerifyWorkerSignals(QObject):
+    progress = Signal(RareGame, int, int, float, float)
+    result = Signal(RareGame, bool, int, int)
+    error = Signal(RareGame, str)
 
-    # num: int = 0
-    # total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized
+
+class VerifyWorker(QueueWorker):
 
     def __init__(self, core: LegendaryCore, args: Namespace, rgame: RareGame):
         super(VerifyWorker, self).__init__()
-        self.signals = VerifyWorker.Signals()
+        self.signals = VerifyWorkerSignals()
         self.core = core
         self.args = args
         self.rgame = rgame
