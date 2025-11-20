@@ -27,6 +27,9 @@ class VerifyWorker(QueueWorker):
         self.args = args
         self.rgame = rgame
 
+        # set RareGame's state as soon as the worker is instantiated to avoid conflicts
+        self.rgame.state = RareGame.State.VERIFYING
+
     def __status_callback(self, num: int, total: int, percentage: float, speed: float):
         self.rgame.signals.progress.update.emit(num * 100 // total)
         self.signals.progress.emit(self.rgame, num, total, percentage, speed)
@@ -35,7 +38,7 @@ class VerifyWorker(QueueWorker):
         return QueueWorkerInfo(
             app_name=self.rgame.app_name,
             app_title=self.rgame.app_title,
-            worker_type="Verify",
+            type=type(self).__name__,
             state=self.state,
         )
 

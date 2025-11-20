@@ -24,10 +24,8 @@ from .workers import (
     EntitlementsWorker,
     FetchWorker,
     GamesDlcsWorker,
-    MoveWorker,
     OriginWineWorker,
     QueueWorker,
-    VerifyWorker,
 )
 from .workers.fetch import SteamAppIdsWorker
 from .workers.uninstall import uninstall_game
@@ -84,10 +82,6 @@ class RareCore(QObject):
         RareCore.__instance = self
 
     def enqueue_worker(self, rgame: RareGame, worker: QueueWorker):
-        if isinstance(worker, VerifyWorker):
-            rgame.state = RareGame.State.VERIFYING
-        if isinstance(worker, MoveWorker):
-            rgame.state = RareGame.State.MOVING
         rgame.set_worker(worker)
         worker.feedback.started.connect(self.__signals.application.update_statusbar)
         worker.feedback.finished.connect(lambda: rgame.set_worker(None))
@@ -119,9 +113,6 @@ class RareCore(QObject):
     @staticmethod
     def instance() -> "RareCore":
         raise RuntimeError("RareCore.instance() method is deprecated")
-        if RareCore.__instance is None:
-            raise RuntimeError("Uninitialized use of RareCore")
-        return RareCore.__instance
 
     def signals(self, init: bool = False) -> GlobalSignals:
         if self.__signals is None and not init:

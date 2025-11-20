@@ -57,7 +57,7 @@ class QueueWorkerState(IntEnum):
 class QueueWorkerInfo:
     app_name: str
     app_title: str
-    worker_type: str
+    type: str
     state: QueueWorkerState
     progress: int = 0
 

@@ -182,8 +182,8 @@ class RareWindow(QMainWindow):
         for info in self.rcore.queue_info():
             label = ElideLabel(info.app_title)
             label.setObjectName("QueueWorkerLabel")
-            label.setToolTip(f"<b>{info.worker_type}</b>: {info.app_title}")
-            label.setProperty("workerType", info.worker_type)
+            label.setToolTip(f"<b>{info.type}</b>: {info.app_title}")
+            label.setProperty("workertype", info.type)
             label.setFixedWidth(150)
             label.setContentsMargins(3, 0, 3, 0)
             if info.state == QueueWorkerState.ACTIVE:

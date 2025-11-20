@@ -130,6 +130,9 @@ class RareGame(RareGameSlim):
         return self.__worker
 
     def set_worker(self, worker: Optional[QRunnable]):
+        if self.__worker is not None:
+            self.logger.error("Game '%s' already has attached worker %s", self.__worker)
+            raise RuntimeError
         self.__worker = worker
         if worker is None:
             self.state = RareGame.State.IDLE
