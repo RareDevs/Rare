@@ -223,7 +223,7 @@ class GameDetails(QWidget, SideTabContents):
         if not options.accepted:
             return
 
-        new_install_path = options.install_path
+        new_install_path = options.full_path
         if os.path.isdir(new_install_path):
             options.dst_exists = MoveInfoWorker.is_game_dir(self.rgame.install_path, new_install_path)
 

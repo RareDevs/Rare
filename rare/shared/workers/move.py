@@ -1,6 +1,7 @@
 import os
 import shutil
 from enum import auto
+from os.path import exists
 from typing import Iterator
 
 from legendary.lfs.utils import validate_files
@@ -36,7 +37,7 @@ class MoveInfoWorker(Worker):
         self.rgame: RareGame = rgame
         self.installed_games: Iterator[RareGame] = igames
         self.target_path: str = options.target_path
-        self.full_path: str = options.install_path
+        self.full_path: str = options.target_path if options.rename_path else options.full_path
 
     @staticmethod
     def is_game_dir(src_path: str, dst_path: str):
@@ -112,8 +113,8 @@ class MoveWorker(QueueWorker):
         self.core = core
         self.rgame = rgame
         self.options: MoveGameModel = options
-        self.dst_path = options.install_path
-        self.dst_exists = options.dst_exists
+        self.dst_path: str = options.full_path
+        self.dst_exists: bool = options.dst_exists
 
     def worker_info(self) -> QueueWorkerInfo:
         return QueueWorkerInfo(
@@ -132,13 +133,16 @@ class MoveWorker(QueueWorker):
         self.rgame.signals.progress.start.emit()
 
         if self.options.dst_delete:
-            if os.path.isdir(self.options.install_path):
-                shutil.rmtree(self.options.install_path)
+            if os.path.isdir(self.options.full_path):
+                shutil.rmtree(self.options.full_path)
             else:
-                os.remove(self.options.install_path)
+                os.remove(self.options.full_path)
 
         if os.stat(self.rgame.install_path).st_dev == os.stat(os.path.dirname(self.dst_path)).st_dev:
-            shutil.move(self.rgame.install_path, self.dst_path)
+            os.makedirs(self.dst_path, exist_ok=True)
+            for src in os.listdir(self.rgame.install_path):
+                shutil.move(os.path.join(self.rgame.install_path, src), self.dst_path)
+            os.rmdir(self.rgame.install_path)
 
         elif not self.dst_exists:
             src_size = sum(

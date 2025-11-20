@@ -1,9 +1,8 @@
 import os
-from pathlib import Path
 from typing import Optional, Tuple, Union
 
-from PySide6.QtCore import QThreadPool, Signal, Slot
-from PySide6.QtGui import QShowEvent
+from PySide6.QtCore import QThreadPool, Signal, Slot, QSignalBlocker
+from PySide6.QtGui import QShowEvent, Qt
 from PySide6.QtWidgets import QFileDialog, QFormLayout, QLabel, QWidget
 
 from rare.models.game import RareGame
@@ -13,6 +12,7 @@ from rare.shared.workers.move import MoveInfoWorker, MovePathEditReasons
 from rare.ui.components.dialogs.move_dialog import Ui_MoveDialog
 from rare.utils.misc import format_size, qta_icon
 from rare.widgets.dialogs import ActionDialog, game_title
+from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 
@@ -35,14 +35,14 @@ class MoveDialog(ActionDialog):
         self.rcore = rcore
         self.core = rcore.core()
         self.rgame: Optional[RareGame] = rgame
-        self.options: MoveGameModel = MoveGameModel(rgame.app_name)
-        self.options.target_path = os.path.dirname(rgame.install_path)
-        self.options.target_name = os.path.basename(rgame.install_path)
+        self.options: MoveGameModel = MoveGameModel(
+            rgame.app_name, rgame.install_path, rgame.folder_name
+        )
 
         self.target_path_edit = PathEdit(
             path=self.options.target_path,
             file_mode=QFileDialog.FileMode.Directory,
-            edit_func=self.__target_dir_edit_callback,
+            edit_func=self.__target_path_edit_callback,
             parent=self,
         )
         self.target_path_edit.reasons = {
@@ -53,12 +53,28 @@ class MoveDialog(ActionDialog):
             MovePathEditReasons.MOVEDIALOG_NESTED_DIR: self.tr("Game install directories cannot be nested."),
             MovePathEditReasons.MOVEDIALOG_NO_SPACE: self.tr("Not enough space available on drive."),
         }
-        self.target_path_edit.validationFinished.connect(self.__on_target_dir_validation)
+        self.target_path_edit.validationFinished.connect(self.__on_target_path_validation)
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.target_path_label)[0],
             QFormLayout.ItemRole.FieldRole,
             self.target_path_edit,
         )
+
+        self.dest_path_info = ElideLabel(parent=self)
+        font = self.font()
+        font.setItalic(True)
+        self.dest_path_info.setFont(font)
+        self.ui.main_layout.setWidget(
+            self.ui.main_layout.getWidgetPosition(self.ui.dest_path_label)[0],
+            QFormLayout.ItemRole.FieldRole,
+            self.dest_path_info,
+        )
+
+        self.ui.rename_path_check.setChecked(self.options.rename_path)
+        self.ui.rename_path_check.checkStateChanged.connect(self.__on_rename_path_changed)
+
+        self.ui.reset_name_check.setChecked(self.options.reset_name)
+        self.ui.reset_name_check.checkStateChanged.connect(self.__on_reset_name_changed)
 
         self.accept_button.setText(self.tr("Move"))
         self.accept_button.setIcon(qta_icon("mdi.folder-move-outline"))
@@ -98,8 +114,24 @@ class MoveDialog(ActionDialog):
         self.options.accepted = False
         self.options.target_path = ""
 
+    @Slot(Qt.CheckState)
+    def __on_rename_path_changed(self, state: Qt.CheckState):
+        self.options.rename_path = (state == Qt.CheckState.Checked)
+        self.dest_path_info.setText(self.options.full_path)
+        _ = QSignalBlocker(self.ui.reset_name_check)
+        self.ui.reset_name_check.setChecked(self.options.reset_name)
+        self.action_button.setEnabled(True)
+
+    @Slot(Qt.CheckState)
+    def __on_reset_name_changed(self, state: Qt.CheckState):
+        self.options.reset_name = (state == Qt.CheckState.Checked)
+        self.dest_path_info.setText(self.options.full_path)
+        _ = QSignalBlocker(self.ui.rename_path_check)
+        self.ui.rename_path_check.setChecked(self.options.rename_path)
+        self.action_button.setEnabled(True)
+
     @staticmethod
-    def __target_dir_edit_callback(path: str) -> Tuple[bool, str, int]:
+    def __target_path_edit_callback(path: str) -> Tuple[bool, str, int]:
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:
@@ -124,9 +156,9 @@ class MoveDialog(ActionDialog):
         self.set_error_labels(error, reason)
 
     @Slot(bool, str)
-    def __on_target_dir_validation(self, is_valid: bool, reason: str):
-        path = Path(self.target_path_edit.text())
-        self.ui.install_path_info.setText(str(path.joinpath(self.options.target_name)))
+    def __on_target_path_validation(self, is_valid: bool, reason: str):
+        self.options.target_path = self.target_path_edit.text()
+        self.dest_path_info.setText(self.options.full_path)
         self.action_button.setEnabled(is_valid and not self.active())
         self.accept_button.setEnabled(False)
         error, reason = (self.tr("Error"), reason) if not is_valid else ("", "")
