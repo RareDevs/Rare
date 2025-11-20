@@ -51,6 +51,7 @@ style.QLabel["#InfoLabel"].setValues(
 
 verify_color = QColor("#d6af57")
 move_color = QColor("#41cad9")
+cloud_sync_color = QColor("#dbd3d1")
 
 
 # [Un]InstallButton
@@ -115,6 +116,12 @@ style.QLabel["#QueueWorkerLabel"][f'[workertype="{widget_object_name(MoveWorker,
     backgroundColor=move_color.darker(400).name(),
 )
 
+from rare.shared.workers.cloud_sync import CloudSyncWorker  # noqa: E402
+
+style.QLabel["#QueueWorkerLabel"][f'[workertype="{widget_object_name(CloudSyncWorker, "")}"]'].setValues(
+    borderColor=cloud_sync_color.darker(200).name(),
+    backgroundColor=cloud_sync_color.darker(400).name(),
+)
 
 # ProgressLabel
 from rare.components.tabs.library.widgets.library_widget import ProgressLabel  # noqa: E402

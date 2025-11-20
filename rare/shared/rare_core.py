@@ -21,11 +21,14 @@ from rare.utils.metrics import timelogger
 
 from .image_manager import ImageManager
 from .workers import (
+    CloudSyncWorker,
     EntitlementsWorker,
     FetchWorker,
     GamesDlcsWorker,
+    MoveWorker,
     OriginWineWorker,
     QueueWorker,
+    VerifyWorker,
 )
 from .workers.fetch import SteamAppIdsWorker
 from .workers.uninstall import uninstall_game
@@ -65,9 +68,12 @@ class RareCore(QObject):
         self.image_manager(init=True)
         self.__wrappers = Wrappers()
 
-        self.queue_workers: List[QueueWorker] = []
-        self.queue_threadpool = QThreadPool()
-        self.queue_threadpool.setMaxThreadCount(2)
+        self.workers_disk: List[QueueWorker] = []
+        self.threadpool_disk = QThreadPool()
+        self.threadpool_disk.setMaxThreadCount(2)
+        self.workers_net: List[QueueWorker] = []
+        self.threadpool_net = QThreadPool()
+        self.threadpool_net.setMaxThreadCount(2)
 
         self.__library: Dict[str, RareGame] = {}
         self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp)
@@ -85,29 +91,43 @@ class RareCore(QObject):
         rgame.set_worker(worker)
         worker.feedback.started.connect(self.__signals.application.update_statusbar)
         worker.feedback.finished.connect(lambda: rgame.set_worker(None))
-        worker.feedback.finished.connect(lambda: self.queue_workers.remove(worker))
-        worker.feedback.finished.connect(self.__signals.application.update_statusbar)
-        self.queue_workers.append(worker)
-        self.queue_threadpool.start(worker, priority=0)
+        # signals are serviced in the order they are connected, so we have to
+        # connect the signal to update the statusbar after the one to remove the worker
+        # from the corresponding list
+        if isinstance(worker, CloudSyncWorker):
+            worker.feedback.finished.connect(lambda: self.workers_net.remove(worker))
+            worker.feedback.finished.connect(self.__signals.application.update_statusbar)
+            self.workers_net.append(worker)
+            self.threadpool_net.start(worker, priority=0)
+        elif isinstance(worker, (VerifyWorker, MoveWorker)):
+            worker.feedback.finished.connect(lambda: self.workers_disk.remove(worker))
+            worker.feedback.finished.connect(self.__signals.application.update_statusbar)
+            self.workers_disk.append(worker)
+            self.threadpool_disk.start(worker, priority=0)
+        else:
+            raise RuntimeError(f"Cannot enqueue unkown worker type {type(worker).__name__}")
         self.__signals.application.update_statusbar.emit()
 
     def dequeue_worker(self, worker: QueueWorker):
         rgame = self.__library[worker.worker_info().app_name]
         rgame.set_worker(None)
-        self.queue_workers.remove(worker)
+        if worker in self.threadpool_disk:
+            self.workers_disk.remove(worker)
+        if worker in self.threadpool_net:
+            self.workers_net.remove(worker)
         self.__signals.application.update_statusbar.emit()
 
     def active_workers(self) -> Iterable[QueueWorker]:
         # return list(filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers))
-        yield from filter(lambda w: w.state == QueueWorkerState.ACTIVE, self.queue_workers)
+        yield from filter(lambda w: w.state == QueueWorkerState.ACTIVE, (*self.workers_disk, *self.workers_net))
 
     def queued_workers(self) -> Iterable[QueueWorker]:
         # return list(filter(lambda w: w.state == QueueWorkerState.QUEUED, self.queue_workers))
-        yield from filter(lambda w: w.state == QueueWorkerState.QUEUED, self.queue_workers)
+        yield from filter(lambda w: w.state == QueueWorkerState.QUEUED, (*self.workers_disk, *self.workers_net))
 
     def queue_info(self) -> Iterable[QueueWorkerInfo]:
         # return (w.worker_info() for w in self.queue_workers)
-        for w in self.queue_workers:
+        for w in (*self.workers_disk, *self.workers_net):
             yield w.worker_info()
 
     @staticmethod

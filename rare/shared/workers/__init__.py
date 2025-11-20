@@ -1,3 +1,4 @@
+from .cloud_sync import CloudSyncWorker
 from .fetch import EntitlementsWorker, FetchWorker, GamesDlcsWorker
 from .install import InstallInfoWorker
 from .move import MoveInfoWorker, MoveWorker
@@ -7,6 +8,7 @@ from .wine_resolver import OriginWineWorker
 from .worker import QueueWorker, Worker
 
 __all__ = [
+    "CloudSyncWorker",
     "EntitlementsWorker",
     "FetchWorker",
     "GamesDlcsWorker",

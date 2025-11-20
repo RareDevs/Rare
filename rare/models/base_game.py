@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame, SaveGameFile, SaveGameStatus
 from legendary.utils.selective_dl import get_sdl_appname
-from PySide6.QtCore import QObject, QRunnable, QThreadPool, Signal
+from PySide6.QtCore import QObject, Signal
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
@@ -265,55 +265,49 @@ class RareGameSlim(RareGameBase):
             return latest.status, (latest.dt_local, latest.dt_remote)
         return SaveGameStatus.NO_SAVE, (None, None)
 
-    def upload_saves(self, thread=True):
+    def upload_saves(self):
         if not self.supports_cloud_saves:
             return
         if self.state == RareGameSlim.State.SYNCING:
-            self.logger.error(f"{self.app_title} is already syncing")
+            self.logger.error("Game '%s'is already syncing", self.app_title)
             return
+        self.state = RareGameSlim.State.SYNCING
 
         status, (dt_local, dt_remote) = self.save_game_state
         if status == SaveGameStatus.NO_SAVE or not dt_local:
-            self.logger.warning("Can't upload non existing save")
+            self.logger.warning("Can't upload missing save")
+            self.state = RareGameSlim.State.IDLE
             return
 
         def _upload():
-            self.logger.info(f"Uploading save for {self.app_title}")
-            self.state = RareGameSlim.State.SYNCING
+            self.logger.info("Uploading save for '%s'", self.app_title)
             self.core.upload_save(self.app_name, self.igame.save_path, dt_local)
-            self.state = RareGameSlim.State.IDLE
             self.update_saves()
 
-        if thread:
-            worker = QRunnable.create(_upload)
-            QThreadPool.globalInstance().start(worker)
-        else:
-            _upload()
+        _upload()
+        self.state = RareGameSlim.State.IDLE
 
-    def download_saves(self, thread=True):
+    def download_saves(self):
         if not self.supports_cloud_saves:
             return
         if self.state == RareGameSlim.State.SYNCING:
-            self.logger.error(f"{self.app_title} is already syncing")
+            self.logger.error("Game '%s'is already syncing", self.app_title)
             return
+        self.state = RareGameSlim.State.SYNCING
 
         status, (dt_local, dt_remote) = self.save_game_state
         if status == SaveGameStatus.NO_SAVE or not dt_remote:
-            self.logger.error("Can't download non existing save")
+            self.logger.error("Can't download missing save")
+            self.state = RareGameSlim.State.IDLE
             return
 
         def _download():
-            self.logger.info(f"Downloading save for {self.app_title}")
-            self.state = RareGameSlim.State.SYNCING
+            self.logger.info("Downloading save for '%s'", self.app_title)
             self.core.download_saves(self.app_name, self.latest_save.file.manifest_name, self.save_path)
-            self.state = RareGameSlim.State.IDLE
             self.update_saves()
 
-        if thread:
-            worker = QRunnable.create(_download)
-            QThreadPool.globalInstance().start(worker)
-        else:
-            _download()
+        _download()
+        self.state = RareGameSlim.State.IDLE
 
     def load_saves(self, saves: List[SaveGameFile]):
         """Use only in a thread"""
