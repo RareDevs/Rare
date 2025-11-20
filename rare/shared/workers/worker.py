@@ -58,6 +58,7 @@ class QueueWorkerInfo:
     app_name: str
     app_title: str
     type: str
+    prefix: str
     state: QueueWorkerState
     progress: int = 0
 
