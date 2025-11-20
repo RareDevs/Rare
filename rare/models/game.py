@@ -3,7 +3,6 @@ import os
 import platform
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from logging import getLogger
 from threading import Lock
 from typing import Dict, List, Optional, Set, Tuple
 
@@ -23,8 +22,6 @@ from rare.utils import config_helper as config
 from rare.utils.paths import compat_shaders_dir, data_dir, get_rare_executable
 from rare.utils.steam_grades import get_rating
 from rare.utils.workarounds import apply_workarounds
-
-logger = getLogger("RareGame")
 
 
 class RareGame(RareGameSlim):
@@ -102,7 +99,7 @@ class RareGame(RareGameSlim):
         self.owned_dlcs: Set[RareGame] = set()
 
         if self.has_update:
-            logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
+            self.logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
 
         self.__worker: Optional[QRunnable] = None
         self.progress: int = 0
@@ -158,8 +155,7 @@ class RareGame(RareGameSlim):
     __metadata_json: Optional[Dict] = None
     __metadata_lock: Lock = Lock()
 
-    @staticmethod
-    def __load_metadata_json() -> Optional[Dict]:
+    def __load_metadata_json(self) -> Optional[Dict]:
         if RareGame.__metadata_json is None:
             metadata = {}
             file = os.path.join(data_dir(), "game_meta.json")
@@ -167,9 +163,9 @@ class RareGame(RareGameSlim):
                 with open(file, "r", encoding="utf-8") as f:
                     metadata = json.load(f)
             except FileNotFoundError:
-                logger.info("%s does not exist", file)
+                self.logger.info("%s does not exist", file)
             except json.JSONDecodeError:
-                logger.warning("%s is corrupt", file)
+                self.logger.warning("%s is corrupt", file)
             finally:
                 RareGame.__metadata_json = metadata
         return RareGame.__metadata_json
@@ -273,7 +269,7 @@ class RareGame(RareGameSlim):
                 if self.remote_version != self.igame.version:
                     return True
             except ValueError:
-                logger.error(f"Asset error for {self.game.app_title}")
+                self.logger.error(f"Asset error for {self.game.app_title}")
                 return False
         return False
 
@@ -347,7 +343,7 @@ class RareGame(RareGameSlim):
                 _ = self.core.get_asset(self.game.app_name, platform=self.igame.platform).build_version
                 ret = False
         except ValueError:
-            logger.warning(f"Game {self.game.app_title} has no metadata. Set offline true")
+            self.logger.warning(f"Game {self.game.app_title} has no metadata. Set offline true")
         except AttributeError:
             ret = False
         return ret
@@ -477,7 +473,7 @@ class RareGame(RareGameSlim):
             return "pending"
         elapsed_time = abs(datetime.now(timezone.utc) - self.metadata.steam_date)
         if elapsed_time.days > 3:
-            logger.info("Refreshing ProtonDB grade for %s", self.app_title)
+            self.logger.info("Refreshing ProtonDB grade for %s", self.app_title)
             worker = QRunnable.create(self.set_steam_grade)
             self.__steam_grade_pending = True
             QThreadPool.globalInstance().start(worker)
@@ -498,7 +494,7 @@ class RareGame(RareGameSlim):
         if not (entitlements := self.core.lgd.entitlements):
             return self.metadata.grant_date
         if self.metadata.grant_date == datetime.min.replace(tzinfo=timezone.utc) or force:
-            logger.info("Grant date for %s not found in metadata, resolving", self.app_name)
+            self.logger.info("Grant date for %s not found in metadata, resolving", self.app_name)
             matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
             entitlement = next(matching, None)
             grant_date = (
@@ -517,7 +513,7 @@ class RareGame(RareGameSlim):
     @tags.setter
     def tags(self, tags: Tuple[str, ...]) -> None:
         self.metadata.tags = tuple(tag for tag in map(lambda x: x.lower().strip(), tags) if bool(tag))
-        logger.debug(f"Saving tags for {self.game.app_title}: {self.metadata.tags}")
+        self.logger.debug(f"Saving tags for {self.game.app_title}: {self.metadata.tags}")
         self.__save_metadata()
 
     def set_origin_attributes(self, path: str, size: int = 0) -> None:
@@ -633,7 +629,7 @@ class RareGame(RareGameSlim):
             config.remove_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH")
         config.save_config()
 
-        logger.info(f"Starting game process: ({executable} {' '.join(args)})")
+        self.logger.info(f"Starting game process: ({executable} {' '.join(args)})")
         proc = QProcess()
         proc.setProgram(executable)
         proc.setArguments(args)
@@ -670,7 +666,7 @@ class RareEosOverlay(RareGameBase):
         try:
             reg_paths = eos.query_registry_entries(prefix)
         except ValueError as e:
-            logger.info("%s %s", e, prefix)
+            self.logger.info("%s %s", e, prefix)
             return False
         return reg_paths["overlay_path"] and self.core.is_overlay_install(reg_paths["overlay_path"])
 
@@ -678,7 +674,7 @@ class RareEosOverlay(RareGameBase):
         try:
             path = eos.query_registry_entries(prefix)["overlay_path"]
         except ValueError as e:
-            logger.info("%s %s", e, prefix)
+            self.logger.info("%s %s", e, prefix)
             return ""
         return path if path and self.core.is_overlay_install(path) else ""
 
@@ -686,7 +682,7 @@ class RareEosOverlay(RareGameBase):
         try:
             installs = self.core.search_overlay_installs(prefix)
         except ValueError as e:
-            logger.info("%s %s", e, prefix)
+            self.logger.info("%s %s", e, prefix)
             return []
         return installs
 
@@ -701,29 +697,29 @@ class RareEosOverlay(RareGameBase):
         reg_paths = eos.query_registry_entries(prefix)
         if old_path := reg_paths["overlay_path"]:
             if os.path.normpath(old_path) == path:
-                logger.info("Overlay already enabled, nothing to do.")
+                self.logger.info("Overlay already enabled, nothing to do.")
                 return True
             else:
-                logger.info(f'Updating overlay registry entries from "{old_path}" to "{path}"')
+                self.logger.info(f'Updating overlay registry entries from "{old_path}" to "{path}"')
             eos.remove_registry_entries(prefix)
         try:
             eos.add_registry_entries(path, prefix)
         except PermissionError as e:
-            logger.error("Exception while writing registry to enable the overlay.")
-            logger.error(e)
+            self.logger.error("Exception while writing registry to enable the overlay.")
+            self.logger.error(e)
             return False
-        logger.info(f"Enabled overlay at: {path} for prefix: {prefix}")
+        self.logger.info(f"Enabled overlay at: {path} for prefix: {prefix}")
         return True
 
     def disable(self, prefix: Optional[str] = None) -> bool:
         if not self.is_enabled(prefix):
             return False
-        logger.info(f"Disabling overlay (removing registry keys) for prefix: {prefix}")
+        self.logger.info(f"Disabling overlay (removing registry keys) for prefix: {prefix}")
         try:
             eos.remove_registry_entries(prefix)
         except PermissionError as e:
-            logger.error("Exception while writing registry to disable the overlay.")
-            logger.error(e)
+            self.logger.error("Exception while writing registry to disable the overlay.")
+            self.logger.error(e)
             return False
         return True
 

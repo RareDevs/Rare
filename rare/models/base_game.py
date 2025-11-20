@@ -14,8 +14,6 @@ from rare.lgndr.core import LegendaryCore
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.models.settings import RareAppSettings, app_settings
 
-logger = getLogger("RareGameBase")
-
 
 @dataclass
 class RareSaveGame:
@@ -78,6 +76,7 @@ class RareGameBase(QObject):
 
     def __init__(self, legendary_core: LegendaryCore, game: Game):
         super(RareGameBase, self).__init__()
+        self.logger = getLogger(type(self).__name__)
         self.signals = RareGameSignals()
         self.core = legendary_core
         self.game: Game = game
@@ -270,16 +269,16 @@ class RareGameSlim(RareGameBase):
         if not self.supports_cloud_saves:
             return
         if self.state == RareGameSlim.State.SYNCING:
-            logger.error(f"{self.app_title} is already syncing")
+            self.logger.error(f"{self.app_title} is already syncing")
             return
 
         status, (dt_local, dt_remote) = self.save_game_state
         if status == SaveGameStatus.NO_SAVE or not dt_local:
-            logger.warning("Can't upload non existing save")
+            self.logger.warning("Can't upload non existing save")
             return
 
         def _upload():
-            logger.info(f"Uploading save for {self.app_title}")
+            self.logger.info(f"Uploading save for {self.app_title}")
             self.state = RareGameSlim.State.SYNCING
             self.core.upload_save(self.app_name, self.igame.save_path, dt_local)
             self.state = RareGameSlim.State.IDLE
@@ -295,16 +294,16 @@ class RareGameSlim(RareGameBase):
         if not self.supports_cloud_saves:
             return
         if self.state == RareGameSlim.State.SYNCING:
-            logger.error(f"{self.app_title} is already syncing")
+            self.logger.error(f"{self.app_title} is already syncing")
             return
 
         status, (dt_local, dt_remote) = self.save_game_state
         if status == SaveGameStatus.NO_SAVE or not dt_remote:
-            logger.error("Can't download non existing save")
+            self.logger.error("Can't download non existing save")
             return
 
         def _download():
-            logger.info(f"Downloading save for {self.app_title}")
+            self.logger.info(f"Downloading save for {self.app_title}")
             self.state = RareGameSlim.State.SYNCING
             self.core.download_saves(self.app_name, self.latest_save.file.manifest_name, self.save_path)
             self.state = RareGameSlim.State.IDLE
