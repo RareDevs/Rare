@@ -81,13 +81,17 @@ QLabel#QueueWorkerLabel {
     border-style: solid;
     border-radius: 3px;
 }
-QLabel#QueueWorkerLabel[workerType="Verify"] {
+QLabel#QueueWorkerLabel[workertype="VerifyWorker"] {
     border-color: #6b572c;
     background-color: #352c16;
 }
-QLabel#QueueWorkerLabel[workerType="Move"] {
+QLabel#QueueWorkerLabel[workertype="MoveWorker"] {
     border-color: #20656c;
     background-color: #103236;
+}
+QLabel#QueueWorkerLabel[workertype="CloudSyncWorker"] {
+    border-color: #6d6968;
+    background-color: #373534;
 }
 QLabel#ProgressLabel {
     border-width: 1px;

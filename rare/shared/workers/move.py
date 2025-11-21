@@ -97,29 +97,35 @@ class MoveInfoWorker(Worker):
         return
 
 
+class MoveWorkerSignals(QObject):
+    # int: percentage, object: source size, object: dest size
+    progress = Signal(RareGame, int, object, object)
+    # str: destination path
+    result = Signal(RareGame, str)
+    # str: error message
+    error = Signal(RareGame, str)
+
+
 class MoveWorker(QueueWorker):
-    class Signals(QObject):
-        # int: percentage, object: source size, object: dest size
-        progress = Signal(RareGame, int, object, object)
-        # str: destination path
-        result = Signal(RareGame, str)
-        # str: error message
-        error = Signal(RareGame, str)
 
     def __init__(self, core: LegendaryCore, rgame: RareGame, options: MoveGameModel):
         super(MoveWorker, self).__init__()
-        self.signals = MoveWorker.Signals()
+        self.signals = MoveWorkerSignals()
         self.core = core
         self.rgame = rgame
         self.options: MoveGameModel = options
         self.dst_path: str = options.full_path
         self.dst_exists: bool = options.dst_exists
 
+        # set RareGame's state as soon as the worker is instantiated to avoid conflicts
+        self.rgame.state = RareGame.State.MOVING
+
     def worker_info(self) -> QueueWorkerInfo:
         return QueueWorkerInfo(
             app_name=self.rgame.app_name,
             app_title=self.rgame.app_title,
-            worker_type="Move",
+            type=type(self).__name__,
+            prefix="Moving",
             state=self.state,
         )
 

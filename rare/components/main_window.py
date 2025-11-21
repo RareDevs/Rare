@@ -180,11 +180,11 @@ class RareWindow(QMainWindow):
             self.queued_container.layout().removeWidget(label)
             label.deleteLater()
         for info in self.rcore.queue_info():
-            label = ElideLabel(info.app_title)
+            label = ElideLabel(f"{info.prefix} {info.app_title}")
             label.setObjectName("QueueWorkerLabel")
-            label.setToolTip(f"<b>{info.worker_type}</b>: {info.app_title}")
-            label.setProperty("workerType", info.worker_type)
-            label.setFixedWidth(150)
+            label.setToolTip(f"<b>{info.prefix}</b>: {info.app_title}")
+            label.setProperty("workertype", info.type)
+            label.setFixedWidth(160)
             label.setContentsMargins(3, 0, 3, 0)
             if info.state == QueueWorkerState.ACTIVE:
                 self.active_container.layout().addWidget(label)
@@ -225,7 +225,7 @@ class RareWindow(QMainWindow):
                 return
 
         # FIXME: Move this to RareCore once the download manager is implemented
-        if self.rcore.queue_threadpool.activeThreadCount():
+        if self.rcore.threadpool_disk.activeThreadCount() or self.rcore.threadpool_net.activeThreadCount():
             reply = QMessageBox.question(
                 self,
                 self.tr("Quit {}?").format(QApplication.applicationName()),
@@ -236,7 +236,8 @@ class RareWindow(QMainWindow):
                 defaultButton=QMessageBox.StandardButton.No,
             )
             if reply == QMessageBox.StandardButton.Yes:
-                self.rcore.queue_threadpool.clear()
+                self.rcore.threadpool_disk.clear()
+                self.rcore.threadpool_net.clear()
                 for qw in self.rcore.queued_workers():
                     self.rcore.dequeue_worker(qw)
                 self.update_statusbar()

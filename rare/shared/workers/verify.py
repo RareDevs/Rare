@@ -12,21 +12,23 @@ from rare.models.game import RareGame
 from .worker import QueueWorker, QueueWorkerInfo
 
 
-class VerifyWorker(QueueWorker):
-    class Signals(QObject):
-        progress = Signal(RareGame, int, int, float, float)
-        result = Signal(RareGame, bool, int, int)
-        error = Signal(RareGame, str)
+class VerifyWorkerSignals(QObject):
+    progress = Signal(RareGame, int, int, float, float)
+    result = Signal(RareGame, bool, int, int)
+    error = Signal(RareGame, str)
 
-    # num: int = 0
-    # total: int = 1  # set default to 1 to avoid DivisionByZero before it is initialized
+
+class VerifyWorker(QueueWorker):
 
     def __init__(self, core: LegendaryCore, args: Namespace, rgame: RareGame):
         super(VerifyWorker, self).__init__()
-        self.signals = VerifyWorker.Signals()
+        self.signals = VerifyWorkerSignals()
         self.core = core
         self.args = args
         self.rgame = rgame
+
+        # set RareGame's state as soon as the worker is instantiated to avoid conflicts
+        self.rgame.state = RareGame.State.VERIFYING
 
     def __status_callback(self, num: int, total: int, percentage: float, speed: float):
         self.rgame.signals.progress.update.emit(num * 100 // total)
@@ -36,7 +38,8 @@ class VerifyWorker(QueueWorker):
         return QueueWorkerInfo(
             app_name=self.rgame.app_name,
             app_title=self.rgame.app_title,
-            worker_type="Verify",
+            type=type(self).__name__,
+            prefix="Verifying",
             state=self.state,
         )
 

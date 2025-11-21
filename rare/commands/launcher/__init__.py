@@ -12,8 +12,6 @@ from typing import Optional
 
 import shiboken6
 from legendary.models.game import SaveGameStatus
-
-# from PySide6.import sip
 from PySide6.QtCore import (
     QMetaMethod,
     QObject,
@@ -33,6 +31,7 @@ from PySide6.QtWidgets import QApplication
 from rare.lgndr.core import LegendaryCore
 from rare.models.base_game import RareGameSlim
 from rare.models.launcher import Actions, BaseModel, ErrorModel, FinishedModel, StateChangedModel
+from rare.shared.workers.cloud_sync import CloudSyncWorker
 from rare.utils.paths import get_rare_executable
 from rare.widgets.rare_app import RareApp, RareAppException
 
@@ -69,9 +68,9 @@ class PreLaunch(QRunnable):
     def run(self) -> None:
         self.logger.info(f"Sync action: {self.sync_action}")
         if self.sync_action == CloudSyncDialogResult.UPLOAD:
-            self.rgame.upload_saves(False)
+            self.rgame.upload_saves()
         elif self.sync_action == CloudSyncDialogResult.DOWNLOAD:
-            self.rgame.download_saves(False)
+            self.rgame.download_saves()
         else:
             self.logger.info("No sync action")
 
@@ -275,11 +274,15 @@ class RareLauncher(RareApp):
         if action == CloudSyncDialogResult.UPLOAD:
             if self.console:
                 self.console.log("Uploading saves...")
-            self.rgame.upload_saves()
+            worker = CloudSyncWorker(self.rgame, CloudSyncWorker.Mode.UPLOAD)
+            QThreadPool.globalInstance().start(worker, priority=0)
+            QThreadPool.globalInstance().waitForDone()
         elif action == CloudSyncDialogResult.DOWNLOAD:
             if self.console:
                 self.console.log("Downloading saves...")
-            self.rgame.download_saves()
+            worker = CloudSyncWorker(self.rgame, CloudSyncWorker.Mode.DOWNLOAD)
+            QThreadPool.globalInstance().start(worker, priority=0)
+            QThreadPool.globalInstance().waitForDone()
         else:
             self.on_exit(exit_code)
 
@@ -475,6 +478,7 @@ class RareLauncher(RareApp):
         except (TypeError, RuntimeError) as e:
             self.logger.error("Failed to disconnect process signals: %s", e)
 
+        # FIXME: refactor to avoid this
         if shiboken6.isValid(self.game_process):  # pylint: disable=E1101
             if self.game_process.state() != QProcess.ProcessState.NotRunning:
                 if sig == signal.SIGTERM:
@@ -487,12 +491,14 @@ class RareLauncher(RareApp):
         else:
             exit_code = 0
 
-        self.logger.info("Stopping server %s", self.server.socketDescriptor())
-        try:
-            self.server.close()
-            self.server.deleteLater()
-        except RuntimeError as e:
-            self.logger.error("Error occurred while stopping server: %s", e)
+        # FIXME: refactor to avoid this
+        if shiboken6.isValid(self.server):  # pylint: disable=E1101
+            self.logger.info("Stopping server %s", self.server.socketDescriptor())
+            try:
+                self.server.close()
+                self.server.deleteLater()
+            except RuntimeError as e:
+                self.logger.error("Error occurred while stopping server: %s", e)
 
         self.processEvents()
         if not self.console:
