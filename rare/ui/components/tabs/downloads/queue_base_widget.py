@@ -3,14 +3,14 @@
 ################################################################################
 ## Form generated from reading UI file 'queue_base_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtWidgets import (QFrame, QHBoxLayout, QPushButton,
-    QSizePolicy, QVBoxLayout, QWidget)
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtWidgets import QFrame, QHBoxLayout, QPushButton, QSizePolicy, QVBoxLayout, QWidget
+
 
 class Ui_QueueBaseWidget(object):
     def setupUi(self, QueueBaseWidget):

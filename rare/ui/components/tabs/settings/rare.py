@@ -3,16 +3,27 @@
 ################################################################################
 ## Form generated from reading UI file 'rare.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFormLayout,
-    QGridLayout, QGroupBox, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout)
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFormLayout,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+)
+
 
 class Ui_RareSettings(object):
     def setupUi(self, RareSettings):
@@ -38,32 +49,32 @@ class Ui_RareSettings(object):
         self.lang_label = QLabel(self.interface_group)
         self.lang_label.setObjectName(u"lang_label")
 
-        self.interface_layout.setWidget(0, QFormLayout.LabelRole, self.lang_label)
+        self.interface_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.lang_label)
 
         self.lang_select = QComboBox(self.interface_group)
         self.lang_select.setObjectName(u"lang_select")
 
-        self.interface_layout.setWidget(0, QFormLayout.FieldRole, self.lang_select)
+        self.interface_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.lang_select)
 
         self.color_label = QLabel(self.interface_group)
         self.color_label.setObjectName(u"color_label")
 
-        self.interface_layout.setWidget(1, QFormLayout.LabelRole, self.color_label)
+        self.interface_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.color_label)
 
         self.color_select = QComboBox(self.interface_group)
         self.color_select.setObjectName(u"color_select")
 
-        self.interface_layout.setWidget(1, QFormLayout.FieldRole, self.color_select)
+        self.interface_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.color_select)
 
         self.style_label = QLabel(self.interface_group)
         self.style_label.setObjectName(u"style_label")
 
-        self.interface_layout.setWidget(2, QFormLayout.LabelRole, self.style_label)
+        self.interface_layout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.style_label)
 
         self.style_select = QComboBox(self.interface_group)
         self.style_select.setObjectName(u"style_select")
 
-        self.interface_layout.setWidget(2, QFormLayout.FieldRole, self.style_select)
+        self.interface_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.style_select)
 
         self.interface_info = QLabel(self.interface_group)
         self.interface_info.setObjectName(u"interface_info")
@@ -72,17 +83,17 @@ class Ui_RareSettings(object):
         self.interface_info.setFont(font)
         self.interface_info.setWordWrap(True)
 
-        self.interface_layout.setWidget(4, QFormLayout.SpanningRole, self.interface_info)
+        self.interface_layout.setWidget(4, QFormLayout.ItemRole.SpanningRole, self.interface_info)
 
         self.view_label = QLabel(self.interface_group)
         self.view_label.setObjectName(u"view_label")
 
-        self.interface_layout.setWidget(3, QFormLayout.LabelRole, self.view_label)
+        self.interface_layout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.view_label)
 
         self.view_combo = QComboBox(self.interface_group)
         self.view_combo.setObjectName(u"view_combo")
 
-        self.interface_layout.setWidget(3, QFormLayout.FieldRole, self.view_combo)
+        self.interface_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.view_combo)
 
 
         self.left_layout.addWidget(self.interface_group)

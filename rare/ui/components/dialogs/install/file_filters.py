@@ -8,49 +8,14 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (
-    QCoreApplication,
-    QDate,
-    QDateTime,
-    QLocale,
-    QMetaObject,
-    QObject,
-    QPoint,
-    QRect,
-    QSize,
-    Qt,
-    QTime,
-    QUrl,
-)
-from PySide6.QtGui import (
-    QBrush,
-    QColor,
-    QConicalGradient,
-    QCursor,
-    QFont,
-    QFontDatabase,
-    QGradient,
-    QIcon,
-    QImage,
-    QKeySequence,
-    QLinearGradient,
-    QPainter,
-    QPalette,
-    QPixmap,
-    QRadialGradient,
-    QTransform,
-)
+from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtWidgets import (
-    QApplication,
     QFormLayout,
     QFrame,
     QHBoxLayout,
     QLabel,
     QListWidget,
-    QListWidgetItem,
     QPushButton,
-    QSizePolicy,
-    QWidget,
 )
 
 
@@ -58,7 +23,7 @@ class Ui_InstallDialogFileFilters(object):
     def setupUi(self, InstallDialogFileFilters):
         if not InstallDialogFileFilters.objectName():
             InstallDialogFileFilters.setObjectName(u"InstallDialogFileFilters")
-        InstallDialogFileFilters.resize(517, 305)
+        InstallDialogFileFilters.resize(274, 246)
         InstallDialogFileFilters.setWindowTitle(u"InstallDialogFileFilters")
         self.main_layout = QFormLayout(InstallDialogFileFilters)
         self.main_layout.setObjectName(u"main_layout")

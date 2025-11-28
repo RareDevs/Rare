@@ -3,15 +3,15 @@
 ################################################################################
 ## Form generated from reading UI file 'landing_page.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QFormLayout, QLabel, QRadioButton,
-    QSizePolicy)
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QFormLayout, QLabel, QRadioButton, QSizePolicy
+
 
 class Ui_LandingPage(object):
     def setupUi(self, LandingPage):
@@ -37,7 +37,7 @@ class Ui_LandingPage(object):
         font.setBold(True)
         self.login_label.setFont(font)
 
-        self.main_layout.setWidget(0, QFormLayout.SpanningRole, self.login_label)
+        self.main_layout.setWidget(0, QFormLayout.ItemRole.SpanningRole, self.login_label)
 
         self.login_browser_radio = QRadioButton(LandingPage)
         self.login_browser_radio.setObjectName(u"login_browser_radio")
@@ -47,7 +47,7 @@ class Ui_LandingPage(object):
         sizePolicy1.setHeightForWidth(self.login_browser_radio.sizePolicy().hasHeightForWidth())
         self.login_browser_radio.setSizePolicy(sizePolicy1)
 
-        self.main_layout.setWidget(1, QFormLayout.LabelRole, self.login_browser_radio)
+        self.main_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.login_browser_radio)
 
         self.login_browser_label = QLabel(LandingPage)
         self.login_browser_label.setObjectName(u"login_browser_label")
@@ -55,20 +55,20 @@ class Ui_LandingPage(object):
         font1.setItalic(True)
         self.login_browser_label.setFont(font1)
 
-        self.main_layout.setWidget(1, QFormLayout.FieldRole, self.login_browser_label)
+        self.main_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.login_browser_label)
 
         self.login_import_radio = QRadioButton(LandingPage)
         self.login_import_radio.setObjectName(u"login_import_radio")
         sizePolicy1.setHeightForWidth(self.login_import_radio.sizePolicy().hasHeightForWidth())
         self.login_import_radio.setSizePolicy(sizePolicy1)
 
-        self.main_layout.setWidget(2, QFormLayout.LabelRole, self.login_import_radio)
+        self.main_layout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.login_import_radio)
 
         self.login_import_label = QLabel(LandingPage)
         self.login_import_label.setObjectName(u"login_import_label")
         self.login_import_label.setFont(font1)
 
-        self.main_layout.setWidget(2, QFormLayout.FieldRole, self.login_import_label)
+        self.main_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.login_import_label)
 
 
         self.retranslateUi(LandingPage)

@@ -3,15 +3,23 @@
 ################################################################################
 ## Form generated from reading UI file 'egl_sync_list_group.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication)
-from PySide6.QtWidgets import (QHBoxLayout, QLabel,
-    QListWidget, QPushButton, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget)
+from PySide6.QtCore import QCoreApplication
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
+)
+
 
 class Ui_EGLSyncListGroup(object):
     def setupUi(self, EGLSyncListGroup):

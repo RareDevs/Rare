@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'install_dialog.ui'
+## Form generated from reading UI file 'dialog.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFormLayout,
-    QFrame, QLabel, QSizePolicy)
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QFrame, QLabel, QSizePolicy
+
 
 class Ui_InstallDialog(object):
     def setupUi(self, InstallDialog):

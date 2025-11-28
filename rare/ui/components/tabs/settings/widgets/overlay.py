@@ -53,6 +53,7 @@ class Ui_OverlaySettings(object):
         self.current_value_info.setObjectName(u"current_value_info")
         self.current_value_info.setMinimumSize(QSize(1, 0))
         font = QFont()
+        font.setFamilies([u"Monospace"])
         self.current_value_info.setFont(font)
         self.current_value_info.setFrameShape(QFrame.Shape.StyledPanel)
         self.current_value_info.setFrameShadow(QFrame.Shadow.Sunken)

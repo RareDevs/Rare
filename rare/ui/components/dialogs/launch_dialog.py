@@ -3,14 +3,14 @@
 ################################################################################
 ## Form generated from reading UI file 'launch_dialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QSize)
-from PySide6.QtWidgets import (QLabel, QProgressBar,
-    QSizePolicy, QVBoxLayout)
+from PySide6.QtCore import QCoreApplication, QSize
+from PySide6.QtWidgets import QLabel, QProgressBar, QSizePolicy, QVBoxLayout
+
 
 class Ui_LaunchDialog(object):
     def setupUi(self, LaunchDialog):
