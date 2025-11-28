@@ -57,7 +57,7 @@ class LaunchSettingsBase(QGroupBox):
         self.main_layout = QFormLayout(self)
         self.main_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         self.main_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.main_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
+        self.main_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignVCenter)
 
         self.wrappers_widget = wrapper_widget(rcore, self)
 

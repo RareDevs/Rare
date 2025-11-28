@@ -57,7 +57,7 @@ class WineSettings(QGroupBox):
         layout.addRow(self.tr("Prefix"), self.wine_prefix_edit)
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignVCenter)
 
     def __update_widget(self):
         _ = QSignalBlocker(self.wine_prefix_edit)

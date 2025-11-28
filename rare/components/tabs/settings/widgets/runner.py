@@ -70,6 +70,9 @@ class RunnerSettingsBase(QGroupBox):
 
         self.form_layout = QFormLayout()
         self.form_layout.addRow(self.tr("Shader cache"), self.shader_cache_check)
+        self.form_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
+        self.form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self.form_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignVCenter)
         self.main_layout.addLayout(self.form_layout)
 
     @Slot(Qt.CheckState)

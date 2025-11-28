@@ -81,7 +81,7 @@ class ProtonSettings(QGroupBox):
         layout.addRow(self.tr("Compat folder"), folder_layout)
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop)
+        layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignVCenter)
         # layout.addRow(button_layout)
 
     def _get_compat_path(self, compat_location: CompatLocation):
