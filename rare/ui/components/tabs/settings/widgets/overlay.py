@@ -3,24 +3,26 @@
 ################################################################################
 ## Form generated from reading UI file 'overlay.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtWidgets import (QComboBox, QFormLayout, QGridLayout,
-    QGroupBox, QLabel, QSizePolicy, QSpacerItem)
+from PySide6.QtCore import QCoreApplication, QSize, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QComboBox, QFormLayout, QFrame, QGridLayout, QGroupBox, QLabel, QSizePolicy, QSpacerItem
+
 
 class Ui_OverlaySettings(object):
     def setupUi(self, OverlaySettings):
         if not OverlaySettings.objectName():
             OverlaySettings.setObjectName(u"OverlaySettings")
-        OverlaySettings.resize(555, 188)
+        OverlaySettings.resize(343, 119)
         OverlaySettings.setWindowTitle(u"OverlaySettings")
         OverlaySettings.setTitle(u"")
-        self.main_layout = QGridLayout(OverlaySettings)
+        self.main_layout = QFormLayout(OverlaySettings)
         self.main_layout.setObjectName(u"main_layout")
+        self.main_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.overlay_state_label = QLabel(OverlaySettings)
         self.overlay_state_label.setObjectName(u"overlay_state_label")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
@@ -28,8 +30,9 @@ class Ui_OverlaySettings(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.overlay_state_label.sizePolicy().hasHeightForWidth())
         self.overlay_state_label.setSizePolicy(sizePolicy)
+        self.overlay_state_label.setText(u"error")
 
-        self.main_layout.addWidget(self.overlay_state_label, 0, 0, 1, 1)
+        self.main_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.overlay_state_label)
 
         self.overlay_state_combo = QComboBox(OverlaySettings)
         self.overlay_state_combo.setObjectName(u"overlay_state_combo")
@@ -39,7 +42,26 @@ class Ui_OverlaySettings(object):
         sizePolicy1.setHeightForWidth(self.overlay_state_combo.sizePolicy().hasHeightForWidth())
         self.overlay_state_combo.setSizePolicy(sizePolicy1)
 
-        self.main_layout.addWidget(self.overlay_state_combo, 0, 1, 1, 2)
+        self.main_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.overlay_state_combo)
+
+        self.current_value_label = QLabel(OverlaySettings)
+        self.current_value_label.setObjectName(u"current_value_label")
+
+        self.main_layout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.current_value_label)
+
+        self.current_value_info = QLabel(OverlaySettings)
+        self.current_value_info.setObjectName(u"current_value_info")
+        self.current_value_info.setMinimumSize(QSize(1, 0))
+        font = QFont()
+        self.current_value_info.setFont(font)
+        self.current_value_info.setFrameShape(QFrame.Shape.StyledPanel)
+        self.current_value_info.setFrameShadow(QFrame.Shadow.Sunken)
+        self.current_value_info.setText(u"")
+        self.current_value_info.setTextFormat(Qt.TextFormat.PlainText)
+        self.current_value_info.setWordWrap(True)
+        self.current_value_info.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        self.main_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.current_value_info)
 
         self.options_group = QGroupBox(OverlaySettings)
         self.options_group.setObjectName(u"options_group")
@@ -62,14 +84,14 @@ class Ui_OverlaySettings(object):
         self.options_layout.addItem(self.hspacer, 0, 1, 2, 1)
 
 
-        self.main_layout.addWidget(self.options_group, 2, 0, 1, 3)
+        self.main_layout.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.options_group)
 
 
         self.retranslateUi(OverlaySettings)
     # setupUi
 
     def retranslateUi(self, OverlaySettings):
-        self.overlay_state_label.setText(QCoreApplication.translate("OverlaySettings", u"error", None))
+        self.current_value_label.setText(QCoreApplication.translate("OverlaySettings", u"Current", None))
         pass
     # retranslateUi
 

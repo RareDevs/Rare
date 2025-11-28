@@ -3,7 +3,7 @@ from enum import IntEnum
 from logging import getLogger
 from typing import Dict, List, Optional, Tuple, Union
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QDoubleValidator, QIntValidator, QShowEvent
 from PySide6.QtWidgets import QCheckBox, QComboBox, QGroupBox, QLineEdit
 
@@ -139,7 +139,8 @@ class OverlaySettings(QGroupBox):
         self.ui.overlay_state_combo.addItem(self.tr("Enabled (defaults)"), ActivationStates.DEFAULTS)
         self.ui.overlay_state_combo.addItem(self.tr("Enabled (custom)"), ActivationStates.CUSTOM)
 
-        self.envvar: Union[str, None] = None
+        self.control_key: Union[str, None] = None
+        self.config_key: Union[str, None] = None
         self.force_disabled: Union[str, None] = None
         self.force_defaults: Union[str, None] = None
         self.separator: Union[str, None] = None
@@ -150,19 +151,23 @@ class OverlaySettings(QGroupBox):
         # self.values: Dict[str, Union[OverlayLineEdit, OverlayComboBox]] = {}
 
         self.ui.options_group.setTitle(self.tr("Custom options"))
-        self.ui.overlay_state_combo.currentIndexChanged.connect(self.update_settings)
+        self.ui.overlay_state_combo.currentIndexChanged.connect(self.__update_settings)
+
+        self.environ_changed.connect(self.__update_current_value)
 
     def setupWidget(
         self,
         grid_map: List[OverlayCheckBox],
         form_map: List[Tuple[Union[OverlayLineEdit, OverlayComboBox], str]],
         label: str,
-        envvar: str,
+        control_key: str,
+        config_key: str,
         force_disabled: str,
         force_defaults: str,
         separator: str,
     ):
-        self.envvar = envvar
+        self.control_key = control_key
+        self.config_key = config_key
         self.force_disabled = force_disabled
         self.force_defaults = force_defaults
         self.separator = separator
@@ -174,43 +179,48 @@ class OverlaySettings(QGroupBox):
             self.ui.options_grid.addWidget(widget, i // 4, i % 4)
             # self.checkboxes[widget.option] = widget
             self.option_widgets.append(widget)
-            widget.stateChanged.connect(self.update_settings)
+            widget.stateChanged.connect(self.__update_settings)
 
         for widget, label in form_map:
             widget.setParent(self.ui.options_group)
             self.ui.options_form.addRow(label, widget)
             # self.values[widget.option] = widget
             self.option_widgets.append(widget)
-            widget.valueChanged.connect(self.update_settings)
+            widget.valueChanged.connect(self.__update_settings)
 
     @abstractmethod
     def update_settings_override(self, state: ActivationStates):
         raise NotImplementedError
 
-    def update_settings(self):
+    @Slot()
+    def __update_settings(self):
         current_state = self.ui.overlay_state_combo.currentData(Qt.ItemDataRole.UserRole)
         self.ui.options_group.setEnabled(current_state == ActivationStates.CUSTOM)
 
         if current_state == ActivationStates.GLOBAL:
             # System default (don't add any env variables)
-            config.remove_envvar(self.app_name, self.envvar)
+            config.remove_envvar(self.app_name, self.config_key)
 
         elif current_state == ActivationStates.DISABLED:
             # hidden
-            config.set_envvar(self.app_name, self.envvar, self.force_disabled)
+            config.set_envvar(self.app_name, self.config_key, self.force_disabled)
 
         elif current_state == ActivationStates.DEFAULTS:
-            config.set_envvar(self.app_name, self.envvar, self.force_defaults)
+            config.set_envvar(self.app_name, self.config_key, self.force_defaults)
 
         elif current_state == ActivationStates.CUSTOM:
             self.ui.options_group.setDisabled(False)
             # custom options
             options = (name for widget in self.option_widgets if (name := widget.getValue()) is not None)
 
-            config.set_envvar(self.app_name, self.envvar, self.separator.join(options))
+            config.set_envvar(self.app_name, self.config_key, self.separator.join(options))
 
-        self.environ_changed.emit(self.envvar)
+        self.environ_changed.emit(self.config_key)
         self.update_settings_override(current_state)
+
+    @Slot()
+    def __update_current_value(self):
+        self.ui.current_value_info.setText(config.get_envvar_with_global(self.app_name, self.config_key, ""))
 
     def setCurrentState(self, state: ActivationStates):
         self.ui.overlay_state_combo.setCurrentIndex(self.ui.overlay_state_combo.findData(state, Qt.ItemDataRole.UserRole))
@@ -221,9 +231,9 @@ class OverlaySettings(QGroupBox):
             return super().showEvent(a0)
         self.ui.options_group.blockSignals(True)
 
-        config_options = config.get_envvar(self.app_name, self.envvar, fallback=None)
+        config_options = config.get_envvar(self.app_name, self.config_key, fallback=None)
         if config_options is None:
-            logger.debug("Setting %s is not present", self.envvar)
+            logger.debug("Setting %s is not present", self.config_key)
             self.setCurrentState(ActivationStates.GLOBAL)
 
         elif config_options == self.force_disabled:
@@ -252,6 +262,7 @@ class OverlaySettings(QGroupBox):
                 )
 
         self.ui.options_group.blockSignals(False)
+        self.__update_current_value()
         return super().showEvent(a0)
 
 
@@ -280,7 +291,8 @@ class DxvkHudSettings(OverlaySettings):
             grid,
             form,
             label=self.tr("Show HUD"),
-            envvar="DXVK_HUD",
+            control_key="DXVK_HUD",
+            config_key="DXVK_HUD",
             force_disabled="0",
             force_defaults="1",
             separator=",",
@@ -338,7 +350,8 @@ class DxvkConfigSettings(OverlaySettings):
             grid,
             form,
             label=self.tr("Mode"),
-            envvar="DXVK_CONFIG",
+            control_key="DXVK_CONFIG",
+            config_key="DXVK_CONFIG",
             force_disabled="0",
             force_defaults="",
             separator=";",
@@ -399,7 +412,8 @@ class DxvkNvapiDrsSettings(OverlaySettings):
             grid,
             form,
             label=self.tr("Mode"),
-            envvar="DXVK_NVAPI_DRS_SETTINGS",
+            control_key="DXVK_NVAPI_DRS_SETTINGS",
+            config_key="DXVK_NVAPI_DRS_SETTINGS",
             force_disabled="0",
             force_defaults="",
             separator=",",
@@ -472,7 +486,8 @@ class MangoHudSettings(OverlaySettings):
             grid,
             form,
             label=self.tr("Show HUD"),
-            envvar="MANGOHUD_CONFIG",
+            control_key="MANGOHUD",
+            config_key="MANGOHUD_CONFIG",
             force_disabled="no_display",
             force_defaults="read_cfg",
             separator=",",
@@ -485,20 +500,16 @@ class MangoHudSettings(OverlaySettings):
         self.ui.options_group.blockSignals(False)
         return super().showEvent(a0)
 
-    def update_settings_override(self, state: IntEnum):  # pylint: disable=E0202
+    def update_settings_override(self, state: ActivationStates):  # pylint: disable=E0202
         if state == ActivationStates.GLOBAL:
-            config.remove_envvar(self.app_name, "MANGOHUD")
-
+            config.remove_envvar(self.app_name, self.control_key)
         elif state == ActivationStates.DISABLED:
-            config.set_envvar(self.app_name, "MANGOHUD", "0")
-
+            config.set_envvar(self.app_name, self.control_key, "0")
         elif state == ActivationStates.DEFAULTS:
-            config.set_envvar(self.app_name, "MANGOHUD", "1")
-
+            config.set_envvar(self.app_name, self.control_key, "1")
         elif state == ActivationStates.CUSTOM:
-            config.set_envvar(self.app_name, "MANGOHUD", "1")
-
-        self.environ_changed.emit("MANGOHUD")
+            config.set_envvar(self.app_name, self.control_key, "1")
+        self.environ_changed.emit(self.control_key)
 
 
 if __name__ == "__main__":
