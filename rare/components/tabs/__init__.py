@@ -8,6 +8,7 @@ from rare.utils.misc import ExitCodes, qta_icon
 
 from .account import AccountWidget
 from .downloads import DownloadsTab
+from .integrations import IntegrationsTab
 from .library import GamesLibrary
 from .settings import SettingsTab
 from .store import StoreTab
@@ -33,7 +34,12 @@ class MainTabWidget(QTabWidget):
 
         # Generate Tabs
         self.games_tab = GamesLibrary(self.settings, self.rcore, self)
+        self.games_tab.import_clicked.connect(self.show_import)
         self.games_index = self.addTab(self.games_tab, self.tr("Games"))
+
+        self.integrations_tab = IntegrationsTab(self.rcore, self)
+        self.integrations_tab.back_clicked.connect(lambda: self.setCurrentWidget(self.games_tab))
+        self.integrations_index = self.addTab(self.integrations_tab, self.tr("Integrations"))
 
         # Downloads Tab after Games Tab to use populated RareCore games list
         self.downloads_tab = DownloadsTab(self.settings, self.rcore, self)
@@ -79,6 +85,22 @@ class MainTabWidget(QTabWidget):
         QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
 
         self.setCurrentIndex(self.games_index)
+
+    @Slot()
+    @Slot(str)
+    def show_import(self, app_name: str = None):
+        self.setCurrentWidget(self.integrations_tab)
+        self.integrations_tab.show_import(app_name)
+
+    @Slot()
+    def show_egl_sync(self):
+        self.setCurrentWidget(self.integrations_tab)
+        self.integrations_tab.show_egl_sync()
+
+    @Slot()
+    def show_eos_ubisoft(self):
+        self.setCurrentWidget(self.integrations_tab)
+        self.integrations_tab.show_eos_ubisoft()
 
     @Slot(int)
     def __on_downloads_update_title(self, num_downloads: int):

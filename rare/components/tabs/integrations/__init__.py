@@ -12,9 +12,9 @@ from .import_group import ImportGroup
 from .ubisoft_group import UbisoftGroup
 
 
-class IntegrationsTabs(SideTabWidget):
+class IntegrationsTab(SideTabWidget):
     def __init__(self, rcore: RareCore, parent=None):
-        super(IntegrationsTabs, self).__init__(show_back=True, parent=parent)
+        super(IntegrationsTab, self).__init__(show_back=False, parent=parent)
         self.import_group = ImportGroup(rcore, self)
         self.import_widget = IntegrationsWidget(
             self.import_group,
