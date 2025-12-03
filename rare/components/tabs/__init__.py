@@ -98,9 +98,14 @@ class MainTabWidget(QTabWidget):
         self.integrations_tab.show_egl_sync()
 
     @Slot()
-    def show_eos_ubisoft(self):
+    def show_eos(self):
         self.setCurrentWidget(self.integrations_tab)
-        self.integrations_tab.show_eos_ubisoft()
+        self.integrations_tab.show_eos()
+
+    @Slot()
+    def show_ubisoft(self):
+        self.setCurrentWidget(self.integrations_tab)
+        self.integrations_tab.show_ubisoft()
 
     @Slot(int)
     def __on_downloads_update_title(self, num_downloads: int):

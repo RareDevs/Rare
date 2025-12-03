@@ -31,16 +31,21 @@ class IntegrationsTab(SideTabWidget):
         )
         self.egl_sync_index = self.addTab(self.egl_sync_widget, self.tr("Sync with EGL"))
 
-        self.eos_ubisoft = IntegrationsWidget(
-            None,
+        self.eos_group = EosGroup(rcore, self)
+        self.eos_widget = IntegrationsWidget(
+            self.eos_group,
             self.tr(""),
             self,
         )
-        self.eos_group = EosGroup(rcore, self.eos_ubisoft)
-        self.ubisoft_group = UbisoftGroup(rcore, self.eos_ubisoft)
-        self.eos_ubisoft.addWidget(self.eos_group)
-        self.eos_ubisoft.addWidget(self.ubisoft_group)
-        self.eos_ubisoft_index = self.addTab(self.eos_ubisoft, self.tr("Epic Overlay and Ubisoft"))
+        self.eos_index = self.addTab(self.eos_widget, self.tr("Epic Overlay"))
+
+        self.ubisoft_group = UbisoftGroup(rcore, self)
+        self.ubisoft_widget = IntegrationsWidget(
+            self.ubisoft_group,
+            self.tr(""),
+            self,
+        )
+        self.ubisoft_index = self.addTab(self.ubisoft_widget, self.tr("Ubisoft Link"))
 
         self.setCurrentIndex(self.import_index)
 
@@ -51,8 +56,11 @@ class IntegrationsTab(SideTabWidget):
     def show_egl_sync(self):
         self.setCurrentIndex(self.egl_sync_index)
 
-    def show_eos_ubisoft(self):
-        self.setCurrentIndex(self.eos_ubisoft_index)
+    def show_eos(self):
+        self.setCurrentIndex(self.eos_index)
+
+    def show_ubisoft(self):
+        self.setCurrentIndex(self.ubisoft_index)
 
 
 class IntegrationsWidget(QWidget):
