@@ -1,18 +1,17 @@
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShortcut
-from PySide6.QtWidgets import QMenu, QMessageBox, QTabWidget, QWidget, QWidgetAction
+from PySide6.QtWidgets import QMessageBox, QTabWidget, QWidget
 
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils.misc import ExitCodes, qta_icon
 
-from .account import AccountWidget
 from .downloads import DownloadsTab
 from .integrations import IntegrationsTab
 from .library import GamesLibrary
 from .settings import SettingsTab
 from .store import StoreTab
-from .tab_widgets import MainTabBar, TabButtonWidget
+from .tab_widgets import MainTabBar
 
 
 class MainTabWidget(QTabWidget):
@@ -35,6 +34,7 @@ class MainTabWidget(QTabWidget):
         # Generate Tabs
         self.games_tab = GamesLibrary(self.settings, self.rcore, self)
         self.games_tab.import_clicked.connect(self.show_import)
+        self.games_tab.exit_app.connect(self.__on_exit_app)
         self.games_index = self.addTab(self.games_tab, self.tr("Games"))
 
         self.integrations_tab = IntegrationsTab(self.rcore, self)
@@ -62,17 +62,6 @@ class MainTabWidget(QTabWidget):
         self.settings_tab = SettingsTab(settings, rcore, self)
         self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), "")
         self.settings_tab.about.update_available_ready.connect(lambda: self.tab_bar.setTabText(self.settings_index, "(!)"))
-
-        # Account Button
-        self.account_widget = AccountWidget(self.signals, self.core, self)
-        self.account_widget.exit_app.connect(self.__on_exit_app)
-        account_action = QWidgetAction(self)
-        account_action.setDefaultWidget(self.account_widget)
-        account_button = TabButtonWidget(qta_icon("mdi.account-circle", "fa5s.user"), tooltip="Menu")
-        account_menu = QMenu(account_button)
-        account_menu.addAction(account_action)
-        account_button.setMenu(account_menu)
-        self.tab_bar.setButton(account_button)
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)

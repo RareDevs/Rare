@@ -27,6 +27,7 @@ logger = getLogger("GamesLibrary")
 
 
 class GamesLibrary(QStackedWidget):
+    exit_app: Signal = Signal(int)
     # str: app_name
     import_clicked = Signal(str)
 
@@ -53,6 +54,7 @@ class GamesLibrary(QStackedWidget):
         # library_page_left_layout.addWidget(self.library_list)
 
         self.head_bar = LibraryHeadBar(settings, rcore, parent=self.library_page)
+        self.head_bar.exit_app.connect(self.exit_app)
         library_page_right_layout.addWidget(self.head_bar)
 
         self.details_page = GameDetailsTabs(settings, rcore, self)
