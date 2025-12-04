@@ -114,7 +114,6 @@ class GamesLibrary(QStackedWidget):
 
     def setup_game_list(self):
         for rgame in self.rcore.games:
-            # self.library_list.addItem(QListWidgetItem(QIcon(rgame.get_pixmap(ImageSize.Icon)), rgame.app_title))
             widget = self.add_library_widget(rgame)
             if not widget:
                 logger.warning("Excluding %s from the game list", rgame.app_title)

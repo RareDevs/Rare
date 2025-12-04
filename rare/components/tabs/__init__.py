@@ -29,8 +29,9 @@ class MainTabWidget(QTabWidget):
         self.signals = rcore.signals()
         self.args = rcore.args()
 
-        self.tab_bar = MainTabBar(parent=self)
-        self.setTabBar(self.tab_bar)
+        self.main_bar = MainTabBar(parent=self)
+        self.main_bar.installEventFilter(self)
+        self.setTabBar(self.main_bar)
 
         # Generate Tabs
         self.games_tab = GamesLibrary(self.settings, self.rcore, self)
@@ -52,11 +53,10 @@ class MainTabWidget(QTabWidget):
         # Space Tab
         space_index = self.addTab(QWidget(self), "Rare")
         self.setTabEnabled(space_index, False)
-        self.tab_bar.expanded_idx = space_index
+        self.main_bar.expanded_idx = space_index
 
         # Integrations Tab
         self.integrations_tab = IntegrationsTab(self.rcore, self)
-        self.integrations_tab.back_clicked.connect(lambda: self.setCurrentWidget(self.games_tab))
         self.integrations_index = self.addTab(self.integrations_tab, self.tr("Integrations"))
 
         # Account Tab
@@ -74,7 +74,7 @@ class MainTabWidget(QTabWidget):
         # Settings Tab
         self.settings_tab = SettingsTab(settings, rcore, self)
         self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), "")
-        self.settings_tab.about.update_available_ready.connect(lambda: self.tab_bar.setTabText(self.settings_index, "(!)"))
+        self.settings_tab.about.update_available_ready.connect(lambda: self.main_bar.setTabText(self.settings_index, "(!)"))
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
@@ -88,17 +88,16 @@ class MainTabWidget(QTabWidget):
         QShortcut("Alt+5", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
 
         self.setCurrentIndex(self.games_index)
-        self.tab_bar.installEventFilter(self)
 
     def eventFilter(self, w: QObject, e: QEvent) -> bool:
         if not isinstance(e, QEvent):
             return True
-        if w is self.tab_bar and e.type() == QEvent.Type.MouseButtonPress:
-            tab_idx = self.tab_bar.tabAt(e.pos())
+        if w is self.main_bar and e.type() == QEvent.Type.MouseButtonPress:
+            tab_idx = self.main_bar.tabAt(e.pos())
             if tab_idx == self.account_index:
                 if e.button() == Qt.MouseButton.LeftButton:
                     self.account_menu.exec(
-                        self.mapToGlobal(self.tab_bar.tabRect(tab_idx).bottomRight() - self.account_menu.rect().topRight())
+                        self.mapToGlobal(self.main_bar.tabRect(tab_idx).bottomRight() - self.account_menu.rect().topRight())
                     )
                 return True
         return False
@@ -138,7 +137,7 @@ class MainTabWidget(QTabWidget):
             self.integrations_tab.show_import()
 
     def resizeEvent(self, event):
-        self.tab_bar.setMinimumWidth(self.width())
+        self.main_bar.setMinimumWidth(self.width())
         super(MainTabWidget, self).resizeEvent(event)
 
     @Slot(int)
