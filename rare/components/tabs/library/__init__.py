@@ -98,6 +98,10 @@ class GamesLibrary(QStackedWidget):
     def scroll_to_top(self):
         self.view_scroll.verticalScrollBar().setSliderPosition(self.view_scroll.verticalScrollBar().minimum())
 
+    @Slot()
+    def show_library(self):
+        self.setCurrentWidget(self.library_page)
+
     @Slot(RareGame)
     def show_game_info(self, rgame):
         self.details_page.update_game(rgame)

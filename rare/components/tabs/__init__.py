@@ -37,10 +37,6 @@ class MainTabWidget(QTabWidget):
         self.games_tab.exit_app.connect(self.__on_exit_app)
         self.games_index = self.addTab(self.games_tab, self.tr("Games"))
 
-        self.integrations_tab = IntegrationsTab(self.rcore, self)
-        self.integrations_tab.back_clicked.connect(lambda: self.setCurrentWidget(self.games_tab))
-        self.integrations_index = self.addTab(self.integrations_tab, self.tr("Integrations"))
-
         # Downloads Tab after Games Tab to use populated RareCore games list
         self.downloads_tab = DownloadsTab(self.settings, self.rcore, self)
         self.downloads_index = self.addTab(self.downloads_tab, "")
@@ -58,6 +54,11 @@ class MainTabWidget(QTabWidget):
         self.setTabEnabled(space_index, False)
         self.tab_bar.expanded = space_index
 
+        # Integrations Tab
+        self.integrations_tab = IntegrationsTab(self.rcore, self)
+        self.integrations_tab.back_clicked.connect(lambda: self.setCurrentWidget(self.games_tab))
+        self.integrations_index = self.addTab(self.integrations_tab, self.tr("Integrations"))
+
         # Settings Tab
         self.settings_tab = SettingsTab(settings, rcore, self)
         self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), "")
@@ -71,7 +72,8 @@ class MainTabWidget(QTabWidget):
         if not self.args.offline:
             QShortcut("Alt+2", self).activated.connect(lambda: self.setCurrentIndex(self.downloads_index))
             QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(self.store_index))
-        QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
+        QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(self.integrations_index))
+        QShortcut("Alt+5", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
 
         self.setCurrentIndex(self.games_index)
 
@@ -105,7 +107,9 @@ class MainTabWidget(QTabWidget):
 
     def mouse_clicked(self, index):
         if index == self.games_index:
-            self.games_tab.setCurrentWidget(self.games_tab.library_page)
+            self.games_tab.show_library()
+        if index == self.integrations_index:
+            self.integrations_tab.show_import()
 
     def resizeEvent(self, event):
         self.tab_bar.setMinimumWidth(self.width())
