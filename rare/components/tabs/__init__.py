@@ -1,11 +1,12 @@
-from PySide6.QtCore import Signal, Slot
-from PySide6.QtGui import QShortcut
-from PySide6.QtWidgets import QMessageBox, QTabWidget, QWidget
+from PySide6.QtCore import QEvent, QObject, Signal, Slot
+from PySide6.QtGui import QShortcut, Qt
+from PySide6.QtWidgets import QMenu, QMessageBox, QTabWidget, QWidget, QWidgetAction
 
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils.misc import ExitCodes, qta_icon
 
+from .account import AccountWidget
 from .downloads import DownloadsTab
 from .integrations import IntegrationsTab
 from .library import GamesLibrary
@@ -34,7 +35,6 @@ class MainTabWidget(QTabWidget):
         # Generate Tabs
         self.games_tab = GamesLibrary(self.settings, self.rcore, self)
         self.games_tab.import_clicked.connect(self.show_import)
-        self.games_tab.exit_app.connect(self.__on_exit_app)
         self.games_index = self.addTab(self.games_tab, self.tr("Games"))
 
         # Downloads Tab after Games Tab to use populated RareCore games list
@@ -52,12 +52,24 @@ class MainTabWidget(QTabWidget):
         # Space Tab
         space_index = self.addTab(QWidget(self), "Rare")
         self.setTabEnabled(space_index, False)
-        self.tab_bar.expanded = space_index
+        self.tab_bar.expanded_idx = space_index
 
         # Integrations Tab
         self.integrations_tab = IntegrationsTab(self.rcore, self)
         self.integrations_tab.back_clicked.connect(lambda: self.setCurrentWidget(self.games_tab))
         self.integrations_index = self.addTab(self.integrations_tab, self.tr("Integrations"))
+
+        # Account Tab
+        self.account_widget = AccountWidget(self.signals, self.core, self)
+        self.account_widget.exit_app.connect(self.__on_exit_app)
+        account_action = QWidgetAction(self)
+        account_action.setDefaultWidget(self.account_widget)
+        self.account_menu = QMenu(self)
+        self.account_menu.addAction(account_action)
+        self.account_tab = QWidget(self)
+        self.account_index = self.addTab(
+            self.account_tab, qta_icon("mdi.account-circle", "fa5s.user"), self.core.lgd.userdata.get("displayName")
+        )
 
         # Settings Tab
         self.settings_tab = SettingsTab(settings, rcore, self)
@@ -76,6 +88,20 @@ class MainTabWidget(QTabWidget):
         QShortcut("Alt+5", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
 
         self.setCurrentIndex(self.games_index)
+        self.tab_bar.installEventFilter(self)
+
+    def eventFilter(self, w: QObject, e: QEvent) -> bool:
+        if not isinstance(e, QEvent):
+            return True
+        if w is self.tab_bar and e.type() == QEvent.Type.MouseButtonPress:
+            tab_idx = self.tab_bar.tabAt(e.pos())
+            if tab_idx == self.account_index:
+                if e.button() == Qt.MouseButton.LeftButton:
+                    self.account_menu.exec(
+                        self.mapToGlobal(self.tab_bar.tabRect(tab_idx).bottomRight() - self.account_menu.rect().topRight())
+                    )
+                return True
+        return False
 
     @Slot()
     @Slot(str)

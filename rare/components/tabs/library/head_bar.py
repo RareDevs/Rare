@@ -6,12 +6,10 @@ from PySide6.QtWidgets import (
     QCompleter,
     QHBoxLayout,
     QLabel,
-    QMenu,
     QPushButton,
     QSizePolicy,
     QSpacerItem,
     QWidget,
-    QWidgetAction,
 )
 
 from rare.models.settings import LibraryFilter, LibraryOrder, RareAppSettings, app_settings
@@ -19,12 +17,8 @@ from rare.shared import RareCore
 from rare.utils.misc import qta_icon
 from rare.widgets.button_edit import ButtonLineEdit
 
-from .account import AccountWidget
-
 
 class LibraryHeadBar(QWidget):
-    # int: exit code
-    exit_app: Signal = Signal(int)
     # object: LibraryFilter
     filterChanged = Signal(object)
     # object: LibraryOrder
@@ -36,7 +30,6 @@ class LibraryHeadBar(QWidget):
         super(LibraryHeadBar, self).__init__(parent=parent)
         self.settings = settings
         self.rcore = rcore
-        self.core = rcore.core()
         self.signals = rcore.signals()
         self.logger = getLogger(type(self).__name__)
 
@@ -117,18 +110,6 @@ class LibraryHeadBar(QWidget):
         self.available_label = QLabel(parent=self)
         self.available_label.setToolTip(available_tooltip)
 
-        # Account Button
-        self.account_widget = AccountWidget(self.signals, self.core, self)
-        self.account_widget.exit_app.connect(self.exit_app)
-        account_action = QWidgetAction(self)
-        account_action.setDefaultWidget(self.account_widget)
-        account_button = QPushButton(self.core.lgd.userdata.get("displayName"), self)
-        account_button.setIcon(qta_icon("mdi.account-circle", "fa5s.user"))
-        account_button.setToolTip(self.tr("Menu"))
-        account_menu = QMenu(account_button)
-        account_menu.addAction(account_action)
-        account_button.setMenu(account_menu)
-
         self.refresh_list = QPushButton(parent=self)
         self.refresh_list.setIcon(qta_icon("fa.refresh", "fa5s.sync"))  # Reload icon
         self.refresh_list.clicked.connect(self.__refresh_clicked)
@@ -146,7 +127,6 @@ class LibraryHeadBar(QWidget):
         right_layout.addWidget(self.available_icon)
         right_layout.addWidget(self.available_label)
         right_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
-        right_layout.addWidget(account_button)
         right_layout.addWidget(self.refresh_list)
 
         layout = QHBoxLayout(self)
