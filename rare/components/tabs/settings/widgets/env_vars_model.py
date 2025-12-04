@@ -131,9 +131,10 @@ class EnvVarsTableModel(QAbstractTableModel):
             if index.row() == self.__data_length():
                 if index.column() == 1:
                     return self.tr("Disabled, please set the variable name first.")
-                else:
-                    return None
+                return None
             if self.__key(index) in self.__readonly:
+                if index.column() == 1:
+                    return self.tr("Value: {}").format(self.__value(index))
                 return self.tr("Readonly, please edit this via setting the appropriate setting.")
 
     def headerData(

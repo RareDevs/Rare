@@ -1,13 +1,11 @@
 from logging import getLogger
 
 from PySide6.QtCore import QSize, Qt, Signal, Slot
-from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QComboBox,
     QCompleter,
     QHBoxLayout,
     QLabel,
-    QMenu,
     QPushButton,
     QSizePolicy,
     QSpacerItem,
@@ -21,12 +19,12 @@ from rare.widgets.button_edit import ButtonLineEdit
 
 
 class LibraryHeadBar(QWidget):
+    # object: LibraryFilter
     filterChanged = Signal(object)
+    # object: LibraryOrder
     orderChanged = Signal(object)
+    # object: LibraryView
     viewChanged = Signal(object)
-    goto_import = Signal()
-    goto_egl_sync = Signal()
-    goto_eos_ubisoft = Signal()
 
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(LibraryHeadBar, self).__init__(parent=parent)
@@ -91,37 +89,6 @@ class LibraryHeadBar(QWidget):
             self.order.setCurrentIndex(self.order.findData(_order, Qt.ItemDataRole.UserRole))
         self.order.currentIndexChanged.connect(self.__order_changed)
 
-        integrations_menu = QMenu(parent=self)
-        import_action = QAction(
-            qta_icon("mdi.import", "fa5s.arrow-down"),
-            self.tr("Import Game"),
-            integrations_menu,
-        )
-
-        import_action.triggered.connect(self.goto_import)
-        egl_sync_action = QAction(
-            qta_icon("mdi.sync", "fa5s.sync"),
-            self.tr("Sync with EGL"),
-            integrations_menu,
-        )
-        egl_sync_action.triggered.connect(self.goto_egl_sync)
-
-        eos_ubisoft_action = QAction(
-            qta_icon("mdi.rocket", "fa.rocket"),
-            self.tr("Epic Overlay and Ubisoft"),
-            integrations_menu,
-        )
-        eos_ubisoft_action.triggered.connect(self.goto_eos_ubisoft)
-
-        integrations_menu.addAction(import_action)
-        integrations_menu.addAction(egl_sync_action)
-        integrations_menu.addAction(eos_ubisoft_action)
-
-        integrations = QPushButton(parent=self)
-        integrations.setText(self.tr("Integrations"))
-        integrations.setIcon(qta_icon("mdi.tools"))
-        integrations.setMenu(integrations_menu)
-
         self.search_bar = ButtonLineEdit("fa5s.search", placeholder_text=self.tr("Search (use :: to filter by tag)"))
         self.search_bar.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         self.search_bar.setObjectName("SearchBar")
@@ -147,19 +114,26 @@ class LibraryHeadBar(QWidget):
         self.refresh_list.setIcon(qta_icon("fa.refresh", "fa5s.sync"))  # Reload icon
         self.refresh_list.clicked.connect(self.__refresh_clicked)
 
+        left_layout = QHBoxLayout()
+        left_layout.setContentsMargins(0, 0, 0, 0)
+        left_layout.addWidget(self.filter)
+        left_layout.addWidget(self.order)
+        left_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
+
+        right_layout = QHBoxLayout()
+        right_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout.addWidget(self.installed_icon)
+        right_layout.addWidget(self.installed_label)
+        right_layout.addWidget(self.available_icon)
+        right_layout.addWidget(self.available_label)
+        right_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
+        right_layout.addWidget(self.refresh_list)
+
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.filter)
-        layout.addWidget(self.order)
-        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
+        layout.addLayout(left_layout)
         layout.addWidget(self.search_bar)
-        layout.addWidget(self.installed_icon)
-        layout.addWidget(self.installed_label)
-        layout.addWidget(self.available_icon)
-        layout.addWidget(self.available_label)
-        layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
-        layout.addWidget(integrations)
-        layout.addWidget(self.refresh_list)
+        layout.addLayout(right_layout)
 
         self.signals.application.update_game_tags.connect(self.__game_tags_updated)
         self.__game_tags_updated()

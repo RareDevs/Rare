@@ -3,16 +3,15 @@
 ################################################################################
 ## Form generated from reading UI file 'dlc_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QSize, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QFormLayout, QFrame, QHBoxLayout,
-    QLabel, QPushButton, QSizePolicy, QSpacerItem,
-    QWidget)
+from PySide6.QtCore import QCoreApplication, QSize, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QFormLayout, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QWidget
+
 
 class Ui_GameDlcWidget(object):
     def setupUi(self, GameDlcWidget):
@@ -47,7 +46,7 @@ class Ui_GameDlcWidget(object):
         font.setBold(True)
         self.dlc_name_label.setFont(font)
 
-        self.dlc_info_layout.setWidget(0, QFormLayout.LabelRole, self.dlc_name_label)
+        self.dlc_info_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.dlc_name_label)
 
         self.dlc_name = QLabel(self.dlc_info)
         self.dlc_name.setObjectName(u"dlc_name")
@@ -55,7 +54,7 @@ class Ui_GameDlcWidget(object):
         self.dlc_name.setText(u"dlc_name")
         self.dlc_name.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
 
-        self.dlc_info_layout.setWidget(0, QFormLayout.FieldRole, self.dlc_name)
+        self.dlc_info_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.dlc_name)
 
         self.version_label = QLabel(self.dlc_info)
         self.version_label.setObjectName(u"version_label")
@@ -63,7 +62,7 @@ class Ui_GameDlcWidget(object):
         self.version_label.setSizePolicy(sizePolicy1)
         self.version_label.setFont(font)
 
-        self.dlc_info_layout.setWidget(1, QFormLayout.LabelRole, self.version_label)
+        self.dlc_info_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.version_label)
 
         self.version = QLabel(self.dlc_info)
         self.version.setObjectName(u"version")
@@ -71,7 +70,7 @@ class Ui_GameDlcWidget(object):
         self.version.setText(u"version")
         self.version.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
 
-        self.dlc_info_layout.setWidget(1, QFormLayout.FieldRole, self.version)
+        self.dlc_info_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.version)
 
         self.app_name_label = QLabel(self.dlc_info)
         self.app_name_label.setObjectName(u"app_name_label")
@@ -79,7 +78,7 @@ class Ui_GameDlcWidget(object):
         self.app_name_label.setSizePolicy(sizePolicy1)
         self.app_name_label.setFont(font)
 
-        self.dlc_info_layout.setWidget(2, QFormLayout.LabelRole, self.app_name_label)
+        self.dlc_info_layout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.app_name_label)
 
         self.app_name = QLabel(self.dlc_info)
         self.app_name.setObjectName(u"app_name")
@@ -87,7 +86,7 @@ class Ui_GameDlcWidget(object):
         self.app_name.setText(u"app_name")
         self.app_name.setTextInteractionFlags(Qt.LinksAccessibleByMouse|Qt.TextSelectableByMouse)
 
-        self.dlc_info_layout.setWidget(2, QFormLayout.FieldRole, self.app_name)
+        self.dlc_info_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.app_name)
 
 
         self.dlc_layout.addWidget(self.dlc_info)

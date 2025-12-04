@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShowEvent  # , Qt, QIcon
 from PySide6.QtWidgets import (
     QFrame,
@@ -21,13 +21,15 @@ from rare.shared import RareCore
 
 from .details import GameDetailsTabs
 from .head_bar import LibraryHeadBar
-from .integrations import IntegrationsTabs
 from .widgets import LibraryFilter, LibraryOrder, LibraryView, LibraryWidgetController
 
 logger = getLogger("GamesLibrary")
 
 
 class GamesLibrary(QStackedWidget):
+    # str: app_name
+    import_clicked = Signal(str)
+
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(GamesLibrary, self).__init__(parent=parent)
         self.settings = settings
@@ -51,21 +53,14 @@ class GamesLibrary(QStackedWidget):
         # library_page_left_layout.addWidget(self.library_list)
 
         self.head_bar = LibraryHeadBar(settings, rcore, parent=self.library_page)
-        self.head_bar.goto_import.connect(self.show_import)
-        self.head_bar.goto_egl_sync.connect(self.show_egl_sync)
-        self.head_bar.goto_eos_ubisoft.connect(self.show_eos_ubisoft)
         library_page_right_layout.addWidget(self.head_bar)
 
         self.details_page = GameDetailsTabs(settings, rcore, self)
         self.details_page.back_clicked.connect(lambda: self.setCurrentWidget(self.library_page))
         # Update visibility of hidden games
         self.details_page.back_clicked.connect(lambda: self.filter_games(self.head_bar.current_filter()))
-        self.details_page.import_clicked.connect(self.show_import)
+        self.details_page.import_clicked.connect(self.import_clicked)
         self.addWidget(self.details_page)
-
-        self.integrations_page = IntegrationsTabs(rcore, self)
-        self.integrations_page.back_clicked.connect(lambda: self.setCurrentWidget(self.library_page))
-        self.addWidget(self.integrations_page)
 
         self.view_scroll = QScrollArea(self.library_page)
         self.view_scroll.setWidgetResizable(True)
@@ -102,20 +97,8 @@ class GamesLibrary(QStackedWidget):
         self.view_scroll.verticalScrollBar().setSliderPosition(self.view_scroll.verticalScrollBar().minimum())
 
     @Slot()
-    @Slot(str)
-    def show_import(self, app_name: str = None):
-        self.setCurrentWidget(self.integrations_page)
-        self.integrations_page.show_import(app_name)
-
-    @Slot()
-    def show_egl_sync(self):
-        self.setCurrentWidget(self.integrations_page)
-        self.integrations_page.show_egl_sync()
-
-    @Slot()
-    def show_eos_ubisoft(self):
-        self.setCurrentWidget(self.integrations_page)
-        self.integrations_page.show_eos_ubisoft()
+    def show_library(self):
+        self.setCurrentWidget(self.library_page)
 
     @Slot(RareGame)
     def show_game_info(self, rgame):
@@ -131,7 +114,6 @@ class GamesLibrary(QStackedWidget):
 
     def setup_game_list(self):
         for rgame in self.rcore.games:
-            # self.library_list.addItem(QListWidgetItem(QIcon(rgame.get_pixmap(ImageSize.Icon)), rgame.app_title))
             widget = self.add_library_widget(rgame)
             if not widget:
                 logger.warning("Excluding %s from the game list", rgame.app_title)

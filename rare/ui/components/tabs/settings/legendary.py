@@ -3,16 +3,27 @@
 ################################################################################
 ## Form generated from reading UI file 'legendary.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QCheckBox, QFormLayout, QGroupBox,
-    QHBoxLayout, QLabel, QLineEdit, QPushButton,
-    QSizePolicy, QSpacerItem, QSpinBox, QVBoxLayout)
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QSpinBox,
+    QVBoxLayout,
+)
+
 
 class Ui_LegendarySettings(object):
     def setupUi(self, LegendarySettings):
@@ -46,7 +57,7 @@ class Ui_LegendarySettings(object):
         sizePolicy.setHeightForWidth(self.max_workers_label.sizePolicy().hasHeightForWidth())
         self.max_workers_label.setSizePolicy(sizePolicy)
 
-        self.download_layout.setWidget(0, QFormLayout.LabelRole, self.max_workers_label)
+        self.download_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.max_workers_label)
 
         self.max_workers_layout = QHBoxLayout()
         self.max_workers_layout.setObjectName(u"max_workers_layout")
@@ -72,12 +83,12 @@ class Ui_LegendarySettings(object):
         self.max_workers_layout.addWidget(self.max_workers_info_label)
 
 
-        self.download_layout.setLayout(0, QFormLayout.FieldRole, self.max_workers_layout)
+        self.download_layout.setLayout(0, QFormLayout.ItemRole.FieldRole, self.max_workers_layout)
 
         self.max_memory_label = QLabel(self.download_group)
         self.max_memory_label.setObjectName(u"max_memory_label")
 
-        self.download_layout.setWidget(1, QFormLayout.LabelRole, self.max_memory_label)
+        self.download_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.max_memory_label)
 
         self.max_memory_layout = QHBoxLayout()
         self.max_memory_layout.setObjectName(u"max_memory_layout")
@@ -99,27 +110,27 @@ class Ui_LegendarySettings(object):
         self.max_memory_layout.addWidget(self.max_memory_info_label)
 
 
-        self.download_layout.setLayout(1, QFormLayout.FieldRole, self.max_memory_layout)
+        self.download_layout.setLayout(1, QFormLayout.ItemRole.FieldRole, self.max_memory_layout)
 
         self.preferred_cdn_label = QLabel(self.download_group)
         self.preferred_cdn_label.setObjectName(u"preferred_cdn_label")
 
-        self.download_layout.setWidget(2, QFormLayout.LabelRole, self.preferred_cdn_label)
+        self.download_layout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.preferred_cdn_label)
 
         self.preferred_cdn_line = QLineEdit(self.download_group)
         self.preferred_cdn_line.setObjectName(u"preferred_cdn_line")
 
-        self.download_layout.setWidget(2, QFormLayout.FieldRole, self.preferred_cdn_line)
+        self.download_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.preferred_cdn_line)
 
         self.disable_https_label = QLabel(self.download_group)
         self.disable_https_label.setObjectName(u"disable_https_label")
 
-        self.download_layout.setWidget(3, QFormLayout.LabelRole, self.disable_https_label)
+        self.download_layout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.disable_https_label)
 
         self.disable_https_check = QCheckBox(self.download_group)
         self.disable_https_check.setObjectName(u"disable_https_check")
 
-        self.download_layout.setWidget(3, QFormLayout.FieldRole, self.disable_https_check)
+        self.download_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.disable_https_check)
 
 
         self.left_layout.addWidget(self.download_group)

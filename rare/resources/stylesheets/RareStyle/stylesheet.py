@@ -5,6 +5,7 @@ import qstylizer.parser
 import qstylizer.style
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QFrame
 from PySide6.scripts.pyside_tool import qt_tool_wrapper
 from shiboken6.Shiboken import Object as wrappertype
 
@@ -55,6 +56,12 @@ style["QTableView QTableCornerButton::section"].setValues(**common_attributes, *
 
 style.QComboBox.comboboxPopup.setValue(0)
 style["QComboBox QAbstractItemView"].setValues(**common_attributes, **common_attributes_editable)
+
+style[f'QLabel[frameShape="{int(QFrame.Shape.StyledPanel)}"][frameShadow="{int(QFrame.Shadow.Sunken)}"]'].setValues(
+    color="#bbb",
+    borderColor=background_color_base.darker(200).name(),
+    backgroundColor=background_color_base.darker(110).name(),
+)
 
 for selector in (
     "QListView QLineEdit",

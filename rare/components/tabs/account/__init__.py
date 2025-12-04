@@ -9,6 +9,7 @@ from rare.utils.misc import ExitCodes, qta_icon
 
 
 class AccountWidget(QWidget):
+    # int: exit code
     exit_app: Signal = Signal(int)
     logout: Signal = Signal()
 

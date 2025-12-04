@@ -902,6 +902,11 @@ QComboBox QAbstractItemView {
     background-color: #262633;
     selection-background-color: #274242;
 }
+QLabel[frameShape="6"][frameShadow="48"] {
+    color: #bbb;
+    border-color: #101112;
+    background-color: #1d1f22;
+}
 QListView QLineEdit {
     padding: 0px;
 }

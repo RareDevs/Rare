@@ -3,14 +3,14 @@
 ################################################################################
 ## Form generated from reading UI file 'cloud_sync_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QSize, Qt)
-from PySide6.QtWidgets import (QGroupBox, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QVBoxLayout)
+from PySide6.QtCore import QCoreApplication, QSize, Qt
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QVBoxLayout
+
 
 class Ui_CloudSyncWidget(object):
     def setupUi(self, CloudSyncWidget):

@@ -3,16 +3,25 @@
 ################################################################################
 ## Form generated from reading UI file 'import_login.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QComboBox, QFormLayout, QHBoxLayout,
-    QLabel, QLayout, QPushButton, QSizePolicy,
-    QSpacerItem, QVBoxLayout)
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLayout,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+)
+
 
 class Ui_ImportLogin(object):
     def setupUi(self, ImportLogin):
@@ -63,12 +72,12 @@ class Ui_ImportLogin(object):
 
         self.prefix_layout.setStretch(0, 1)
 
-        self.form_layout.setLayout(0, QFormLayout.FieldRole, self.prefix_layout)
+        self.form_layout.setLayout(0, QFormLayout.ItemRole.FieldRole, self.prefix_layout)
 
         self.prefix_label = QLabel(ImportLogin)
         self.prefix_label.setObjectName(u"prefix_label")
 
-        self.form_layout.setWidget(0, QFormLayout.LabelRole, self.prefix_label)
+        self.form_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.prefix_label)
 
         self.status_label = QLabel(ImportLogin)
         self.status_label.setObjectName(u"status_label")
@@ -77,7 +86,7 @@ class Ui_ImportLogin(object):
         self.status_label.setFont(font1)
         self.status_label.setText(u"")
 
-        self.form_layout.setWidget(1, QFormLayout.FieldRole, self.status_label)
+        self.form_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.status_label)
 
 
         self.main_layout.addLayout(self.form_layout)

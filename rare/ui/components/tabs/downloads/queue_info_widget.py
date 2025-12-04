@@ -3,15 +3,15 @@
 ################################################################################
 ## Form generated from reading UI file 'queue_info_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QSize, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QGridLayout, QLabel, QLayout,
-    QSizePolicy, QSpacerItem, QVBoxLayout)
+from PySide6.QtCore import QCoreApplication, QSize, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QGridLayout, QLabel, QLayout, QSizePolicy, QSpacerItem, QVBoxLayout
+
 
 class Ui_QueueInfoWidget(object):
     def setupUi(self, QueueInfoWidget):

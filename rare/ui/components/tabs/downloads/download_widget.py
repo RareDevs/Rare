@@ -3,15 +3,15 @@
 ################################################################################
 ## Form generated from reading UI file 'download_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QGridLayout, QLabel, QProgressBar,
-    QPushButton, QSizePolicy)
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QGridLayout, QLabel, QProgressBar, QPushButton, QSizePolicy
+
 
 class Ui_DownloadWidget(object):
     def setupUi(self, DownloadWidget):

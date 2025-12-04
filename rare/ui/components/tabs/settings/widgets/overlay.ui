@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>555</width>
-    <height>188</height>
+    <width>343</width>
+    <height>119</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,10 @@
   <property name="title">
    <string notr="true"/>
   </property>
-  <layout class="QGridLayout" name="main_layout">
+  <layout class="QFormLayout" name="main_layout">
+   <property name="labelAlignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
    <item row="0" column="0">
     <widget class="QLabel" name="overlay_state_label">
      <property name="sizePolicy">
@@ -26,11 +29,11 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>error</string>
+      <string notr="true">error</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="1" colspan="2">
+   <item row="0" column="1">
     <widget class="QComboBox" name="overlay_state_combo">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -40,7 +43,47 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="3">
+   <item row="2" column="0">
+    <widget class="QLabel" name="current_value_label">
+     <property name="text">
+      <string>Current</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLabel" name="current_value_info">
+     <property name="minimumSize">
+      <size>
+       <width>1</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Monospace</family>
+      </font>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Sunken</enum>
+     </property>
+     <property name="text">
+      <string notr="true"/>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::TextFormat::PlainText</enum>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="options_group">
      <property name="title">
       <string notr="true"/>

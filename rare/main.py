@@ -111,7 +111,7 @@ def main() -> int:
     )
 
     # Subreaper command
-    subreaper_parser = subparsers.add_parser("subreaper", aliases=["reaper"])
+    subparsers.add_parser("subreaper", aliases=["reaper"])
 
     args, other = parser.parse_known_args()
 

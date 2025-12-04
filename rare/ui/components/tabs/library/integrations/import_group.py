@@ -3,16 +3,15 @@
 ################################################################################
 ## Form generated from reading UI file 'import_group.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QFormLayout,
-    QHBoxLayout, QLabel, QPushButton,
-    QSizePolicy)
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QHBoxLayout, QLabel, QPushButton, QSizePolicy
+
 
 class Ui_ImportGroup(object):
     def setupUi(self, ImportGroup):
@@ -27,17 +26,17 @@ class Ui_ImportGroup(object):
         self.path_edit_label = QLabel(ImportGroup)
         self.path_edit_label.setObjectName(u"path_edit_label")
 
-        self.import_layout.setWidget(0, QFormLayout.LabelRole, self.path_edit_label)
+        self.import_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.path_edit_label)
 
         self.app_name_label = QLabel(ImportGroup)
         self.app_name_label.setObjectName(u"app_name_label")
 
-        self.import_layout.setWidget(1, QFormLayout.LabelRole, self.app_name_label)
+        self.import_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.app_name_label)
 
         self.import_folder_label = QLabel(ImportGroup)
         self.import_folder_label.setObjectName(u"import_folder_label")
 
-        self.import_layout.setWidget(3, QFormLayout.LabelRole, self.import_folder_label)
+        self.import_layout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.import_folder_label)
 
         self.import_folder_check = QCheckBox(ImportGroup)
         self.import_folder_check.setObjectName(u"import_folder_check")
@@ -45,35 +44,35 @@ class Ui_ImportGroup(object):
         font.setItalic(True)
         self.import_folder_check.setFont(font)
 
-        self.import_layout.setWidget(3, QFormLayout.FieldRole, self.import_folder_check)
+        self.import_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.import_folder_check)
 
         self.import_dlcs_label = QLabel(ImportGroup)
         self.import_dlcs_label.setObjectName(u"import_dlcs_label")
 
-        self.import_layout.setWidget(4, QFormLayout.LabelRole, self.import_dlcs_label)
+        self.import_layout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.import_dlcs_label)
 
         self.import_dlcs_check = QCheckBox(ImportGroup)
         self.import_dlcs_check.setObjectName(u"import_dlcs_check")
         self.import_dlcs_check.setFont(font)
 
-        self.import_layout.setWidget(4, QFormLayout.FieldRole, self.import_dlcs_check)
+        self.import_layout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.import_dlcs_check)
 
         self.import_force_label = QLabel(ImportGroup)
         self.import_force_label.setObjectName(u"import_force_label")
 
-        self.import_layout.setWidget(5, QFormLayout.LabelRole, self.import_force_label)
+        self.import_layout.setWidget(5, QFormLayout.ItemRole.LabelRole, self.import_force_label)
 
         self.import_force_check = QCheckBox(ImportGroup)
         self.import_force_check.setObjectName(u"import_force_check")
         self.import_force_check.setFont(font)
 
-        self.import_layout.setWidget(5, QFormLayout.FieldRole, self.import_force_check)
+        self.import_layout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.import_force_check)
 
         self.import_button_label = QLabel(ImportGroup)
         self.import_button_label.setObjectName(u"import_button_label")
         self.import_button_label.setText(u"error")
 
-        self.import_layout.setWidget(6, QFormLayout.LabelRole, self.import_button_label)
+        self.import_layout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.import_button_label)
 
         self.button_info_layout = QHBoxLayout()
         self.button_info_layout.setObjectName(u"button_info_layout")
@@ -88,12 +87,12 @@ class Ui_ImportGroup(object):
         self.button_info_layout.addWidget(self.import_button)
 
 
-        self.import_layout.setLayout(6, QFormLayout.FieldRole, self.button_info_layout)
+        self.import_layout.setLayout(6, QFormLayout.ItemRole.FieldRole, self.button_info_layout)
 
         self.platform_label = QLabel(ImportGroup)
         self.platform_label.setObjectName(u"platform_label")
 
-        self.import_layout.setWidget(2, QFormLayout.LabelRole, self.platform_label)
+        self.import_layout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.platform_label)
 
         self.platform_layout = QHBoxLayout()
         self.platform_layout.setObjectName(u"platform_layout")
@@ -114,7 +113,7 @@ class Ui_ImportGroup(object):
         self.platform_layout.addWidget(self.platform_tooltip)
 
 
-        self.import_layout.setLayout(2, QFormLayout.FieldRole, self.platform_layout)
+        self.import_layout.setLayout(2, QFormLayout.ItemRole.FieldRole, self.platform_layout)
 
 
         self.retranslateUi(ImportGroup)

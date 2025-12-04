@@ -3,14 +3,23 @@
 ################################################################################
 ## Form generated from reading UI file 'eos_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QSize, Qt)
-from PySide6.QtWidgets import (QFormLayout, QHBoxLayout,
-    QLabel, QLayout, QPushButton, QStackedWidget, QVBoxLayout, QWidget)
+from PySide6.QtCore import QCoreApplication, QSize, Qt
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLayout,
+    QPushButton,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
+
 
 class Ui_EosWidget(object):
     def setupUi(self, EosWidget):
@@ -34,13 +43,13 @@ class Ui_EosWidget(object):
         self.version_label.setObjectName(u"version_label")
         self.version_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.info_layout.setWidget(0, QFormLayout.LabelRole, self.version_label)
+        self.info_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.version_label)
 
         self.path_label = QLabel(self.overlay_widget)
         self.path_label.setObjectName(u"path_label")
         self.path_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.info_layout.setWidget(1, QFormLayout.LabelRole, self.path_label)
+        self.info_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.path_label)
 
 
         self.overlay_widget_layout.addLayout(self.info_layout)

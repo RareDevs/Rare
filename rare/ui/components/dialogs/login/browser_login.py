@@ -3,16 +3,25 @@
 ################################################################################
 ## Form generated from reading UI file 'browser_login.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QFormLayout, QHBoxLayout, QLabel,
-    QLayout, QLineEdit, QPushButton, QSizePolicy,
-    QSpacerItem, QVBoxLayout)
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLayout,
+    QLineEdit,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+)
+
 
 class Ui_BrowserLogin(object):
     def setupUi(self, BrowserLogin):
@@ -44,7 +53,7 @@ class Ui_BrowserLogin(object):
         self.open_button = QPushButton(BrowserLogin)
         self.open_button.setObjectName(u"open_button")
 
-        self.form_layout.setWidget(0, QFormLayout.LabelRole, self.open_button)
+        self.form_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.open_button)
 
         self.link_layout = QHBoxLayout()
         self.link_layout.setObjectName(u"link_layout")
@@ -64,14 +73,14 @@ class Ui_BrowserLogin(object):
 
         self.link_layout.setStretch(0, 1)
 
-        self.form_layout.setLayout(0, QFormLayout.FieldRole, self.link_layout)
+        self.form_layout.setLayout(0, QFormLayout.ItemRole.FieldRole, self.link_layout)
 
         self.sid_label = QLabel(BrowserLogin)
         self.sid_label.setObjectName(u"sid_label")
         self.sid_label.setText(u"authorizationCode")
         self.sid_label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.form_layout.setWidget(1, QFormLayout.LabelRole, self.sid_label)
+        self.form_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.sid_label)
 
         self.status_label = QLabel(BrowserLogin)
         self.status_label.setObjectName(u"status_label")
@@ -80,7 +89,7 @@ class Ui_BrowserLogin(object):
         self.status_label.setFont(font1)
         self.status_label.setText(u"")
 
-        self.form_layout.setWidget(2, QFormLayout.FieldRole, self.status_label)
+        self.form_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.status_label)
 
 
         self.main_layout.addLayout(self.form_layout)

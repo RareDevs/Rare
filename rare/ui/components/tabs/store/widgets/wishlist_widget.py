@@ -3,15 +3,15 @@
 ################################################################################
 ## Form generated from reading UI file 'wishlist_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QHBoxLayout, QLabel, QPushButton,
-    QSizePolicy, QVBoxLayout, QWidget)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
+
 
 class Ui_WishlistWidget(object):
     def setupUi(self, WishlistWidget):
