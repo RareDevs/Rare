@@ -1,4 +1,4 @@
-from PySide6.QtCore import QEvent, QObject, Signal, Slot
+from PySide6.QtCore import QEvent, QObject, QPoint, Signal, Slot
 from PySide6.QtGui import QShortcut, Qt
 from PySide6.QtWidgets import QMenu, QMessageBox, QTabWidget, QWidget, QWidgetAction
 
@@ -96,9 +96,12 @@ class MainTabWidget(QTabWidget):
             tab_idx = self.main_bar.tabAt(e.pos())
             if tab_idx == self.account_index:
                 if e.button() == Qt.MouseButton.LeftButton:
-                    self.account_menu.exec(
-                        self.mapToGlobal(self.main_bar.tabRect(tab_idx).bottomRight() - self.account_menu.rect().topRight())
+                    print(self.account_menu.sizeHint())
+                    origin = QPoint(
+                        self.main_bar.tabRect(tab_idx).bottomRight().x() - self.account_menu.sizeHint().width(),
+                        self.main_bar.tabRect(tab_idx).bottomRight().y()
                     )
+                    self.account_menu.exec(self.mapToGlobal(origin))
                 return True
         return False
 
