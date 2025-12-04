@@ -124,13 +124,13 @@ def main() -> int:
         if args.startmenu_shortcut:
             create_desktop_link(app_name="rare_shortcut", link_type="start_menu")
 
-        print("Link created")
+        print("Link created", file=sys.stderr)
         return 0
 
     if args.version:
         from rare import __codename__, __version__
 
-        print(f"Rare {__version__} Codename: {__codename__}")
+        print(f"Rare {__version__} Codename: {__codename__}", file=sys.stderr)
         return 0
 
     if args.subparser in {"login", "auth"}:
@@ -160,7 +160,7 @@ def main() -> int:
 
         me = singleton.SingleInstance()  # noqa: F841
     except singleton.SingleInstanceException:
-        print("Rare is already running")
+        print("Rare is already running", file=sys.stderr)
         from rare.utils.paths import lock_file
 
         with open(lock_file(), "w") as file:

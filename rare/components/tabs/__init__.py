@@ -96,7 +96,6 @@ class MainTabWidget(QTabWidget):
             tab_idx = self.main_bar.tabAt(e.pos())
             if tab_idx == self.account_index:
                 if e.button() == Qt.MouseButton.LeftButton:
-                    print(self.account_menu.sizeHint())
                     origin = QPoint(
                         self.main_bar.tabRect(tab_idx).bottomRight().x() - self.account_menu.sizeHint().width(),
                         self.main_bar.tabRect(tab_idx).bottomRight().y()
