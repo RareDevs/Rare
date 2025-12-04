@@ -129,30 +129,30 @@ def get_compat_data_path_with_global(app_name: Optional[str] = None, fallback: A
     return _compat
 
 
-def _get_prefixes(lookup: Callable[[SectionProxy], str]) -> Set[Tuple[str, str]]:
+def prefix_exists(pfx: str) -> bool:
+    return os.path.isdir(pfx) and os.path.isfile(os.path.join(pfx, "user.reg"))
+
+
+def _get_prefixes(lookup_fn: Callable[[SectionProxy], str]) -> Set[Tuple[str, str]]:
     _prefixes: Set[Tuple[str, str]] = set()
     for name, section in _config.items():
-        pfx = lookup(section)
+        pfx = lookup_fn(section)
         if pfx:
             _prefixes.update([(pfx, name[: -len(".env")] if name.endswith(".env") else name)])
     _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
-    return {(p, n) for p, n in _prefixes if os.path.isdir(p) and os.path.isfile(os.path.join(p, "user.reg"))}
+    return {(p, n) for p, n in _prefixes if prefix_exists(p)}
 
 
 def get_wine_prefixes() -> Set[Tuple[str, str]]:
-    return _get_prefixes(lambda sctn: sctn.get("WINEPREFIX") or sctn.get("wine_prefix"))
+    return _get_prefixes(lambda s: s.get("WINEPREFIX") or s.get("wine_prefix"))
 
 
 def get_proton_prefixes() -> Set[Tuple[str, str]]:
-    return _get_prefixes(lambda sctn: os.path.join(compat_path, "pfx") if (compat_path := sctn.get("STEAM_COMPAT_DATA_PATH")) else "")
+    return _get_prefixes(lambda s: os.path.join(compat_path, "pfx") if (compat_path := s.get("STEAM_COMPAT_DATA_PATH")) else "")
 
 
 def get_prefixes() -> Set[Tuple[str, str]]:
     return get_wine_prefixes().union(get_proton_prefixes())
-
-
-def prefix_exists(pfx: str) -> bool:
-    return os.path.isdir(pfx) and os.path.isfile(os.path.join(pfx, "user.reg"))
 
 
 def get_prefix(app_name: str = "default") -> Optional[str]:
