@@ -1,4 +1,5 @@
 import os
+from configparser import SectionProxy
 from typing import Any, Callable, Optional, Set, Tuple
 
 from legendary.models.config import LGDConf
@@ -128,24 +129,22 @@ def get_compat_data_path_with_global(app_name: Optional[str] = None, fallback: A
     return _compat
 
 
-def get_wine_prefixes() -> Set[Tuple[str, str]]:
+def _get_prefixes(lookup: Callable[[SectionProxy], str]) -> Set[Tuple[str, str]]:
     _prefixes: Set[Tuple[str, str]] = set()
     for name, section in _config.items():
-        pfx = section.get("WINEPREFIX") or section.get("wine_prefix")
+        pfx = lookup(section)
         if pfx:
             _prefixes.update([(pfx, name[: -len(".env")] if name.endswith(".env") else name)])
     _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
-    return {(p, n) for p, n in _prefixes if os.path.isdir(p)}
+    return {(p, n) for p, n in _prefixes if os.path.isdir(p) and os.path.isfile(os.path.join(p, "user.reg"))}
+
+
+def get_wine_prefixes() -> Set[Tuple[str, str]]:
+    return _get_prefixes(lambda sctn: sctn.get("WINEPREFIX") or sctn.get("wine_prefix"))
 
 
 def get_proton_prefixes() -> Set[Tuple[str, str]]:
-    _prefixes: Set[Tuple[str, str]] = set()
-    for name, section in _config.items():
-        pfx = os.path.join(compat_path, "pfx") if (compat_path := section.get("STEAM_COMPAT_DATA_PATH")) else ""
-        if pfx:
-            _prefixes.update([(pfx, name[: -len(".env")] if name.endswith(".env") else name)])
-    _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
-    return {(p, n) for p, n in _prefixes if os.path.isdir(p)}
+    return _get_prefixes(lambda sctn: os.path.join(compat_path, "pfx") if (compat_path := sctn.get("STEAM_COMPAT_DATA_PATH")) else "")
 
 
 def get_prefixes() -> Set[Tuple[str, str]]:

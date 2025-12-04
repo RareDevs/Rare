@@ -47,7 +47,10 @@ def uninstall_game(
                 pass
             if len(prefixes):
                 for prefix, _ in prefixes:
-                    remove_registry_entries(prefix)
+                    try:
+                        remove_registry_entries(prefix)
+                    except Exception as e:
+                        logger.error("%s %s", e, prefix)
                     logger.debug("Removed registry entries for prefix %s", prefix)
         else:
             remove_registry_entries()
