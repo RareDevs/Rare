@@ -29,7 +29,7 @@ from PySide6.QtWidgets import (
 from rare.lgndr.core import LegendaryCore
 from rare.models.game import RareEosOverlay
 from rare.shared import RareCore
-from rare.ui.components.tabs.library.integrations.eos_widget import Ui_EosWidget
+from rare.ui.components.tabs.integrations.eos_widget import Ui_EosWidget
 from rare.utils import config_helper as config
 from rare.utils.misc import qta_icon, style_hyperlink
 from rare.widgets.elide_label import ElideLabel
@@ -184,8 +184,8 @@ class EosGroup(QGroupBox):
         self.ui.install_button.setObjectName("InstallButton")
         self.ui.uninstall_button.setObjectName("UninstallButton")
 
-        self.ui.install_page_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
-        self.ui.update_page_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
+        self.ui.install_page_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.ui.update_page_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.ui.install_button.setIcon(qta_icon("ri.install-line"))
         self.ui.update_button.setIcon(qta_icon("ri.arrow-up-circle-line"))
@@ -246,7 +246,7 @@ class EosGroup(QGroupBox):
 
         if platform.system() != "Windows":
             prefixes = config.get_prefixes()
-            prefixes = {prefix for prefix, _ in prefixes if config.prefix_exists(prefix)}
+            prefixes = sorted({prefix for prefix, _ in prefixes})
             if platform.system() == "Darwin":
                 # TODO: add crossover support
                 pass

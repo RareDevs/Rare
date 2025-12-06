@@ -25,7 +25,7 @@ class Ui_EosWidget(object):
     def setupUi(self, EosWidget):
         if not EosWidget.objectName():
             EosWidget.setObjectName(u"EosWidget")
-        EosWidget.resize(528, 95)
+        EosWidget.resize(245, 95)
         EosWidget.setWindowTitle(u"GroupBox")
         self.eos_layout = QVBoxLayout(EosWidget)
         self.eos_layout.setObjectName(u"eos_layout")
@@ -63,9 +63,9 @@ class Ui_EosWidget(object):
         self.install_page_layout.setContentsMargins(0, 0, 0, 0)
         self.install_button = QPushButton(self.install_page)
         self.install_button.setObjectName(u"install_button")
-        self.install_button.setMinimumSize(QSize(140, 26))
+        self.install_button.setMinimumSize(QSize(140, 0))
 
-        self.install_page_layout.addWidget(self.install_button, 0, Qt.AlignmentFlag.AlignBottom)
+        self.install_page_layout.addWidget(self.install_button)
 
         self.button_stack.addWidget(self.install_page)
         self.update_page = QWidget()
@@ -75,19 +75,19 @@ class Ui_EosWidget(object):
         self.update_page_layout.setContentsMargins(0, 0, 0, 0)
         self.update_button = QPushButton(self.update_page)
         self.update_button.setObjectName(u"update_button")
-        self.update_button.setMinimumSize(QSize(140, 26))
+        self.update_button.setMinimumSize(QSize(140, 0))
 
-        self.update_page_layout.addWidget(self.update_button, 0, Qt.AlignmentFlag.AlignBottom)
+        self.update_page_layout.addWidget(self.update_button)
 
         self.uninstall_button = QPushButton(self.update_page)
         self.uninstall_button.setObjectName(u"uninstall_button")
-        self.uninstall_button.setMinimumSize(QSize(140, 26))
+        self.uninstall_button.setMinimumSize(QSize(140, 0))
 
-        self.update_page_layout.addWidget(self.uninstall_button, 0, Qt.AlignmentFlag.AlignBottom)
+        self.update_page_layout.addWidget(self.uninstall_button)
 
         self.button_stack.addWidget(self.update_page)
 
-        self.overlay_widget_layout.addWidget(self.button_stack, 0, Qt.AlignmentFlag.AlignTop)
+        self.overlay_widget_layout.addWidget(self.button_stack)
 
         self.overlay_widget_layout.setStretch(0, 1)
 
@@ -96,7 +96,7 @@ class Ui_EosWidget(object):
 
         self.retranslateUi(EosWidget)
 
-        self.button_stack.setCurrentIndex(0)
+        self.button_stack.setCurrentIndex(1)
 
     # setupUi
 

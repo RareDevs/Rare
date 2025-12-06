@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>528</width>
+    <width>245</width>
     <height>95</height>
    </rect>
   </property>
@@ -65,7 +65,7 @@
         </item>
        </layout>
       </item>
-      <item alignment="Qt::AlignmentFlag::AlignTop">
+      <item>
        <widget class="QStackedWidget" name="button_stack">
         <property name="currentIndex">
          <number>0</number>
@@ -84,12 +84,12 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <item alignment="Qt::AlignmentFlag::AlignBottom">
+          <item>
            <widget class="QPushButton" name="install_button">
             <property name="minimumSize">
              <size>
               <width>140</width>
-              <height>26</height>
+              <height>0</height>
              </size>
             </property>
             <property name="text">
@@ -113,12 +113,12 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <item alignment="Qt::AlignmentFlag::AlignBottom">
+          <item>
            <widget class="QPushButton" name="update_button">
             <property name="minimumSize">
              <size>
               <width>140</width>
-              <height>26</height>
+              <height>0</height>
              </size>
             </property>
             <property name="text">
@@ -126,12 +126,12 @@
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignmentFlag::AlignBottom">
+          <item>
            <widget class="QPushButton" name="uninstall_button">
             <property name="minimumSize">
              <size>
               <width>140</width>
-              <height>26</height>
+              <height>0</height>
              </size>
             </property>
             <property name="text">

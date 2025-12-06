@@ -1,4 +1,5 @@
 import os
+from configparser import SectionProxy
 from typing import Any, Callable, Optional, Set, Tuple
 
 from legendary.models.config import LGDConf
@@ -128,32 +129,30 @@ def get_compat_data_path_with_global(app_name: Optional[str] = None, fallback: A
     return _compat
 
 
-def get_wine_prefixes() -> Set[Tuple[str, str]]:
+def prefix_exists(pfx: str) -> bool:
+    return os.path.isdir(pfx) and os.path.isfile(os.path.join(pfx, "user.reg"))
+
+
+def _get_prefixes(lookup_fn: Callable[[SectionProxy], str]) -> Set[Tuple[str, str]]:
     _prefixes: Set[Tuple[str, str]] = set()
     for name, section in _config.items():
-        pfx = section.get("WINEPREFIX") or section.get("wine_prefix")
+        pfx = lookup_fn(section)
         if pfx:
             _prefixes.update([(pfx, name[: -len(".env")] if name.endswith(".env") else name)])
     _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
-    return {(p, n) for p, n in _prefixes if os.path.isdir(p)}
+    return {(p, n) for p, n in _prefixes if prefix_exists(p)}
+
+
+def get_wine_prefixes() -> Set[Tuple[str, str]]:
+    return _get_prefixes(lambda s: s.get("WINEPREFIX") or s.get("wine_prefix"))
 
 
 def get_proton_prefixes() -> Set[Tuple[str, str]]:
-    _prefixes: Set[Tuple[str, str]] = set()
-    for name, section in _config.items():
-        pfx = os.path.join(compat_path, "pfx") if (compat_path := section.get("STEAM_COMPAT_DATA_PATH")) else ""
-        if pfx:
-            _prefixes.update([(pfx, name[: -len(".env")] if name.endswith(".env") else name)])
-    _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
-    return {(p, n) for p, n in _prefixes if os.path.isdir(p)}
+    return _get_prefixes(lambda s: os.path.join(compat_path, "pfx") if (compat_path := s.get("STEAM_COMPAT_DATA_PATH")) else "")
 
 
 def get_prefixes() -> Set[Tuple[str, str]]:
     return get_wine_prefixes().union(get_proton_prefixes())
-
-
-def prefix_exists(pfx: str) -> bool:
-    return os.path.isdir(pfx) and os.path.isfile(os.path.join(pfx, "user.reg"))
 
 
 def get_prefix(app_name: str = "default") -> Optional[str]:

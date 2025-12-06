@@ -1,20 +1,16 @@
 from logging import getLogger
 
 from PySide6.QtCore import Signal, Slot
-from PySide6.QtGui import QShowEvent  # , Qt, QIcon
+from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
-    # QLineEdit,
-    # QListWidget,
-    # QListWidgetItem,
     QScrollArea,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
 )
 
-# from rare.models.image import ImageSize
 from rare.models.game import RareGame
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
@@ -38,19 +34,9 @@ class GamesLibrary(QStackedWidget):
 
         self.library_page = QWidget(parent=self)
         library_page_layout = QHBoxLayout(self.library_page)
-        # library_page_left_layout = QVBoxLayout()
-        # library_page_layout.addLayout(library_page_left_layout, stretch=0)
         library_page_right_layout = QVBoxLayout()
         library_page_layout.addLayout(library_page_right_layout, stretch=2)
         self.addWidget(self.library_page)
-
-        # self.library_search = QLineEdit(self.library_page)
-        # library_page_left_layout.addWidget(self.library_search)
-
-        # self.library_list = QListWidget(self.library_page)
-        # self.library_list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        # self.library_list.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        # library_page_left_layout.addWidget(self.library_list)
 
         self.head_bar = LibraryHeadBar(settings, rcore, parent=self.library_page)
         library_page_right_layout.addWidget(self.head_bar)
