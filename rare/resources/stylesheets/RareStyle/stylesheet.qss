@@ -2,7 +2,7 @@
 
 * {
     color: rgb(238, 238, 238);
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     background-color: rgb( 32,  34,  37);
 }
 *:disabled {
@@ -242,8 +242,8 @@ QComboBox:!editable:hover {
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
     subcontrol-position: top right;
-    border-color: rgb( 72,  61, 139);
-    border-left-color: rgb( 82,  70, 160);
+    border-color: rgb( 93, 187, 204);
+    border-left-color: rgb(127, 212, 224);
     width: 14px;
     image: url(":/stylesheets/RareStyle/drop-down.svg");
 }
@@ -341,7 +341,7 @@ QScrollBar::sub-line:horizontal {
 QScrollBar::handle {
     border-width: 1px;
     border-style: solid;
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     background-color: rgb( 38,  38,  51);
     border-radius: 2px;
     min-height: 30px;
@@ -364,27 +364,27 @@ QHeaderView::section:vertical:first {
     margin-top: 1px;
 }
 QListView::item:hover {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     background-color: rgb( 34,  34,  51);
 }
 QTreeView::item:hover {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     background-color: rgb( 34,  34,  51);
 }
 QTableView::item:hover {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     background-color: rgb( 34,  34,  51);
 }
 QListView::item:selected {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     background-color: rgb( 39,  66,  66);
 }
 QTreeView::item:selected {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     background-color: rgb( 39,  66,  66);
 }
 QTableView::item:selected {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     background-color: rgb( 39,  66,  66);
 }
 QPushButton {
@@ -590,9 +590,9 @@ QToolBox::tab {
     border-style: solid;
     border-top-left-radius: 4px;
     border-bottom-right-radius: 4px;
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     padding: 1px;
-    background-color: rgb( 42, 40, 63);
+    background-color: rgb( 55,  81,  88);
 }
 QGroupBox::title {
     subcontrol-origin: border;
@@ -601,9 +601,9 @@ QGroupBox::title {
     border-style: solid;
     border-top-left-radius: 4px;
     border-bottom-right-radius: 4px;
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     padding: 1px;
-    background-color: rgb( 42, 40, 63);
+    background-color: rgb( 55,  81,  88);
 }
 QToolBox::tab:disabled {
     border-color: rgb( 67,  71,  77);
@@ -630,52 +630,36 @@ QTabBar::tab:top {
     padding-right: 12px;
     border-top-width: 3px;
     border-top-color: rgb( 60,  63,  65);
-    border-bottom-color: rgb( 72,  61, 139);
-    background: qlineargradient(
-        x1: 0, y1: -1,
-        x2: 0, y2:  1,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    border-bottom-color: rgb( 93, 187, 204);
+    background: rgb( 32,  34,  37);
 }
 QTabBar::tab:bottom {
     padding-left: 12px;
     padding-right: 12px;
     border-bottom-width: 3px;
-    border-top-color: rgb( 72,  61, 139);
+    border-top-color: rgb( 93, 187, 204);
     border-bottom-color: rgb( 60,  63,  65);
-    background: qlineargradient(
-        x1: 0, y1: 2,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    background: rgb( 32,  34,  37);
 }
 QTabBar::tab:top:hover {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-left-color: transparent;
     border-right-color: transparent;
-    background: qlineargradient(
-        x1: 0, y1: -1,
-        x2: 0, y2:  1,
-        stop: 0 rgb( 72,  61, 139),
-        stop: 1 rgb( 32,  34,  37));
+    background: rgb( 34,  34,  51);
 }
 QTabBar::tab:bottom:hover {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-left-color: transparent;
     border-right-color: transparent;
-    background: qlineargradient(
-        x1: 0, y1: 2,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 72,  61, 139),
-        stop: 1 rgb( 32,  34,  37));
+    background: rgb( 34,  34,  51);
 }
 QTabBar::tab:top:selected {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-bottom-color: transparent;
     background: rgb( 32,  34,  37);
 }
 QTabBar::tab:bottom:selected {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-top-color: transparent;
     background: rgb( 32,  34,  37);
 }
@@ -698,52 +682,36 @@ QTabBar::tab:left {
     padding-bottom: 2px;
     border-left-width: 3px;
     border-left-color: rgb( 60,  63,  65);
-    border-right-color: rgb( 72,  61, 139);
-    background: qlineargradient(
-        x1: -1, y1: 0,
-        x2:  1, y2: 0,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    border-right-color: rgb( 93, 187, 204);
+    background: rgb( 32,  34,  37);
 }
 QTabBar::tab:right {
     padding-top: 2px;
     padding-bottom: 2px;
     border-right-width: 3px;
     border-right-color: rgb( 60,  63,  65);
-    border-left-color: rgb( 72,  61, 139);
-    background: qlineargradient(
-        x1: 2, y1: 0,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    border-left-color: rgb( 93, 187, 204);
+    background: rgb( 32,  34,  37);
 }
 QTabBar::tab:left:hover {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-top-color: transparent;
     border-bottom-color: transparent;
-    background: qlineargradient(
-        x1: -1, y1: 0,
-        x2:  1, y2: 0,
-        stop: 0 rgb( 72,  61, 139),
-        stop: 1 rgb( 32,  34,  37));
+    background: rgb( 34,  34,  51);
 }
 QTabBar::tab:right:hover {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-top-color: transparent;
     border-bottom-color: transparent;
-    background: qlineargradient(
-        x1: 2, y1: 0,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 72,  61, 139),
-        stop: 1 rgb( 32,  34,  37));
+    background: rgb( 34,  34,  51);
 }
 QTabBar::tab:left:selected {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-right-color: transparent;
     background: rgb( 32,  34,  37);
 }
 QTabBar::tab:right:selected {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-left-color: transparent;
     background: rgb( 32,  34,  37);
 }
@@ -765,18 +733,14 @@ QStatusBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    border-top-color: rgb( 72,  61, 139);
+    border-top-color: rgb( 93, 187, 204);
     border-bottom-color: rgb( 60,  63,  65);
-    background: qlineargradient(
-        x1: 0, y1: 3,
-        x2: 0, y2: 0,
-        stop: 0 rgb( 60,  63,  65),
-        stop: 1 rgb( 32,  34,  37));
+    background: rgb( 32,  34,  37);
 }
 QToolTip {
     border-width: 1px;
     border-style: solid;
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-radius: 4px;
     padding: 1px;
     opacity: 200;
@@ -786,7 +750,7 @@ QBalloonTip {
     background-color: rgb( 32,  34,  37);
     border-width: 1px;
     border-style: solid;
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-radius: 4px;
     padding: 1px;
 }
@@ -794,7 +758,7 @@ QTabBar#MainTabBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    border-bottom-color: rgb( 72,  61, 139);
+    border-bottom-color: rgb( 93, 187, 204);
 }
 QTabBar#MainTabBar:disabled {
     border-color: transparent;
@@ -804,14 +768,14 @@ QTabBar#MainTabBar::tab {
     margin-left: 3px;
     margin-right: 3px;
     border-top-color: transparent;
-    border-bottom-color: rgb( 72,  61, 139);
+    border-bottom-color: rgb( 93, 187, 204);
     padding: 3px 5px;
 }
 QTabBar#MainTabBar::tab:top:hover {
-    border-top-color: rgb( 72,  61, 139);
+    border-top-color: rgb( 93, 187, 204);
 }
 QTabBar#MainTabBar::tab:top:selected {
-    border-color: rgb( 72,  61, 139);
+    border-color: rgb( 93, 187, 204);
     border-bottom-color: rgb( 32,  34,  37);
 }
 QPushButton#TabButtonWidget {
@@ -834,7 +798,7 @@ QTabBar#SideTabBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
-    border-right-color: rgb( 72,  61, 139);
+    border-right-color: rgb( 93, 187, 204);
 }
 QTabBar#SideTabBar:disabled {
     border-color: transparent;
