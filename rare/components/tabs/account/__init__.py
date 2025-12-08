@@ -1,7 +1,7 @@
 import webbrowser
 
 from PySide6.QtCore import Signal, Slot
-from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QLabel, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.signals import GlobalSignals
@@ -35,8 +35,9 @@ class AccountWidget(QWidget):
         self.quit_button.clicked.connect(self.__on_quit)
 
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel(self.tr("Account")))
         layout.addWidget(QLabel(self.tr("Logged in as <b>{}</b>").format(username)))
+        vspacer = QSpacerItem(10, 10, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        layout.addSpacerItem(vspacer)
         layout.addWidget(self.open_browser)
         layout.addWidget(self.logout_button)
         layout.addWidget(self.quit_button)

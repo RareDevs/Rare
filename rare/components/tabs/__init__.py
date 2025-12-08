@@ -59,6 +59,11 @@ class MainTabWidget(QTabWidget):
         self.integrations_tab = IntegrationsTab(self.rcore, self)
         self.integrations_index = self.addTab(self.integrations_tab, self.tr("Integrations"))
 
+        # Settings Tab
+        self.settings_tab = SettingsTab(settings, rcore, self)
+        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), self.tr("Settings"))
+        self.settings_tab.about.update_available_ready.connect(lambda: self.main_bar.setTabText(self.settings_index, self.tr("Settings (!)")))
+
         # Account Tab
         self.account_widget = AccountWidget(self.signals, self.core, self)
         self.account_widget.exit_app.connect(self.__on_exit_app)
@@ -70,11 +75,6 @@ class MainTabWidget(QTabWidget):
         self.account_index = self.addTab(
             self.account_tab, qta_icon("mdi.account-circle", "fa5s.user"), self.core.lgd.userdata.get("displayName")
         )
-
-        # Settings Tab
-        self.settings_tab = SettingsTab(settings, rcore, self)
-        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), self.tr("Settings"))
-        self.settings_tab.about.update_available_ready.connect(lambda: self.main_bar.setTabText(self.settings_index, self.tr("Settings (!)")))
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
