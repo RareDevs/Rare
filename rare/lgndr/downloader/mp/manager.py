@@ -6,6 +6,7 @@ from multiprocessing import Queue as MPQueue
 from multiprocessing.shared_memory import SharedMemory
 from sys import exit
 from threading import Condition, Thread
+from typing import Optional
 
 from legendary.downloader.mp.manager import DLManager as DLManagerReal
 from legendary.downloader.mp.workers import DLWorker, FileWorker
@@ -179,7 +180,7 @@ class DLManager(DLManagerReal):
             try:
                 signals: DLManagerSignals = self.signals_queue.get(timeout=0.5)
                 self.log.warning('Immediate stop requested!')
-                if signals.kill is True:
+                if signals.kill:
                     # lk: graceful but not what legendary does
                     self.running = False
                     # send conditions to unlock threads if they aren't already
@@ -214,6 +215,7 @@ class DLManager(DLManagerReal):
 
         # forcibly kill DL workers that are not actually dead yet
         for child in self.children:
+            child.join(timeout=5.0)
             if child.exitcode is None:
                 child.terminate()
 
@@ -222,6 +224,29 @@ class DLManager(DLManagerReal):
             t.join(timeout=5.0)
             if t.is_alive():
                 self.log.warning(f'Thread did not terminate! {repr(t)}')
+
+        # clean up all the queues, otherwise this process won't terminate properly
+        queues: list[tuple[str, Optional[MPQueue]]] = [
+            ('Download jobs', self.dl_worker_queue),
+            ('Writer jobs', self.writer_queue),
+            ('Download results', self.dl_result_q),
+            ('Writer results', self.writer_result_q),
+            ('Signed chunks', self.signed_chunks_q)
+        ]
+        for name, q in queues:
+            self.log.debug(f'Cleaning up queue "{name}"')
+            try:
+                while True:
+                    _ = q.get_nowait()
+            except queue.Empty:
+                q.close()
+                q.join_thread()
+
+        # clean up connections
+        pipes = [self.sign_pipe, self.ticket_pipe]
+        for pipe in pipes:
+            if pipe is not None:
+                pipe.close()
 
         # clean up resume file
         if self.resume_file and not kill_request:
