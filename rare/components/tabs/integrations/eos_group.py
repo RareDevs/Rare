@@ -13,7 +13,7 @@ from PySide6.QtCore import (
     Signal,
     Slot,
 )
-from PySide6.QtGui import QShowEvent
+from PySide6.QtGui import QHideEvent, QShowEvent
 from PySide6.QtWidgets import (
     QComboBox,
     QFormLayout,
@@ -210,13 +210,20 @@ class EosGroup(QGroupBox):
         self.threadpool = QThreadPool.globalInstance()
         self.worker: Optional[CheckForUpdateWorker] = None
 
-    def showEvent(self, a0: QShowEvent) -> None:
-        if a0.spontaneous():
-            return super().showEvent(a0)
+    def showEvent(self, e: QShowEvent) -> None:
+        if e.spontaneous():
+            return super().showEvent(e)
         self.update_state()
         self.update_prefixes()
         self.check_for_update()
-        super().showEvent(a0)
+        return super().showEvent(e)
+
+    def hideEvent(self, e: QHideEvent, /):
+        if e.spontaneous():
+            return super().hideEvent(e)
+        for widget in self.findChildren(EosPrefixWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
+            widget.deleteLater()
+        return super().hideEvent(e)
 
     @Slot()
     def update_state(self):
@@ -283,6 +290,7 @@ class EosGroup(QGroupBox):
                 self,
                 "Error",
                 self.tr("Something went wrong while installing EOS Overlay"),
+                QMessageBox.StandardButton.Close,
             )
             return
         self.update_state()
