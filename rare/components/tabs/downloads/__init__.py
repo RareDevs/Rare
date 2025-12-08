@@ -1,5 +1,6 @@
 import datetime
 import platform
+from copy import deepcopy
 from logging import getLogger
 from typing import Optional, Union
 
@@ -190,7 +191,7 @@ class DownloadsTab(QWidget):
         rgame = self.rcore.get_game(item.options.app_name)
         if not rgame.state == RareGame.State.DOWNLOADING:
             logger.error(
-                f"Can't start download {item.options.app_name}due to incompatible state {RareGame.State(rgame.state).name}"
+                f"Can't start download {item.options.app_name} due to incompatible state {RareGame.State(rgame.state).name}"
             )
             # lk: invalidate the queue item in case the game was uninstalled
             self.__requeue_download(InstallQueueItemModel(options=item.options))
@@ -201,7 +202,6 @@ class DownloadsTab(QWidget):
         dl_thread = DlThread(item, rgame, self.core, self.args.debug)
         dl_thread.result.connect(self.__on_download_result)
         dl_thread.progress.connect(self.__on_download_progress)
-        dl_thread.finished.connect(dl_thread.deleteLater)
         dl_thread.start()
         self.__thread = dl_thread
         self.download_widget.ui.kill_button.setDisabled(False)
@@ -231,6 +231,10 @@ class DownloadsTab(QWidget):
 
     @Slot(DlResultModel)
     def __on_download_result(self, result: DlResultModel):
+        # lk: copy the result and queue the thread for deletion
+        result = deepcopy(result)
+        self.__thread.deleteLater()
+
         if result.code == DlResultCode.FINISHED:
             logger.info(f"Download finished: {result.options.app_name}")
             if result.shortcut and desktop_links_supported():
@@ -257,8 +261,9 @@ class DownloadsTab(QWidget):
             logger.error(f"Download error: {result.options.app_name} ({result.message})")
             QMessageBox.warning(
                 self,
-                self.tr("Error"),
+                self.tr("Error - {}").format(result.app_title),
                 self.tr("Download error: {}").format(result.message),
+                QMessageBox.StandardButton.Close,
             )
 
         elif result.code == DlResultCode.STOPPED:
@@ -281,6 +286,7 @@ class DownloadsTab(QWidget):
             self.__reset_download()
 
     def __reset_download(self):
+        self.__thread = None
         self.download_widget.setPixmap(QPixmap())
         self.download_widget.ui.kill_button.setDisabled(True)
         self.download_widget.ui.dl_name.setText(self.tr("No active download"))
@@ -289,7 +295,7 @@ class DownloadsTab(QWidget):
         self.download_widget.ui.time_left.setText("...")
         self.download_widget.ui.cache_used.setText("...")
         self.download_widget.ui.downloaded.setText("...")
-        self.__thread = None
+        self.update_queues_count()
 
     @Slot(InstallOptionsModel)
     def __get_install_options(self, options: InstallOptionsModel):
@@ -364,6 +370,6 @@ class DownloadsTab(QWidget):
                 None,
                 self.tr("Uninstall - {}").format(rgame.app_title),
                 message,
-                QMessageBox.Close,
+                QMessageBox.StandardButton.Close,
             )
         rgame.state = RareGame.State.IDLE
