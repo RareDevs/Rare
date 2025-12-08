@@ -11,7 +11,7 @@
     <file alias="Zukitre">colors/Zukitre.scheme</file>
   </qresource>
   <qresource prefix="images">
-    <file alias="Rare.png">images/Rare.png</file>
+    <file alias="icon.png">images/icon.png</file>
     <file alias="loader.webp">images/loader.webp</file>
   </qresource>
 </RCC>

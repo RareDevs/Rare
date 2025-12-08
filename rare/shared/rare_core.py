@@ -76,7 +76,7 @@ class RareCore(QObject):
         self.threadpool_net.setMaxThreadCount(2)
 
         self.__library: Dict[str, RareGame] = {}
-        self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp)
+        self.__eos_overlay = RareEosOverlay(self.__settings, self.__core, self.__image_manager, EOSOverlayApp)
         self.__eos_overlay.signals.game.install.connect(self.__signals.game.install)
         self.__eos_overlay.signals.game.uninstall.connect(self.__signals.game.uninstall)
 
