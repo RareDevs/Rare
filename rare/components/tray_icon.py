@@ -25,7 +25,7 @@ class TrayIcon(QSystemTrayIcon):
         self.signals = rcore.signals()
         self.core = rcore.core()
 
-        self.setIcon(QIcon(":/images/Rare.png"))
+        self.setIcon(QIcon(":/images/icon.png"))
         self.setVisible(True)
         self.setToolTip(QApplication.applicationName())
 

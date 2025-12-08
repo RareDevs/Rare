@@ -642,9 +642,26 @@ class RareGame(RareGameSlim):
 
 
 class RareEosOverlay(RareGameBase):
-    def __init__(self, legendary_core: LegendaryCore, game: Game):
+
+    def __init__(
+            self,
+            settings: RareAppSettings,
+            legendary_core: LegendaryCore,
+            image_manager: ImageManager,
+            game: Game,
+        ):
         super(RareEosOverlay, self).__init__(legendary_core, game)
+        self.settings = settings
+        self.image_manager = image_manager
+
         self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
+        self.image_manager.download_image(game, self.__update_pixmap, 0, False)
+
+    @Slot()
+    def __update_pixmap(self):
+        self.has_pixmap = self.image_manager.has_pixmaps(self.app_name)
+        if self.has_pixmap:
+            self.signals.widget.update.emit()
 
     @property
     def is_installed(self) -> bool:
