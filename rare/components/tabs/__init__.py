@@ -73,8 +73,8 @@ class MainTabWidget(QTabWidget):
 
         # Settings Tab
         self.settings_tab = SettingsTab(settings, rcore, self)
-        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), "")
-        self.settings_tab.about.update_available_ready.connect(lambda: self.main_bar.setTabText(self.settings_index, "(!)"))
+        self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), self.tr("Settings"))
+        self.settings_tab.about.update_available_ready.connect(lambda: self.main_bar.setTabText(self.settings_index, self.tr("Settings (!)")))
 
         # Open game list on click on Games tab button
         self.tabBarClicked.connect(self.mouse_clicked)
@@ -127,9 +127,10 @@ class MainTabWidget(QTabWidget):
 
     @Slot(int)
     def __on_downloads_update_title(self, num_downloads: int):
+        suffix = "" if not num_downloads else f" ({num_downloads})"
         self.setTabText(
             self.indexOf(self.downloads_tab),
-            self.tr("Downloads ({})").format(num_downloads),
+            self.tr("Downloads") + suffix,
         )
 
     def mouse_clicked(self, index):
