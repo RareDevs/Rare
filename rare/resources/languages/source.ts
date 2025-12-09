@@ -79,11 +79,6 @@
     </message>
     <message>
         <location filename="../../components/tabs/account/__init__.py" line="38"/>
-        <source>Account</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../components/tabs/account/__init__.py" line="39"/>
         <source>Logged in as &lt;b&gt;{}&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -513,7 +508,7 @@
     <name>DownloadsTab</name>
     <message>
         <location filename="../../components/tabs/downloads/__init__.py" line="212"/>
-        <location filename="../../components/tabs/downloads/__init__.py" line="249"/>
+        <location filename="../../components/tabs/downloads/__init__.py" line="253"/>
         <source>Downloads</source>
         <translation type="unfinished"></translation>
     </message>
@@ -523,27 +518,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/downloads/__init__.py" line="250"/>
+        <location filename="../../components/tabs/downloads/__init__.py" line="254"/>
         <source>Finished: &quot;{}&quot; is now playable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/downloads/__init__.py" line="260"/>
-        <source>Error</source>
+        <location filename="../../components/tabs/downloads/__init__.py" line="264"/>
+        <source>Error - {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/downloads/__init__.py" line="261"/>
+        <location filename="../../components/tabs/downloads/__init__.py" line="265"/>
         <source>Download error: {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/downloads/__init__.py" line="286"/>
+        <location filename="../../components/tabs/downloads/__init__.py" line="292"/>
         <source>No active download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/downloads/__init__.py" line="365"/>
+        <location filename="../../components/tabs/downloads/__init__.py" line="371"/>
         <source>Uninstall - {}</source>
         <translation type="unfinished"></translation>
     </message>
@@ -813,12 +808,12 @@
 <context>
     <name>EosGroup</name>
     <message>
-        <location filename="../../components/tabs/integrations/eos_group.py" line="227"/>
+        <location filename="../../components/tabs/integrations/eos_group.py" line="234"/>
         <source>&lt;b&gt;Epic Online Services Overlay is not installed&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/integrations/eos_group.py" line="285"/>
+        <location filename="../../components/tabs/integrations/eos_group.py" line="292"/>
         <source>Something went wrong while installing EOS Overlay</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2456,28 +2451,38 @@ Disabling this greatly improves start-up time, but some library filters may not 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/__init__.py" line="132"/>
-        <source>Downloads ({})</source>
+        <location filename="../../components/tabs/__init__.py" line="64"/>
+        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/__init__.py" line="151"/>
-        <source>Quit</source>
+        <location filename="../../components/tabs/__init__.py" line="65"/>
+        <source>Settings (!)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/__init__.py" line="151"/>
-        <location filename="../../components/tabs/__init__.py" line="159"/>
-        <source>Logout</source>
+        <location filename="../../components/tabs/__init__.py" line="133"/>
+        <source>Downloads</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../components/tabs/__init__.py" line="152"/>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/__init__.py" line="152"/>
+        <location filename="../../components/tabs/__init__.py" line="160"/>
+        <source>Logout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../components/tabs/__init__.py" line="153"/>
         <source>There are active downloads. Stop them before trying to quit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../components/tabs/__init__.py" line="160"/>
+        <location filename="../../components/tabs/__init__.py" line="161"/>
         <source>Do you really want to logout &lt;b&gt;{}&lt;/b&gt;?</source>
         <translation type="unfinished"></translation>
     </message>
