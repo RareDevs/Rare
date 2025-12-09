@@ -33,7 +33,11 @@ jobs:
           check-latest: true
           architecture: ${{ matrix.pyarch }}
       - name: Install build dependencies
+        env:
+          NONINTERACTIVE: 1
         run: |
+          sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+          sudo rm -rfv /opt/homebrew/
           pip3 install --upgrade cx_freeze ruff
       - name: Install target dependencies
         run: |
