@@ -152,4 +152,5 @@ jobs:
     uses: ./.github/workflows/_job_publish.yml
     with:
       version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
-      file1: Rare-${{ needs.version.outputs.version }}.msi
+      file1: Rare-${{ needs.version.outputs.version }}-x86_64.msi
+      file2: Rare-${{ needs.version.outputs.version }}-arm64.msi
