@@ -583,7 +583,11 @@ class RareGame(RareGameSlim):
     def uninstall(self) -> bool:
         if not self.is_idle:
             return False
-        self.signals.game.uninstall.emit(UninstallOptionsModel(app_name=self.app_name, keep_config=self.sdl_name is not None))
+        self.signals.game.uninstall.emit(
+            UninstallOptionsModel(
+                app_name=self.app_name,
+                keep_config=self.sdl_name is not None or platform.system() not in {"Windows"},
+        ))
         return True
 
     def launch(
@@ -760,5 +764,9 @@ class RareEosOverlay(RareGameBase):
     def uninstall(self) -> bool:
         if not self.is_idle or not self.is_installed:
             return False
-        self.signals.game.uninstall.emit(UninstallOptionsModel(app_name=self.app_name))
+        self.signals.game.uninstall.emit(
+            UninstallOptionsModel(
+                app_name=self.app_name,
+                keep_overlay_keys=platform.system() not in {"Windows"},
+            ))
         return True
