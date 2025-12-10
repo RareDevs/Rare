@@ -56,7 +56,7 @@ jobs:
           --assume-yes-for-downloads
           --disable-ccache
           --show-scons
-          --clang
+          --msvc=latest
           --lto=no
           --jobs=4
           --static-libpython=no
