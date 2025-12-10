@@ -57,7 +57,8 @@ jobs:
         --repo "${{ github.server_url }}/${{ github.repository }}"
         release create
         "${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}"
-        --latest=true
+        --prerelease
+        --latest=false
         --target main
         --title "Pre-release ${{ needs.version.outputs.tag_abbrev }}.${{ needs.version.outputs.tag_offset }}"
         --generate-notes
