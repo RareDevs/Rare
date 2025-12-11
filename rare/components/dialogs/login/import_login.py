@@ -8,6 +8,7 @@ from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import QFileDialog, QFrame
 
 from rare.lgndr.core import LegendaryCore
+from rare.lgndr.glue.exception import LgndrException
 from rare.ui.components.dialogs.login.import_login import Ui_ImportLogin
 
 
@@ -40,9 +41,9 @@ class ImportLogin(QFrame):
             if not self.core.egl.appdata_path and os.path.exists(self.egl_appdata):
                 self.core.egl.appdata_path = self.egl_appdata
             if not self.core.egl.appdata_path:
-                self.ui.status_label.setText(self.text_egl_notfound)
+                self.ui.status_field.setText(self.text_egl_notfound)
             else:
-                self.ui.status_label.setText(self.text_egl_found)
+                self.ui.status_field.setText(self.text_egl_found)
                 self.found = True
             self.ui.prefix_combo.setCurrentText(self.egl_appdata)
         else:
@@ -52,9 +53,9 @@ class ImportLogin(QFrame):
             prefixes = self.get_wine_prefixes()
             if len(prefixes):
                 self.ui.prefix_combo.addItems(prefixes)
-                self.ui.status_label.setText(self.tr("Select the Wine prefix you want to import."))
+                self.ui.status_field.setText(self.tr("Select the Wine prefix you want to import."))
             else:
-                self.ui.status_label.setText(self.text_egl_notfound)
+                self.ui.status_field.setText(self.text_egl_notfound)
 
         self.ui.prefix_button.clicked.connect(self.prefix_path)
         self.ui.prefix_combo.editTextChanged.connect(lambda _: self.isValid.emit(self.is_valid()))
@@ -90,13 +91,13 @@ class ImportLogin(QFrame):
                     os.path.join(wine_folders["Local AppData"], "EpicGamesLauncher", "Saved", "Config", "Windows")
                 )
                 if path_exists := os.path.exists(self.egl_appdata):
-                    self.ui.status_label.setText(self.text_egl_found)
+                    self.ui.status_field.setText(self.text_egl_found)
                 return path_exists
             except KeyError:
                 return False
 
     def do_login(self):
-        self.ui.status_label.setText(self.tr("Loading..."))
+        self.ui.status_field.setText(self.tr("Loading..."))
         if os.name != "nt":
             self.logger.info("Using EGL appdata path at %s", {self.egl_appdata})
             self.core.egl.appdata_path = self.egl_appdata
@@ -104,9 +105,8 @@ class ImportLogin(QFrame):
             if self.core.auth_import():
                 self.logger.info("Logged in as %s", {self.core.lgd.userdata["displayName"]})
                 self.success.emit()
-            else:
-                self.ui.status_label.setText(self.tr("Login failed."))
-                self.logger.warning("Failed to import existing session.")
         except Exception as e:
-            self.ui.status_label.setText(self.tr("Login failed. {}").format(str(e)))
-            self.logger.warning("Failed to import existing session: %s", e)
+            msg = e.message if isinstance(e, LgndrException) else str(e)
+            self.ui.status_field.setText(self.tr("Login failed: {}").format(msg))
+            self.logger.warning("Failed to import existing session")
+            self.logger.error(e)

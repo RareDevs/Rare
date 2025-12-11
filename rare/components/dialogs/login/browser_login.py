@@ -8,6 +8,7 @@ from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QApplication, QFormLayout, QFrame, QLineEdit
 
 from rare.lgndr.core import LegendaryCore
+from rare.lgndr.glue.exception import LgndrException
 from rare.ui.components.dialogs.login.browser_login import Ui_BrowserLogin
 from rare.utils.misc import qta_icon
 from rare.utils.paths import get_rare_executable
@@ -29,28 +30,30 @@ class BrowserLogin(QFrame):
         self.core = core
         self.login_url = self.core.egs.get_auth_url()
 
-        self.sid_edit = IndicatorLineEdit(
+        self.auth_edit = IndicatorLineEdit(
             placeholder=self.tr("Insert authorizationCode here"), edit_func=self.sid_edit_callback, parent=self
         )
-        self.sid_edit.line_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.auth_edit.line_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.ui.link_text.setText(self.login_url)
         self.ui.copy_button.setIcon(qta_icon("mdi.content-copy", "fa5.copy"))
         self.ui.copy_button.clicked.connect(self.copy_link)
         self.ui.form_layout.setWidget(
-            self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0], QFormLayout.ItemRole.FieldRole, self.sid_edit
+            self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0],
+            QFormLayout.ItemRole.FieldRole,
+            self.auth_edit
         )
 
         self.ui.open_button.clicked.connect(self.open_browser)
-        self.sid_edit.textChanged.connect(lambda _: self.isValid.emit(self.is_valid()))
+        self.auth_edit.textChanged.connect(lambda _: self.isValid.emit(self.is_valid()))
 
     @Slot()
     def copy_link(self):
         clipboard = QApplication.instance().clipboard()
         clipboard.setText(self.login_url)
-        self.ui.status_label.setText(self.tr("Copied to clipboard"))
+        self.ui.status_field.setText(self.tr("Copied to clipboard"))
 
     def is_valid(self):
-        return self.sid_edit.is_valid
+        return self.auth_edit.is_valid
 
     @staticmethod
     def sid_edit_callback(text) -> Tuple[bool, str, int]:
@@ -68,17 +71,17 @@ class BrowserLogin(QFrame):
             return False, text, IndicatorReasonsCommon.VALID
 
     def do_login(self):
-        self.ui.status_label.setText(self.tr("Logging in..."))
-        auth_code = self.sid_edit.text()
+        self.ui.status_field.setText(self.tr("Logging in..."))
+        auth_code = self.auth_edit.text()
         try:
             if self.core.auth_code(auth_code):
                 self.logger.info("Successfully logged in as %s", self.core.lgd.userdata["displayName"])
                 self.success.emit()
-            else:
-                self.ui.status_label.setText(self.tr("Login failed."))
-                self.logger.warning("Failed to login through browser")
         except Exception as e:
-            self.logger.warning(e)
+            msg = e.message if isinstance(e, LgndrException) else str(e)
+            self.ui.status_field.setText(self.tr("Login failed: {}").format(msg))
+            self.logger.error("Failed to login through browser")
+            self.logger.error(e)
 
     @Slot()
     def open_browser(self):
@@ -97,8 +100,14 @@ class BrowserLogin(QFrame):
             proc.deleteLater()
 
             if out:
-                self.core.auth_ex_token(out)
-                self.logger.info("Successfully logged in as %s", {self.core.lgd.userdata["displayName"]})
-                self.success.emit()
+                try:
+                    self.core.auth_ex_token(out)
+                    self.logger.info("Successfully logged in as %s", {self.core.lgd.userdata["displayName"]})
+                    self.success.emit()
+                except Exception as e:
+                    msg = e.message if isinstance(e, LgndrException) else str(e)
+                    self.ui.status_field.setText(self.tr("Login failed: {}").format(msg))
+                    self.logger.error("Failed to login through browser")
+                    self.logger.error(e)
             else:
-                self.logger.warning("Failed to login through browser.")
+                self.logger.error("Failed to login through browser")

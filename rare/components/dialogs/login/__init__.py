@@ -45,40 +45,44 @@ class LoginDialog(BaseDialog):
         self.core = core
 
         self.login_stack = SlidingStackedWidget(parent=self)
-        self.login_stack.setMinimumWidth(480)
-        self.ui.login_stack_layout.addWidget(self.login_stack)
+        self.ui.main_layout.insertWidget(3, self.login_stack, stretch=1)
 
         self.landing_page = LandingPage(self.login_stack)
-        self.login_stack.insertWidget(0, self.landing_page)
+        self.landing_index = self.login_stack.insertWidget(0, self.landing_page)
 
         self.browser_page = BrowserLogin(self.core, self.login_stack)
-        self.login_stack.insertWidget(1, self.browser_page)
+        self.browser_index = self.login_stack.insertWidget(1, self.browser_page)
         self.browser_page.success.connect(self.login_successful)
         self.browser_page.isValid.connect(lambda x: self.ui.next_button.setEnabled(x))
         self.import_page = ImportLogin(self.core, self.login_stack)
-        self.login_stack.insertWidget(2, self.import_page)
+        self.import_index = self.login_stack.insertWidget(2, self.import_page)
         self.import_page.success.connect(self.login_successful)
         self.import_page.isValid.connect(lambda x: self.ui.next_button.setEnabled(x))
 
-        # # NOTE: The real problem is that the BrowserLogin page has a huge QLabel with word-wrapping enabled.
-        # # That forces the whole form to vertically expand instead of horizontally. Since the form is not shown
-        # # on the first page, the internal Qt calculation for the size of that form calculates it by expanding it
-        # # vertically. Once the form becomes visible, the correct calculation takes place and that is why the
-        # # dialog reduces in height. To avoid that, calculate the bounding size of all forms and set it as the
-        # # minumum size
-        # self.login_stack.setMinimumSize(
-        #     self.landing_page.sizeHint().expandedTo(
-        #         self.browser_page.sizeHint().expandedTo(self.import_page.sizeHint())
-        #     )
-        # )
+        self.info_message = {
+            self.landing_index: self.tr(
+                "<i>Select log-in method.</i>"
+            ),
+            self.browser_index: self.tr(
+                "<i>Click the <strong>Open Browser</strong> button to open the "
+                "login page in your web browser or copy the link and paste it "
+                "in any web browser. After logging in using the browser, copy "
+                "the text in the quotes after </i><code><b>authorizationCode</b></code><i> "
+                "in the same line into the empty input above."
+                "<br><br><strong>DO NOT SHARE THE INFORMATION IN THE BROWSER PAGE WITH "
+                "ANYONE IN ANY FORM (TEXT OR SCREENSHOT)!</strong></i>"
+            ),
+            self.import_index: self.tr(
+                "<i>Select the Wine prefix where Epic Games Launcher is installed. "
+                "You will get logged out from EGL in the process.</i>"
+            ),
+        }
+        self.ui.info_label.setText(self.info_message[self.landing_index])
 
-        self.login_stack.setFixedHeight(
-            max(
-                self.landing_page.heightForWidth(self.login_stack.minimumWidth()),
-                self.browser_page.heightForWidth(self.login_stack.minimumWidth()),
-                self.import_page.heightForWidth(self.login_stack.minimumWidth()),
-            )
-        )
+        self.login_stack.setMinimumWidth(640)
+        self.login_stack.setMinimumHeight(180)
+        self.ui.info_label.setMinimumWidth(640)
+        self.ui.info_label.setMinimumHeight(40)
 
         self.ui.next_button.setEnabled(False)
         self.ui.back_button.setEnabled(False)
@@ -108,12 +112,14 @@ class LoginDialog(BaseDialog):
     @Slot()
     def browser_radio_clicked(self):
         self.login_stack.slideInWidget(self.browser_page)
+        self.ui.info_label.setText(self.info_message[self.browser_index])
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(False)
 
     @Slot()
     def import_radio_clicked(self):
         self.login_stack.slideInWidget(self.import_page)
+        self.ui.info_label.setText(self.info_message[self.import_index])
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(self.import_page.is_valid())
 
@@ -121,6 +127,7 @@ class LoginDialog(BaseDialog):
     def back_clicked(self):
         self.ui.back_button.setEnabled(False)
         self.ui.next_button.setEnabled(True)
+        self.ui.info_label.setText(self.info_message[self.landing_index])
         self.login_stack.slideInWidget(self.landing_page)
 
     @Slot()
