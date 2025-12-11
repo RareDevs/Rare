@@ -2,7 +2,7 @@ import os
 from typing import Optional, Tuple, Union
 
 from PySide6.QtCore import QSignalBlocker, QThreadPool, Signal, Slot
-from PySide6.QtGui import QShowEvent, Qt
+from PySide6.QtGui import QFont, QShowEvent, Qt
 from PySide6.QtWidgets import QFileDialog, QFormLayout, QLabel, QWidget
 
 from rare.models.game import RareGame
@@ -62,7 +62,7 @@ class MoveDialog(ActionDialog):
 
         self.full_path_info = ElideLabel(parent=self)
         font = self.font()
-        font.setItalic(True)
+        font.setStyleHint(QFont.StyleHint.Monospace)
         self.full_path_info.setFont(font)
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.full_path_label)[0],
