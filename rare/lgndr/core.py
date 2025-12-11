@@ -58,6 +58,39 @@ class LegendaryCore(LegendaryCoreReal):
         usr_platform = self.lgd.config.get("Legendary", "default_platform", fallback=os_default)
         return usr_platform if usr_platform in ("Windows", "Win32", "Mac") else os_default
 
+    def auth_code(self, code) -> bool:
+        handler = LgndrLogHandler(logging.ERROR)
+        self.log.addHandler(handler)
+        try:
+            ret = super().auth_code(code)
+        except LgndrException as ret:
+            raise ret
+        finally:
+            self.log.removeHandler(handler)
+        return ret
+
+    def auth_ex_token(self, code) -> bool:
+        handler = LgndrLogHandler(logging.ERROR)
+        self.log.addHandler(handler)
+        try:
+            ret = super().auth_ex_token(code)
+        except LgndrException as ret:
+            raise ret
+        finally:
+            self.log.removeHandler(handler)
+        return ret
+
+    def auth_import(self) -> bool:
+        handler = LgndrLogHandler(logging.ERROR)
+        self.log.addHandler(handler)
+        try:
+            ret = super().auth_import()
+        except LgndrException as ret:
+            raise ret
+        finally:
+            self.log.removeHandler(handler)
+        return ret
+
     def update_check_enabled(self):
         return True
 
