@@ -3,13 +3,14 @@
 ################################################################################
 ## Form generated from reading UI file 'login_dialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtWidgets import (
+    QFrame,
     QHBoxLayout,
     QLabel,
     QPushButton,
@@ -23,10 +24,10 @@ class Ui_LoginDialog(object):
     def setupUi(self, LoginDialog):
         if not LoginDialog.objectName():
             LoginDialog.setObjectName(u"LoginDialog")
-        LoginDialog.resize(241, 128)
+        LoginDialog.resize(242, 146)
         self.main_layout = QVBoxLayout(LoginDialog)
         self.main_layout.setObjectName(u"main_layout")
-        self.login_vspacer_top = QSpacerItem(0, 17, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        self.login_vspacer_top = QSpacerItem(17, 17, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
         self.main_layout.addItem(self.login_vspacer_top)
 
@@ -35,14 +36,18 @@ class Ui_LoginDialog(object):
 
         self.main_layout.addWidget(self.welcome_label)
 
-        self.login_vspacer_bottom = QSpacerItem(0, 17, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        self.login_vspacer_bottom = QSpacerItem(17, 17, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
         self.main_layout.addItem(self.login_vspacer_bottom)
 
-        self.login_stack_layout = QVBoxLayout()
-        self.login_stack_layout.setObjectName(u"login_stack_layout")
+        self.info_label = QLabel(LoginDialog)
+        self.info_label.setObjectName(u"info_label")
+        self.info_label.setFrameShape(QFrame.Shape.StyledPanel)
+        self.info_label.setFrameShadow(QFrame.Shadow.Sunken)
+        self.info_label.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.info_label.setWordWrap(True)
 
-        self.main_layout.addLayout(self.login_stack_layout)
+        self.main_layout.addWidget(self.info_label)
 
         self.button_layout = QHBoxLayout()
         self.button_layout.setObjectName(u"button_layout")
@@ -75,6 +80,7 @@ class Ui_LoginDialog(object):
     def retranslateUi(self, LoginDialog):
         LoginDialog.setWindowTitle(QCoreApplication.translate("LoginDialog", u"Login", None))
         self.welcome_label.setText(QCoreApplication.translate("LoginDialog", u"<h1>Welcome to Rare</h1>", None))
+        self.info_label.setText("")
         self.exit_button.setText(QCoreApplication.translate("LoginDialog", u"Exit", None))
         self.back_button.setText(QCoreApplication.translate("LoginDialog", u"Back", None))
         self.next_button.setText(QCoreApplication.translate("LoginDialog", u"Next", None))
