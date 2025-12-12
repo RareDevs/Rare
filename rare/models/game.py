@@ -586,7 +586,8 @@ class RareGame(RareGameSlim):
         self.signals.game.uninstall.emit(
             UninstallOptionsModel(
                 app_name=self.app_name,
-                keep_config=self.sdl_name is not None or platform.system() not in {"Windows"},
+                keep_folder=self.is_dlc,
+                keep_config=self.sdl_name is not None or self.is_dlc or platform.system() not in {"Windows"},
         ))
         return True
 
