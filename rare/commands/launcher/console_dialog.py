@@ -165,9 +165,7 @@ class ConsoleEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super(ConsoleEdit, self).__init__(parent=parent)
         self.setReadOnly(True)
-        font = self.font()
-        font.setStyleHint(QFont.StyleHint.Monospace)
-        self.setFont(font)
+        self.setFont(QFont("monospace"))
 
     def scroll_to_last_line(self):
         cursor = self.textCursor()

@@ -27,9 +27,7 @@ class InstallDialogFileFilters(CollapsibleFrame):
 
     def add_item(self, data: str):
         li = QListWidgetItem(data, self.ui.exclude_list)
-        font = self.font()
-        font.setStyleHint(QFont.StyleHint.Monospace)
-        li.setFont(font)
+        li.setFont(QFont("monospace"))
         li.setCheckState(Qt.CheckState.Unchecked)
         self.ui.exclude_list.addItem(li)
 
