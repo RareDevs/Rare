@@ -97,6 +97,7 @@ class RareGame(RareGameSlim):
         self.grant_date()
 
         self.owned_dlcs: Set[RareGame] = set()
+        self.__parent_rgame: Optional[RareGame] = None
 
         if self.has_update:
             self.logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
@@ -121,7 +122,17 @@ class RareGame(RareGameSlim):
         dlc.signals.progress.start.connect(self.signals.progress.start)
         dlc.signals.progress.update.connect(self.signals.progress.update)
         dlc.signals.progress.finish.connect(self.signals.progress.finish)
+        dlc.parent_rgame = self
         self.owned_dlcs.add(dlc)
+
+    @property
+    def parent_rgame(self) -> Optional["RareGame"]:
+        return self.__parent_rgame if self.is_dlc else None
+
+    @parent_rgame.setter
+    def parent_rgame(self, rgame: "RareGame") -> None:
+        if self.is_dlc:
+            self.__parent_rgame = rgame
 
     def __on_progress_update(self, progress: int):
         self.progress = progress
@@ -310,7 +321,8 @@ class RareGame(RareGameSlim):
         else:
             if self.has_update:
                 self.signals.download.dequeue.emit(self.app_name)
-            self.core.egstore_delete(self.igame)
+            if not self.is_dlc:
+                self.core.egstore_delete(self.igame)
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
         self.__update_pixmap()
@@ -555,16 +567,45 @@ class RareGame(RareGameSlim):
     def refresh_pixmap(self):
         self.image_manager.download_image(self.game, self.__update_pixmap, 0, True)
 
+    @property
+    def __install_base_path(self) -> str:
+        if self.is_installed:
+            return self.install_path
+        if self.parent_rgame and self.parent_rgame.is_installed:
+            return self.parent_rgame.install_path
+        return self.core.get_default_install_dir(self.default_platform)
+
+    @property
+    def __install_platform(self) -> str:
+        if self.is_installed:
+            return self.igame.platform
+        if self.parent_rgame and self.parent_rgame.is_installed:
+            return self.parent_rgame.igame.platform
+        return self.default_platform
+
     def install(self) -> bool:
         if not self.is_idle:
             return False
-        self.signals.game.install.emit(InstallOptionsModel(app_name=self.app_name))
+        self.signals.game.install.emit(
+            InstallOptionsModel(
+                app_name=self.app_name,
+                base_path=self.__install_base_path,
+                platform=self.__install_platform,
+            )
+        )
         return True
 
     def modify(self) -> bool:
         if not self.is_idle:
             return False
-        self.signals.game.install.emit(InstallOptionsModel(app_name=self.app_name, reset_sdl=True))
+        self.signals.game.install.emit(
+            InstallOptionsModel(
+                app_name=self.app_name,
+                base_path=self.__install_base_path,
+                platform=self.igame.platform,
+                reset_sdl=True
+            )
+        )
         return True
 
     def repair(self, repair_and_update) -> bool:
@@ -573,6 +614,8 @@ class RareGame(RareGameSlim):
         self.signals.game.install.emit(
             InstallOptionsModel(
                 app_name=self.app_name,
+                base_path=self.__install_base_path,
+                platform=self.igame.platform,
                 repair_mode=True,
                 repair_and_update=repair_and_update,
                 update=repair_and_update,
@@ -586,7 +629,8 @@ class RareGame(RareGameSlim):
         self.signals.game.uninstall.emit(
             UninstallOptionsModel(
                 app_name=self.app_name,
-                keep_config=self.sdl_name is not None or platform.system() not in {"Windows"},
+                keep_folder=self.is_dlc,
+                keep_config=self.sdl_name is not None or self.is_dlc or platform.system() not in {"Windows"},
         ))
         return True
 

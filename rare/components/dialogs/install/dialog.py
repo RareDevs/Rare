@@ -83,15 +83,8 @@ class InstallDialog(ActionDialog):
         self.threadpool = QThreadPool(self)
         self.threadpool.setMaxThreadCount(1)
 
-        if options.base_path:
-            base_path = options.base_path
-        elif rgame.is_installed:
-            base_path = rgame.install_path
-        else:
-            base_path = self.core.get_default_install_dir(rgame.default_platform)
-
         self.install_dir_edit = PathEdit(
-            path=base_path,
+            path=options.base_path,
             file_mode=QFileDialog.FileMode.Directory,
             edit_func=self.__install_dir_edit_callback,
             save_func=self.__install_dir_save_callback,
@@ -104,25 +97,24 @@ class InstallDialog(ActionDialog):
             self.install_dir_edit,
         )
 
-        self.install_dir_edit.setDisabled(rgame.is_installed)
-        self.ui.install_dir_label.setDisabled(rgame.is_installed)
-        self.ui.shortcut_label.setDisabled(rgame.is_installed)
-        self.ui.shortcut_check.setDisabled(rgame.is_installed)
+        self.install_dir_edit.setDisabled(rgame.is_installed or rgame.is_dlc)
+        self.ui.install_dir_label.setDisabled(rgame.is_installed or rgame.is_dlc)
+        self.ui.shortcut_label.setDisabled(rgame.is_installed or rgame.is_dlc)
+        self.ui.shortcut_check.setDisabled(rgame.is_installed or rgame.is_dlc)
         self.ui.shortcut_check.setChecked(not rgame.is_installed and self.settings.get_value(app_settings.create_shortcut))
         self.ui.shortcut_check.checkStateChanged.connect(self.__on_option_changed_no_reload)
 
         self.set_error_labels()
 
         self.ui.platform_combo.addItems(reversed(rgame.platforms))
-        combo_text = rgame.igame.platform if rgame.is_installed else rgame.default_platform
-        self.ui.platform_combo.setCurrentIndex(self.ui.platform_combo.findText(combo_text))
+        self.ui.platform_combo.setCurrentIndex(self.ui.platform_combo.findText(options.platform))
         self.ui.platform_combo.currentIndexChanged.connect(self.__on_option_changed)
         self.ui.platform_combo.currentIndexChanged.connect(self.check_incompatible_platform)
         self.ui.platform_combo.currentIndexChanged.connect(self.reset_install_dir)
         self.ui.platform_combo.currentTextChanged.connect(self.selectable.update_list)
 
-        self.ui.platform_label.setDisabled(rgame.is_installed)
-        self.ui.platform_combo.setDisabled(rgame.is_installed)
+        self.ui.platform_label.setDisabled(rgame.is_installed or rgame.is_dlc)
+        self.ui.platform_combo.setDisabled(rgame.is_installed or rgame.is_dlc)
 
         # if we are repairing, disable the SDL selection and open the dialog frame to be visible
         self.selectable.setDisabled(options.repair_mode and not options.repair_and_update)
@@ -195,7 +187,7 @@ class InstallDialog(ActionDialog):
 
     @Slot(int)
     def reset_install_dir(self, index: int):
-        if not self.rgame.is_installed:
+        if not self.rgame.is_installed and not self.rgame.is_dlc:
             platform = self.ui.platform_combo.itemText(index)
             default_dir = self.core.get_default_install_dir(platform)
             self.install_dir_edit.setText(default_dir)
@@ -213,7 +205,11 @@ class InstallDialog(ActionDialog):
 
     def get_options(self):
         base_path = os.path.join(self.install_dir_edit.text(), ".overlay" if self.__options.overlay else "")
-        self.__options.base_path = "" if self.rgame.is_installed else base_path
+        # TODO: investigate if this check is needed
+        if self.rgame.is_installed or self.rgame.is_dlc:
+            self.__options.base_path = ""
+        else:
+            self.__options.base_path = base_path
         self.__options.platform = self.ui.platform_combo.currentText()
         self.__options.create_shortcut = self.ui.shortcut_check.isChecked()
         self.__options.max_workers = self.advanced.ui.max_workers_spin.value()

@@ -61,9 +61,7 @@ class MoveDialog(ActionDialog):
         )
 
         self.full_path_info = ElideLabel(parent=self)
-        font = self.font()
-        font.setStyleHint(QFont.StyleHint.Monospace)
-        self.full_path_info.setFont(font)
+        self.full_path_info.setFont(QFont("monospace"))
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.full_path_label)[0],
             QFormLayout.ItemRole.FieldRole,

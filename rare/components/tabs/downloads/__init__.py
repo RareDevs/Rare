@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
 from rare.components.dialogs.install import InstallDialog
 from rare.components.dialogs.uninstall import UninstallDialog
 from rare.lgndr.models.downloading import UIUpdate
-from rare.models.game import RareGame
+from rare.models.game import RareEosOverlay, RareGame
 from rare.models.image import ImageSize
 from rare.models.install import (
     InstallOptionsModel,
@@ -114,7 +114,8 @@ class DownloadsTab(QWidget):
 
     @Slot(str)
     @Slot(RareGame)
-    def __add_update(self, update: Union[str, RareGame]):
+    @Slot(RareEosOverlay)
+    def __add_update(self, update: Union[str, RareGame, RareEosOverlay]):
         if isinstance(update, str):
             update = self.rcore.get_game(update)
 

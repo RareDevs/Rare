@@ -180,7 +180,7 @@ class RareWindow(QMainWindow):
             self.queued_container.layout().removeWidget(label)
             label.deleteLater()
         for info in self.rcore.queue_info():
-            label = ElideLabel(f"{info.prefix} {info.app_title}")
+            label = ElideLabel(f"{info.prefix}: {info.app_title}")
             label.setObjectName("QueueWorkerLabel")
             label.setToolTip(f"<b>{info.prefix}</b>: {info.app_title}")
             label.setProperty("workertype", info.type)
