@@ -60,7 +60,7 @@ jobs:
           mv build/Rare.dmg Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
           path: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
