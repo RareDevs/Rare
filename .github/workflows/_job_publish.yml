@@ -32,7 +32,7 @@ jobs:
           - file: ${{ inputs.file4 }}
     steps:
     - name: Download ${{ matrix.file }} from artifacts
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       if: ${{ matrix.file != '' }}
       with:
         name: ${{ matrix.file }}
