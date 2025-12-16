@@ -111,7 +111,7 @@ jobs:
           mv Rare-${{ inputs.version }}-${{ matrix.arch }}.app.zip Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.app.zip
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.app.zip
           path: Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.app.zip
