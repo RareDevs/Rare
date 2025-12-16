@@ -7,8 +7,8 @@ from requests.exceptions import ConnectionError, HTTPError
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.settings import RareAppSettings, app_settings
-from rare.utils import steam_grades
 from rare.utils.metrics import timelogger
+from rare.utils.steam_grades import SteamGrades
 
 from .worker import Worker
 
@@ -39,7 +39,7 @@ class SteamAppIdsWorker(FetchWorker):
             with timelogger(self.logger, "Request Steam AppIds"):
                 try:
                     with timelogger(self.logger, "steam grades load: "):
-                        steam_grades.load_steam_appids()
+                        SteamGrades().load_steam_appids()
                 except Exception as e:
                     self.logger.warning(e)
         self.signals.result.emit((), FetchWorker.Result.STEAMAPPIDS)
