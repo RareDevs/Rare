@@ -3,7 +3,7 @@ from logging import getLogger
 from typing import Tuple
 
 from PySide6.QtCore import QSignalBlocker, Qt, Slot
-from PySide6.QtGui import QShowEvent
+from PySide6.QtGui import QHideEvent, QShowEvent
 
 from rare.components.tabs.settings.compat import CompatSettingsBase
 from rare.components.tabs.settings.widgets.overlay import (
@@ -17,8 +17,8 @@ from rare.models.game import RareGame
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
-from rare.utils import steam_grades
 from rare.utils.paths import compat_shaders_dir, proton_compat_dir, wine_prefix_dir
+from rare.utils.steam_grades import SteamGrades
 from rare.widgets.indicator_edit import (
     ColumnCompleter,
     IndicatorLineEdit,
@@ -74,36 +74,44 @@ class LocalRunnerSettings(RunnerSettingsBase):
             save_func=self.__steam_appid_save_callback,
             parent=self,
         )
-        self.__steam_appids, self.__steam_titles = steam_grades.load_steam_appids()
-        self.steam_appid_edit.setCompleter(ColumnCompleter(items=self.__steam_appids.items()))
         self.form_layout.addRow(self.tr("Steam AppID"), self.steam_appid_edit)
 
-    def showEvent(self, a0: QShowEvent):
-        if a0.spontaneous():
-            return super().showEvent(a0)
+        self.__grades = SteamGrades()
+
+    def showEvent(self, e: QShowEvent):
+        if e.spontaneous():
+            return super().showEvent(e)
         _ = QSignalBlocker(self.shader_cache_check)
         is_local_cache_enabled = self.settings.get_with_global(app_settings.local_shader_cache, self.rgame.app_name)
         has_local_cache_path = bool(config.get_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", False))
         self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
         self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
         _ = QSignalBlocker(self.steam_appid_edit)
+        items = {k: v for k, v in self.__grades.steam_appids.items() if self.rgame.app_title.lower()[0:4] in k.lower()[0:4]}
+        self.steam_appid_edit.setCompleter(ColumnCompleter(items=items))
         self.steam_appid_edit.setText(self.rgame.steam_appid if self.rgame.steam_appid else "")
-        self.steam_appid_edit.setInfo(self.__steam_titles.get(self.rgame.steam_appid, ""))
-        return super().showEvent(a0)
+        self.steam_appid_edit.setInfo(self.__grades.steam_titles.get(self.rgame.steam_appid, ""))
+        return super().showEvent(e)
+
+    def hideEvent(self, e: QHideEvent):
+        if e.spontaneous():
+            return super().hideEvent(e)
+        self.steam_appid_edit.setCompleter(None)
+        return super().hideEvent(e)
 
     def __steam_appid_edit_callback(self, text: str) -> Tuple[bool, str, int]:
         self.steam_appid_edit.setInfo("")
-        if not text:
+        if not text or len(text) < 3:
             return True, text, IndicatorReasonsCommon.UNDEFINED
-        if text in self.__steam_appids.keys():
-            return True, self.__steam_appids[text], IndicatorReasonsCommon.VALID
-        if text in self.__steam_titles.keys():
+        if text in self.__grades.steam_appids.keys():
+            return True, self.__grades.steam_appids[text], IndicatorReasonsCommon.VALID
+        if text in self.__grades.steam_titles.keys():
             return True, text, IndicatorReasonsCommon.VALID
         else:
             return False, text, IndicatorReasonsCommon.GAME_NOT_EXISTS
 
     def __steam_appid_save_callback(self, text: str) -> None:
-        self.steam_appid_edit.setInfo(self.__steam_titles.get(text, ""))
+        self.steam_appid_edit.setInfo(self.__grades.steam_titles.get(text, ""))
         if text == self.rgame.steam_appid:
             return
         self.rgame.steam_appid = text
