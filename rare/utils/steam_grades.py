@@ -40,20 +40,21 @@ class ProtondbRatings(int, Enum):
 
 
 class SteamGrades:
-    __steam_appids: Dict = None
+    __steam_appids: Dict[str, str] = {}
     __steam_appids_version: int = 3
     __active_download: bool = False
+    __replace_chars = ",;.:-_ "
+    __steamids_url = "https://raredevs.github.io/wring/steam_appids.json.xz"
+    __protondb_url = "https://www.protondb.com/api/v1/reports/summaries/"
 
     def __init__(self):
-        self.replace_chars = ",;.:-_ "
-        self.steamids_url = "https://raredevs.github.io/wring/steam_appids.json.xz"
-        self.protondb_url = "https://www.protondb.com/api/v1/reports/summaries/"
+        pass
 
-    def __download_steam_appids(self) -> bytes:
+    def _download_steam_appids(self) -> bytes:
         if SteamGrades.__active_download:
             return b""
         SteamGrades.__active_download = True
-        resp = requests.get(self.steamids_url)
+        resp = requests.get(self.__steamids_url)
         SteamGrades.__active_download = False
         return resp.content
 
@@ -75,7 +76,7 @@ class SteamGrades:
                 SteamGrades.__steam_appids = json["games"]
 
         if not os.path.exists(file) or elapsed_days > 3 or version < SteamGrades.__steam_appids_version:
-            if content := self.__download_steam_appids():
+            if content := self._download_steam_appids():
                 text = lzma.decompress(content).decode("utf-8")
                 with open(file, "w", encoding="utf-8") as f:
                     f.write(text)
@@ -85,7 +86,7 @@ class SteamGrades:
         return SteamGrades.__steam_appids
 
     @property
-    def steam_appids(self) -> Dict:
+    def steam_appids(self) -> Dict[str, str]:
         if not SteamGrades.__steam_appids:
             SteamGrades.__steam_appids = self.load_steam_appids()
         return SteamGrades.__steam_appids
@@ -94,7 +95,7 @@ class SteamGrades:
     def steam_titles(self) -> Dict:
         return {v: k for k, v in self.steam_appids.items()}
 
-    def get_steam_id(self, title: str) -> int:
+    def _get_steam_appid(self, title: str) -> str:
         # workarounds for satisfactory
         # FIXME: This has to be made smarter.
         title = title.replace("Early Access", "").replace("Experimental", "").strip()
@@ -109,33 +110,33 @@ class SteamGrades:
         if steam_name:
             return self.steam_appids[steam_name[0]]
         else:
-            return 0
+            return "0"
 
-    def get_grade(self, steam_code):
-        if steam_code == 0:
+    def _get_grade(self, steam_appid: str):
+        if steam_appid == "0":
             return "fail"
-        steam_code = str(steam_code)
-        res = requests.get(f"{self.protondb_url}/{steam_code}.json")
+        steam_appid = str(steam_appid)
+        res = requests.get(f"{self.__protondb_url}/{steam_appid}.json")
         try:
             app = orjson.loads(res.text)
         except orjson.JSONDecodeError as e:
             logger.error(repr(e))
-            logger.error("Failed to get ProtonDB response for %s", steam_code)
+            logger.error("Failed to get ProtonDB response for %s", steam_appid)
             return "fail"
 
         return app.get("tier", "fail")
 
-    def get_rating(self, core: LegendaryCore, app_name: str, steam_appid: int = None) -> Tuple[int, str]:
+    def get_rating(self, core: LegendaryCore, app_name: str, steam_appid: str = None) -> Tuple[str, str]:
         game = core.get_game(app_name)
         try:
             if steam_appid is None:
-                steam_appid = self.get_steam_id(game.app_title)
+                steam_appid = self._get_steam_appid(game.app_title)
                 if not steam_appid:
                     raise RuntimeError
-            grade = self.get_grade(steam_appid)
+            grade = self._get_grade(steam_appid)
         except Exception as e:
             logger.error(repr(e))
             logger.error("Failed to get ProtonDB rating for %s", game.app_title)
-            return 0, "fail"
+            return "0", "fail"
         else:
             return steam_appid, grade

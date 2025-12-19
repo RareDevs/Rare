@@ -38,8 +38,7 @@ class SteamAppIdsWorker(FetchWorker):
             self.signals.progress.emit(0, self.signals.tr("Updating Steam AppIds"))
             with timelogger(self.logger, "Request Steam AppIds"):
                 try:
-                    with timelogger(self.logger, "steam grades load: "):
-                        SteamGrades().load_steam_appids()
+                    SteamGrades().load_steam_appids()
                 except Exception as e:
                     self.logger.warning(e)
         self.signals.result.emit((), FetchWorker.Result.STEAMAPPIDS)
