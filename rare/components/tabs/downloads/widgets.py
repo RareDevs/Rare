@@ -96,7 +96,13 @@ class UpdateWidget(QFrame):
     def update_game(self, auto: bool):
         self.ui.update_button.setDisabled(True)
         self.ui.settings_button.setDisabled(True)
-        self.enqueue.emit(InstallOptionsModel(app_name=self.game.app_name, update=True, silent=auto))  # True if settings
+        self.enqueue.emit(InstallOptionsModel(
+            app_name=self.game.app_name,
+            base_path=self.igame.install_path,
+            platform=self.igame.platform,
+            update=True,
+            silent=auto, # True if settings
+        ))
 
     def set_enabled(self, enabled: bool):
         self.ui.update_button.setEnabled(enabled)
