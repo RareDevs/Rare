@@ -191,11 +191,11 @@ def relative_date(date):
     elif s < 120:
         return '1 minute ago'
     elif s < 3600:
-        return '{} minutes ago'.format(s/60)
+        return '{} minutes ago'.format(s//60)
     elif s < 7200:
         return '1 hour ago'
     else:
-        return '{} hours ago'.format(s/3600)
+        return '{} hours ago'.format(s//3600)
 
 
 def qta_icon(icn_str: str, fallback: str = None, **kwargs):

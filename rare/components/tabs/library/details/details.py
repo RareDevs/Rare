@@ -438,6 +438,8 @@ class GameDetails(QWidget, SideTabContents):
         else:
             self.ui.install_button.setText(self.tr("Install"))
 
+        self.ui.description_field.setText(rgame.game.metadata['description'])
+
         for page in (
             self.ui.ach_progress_page, self.ui.ach_completed_page, self.ui.ach_uninitiated_page, self.ui.ach_hidden_page,
         ):
