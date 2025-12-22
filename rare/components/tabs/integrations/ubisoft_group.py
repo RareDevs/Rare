@@ -1,7 +1,6 @@
 import time
 import webbrowser
 from logging import getLogger
-from typing import Optional
 
 from legendary.models.game import Game
 from PySide6.QtCore import QObject, QSize, Qt, QThreadPool, Signal, Slot
@@ -24,22 +23,21 @@ from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.loading_widget import LoadingWidget
 
-logger = getLogger("Ubisoft")
+
+class UbiGetInfoWorkerSignals(QObject):
+    worker_finished = Signal(set, set, str)
 
 
 class UbiGetInfoWorker(Worker):
-    class Signals(QObject):
-        worker_finished = Signal(set, set, str)
-
     def __init__(self, core: LegendaryCore):
         super(UbiGetInfoWorker, self).__init__()
-        self.signals = UbiGetInfoWorker.Signals()
+        self.signals = UbiGetInfoWorkerSignals()
         self.setAutoDelete(True)
         self.core = core
 
     def run_real(self) -> None:
         try:
-            with timelogger(logger, "Request external auths"):
+            with timelogger(self.logger, "Request external auths"):
                 external_auths = self.core.egs.get_external_auths()
             for ext_auth in external_auths:
                 if ext_auth["type"] != "ubisoft":
@@ -50,34 +48,34 @@ class UbiGetInfoWorker(Worker):
                 self.signals.worker_finished.emit(set(), set(), "")
                 return
 
-            with timelogger(logger, "Request uplay codes"):
+            with timelogger(self.logger, "Request uplay codes"):
                 uplay_keys = self.core.egs.store_get_uplay_codes()
             key_list = uplay_keys["data"]["PartnerIntegration"]["accountUplayCodes"]
             redeemed = {k["gameId"] for k in key_list if k["redeemedOnUplay"]}
 
             if (entitlements := self.core.lgd.entitlements) is None:
-                with timelogger(logger, "Request entitlements"):
+                with timelogger(self.logger, "Request entitlements"):
                     try:
                         entitlements = self.core.egs.get_user_entitlements_full()
-                    except AttributeError as e:
-                        logger.warning(e)
-                        entitlements = self.core.egs.get_user_entitlements()
+                    except Exception as e:
+                        self.logger.warning(e)
                 self.core.lgd.entitlements = entitlements
             entitlements = {i["entitlementName"] for i in entitlements}
 
             self.signals.worker_finished.emit(redeemed, entitlements, ubi_account_id)
         except Exception as e:
-            logger.error(e)
+            self.logger.error(e)
             self.signals.worker_finished.emit(set(), set(), "error")
 
 
-class UbiConnectWorker(Worker):
-    class Signals(QObject):
-        linked = Signal(str)
+class UbiConnectWorkerSignals(QObject):
+    linked = Signal(str)
 
+
+class UbiConnectWorker(Worker):
     def __init__(self, core: LegendaryCore, ubi_account_id, partner_link_id):
         super(UbiConnectWorker, self).__init__()
-        self.signals = UbiConnectWorker.Signals()
+        self.signals = UbiConnectWorkerSignals()
         self.core = core
         self.ubi_account_id = ubi_account_id
         self.partner_link_id = partner_link_id
@@ -160,6 +158,8 @@ class UbiLinkWidget(QFrame):
 class UbisoftGroup(QGroupBox):
     def __init__(self, rcore: RareCore, parent=None):
         super(UbisoftGroup, self).__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
+
         self.rcore = rcore
         self.core = rcore.core()
         self.args = rcore.args()
@@ -167,7 +167,7 @@ class UbisoftGroup(QGroupBox):
         self.setTitle(self.tr("Link Ubisoft Games"))
 
         self.thread_pool = QThreadPool.globalInstance()
-        self.worker: Optional[UbiGetInfoWorker] = None
+        self.worker: UbiGetInfoWorker = None
 
         self.info_label = QLabel(parent=self)
         self.info_label.setText(self.tr("Getting information about your redeemable Ubisoft games."))
@@ -192,7 +192,7 @@ class UbisoftGroup(QGroupBox):
             return super().showEvent(a0)
 
         if self.worker is not None:
-            return
+            return super().showEvent(a0)
 
         for widget in self.findChildren(UbiLinkWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             widget.deleteLater()
@@ -201,14 +201,14 @@ class UbisoftGroup(QGroupBox):
         self.worker = UbiGetInfoWorker(self.core)
         self.worker.signals.worker_finished.connect(self.show_ubi_games)
         self.thread_pool.start(self.worker)
-        super().showEvent(a0)
+        return super().showEvent(a0)
 
     @Slot(set, set, str)
     def show_ubi_games(self, redeemed: set, entitlements: set, ubi_account_id: str):
         self.worker = None
         self.loading_widget.stop()
         if not redeemed and ubi_account_id != "error":
-            logger.error("No linked ubisoft account found! Link your accounts via your browser and try again.")
+            self.logger.error("No linked ubisoft account found! Link your accounts via your browser and try again.")
             self.info_label.setText(self.tr("Your account is not linked with Ubisoft. Please link your account and try again."))
             self.link_button.setEnabled(True)
         elif ubi_account_id == "error":
@@ -254,7 +254,7 @@ class UbisoftGroup(QGroupBox):
                 self.info_label.setText(
                     self.tr("You have <b>{}</b> games available to redeem.").format(len(uplay_games) - activated)
                 )
-            logger.info(f"Found {len(uplay_games) - activated} game(s) to redeem.")
+            self.logger.info(f"Found {len(uplay_games) - activated} game(s) to redeem.")
 
             for game in uplay_games:
                 widget = UbiLinkWidget(
