@@ -34,18 +34,18 @@ class QtRequests(QObject):
 
     def __init__(self, cache: str = None, token: str = None, parent=None):
         super(QtRequests, self).__init__(parent=parent)
-        self.log = getLogger(f"{type(self).__name__}_{type(parent).__name__}")
-        self.manager = QNetworkAccessManager(self)
-        self.manager.finished.connect(self.__on_finished)
-        self.cache = None
+        self.logger = getLogger(f"{type(self).__name__}_{type(parent).__name__}")
+        self._manager = QNetworkAccessManager(self)
+        self._manager.finished.connect(self.__on_finished)
+        self._cache = None
         if cache is not None:
-            self.log.debug("Using cache dir %s", cache)
-            self.cache = QNetworkDiskCache(self)
-            self.cache.setCacheDirectory(cache)
-            self.manager.setCache(self.cache)
+            self.logger.debug("Using cache dir %s", cache)
+            self._cache = QNetworkDiskCache(self)
+            self._cache.setCacheDirectory(cache)
+            self._manager.setCache(self._cache)
         if token is not None:
-            self.log.debug("Manager is authorized")
-        self.token = token
+            self.logger.debug("Manager is authorized")
+        self._token = token
 
         self.__active_requests: Dict[QNetworkReply, RequestQueueItem] = {}
 
@@ -69,19 +69,19 @@ class QtRequests(QObject):
             QNetworkRequest.Attribute.RedirectPolicyAttribute,
             QNetworkRequest.RedirectPolicy.NoLessSafeRedirectPolicy,
         )
-        if self.cache is not None:
+        if self._cache is not None:
             request.setAttribute(
                 QNetworkRequest.Attribute.CacheLoadControlAttribute,
                 QNetworkRequest.CacheLoadControl.PreferCache,
             )
-        if self.token is not None:
-            request.setRawHeader(b"Authorization", self.token.encode())
+        if self._token is not None:
+            request.setRawHeader(b"Authorization", self._token.encode())
         return request
 
     def __post(self, item: RequestQueueItem):
         request = self.__prepare_request(item)
         payload = orjson.dumps(item.payload)
-        reply = self.manager.post(request, payload)
+        reply = self._manager.post(request, payload)
         reply.errorOccurred.connect(self.__on_error)
         self.__active_requests[reply] = item
 
@@ -91,7 +91,7 @@ class QtRequests(QObject):
 
     def __get(self, item: RequestQueueItem):
         request = self.__prepare_request(item)
-        reply = self.manager.get(request)
+        reply = self._manager.get(request)
         reply.errorOccurred.connect(self.__on_error)
         self.__active_requests[reply] = item
 
@@ -107,7 +107,7 @@ class QtRequests(QObject):
         self.__get(item)
 
     def __on_error(self, error: QNetworkReply.NetworkError) -> None:
-        self.log.error(error)
+        self.logger.error(error)
 
     @staticmethod
     def __parse_content_type(header) -> Tuple[str, str]:
@@ -120,11 +120,11 @@ class QtRequests(QObject):
     def __on_finished(self, reply: QNetworkReply):
         item = self.__active_requests.pop(reply, None)
         if item is None:
-            self.log.error("QNetworkReply: %s without associated item", reply.url().toString())
+            self.logger.error("QNetworkReply: %s without associated item", reply.url().toString())
             reply.deleteLater()
             return
         if reply.error() != QNetworkReply.NetworkError.NoError:
-            self.log.error(reply.errorString())
+            self.logger.error(reply.errorString())
         else:
             mimetype, charset = self.__parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))
             maintype, subtype = mimetype.split("/")
