@@ -1,6 +1,8 @@
 import json
 import os
 import platform
+import re
+from argparse import Namespace
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from threading import Lock
@@ -30,6 +32,7 @@ class RareGame(RareGameSlim):
         queued: bool = False
         queue_pos: Optional[int] = None
         last_played: datetime = datetime.min.replace(tzinfo=timezone.utc)
+        achievements_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
         grant_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
         steam_appid: Optional[str] = None
         steam_grade: Optional[str] = None
@@ -49,6 +52,7 @@ class RareGame(RareGameSlim):
                 queued=data.get("queued", False),
                 queue_pos=data.get("queue_pos", None),
                 last_played=RareGame.Metadata.parse_date(data.get("last_played", "")),
+                achievements_date=RareGame.Metadata.parse_date(data.get("achievements_date", "")),
                 grant_date=RareGame.Metadata.parse_date(data.get("grant_date", "")),
                 steam_appid=str(appid) if (appid := data.get("steam_appid", "")) else None,
                 steam_grade=data.get("steam_grade", None),
@@ -63,6 +67,7 @@ class RareGame(RareGameSlim):
                 queued=self.queued,
                 queue_pos=self.queue_pos,
                 last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=timezone.utc),
+                achievements_date=self.last_played.isoformat() if self.achievements_date else datetime.min.replace(tzinfo=timezone.utc),
                 grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=timezone.utc),
                 steam_appid=str(self.steam_appid) if self.steam_appid else None,
                 steam_grade=self.steam_grade,
@@ -463,6 +468,50 @@ class RareGame(RareGameSlim):
             self.igame.save_path = path
             self.store_igame()
             self.signals.widget.update.emit()
+
+    @property
+    def achievements(self) -> Optional[Namespace]:
+        if not self.game.achievements or not self.game.achievements.achievements:
+            self.logger.info("No achievements found for %s (%s)", self.app_name, self.app_title)
+            return None
+
+        # if self.game.achievements is None:
+        #     _ = self.core.get_game(self.app_name, update_meta=True, platform=self.default_platform)
+        # try:
+        #     ret = self.core.get_achievements(self.game, update=True)
+        # except Exception as e:
+        #     ret = self.core.get_achievements(self.game, update=False)
+
+        update = not self.core.lgd.achievements or not self.core.lgd.achievements.get(self.app_name, None)
+        update = update or self.metadata.achievements_date < self.metadata.last_played
+        if update:
+            self.logger.info("Updating achievements for %s (%s)", self.app_name, self.app_title)
+        ret = self.core.get_achievements(self.game, update=update)
+        self.metadata.achievements_date = self.metadata.last_played
+        self.__save_metadata()
+        if ret is not None:
+            ret = Namespace(**ret)
+        return ret
+
+    @property
+    def eulas(self) -> List:
+        eulas = self.game.metadata.get('eulaIds') or ['$']
+
+        pattern = r'\w+'
+        keys = []
+        for eula in eulas:
+            keys += re.findall(pattern, eula)
+
+        not_accepted_eulas = []
+        for key in keys:
+            # if args.skip_epic and key == 'egstore':
+            #     continue
+            self.logger.debug(f'Fetching eula status for "{key}"')
+            eula = self.core.egs.eula_get_status(key)
+            if eula:
+                not_accepted_eulas.append(eula)
+
+        return not_accepted_eulas
 
     def reset_steam_date(self):
         self.metadata.steam_date = datetime.min.replace(tzinfo=timezone.utc)

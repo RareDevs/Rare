@@ -2,7 +2,7 @@ import os
 import platform
 from hashlib import sha1
 from logging import getLogger
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 from PySide6.QtCore import (
     QCoreApplication,
@@ -14,6 +14,9 @@ from PySide6.QtCore import (
 from PySide6.QtGui import QFontMetrics, QHideEvent, QShowEvent
 from PySide6.QtWidgets import (
     QCheckBox,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
     QLineEdit,
     QMessageBox,
     QSizePolicy,
@@ -28,9 +31,11 @@ from rare.models.install import MoveGameModel, SelectiveDownloadsModel
 from rare.shared import RareCore
 from rare.shared.workers import MoveInfoWorker, MoveWorker, VerifyWorker
 from rare.ui.components.tabs.library.details.details import Ui_GameDetails
-from rare.utils.misc import format_size, qta_icon, style_hyperlink
+from rare.utils.misc import format_size, qta_icon, relative_date, style_hyperlink
+from rare.utils.paths import cache_dir
+from rare.utils.qt_requests import QtRequests
 from rare.widgets.dialogs import ButtonDialog, game_title
-from rare.widgets.image_widget import ImageSize, ImageWidget
+from rare.widgets.image_widget import ImageSize, ImageWidget, LoadingImageWidget
 from rare.widgets.side_tab import SideTabContents
 
 logger = getLogger("GameInfo")
@@ -42,6 +47,7 @@ class GameDetails(QWidget, SideTabContents):
 
     def __init__(self, rcore: RareCore, parent=None):
         super(GameDetails, self).__init__(parent=parent)
+        self.implements_scrollarea = True
         self.ui = Ui_GameDetails()
         self.ui.setupUi(self)
         # lk: set object names for CSS properties
@@ -67,12 +73,14 @@ class GameDetails(QWidget, SideTabContents):
         self.rcore = rcore
         self.core = rcore.core()
         self.args = rcore.args()
+        self.net_manager = QtRequests(cache=str(cache_dir().joinpath("achievements")), parent=self)
 
         self.rgame: Optional[RareGame] = None
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.DisplayTall)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignmentFlag.AlignTop)
+        self.ui.left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.ui.install_button.clicked.connect(self.__on_install)
         self.ui.import_button.clicked.connect(self.__on_import)
@@ -96,8 +104,21 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.add_tag_button.setIcon(qta_icon("mdi.plus"))
         self.ui.add_tag_button.clicked.connect(self.__on_tag_add)
 
+        ach_progress_layout = QVBoxLayout(self.ui.ach_progress_page)
+        ach_progress_layout.setContentsMargins(0, 0, 0, 0)
+        ach_progress_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        ach_completed_layout = QVBoxLayout(self.ui.ach_completed_page)
+        ach_completed_layout.setContentsMargins(0, 0, 0, 0)
+        ach_completed_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        ach_uninitiated_layout = QVBoxLayout(self.ui.ach_uninitiated_page)
+        ach_uninitiated_layout.setContentsMargins(0, 0, 0, 0)
+        ach_uninitiated_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        ach_hidden_layout = QVBoxLayout(self.ui.ach_hidden_page)
+        ach_hidden_layout.setContentsMargins(0, 0, 0, 0)
+        ach_hidden_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
         # lk: hide unfinished things
-        self.ui.description_label.setVisible(False)
+        self.ui.description_field.setVisible(False)
         self.ui.requirements_group.setVisible(False)
 
     @Slot()
@@ -417,7 +438,67 @@ class GameDetails(QWidget, SideTabContents):
         else:
             self.ui.install_button.setText(self.tr("Install"))
 
+        for page in (
+            self.ui.ach_progress_page, self.ui.ach_completed_page, self.ui.ach_uninitiated_page, self.ui.ach_hidden_page,
+        ):
+            for w in page.findChildren(AchievementWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
+                page.layout().removeWidget(w)
+                w.deleteLater()
+
+        if ach := rgame.achievements:
+            self.ui.progress_field.setText(f"{ach.user_unlocked}/<b>{ach.total_achievements}</b>")
+            self.ui.exp_field.setText(f"{ach.user_xp}/<b>{ach.total_product_xp}</b>")
+
+            for group, page in zip(
+                (ach.hidden, ach.uninitiated, ach.completed, ach.in_progress, ),
+                (self.ui.ach_hidden_page, self.ui.ach_uninitiated_page, self.ui.ach_completed_page, self.ui.ach_progress_page, )
+            ):
+                self.ui.achievements_toolbox.setItemEnabled(self.ui.achievements_toolbox.indexOf(page), bool(group))
+                if bool(group):
+                    self.ui.achievements_toolbox.setCurrentWidget(page)
+                for item in group:
+                    page.layout().addWidget(AchievementWidget(self.net_manager, item), alignment=Qt.AlignmentFlag.AlignTop)
+        else:
+            self.ui.progress_field.setText(self.tr("No data"))
+            self.ui.exp_field.setText(self.tr("No data"))
+        self.ui.achievements_group.setVisible(bool(ach))
+
         self.rgame = rgame
+
+
+class AchievementWidget(QFrame):
+    def __init__(self, manager: QtRequests, achievement: Dict, parent=None):
+        super().__init__(parent=parent)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
+        self.setFrameShadow(QFrame.Shadow.Sunken)
+
+        image = LoadingImageWidget(manager, parent=self)
+        image.setFixedSize(ImageSize.LibraryIcon)
+        image.fetchPixmap(achievement['icon_link'])
+
+        title = QLabel(
+            f"<b><font color={achievement['tier']['hexColor']}>{achievement['display_name']}</font></b>"
+            f" ({achievement['xp']} XP)",
+            parent=self
+        )
+        title.setWordWrap(True)
+        description = QLabel(achievement['description'], parent=self)
+        description.setWordWrap(True)
+        unlock_date = achievement['unlock_date'].astimezone() if achievement['unlock_date'] else None
+        unlock_date_str = f" ( On: {relative_date(unlock_date)} )" if unlock_date else ""
+        progress = QLabel(f"Progress: <b>{achievement['progress'] * 100:,.2f}%</b> {unlock_date_str}", parent=self)
+        if unlock_date:
+            progress.setToolTip(str(unlock_date))
+
+        right_layout = QVBoxLayout()
+        right_layout.addWidget(title, alignment=Qt.AlignmentFlag.AlignTop)
+        right_layout.addWidget(description, alignment=Qt.AlignmentFlag.AlignTop, stretch=1)
+        right_layout.addWidget(progress, alignment=Qt.AlignmentFlag.AlignBottom)
+
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(3, 3, 3, 3)
+        main_layout.addWidget(image)
+        main_layout.addLayout(right_layout, stretch=1)
 
 
 class GameTagCheckBox(QCheckBox):
