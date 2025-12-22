@@ -22,9 +22,8 @@ from rare.models.image import ImageSize
 from rare.ui.components.tabs.store.details import Ui_StoreDetailsWidget
 from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
+from rare.widgets.image_widget import LoadingSpinnerImageWidget
 from rare.widgets.side_tab import SideTabContents, SideTabWidget
-
-from .image import LoadingImageWidget
 
 logger = getLogger("StoreDetails")
 
@@ -45,7 +44,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.installed = installed
         self.catalog_offer: CatalogOfferModel = None
 
-        self.image = LoadingImageWidget(store_api.cached_manager, self)
+        self.image = LoadingSpinnerImageWidget(store_api.cached_manager, self)
         self.image.setFixedSize(ImageSize.DisplayTall)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignmentFlag.AlignTop)
         self.ui.left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
