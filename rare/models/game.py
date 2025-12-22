@@ -515,7 +515,7 @@ class RareGame(RareGameSlim):
             grant_date = (
                 datetime.fromisoformat(entitlement["grantDate"].replace("Z", "+00:00"))
                 if entitlement
-                else datetime.min.replace(tzinfo=timezone.utc)
+                else datetime.fromisoformat(self.game.metadata["creationDate"].replace("Z", "+00:00"))
             )
             self.metadata.grant_date = grant_date
             self.__save_metadata()
