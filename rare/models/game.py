@@ -482,7 +482,7 @@ class RareGame(RareGameSlim):
         # except Exception as e:
         #     ret = self.core.get_achievements(self.game, update=False)
 
-        update = not self.core.lgd.achievements or not self.core.lgd.achievements.get(self.app_name, None)
+        update = not self.core.lgd.achievements or not self.core.lgd.achievements.get(self.game.namespace, None)
         update = update or self.metadata.achievements_date < self.metadata.last_played
         if update:
             self.logger.info("Updating achievements for %s (%s)", self.app_name, self.app_title)
