@@ -1,4 +1,5 @@
 import os
+from datetime import UTC, datetime
 from enum import IntEnum
 from logging import getLogger
 from typing import Dict, Iterable, Tuple, Type, Union
@@ -171,6 +172,30 @@ def format_size(b: Union[int, float]) -> str:
         if b < 1024:
             return f"{b:.2f} {s}B"
         b /= 1024
+    return str(b)
+
+
+def relative_date(date):
+    diff = datetime.now(UTC) - date
+    s = diff.seconds
+    if diff.days > 7 or diff.days < 0:
+        return date.strftime('%d %b %y')
+    elif diff.days == 1:
+        return '1 day ago'
+    elif diff.days > 1:
+        return '{} days ago'.format(diff.days)
+    elif s <= 1:
+        return 'just now'
+    elif s < 60:
+        return '{} seconds ago'.format(s)
+    elif s < 120:
+        return '1 minute ago'
+    elif s < 3600:
+        return '{} minutes ago'.format(s//60)
+    elif s < 7200:
+        return '1 hour ago'
+    else:
+        return '{} hours ago'.format(s//3600)
 
 
 def qta_icon(icn_str: str, fallback: str = None, **kwargs):

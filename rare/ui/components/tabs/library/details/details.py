@@ -3,12 +3,12 @@
 ################################################################################
 ## Form generated from reading UI file 'details.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import QCoreApplication, QSize, Qt
+from PySide6.QtCore import QCoreApplication, QRect, QSize, Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QFormLayout,
@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (
     QSpacerItem,
     QStackedWidget,
     QTextBrowser,
+    QToolBox,
     QVBoxLayout,
     QWidget,
 )
@@ -33,7 +34,7 @@ class Ui_GameDetails(object):
     def setupUi(self, GameDetails):
         if not GameDetails.objectName():
             GameDetails.setObjectName(u"GameDetails")
-        GameDetails.resize(795, 404)
+        GameDetails.resize(888, 603)
         GameDetails.setWindowTitle(u"GameDetails")
         self.main_layout = QHBoxLayout(GameDetails)
         self.main_layout.setObjectName(u"main_layout")
@@ -324,11 +325,11 @@ class Ui_GameDetails(object):
 
         self.right_layout.addLayout(self.details_layout, 0, 0, 1, 1)
 
-        self.description_label = QTextBrowser(GameDetails)
-        self.description_label.setObjectName(u"description_label")
-        self.description_label.setOpenExternalLinks(True)
+        self.description_field = QTextBrowser(GameDetails)
+        self.description_field.setObjectName(u"description_field")
+        self.description_field.setOpenExternalLinks(True)
 
-        self.right_layout.addWidget(self.description_label, 0, 1, 1, 1)
+        self.right_layout.addWidget(self.description_field, 1, 0, 1, 1)
 
         self.requirements_group = QFrame(GameDetails)
         self.requirements_group.setObjectName(u"requirements_group")
@@ -336,9 +337,65 @@ class Ui_GameDetails(object):
         self.requirements_group.setFrameShadow(QFrame.Shadow.Sunken)
         self.requirements_layout = QHBoxLayout(self.requirements_group)
         self.requirements_layout.setObjectName(u"requirements_layout")
-        self.requirements_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.right_layout.addWidget(self.requirements_group, 1, 0, 1, 2, Qt.AlignmentFlag.AlignBottom)
+        self.right_layout.addWidget(self.requirements_group, 2, 0, 2, 2)
+
+        self.achievements_group = QWidget(GameDetails)
+        self.achievements_group.setObjectName(u"achievements_group")
+        self.achievements_layout = QVBoxLayout(self.achievements_group)
+        self.achievements_layout.setObjectName(u"achievements_layout")
+        self.achievements_layout.setContentsMargins(0, 0, 0, 0)
+        self.achievement_stats_layout = QHBoxLayout()
+        self.achievement_stats_layout.setObjectName(u"achievement_stats_layout")
+        self.achievement_stats_layout.setContentsMargins(0, -1, 0, -1)
+        self.progress_label = QLabel(self.achievements_group)
+        self.progress_label.setObjectName(u"progress_label")
+        self.progress_label.setFont(font)
+
+        self.achievement_stats_layout.addWidget(self.progress_label)
+
+        self.progress_field = QLabel(self.achievements_group)
+        self.progress_field.setObjectName(u"progress_field")
+
+        self.achievement_stats_layout.addWidget(self.progress_field)
+
+        self.exp_label = QLabel(self.achievements_group)
+        self.exp_label.setObjectName(u"exp_label")
+        self.exp_label.setFont(font)
+
+        self.achievement_stats_layout.addWidget(self.exp_label)
+
+        self.exp_field = QLabel(self.achievements_group)
+        self.exp_field.setObjectName(u"exp_field")
+
+        self.achievement_stats_layout.addWidget(self.exp_field)
+
+        self.achievement_stats_layout.setStretch(1, 1)
+        self.achievement_stats_layout.setStretch(3, 1)
+
+        self.achievements_layout.addLayout(self.achievement_stats_layout)
+
+        self.achievements_toolbox = QToolBox(self.achievements_group)
+        self.achievements_toolbox.setObjectName(u"achievements_toolbox")
+        self.ach_progress_page = QWidget()
+        self.ach_progress_page.setObjectName(u"ach_progress_page")
+        self.ach_progress_page.setGeometry(QRect(0, 0, 320, 419))
+        self.achievements_toolbox.addItem(self.ach_progress_page, u"In progress")
+        self.ach_completed_page = QWidget()
+        self.ach_completed_page.setObjectName(u"ach_completed_page")
+        self.ach_completed_page.setGeometry(QRect(0, 0, 320, 419))
+        self.achievements_toolbox.addItem(self.ach_completed_page, u"Completed")
+        self.ach_uninitiated_page = QWidget()
+        self.ach_uninitiated_page.setObjectName(u"ach_uninitiated_page")
+        self.achievements_toolbox.addItem(self.ach_uninitiated_page, u"Uninitiated")
+        self.ach_hidden_page = QWidget()
+        self.ach_hidden_page.setObjectName(u"ach_hidden_page")
+        self.achievements_toolbox.addItem(self.ach_hidden_page, u"Hidden")
+
+        self.achievements_layout.addWidget(self.achievements_toolbox)
+
+
+        self.right_layout.addWidget(self.achievements_group, 0, 1, 2, 1)
 
         self.right_layout.setRowStretch(1, 1)
         self.right_layout.setColumnStretch(1, 1)
@@ -352,6 +409,7 @@ class Ui_GameDetails(object):
         self.actions_stack.setCurrentIndex(0)
         self.verify_stack.setCurrentIndex(0)
         self.move_stack.setCurrentIndex(0)
+        self.achievements_toolbox.setCurrentIndex(0)
 
     # setupUi
 
@@ -376,6 +434,14 @@ class Ui_GameDetails(object):
         self.uninstall_button.setText(QCoreApplication.translate("GameDetails", u"Uninstall", None))
         self.install_button.setText(QCoreApplication.translate("GameDetails", u"Install", None))
         self.import_button.setText(QCoreApplication.translate("GameDetails", u"Import", None))
+        self.progress_label.setText(QCoreApplication.translate("GameDetails", u"Progress:", None))
+        self.progress_field.setText(QCoreApplication.translate("GameDetails", u"progress_error", None))
+        self.exp_label.setText(QCoreApplication.translate("GameDetails", u"Experience:", None))
+        self.exp_field.setText(QCoreApplication.translate("GameDetails", u"xp_error", None))
+        self.achievements_toolbox.setItemText(self.achievements_toolbox.indexOf(self.ach_progress_page), QCoreApplication.translate("GameDetails", u"In progress", None))
+        self.achievements_toolbox.setItemText(self.achievements_toolbox.indexOf(self.ach_completed_page), QCoreApplication.translate("GameDetails", u"Completed", None))
+        self.achievements_toolbox.setItemText(self.achievements_toolbox.indexOf(self.ach_uninitiated_page), QCoreApplication.translate("GameDetails", u"Uninitiated", None))
+        self.achievements_toolbox.setItemText(self.achievements_toolbox.indexOf(self.ach_hidden_page), QCoreApplication.translate("GameDetails", u"Hidden", None))
         pass
     # retranslateUi
 

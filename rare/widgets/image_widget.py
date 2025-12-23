@@ -1,10 +1,11 @@
 from enum import Enum
-from typing import Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 from PySide6.QtCore import QRectF, QSize, Qt
 from PySide6.QtGui import (
     QBrush,
     QColor,
+    QImage,
     QLinearGradient,
     QPainter,
     QPainterPath,
@@ -16,6 +17,9 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 
 from rare.models.image import ImageSize
+from rare.utils.qt_requests import QtRequests
+
+from .loading_widget import LoadingWidget
 
 OverlayPath = Tuple[QPainterPath, Union[QColor, QLinearGradient]]
 
@@ -154,4 +158,47 @@ class ImageWidget(QWidget):
         painter.end()
 
 
-__all__ = ["ImageSize", "ImageWidget"]
+class LoadingImageWidget(ImageWidget):
+    def __init__(self, manager: QtRequests, parent=None):
+        super(LoadingImageWidget, self).__init__(parent=parent)
+        self.manager = manager
+
+    def fetchPixmap(self, url: str, params: Dict = None):
+        self.setPixmap(QPixmap())
+        self.manager.get(url, self._on_image_ready, params=params)
+
+    def _on_image_ready(self, data):
+        cover = QImage()
+        cover.loadFromData(data)
+        cover.setDevicePixelRatio(self._image_size.base.pixel_ratio)
+        if cover.size() != self._image_size.base.size:
+            cover = cover.scaled(
+                self._image_size.base.size, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation
+            )
+        cover = cover.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
+        cover = QPixmap(cover)
+        self.setPixmap(cover)
+
+
+class LoadingSpinnerImageWidget(LoadingImageWidget):
+    def __init__(self, manager: QtRequests, parent=None):
+        super(LoadingSpinnerImageWidget, self).__init__(manager, parent=parent)
+        self.spinner = LoadingWidget(parent=self)
+        self.spinner.setVisible(False)
+
+    def fetchPixmap(self, url: str, params: Dict = None):
+        self.spinner.start()
+        self.spinner.setFixedSize(self._image_size.size)
+        params = {
+            "resize": 1,
+            "w": self._image_size.base.size.width(),
+            "h": self._image_size.base.size.height(),
+        } if not params else params
+        super().fetchPixmap(url, params=params)
+
+    def _on_image_ready(self, data):
+        super()._on_image_ready(data)
+        self.spinner.stop()
+
+
+__all__ = ["ImageSize", "ImageWidget", "LoadingImageWidget", "LoadingSpinnerImageWidget"]

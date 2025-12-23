@@ -13,6 +13,11 @@ from rare.utils.steam_grades import SteamGrades
 from .worker import Worker
 
 
+class FetchWorkerSignals(QObject):
+    progress = Signal(int, str)
+    result = Signal(object, int)
+
+
 class FetchWorker(Worker):
     class Result(IntEnum):
         ERROR = 0
@@ -20,13 +25,9 @@ class FetchWorker(Worker):
         ENTITLEMENTS = 2
         STEAMAPPIDS = 3
 
-    class Signals(QObject):
-        progress = Signal(int, str)
-        result = Signal(object, int)
-
     def __init__(self, settings: RareAppSettings, core: LegendaryCore, args: Namespace):
         super(FetchWorker, self).__init__()
-        self.signals = FetchWorker.Signals()
+        self.signals = FetchWorkerSignals()
         self.settings = settings
         self.core = core
         self.args = args
@@ -56,9 +57,8 @@ class EntitlementsWorker(FetchWorker):
             with timelogger(self.logger, "Request entitlements"):
                 try:
                     entitlements = self.core.egs.get_user_entitlements_full()
-                except AttributeError as e:
+                except Exception as e:
                     self.logger.warning(e)
-                    entitlements = self.core.egs.get_user_entitlements()
             self.core.lgd.entitlements = entitlements
             self.logger.info("Entitlements: %s", len(list(entitlements)))
         self.signals.result.emit(entitlements, FetchWorker.Result.ENTITLEMENTS)
