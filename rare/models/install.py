@@ -27,7 +27,7 @@ class InstallOptionsModel:
     ignore_space: bool = False
     reset_sdl: bool = False
     disable_https: bool = False
-    always_use_signed_urls: bool = False
+    always_use_signed_urls: bool = True
     skip_dlcs: bool = False
     with_dlcs: bool = False
     # Rare's internal arguments
