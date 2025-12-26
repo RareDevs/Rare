@@ -182,29 +182,14 @@ class DownloadsTab(QWidget):
     def __refresh_download(self, item: InstallQueueItemModel):
         worker = InstallInfoWorker(self.core, item.options)
 
-        # adapter = CallableSlotAdapter(
-        #     worker.signals, lambda d: self.start_download(InstallQueueItemModel(options=item.options, download=d))
-        # )
-        # worker.signals.result.connect(adapter.slot)
         worker.signals.result.connect(
             (lambda obj, d: obj.start_download(
                 InstallQueueItemModel(options=item.options, download=d))).__get__(self)
         )
-
-        # adapter = CallableSlotAdapter(
-        #     worker.signals,
-        #     lambda m: self.logger.error(f"Failed to refresh download for {item.options.app_name} with error: {m}"))
-        # worker.signals.failed.connect(adapter.slot)
         worker.signals.failed.connect(
             (lambda obj, m: obj.logger.error(
                 f"Failed to refresh download for {item.options.app_name} with error: {m}")).__get__(self)
         )
-
-        # adapter = CallableSlotAdapter(
-        #     worker.signals,
-        #     lambda: self.logger.info(f"Download refresh worker finished for {item.options.app_name}")
-        # )
-        # worker.signals.finished.connect(adapter.slot)
         worker.signals.finished.connect(
             (lambda obj, m: obj.logger.info(
                 f"Download refresh worker finished for {item.options.app_name}")).__get__(self)

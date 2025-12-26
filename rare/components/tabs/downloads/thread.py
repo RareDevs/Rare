@@ -209,11 +209,6 @@ class DlThread(QThread):
                 fullpath = os.path.join(work_dir, req_exec)
                 proc = QProcess(self)
                 proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
-                # adapter = CallableSlotAdapter(
-                #     proc,
-                #     lambda: self.logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
-                # )
-                # proc.readyReadStandardOutput.connect(adapter.slot)
                 proc.readyReadStandardOutput.connect(
                     (lambda obj: obj.logger.debug(
                         str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)

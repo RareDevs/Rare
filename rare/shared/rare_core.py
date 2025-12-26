@@ -90,11 +90,6 @@ class RareCore(QObject):
     def enqueue_worker(self, rgame: RareGame, worker: QueueWorker):
         rgame.set_worker(worker)
         worker.feedback.started.connect(self.__signals.application.update_statusbar)
-        # adapter = CallableSlotAdapter(worker.feedback, lambda: rgame.set_worker(None))
-        # worker.feedback.finished.connect(adapter.slot)
-        # worker.feedback.finished.connect(
-        #     (lambda obj: obj.set_worker(None)).__get__(rgame)
-        # )
         # signals are serviced in the order they are connected, so we have to
         # connect the signal to update the statusbar after the one to remove the worker
         # from the corresponding list
@@ -102,21 +97,9 @@ class RareCore(QObject):
         worker.feedback.finished.connect(self.__signals.application.update_statusbar)
 
         if isinstance(worker, CloudSyncWorker):
-            # adapter = CallableSlotAdapter(worker.feedback, lambda: self.workers_net.remove(worker))
-            # worker.feedback.finished.connect(adapter.slot)
-            # worker.feedback.finished.connect(
-            #     (lambda obj, w: obj.workers_net.remove(w)).__get__(self)
-            # )
-            # worker.feedback.finished.connect(self.__signals.application.update_statusbar)
             self.workers_net.append(worker)
             self.threadpool_net.start(worker, priority=0)
         elif isinstance(worker, (VerifyWorker, MoveWorker)):
-            # adapter = CallableSlotAdapter(worker.feedback, lambda: self.workers_disk.remove(worker))
-            # worker.feedback.finished.connect(adapter.slot)
-            # worker.feedback.finished.connect(
-            #     (lambda obj, w: obj.workers_disk.remove(w)).__get__(self)
-            # )
-            # worker.feedback.finished.connect(self.__signals.application.update_statusbar)
             self.workers_disk.append(worker)
             self.threadpool_disk.start(worker, priority=0)
         else:

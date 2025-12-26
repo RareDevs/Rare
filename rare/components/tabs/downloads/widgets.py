@@ -144,25 +144,15 @@ class QueueWidget(QFrame):
             self.ui.queue_buttons.setEnabled(False)
             worker = InstallInfoWorker(core, item.options)
             worker.signals.result.connect(self.__update_info)
-            # adapter = CallableSlotAdapter(worker.signals, lambda m: logger.error(f"Failed to requeue download for {item.options.app_name} with error: {m}"))
-            # worker.signals.failed.connect(adapter.slot)
             worker.signals.failed.connect(
                 (lambda obj, m: obj.logger.error(
                     f"Failed to requeue download for {item.options.app_name} with error: {m}")).__get__(self)
             )
-            # adapter = CallableSlotAdapter(worker.signals, lambda m: self.remove.emit(item.options.app_name))
-            # worker.signals.failed.connect(adapter.slot)
-            worker.signals.failed.connect(
-                (lambda obj, m: obj.remove.emit(
-                    item.options.app_name)).__get__(self)
-            )
-            # adapter = CallableSlotAdapter(worker.signals, lambda: logger.info(f"Download requeue worker finished for {item.options.app_name}"))
-            # worker.signals.finished.connect(adapter.slot)
+            worker.signals.failed.connect((lambda obj, m: obj.remove.emit(item.options.app_name)).__get__(self))
             worker.signals.finished.connect(
                 (lambda obj: obj.logger.error(
                     f"Download requeue worker finished for {item.options.app_name}")).__get__(self)
             )
-
             QThreadPool.globalInstance().start(worker)
             self.info_widget = QueueInfoWidget(imgmgr, None, None, None, old_igame, parent=self)
         else:

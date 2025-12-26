@@ -93,11 +93,6 @@ class PreLaunch(QRunnable):
         if launch.pre_launch_command:
             proc = get_configured_qprocess(shlex.split(launch.pre_launch_command), launch.environment)
             proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
-            # adapter = CallableSlotAdapter(
-            #     proc,
-            #     lambda: self.logger.info(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
-            # )
-            # proc.readyReadStandardOutput.connect(adapter.slot)
             proc.readyReadStandardOutput.connect(
                 (lambda obj: obj.logger.debug(
                     str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
