@@ -234,12 +234,12 @@ class CloudSaves(QWidget, SideTabContents):
 
     def update_game(self, rgame: RareGame):
         if self.rgame:
-            self.rgame.signals.widget.update.disconnect(self.__update_widget)
+            self.rgame.signals.widget.refresh.disconnect(self.__update_widget)
 
         self.rgame = rgame
         self.save_path_spec = PathSpec(self.core, self.rgame.igame).resolve_egl_path_vars(self.rgame.raw_save_path)
 
         self.set_title.emit(rgame.app_title)
-        rgame.signals.widget.update.connect(self.__update_widget)
+        rgame.signals.widget.refresh.connect(self.__update_widget)
 
         self.__update_widget()

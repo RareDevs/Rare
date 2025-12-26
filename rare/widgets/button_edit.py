@@ -15,7 +15,7 @@ class ButtonLineEdit(QLineEdit):
         self.button.setObjectName(f"{type(self).__name__}Button")
         self.button.setIcon(qta_icon(icon_name))
         self.button.setCursor(Qt.CursorShape.ArrowCursor)
-        self.button.clicked.connect(self.buttonClicked.emit)
+        self.button.clicked.connect(self.buttonClicked)
 
         self.setPlaceholderText(placeholder_text)
         # frame_width = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)

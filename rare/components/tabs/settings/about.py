@@ -2,7 +2,7 @@ import webbrowser
 from logging import getLogger
 from typing import Tuple
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QWidget
 
@@ -23,7 +23,7 @@ def versiontuple(v) -> Tuple[int, ...]:
 
 
 class About(QWidget):
-    update_available_ready = Signal()
+    update_available = Signal()
 
     def __init__(self, parent=None):
         super(About, self).__init__(parent=parent)
@@ -33,38 +33,43 @@ class About(QWidget):
         self.ui.version.setText(f"{__version__}  {__codename__}")
 
         self.ui.update_label.setEnabled(False)
-        self.ui.update_lbl.setEnabled(False)
+        self.ui.update_field.setEnabled(False)
         self.ui.open_browser.setVisible(False)
         self.ui.open_browser.setEnabled(False)
 
         self.releases_url = "https://api.github.com/repos/RareDevs/Rare/releases/latest"
 
         self.manager = QtRequests(parent=self)
-        self.manager.get(self.releases_url, self.update_available_finished)
+        self.manager.get(self.releases_url, self._on_update_check_finished)
 
-        self.ui.open_browser.clicked.connect(lambda: webbrowser.open("https://github.com/RareDevs/Rare/releases/latest"))
+        self.ui.open_browser.clicked.connect(self._on_browser_clicked)
 
-        self.update_available = False
+        self._update_available = False
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        self.manager.get(self.releases_url, self.update_available_finished)
-        super().showEvent(a0)
+        self.manager.get(self.releases_url, self._on_update_check_finished)
+        return super().showEvent(a0)
 
-    def update_available_finished(self, data: dict):
+    @Slot()
+    def _on_browser_clicked(self):
+        webbrowser.open("https://github.com/RareDevs/Rare/releases/latest")
+
+    @Slot(dict)
+    def _on_update_check_finished(self, data: dict):
         if latest_tag := data.get("tag_name"):
-            self.update_available = versiontuple(latest_tag) > versiontuple(__version__)
+            self._update_available = versiontuple(latest_tag) > versiontuple(__version__)
         else:
-            self.update_available = False
+            self._update_available = False
 
-        if self.update_available:
+        if self._update_available:
             logger.info(f"Update available: {__version__} -> {latest_tag}")
-            self.ui.update_lbl.setText(f"{__version__} -> {latest_tag}")
-            self.update_available_ready.emit()
+            self.ui.update_field.setText(f"{__version__} -> {latest_tag}")
+            self.update_available.emit()
         else:
-            self.ui.update_lbl.setText(self.tr("You have the latest version"))
-        self.ui.update_label.setEnabled(self.update_available)
-        self.ui.update_lbl.setEnabled(self.update_available)
-        self.ui.open_browser.setVisible(self.update_available)
-        self.ui.open_browser.setEnabled(self.update_available)
+            self.ui.update_field.setText(self.tr("You have the latest version"))
+        self.ui.update_label.setEnabled(self._update_available)
+        self.ui.update_field.setEnabled(self._update_available)
+        self.ui.open_browser.setVisible(self._update_available)
+        self.ui.open_browser.setEnabled(self._update_available)

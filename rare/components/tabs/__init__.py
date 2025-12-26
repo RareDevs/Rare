@@ -62,11 +62,11 @@ class MainTabWidget(QTabWidget):
         # Settings Tab
         self.settings_tab = SettingsTab(settings, rcore, self)
         self.settings_index = self.addTab(self.settings_tab, qta_icon("fa.gear", "fa6s.gear"), self.tr("Settings"))
-        self.settings_tab.about.update_available_ready.connect(lambda: self.main_bar.setTabText(self.settings_index, self.tr("Settings (!)")))
+        self.settings_tab.update_available.connect(self._on_update_available)
 
         # Account Tab
         self.account_widget = AccountWidget(self.signals, self.core, self)
-        self.account_widget.exit_app.connect(self.__on_exit_app)
+        self.account_widget.exit_app.connect(self._on_exit_app)
         account_action = QWidgetAction(self)
         account_action.setDefaultWidget(self.account_widget)
         self.account_menu = QMenu(self)
@@ -80,12 +80,12 @@ class MainTabWidget(QTabWidget):
         self.tabBarClicked.connect(self.mouse_clicked)
 
         # shortcuts
-        QShortcut("Alt+1", self).activated.connect(lambda: self.setCurrentIndex(self.games_index))
+        QShortcut("Alt+1", self).activated.connect(self._on_shortcut_activated_games)
         if not self.args.offline:
-            QShortcut("Alt+2", self).activated.connect(lambda: self.setCurrentIndex(self.downloads_index))
-            QShortcut("Alt+3", self).activated.connect(lambda: self.setCurrentIndex(self.store_index))
-        QShortcut("Alt+4", self).activated.connect(lambda: self.setCurrentIndex(self.integrations_index))
-        QShortcut("Alt+5", self).activated.connect(lambda: self.setCurrentIndex(self.settings_index))
+            QShortcut("Alt+2", self).activated.connect(self._on_shortcut_activated_downloads)
+            QShortcut("Alt+3", self).activated.connect(self._on_shortcut_activated_store)
+        QShortcut("Alt+4", self).activated.connect(self._on_shortcut_activated_integrations)
+        QShortcut("Alt+5", self).activated.connect(self._on_shortcut_activated_settings)
 
         self.setCurrentIndex(self.games_index)
 
@@ -103,6 +103,30 @@ class MainTabWidget(QTabWidget):
                     self.account_menu.exec(self.mapToGlobal(origin))
                 return True
         return False
+
+    @Slot()
+    def _on_shortcut_activated_games(self):
+        self.setCurrentIndex(self.games_index)
+
+    @Slot()
+    def _on_shortcut_activated_downloads(self):
+        self.setCurrentIndex(self.downloads_index)
+
+    @Slot()
+    def _on_shortcut_activated_store(self):
+        self.setCurrentIndex(self.store_index)
+
+    @Slot()
+    def _on_shortcut_activated_integrations(self):
+        self.setCurrentIndex(self.integrations_index)
+
+    @Slot()
+    def _on_shortcut_activated_settings(self):
+        self.setCurrentIndex(self.settings_index)
+
+    @Slot()
+    def _on_update_available(self):
+        self.main_bar.setTabText(self.settings_index, self.tr("Settings (!)"))
 
     @Slot()
     @Slot(str)
@@ -144,7 +168,7 @@ class MainTabWidget(QTabWidget):
         super(MainTabWidget, self).resizeEvent(event)
 
     @Slot(int)
-    def __on_exit_app(self, exit_code: int):
+    def _on_exit_app(self, exit_code: int):
         # FIXME: Don't allow logging out if there are active downloads
         if self.downloads_tab.is_download_active:
             QMessageBox.warning(

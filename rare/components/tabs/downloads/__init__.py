@@ -34,8 +34,6 @@ from .download import DownloadWidget
 from .groups import QueueGroup, UpdateGroup
 from .thread import DlResultCode, DlResultModel, DlThread
 
-logger = getLogger("Download")
-
 
 def get_time(seconds: Union[int, float]) -> str:
     return str(datetime.timedelta(seconds=seconds))
@@ -47,6 +45,8 @@ class DownloadsTab(QWidget):
 
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(DownloadsTab, self).__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
+
         self.settings = settings
         self.rcore = rcore
         self.core = rcore.core()
@@ -158,7 +158,7 @@ class DownloadsTab(QWidget):
             self.stop_download()
             self.__forced_item = item
         else:
-            self.__start_download(item)
+            self.start_download(item)
 
     def stop_download(self, omit_queue=False):
         """
@@ -181,17 +181,41 @@ class DownloadsTab(QWidget):
 
     def __refresh_download(self, item: InstallQueueItemModel):
         worker = InstallInfoWorker(self.core, item.options)
-        worker.signals.result.connect(lambda d: self.__start_download(InstallQueueItemModel(options=item.options, download=d)))
-        worker.signals.failed.connect(
-            lambda m: logger.error(f"Failed to refresh download for {item.options.app_name} with error: {m}")
+
+        # adapter = CallableSlotAdapter(
+        #     worker.signals, lambda d: self.start_download(InstallQueueItemModel(options=item.options, download=d))
+        # )
+        # worker.signals.result.connect(adapter.slot)
+        worker.signals.result.connect(
+            (lambda obj, d: obj.start_download(
+                InstallQueueItemModel(options=item.options, download=d))).__get__(self)
         )
-        worker.signals.finished.connect(lambda: logger.info(f"Download refresh worker finished for {item.options.app_name}"))
+
+        # adapter = CallableSlotAdapter(
+        #     worker.signals,
+        #     lambda m: self.logger.error(f"Failed to refresh download for {item.options.app_name} with error: {m}"))
+        # worker.signals.failed.connect(adapter.slot)
+        worker.signals.failed.connect(
+            (lambda obj, m: obj.logger.error(
+                f"Failed to refresh download for {item.options.app_name} with error: {m}")).__get__(self)
+        )
+
+        # adapter = CallableSlotAdapter(
+        #     worker.signals,
+        #     lambda: self.logger.info(f"Download refresh worker finished for {item.options.app_name}")
+        # )
+        # worker.signals.finished.connect(adapter.slot)
+        worker.signals.finished.connect(
+            (lambda obj, m: obj.logger.info(
+                f"Download refresh worker finished for {item.options.app_name}")).__get__(self)
+        )
+
         QThreadPool.globalInstance().start(worker)
 
-    def __start_download(self, item: InstallQueueItemModel):
+    def start_download(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
         if not rgame.state == RareGame.State.DOWNLOADING:
-            logger.error(
+            self.logger.error(
                 f"Can't start download {item.options.app_name} due to incompatible state {RareGame.State(rgame.state).name}"
             )
             # lk: invalidate the queue item in case the game was uninstalled
@@ -228,7 +252,7 @@ class DownloadsTab(QWidget):
         rgame = self.rcore.get_game(item.options.app_name)
         rgame.state = RareGame.State.DOWNLOADING
         self.queue_group.push_front(item, rgame.igame)
-        logger.info(f"Re-queued download for {rgame.app_name} ({rgame.app_title})")
+        self.logger.info(f"Re-queued download for {rgame.app_name} ({rgame.app_title})")
 
     @Slot(DlResultModel)
     def __on_download_result(self, result: DlResultModel):
@@ -237,7 +261,7 @@ class DownloadsTab(QWidget):
         self.__thread.deleteLater()
 
         if result.code == DlResultCode.FINISHED:
-            logger.info(f"Download finished: {result.options.app_name}")
+            self.logger.info(f"Download finished: {result.options.app_name}")
             if result.shortcut and desktop_links_supported():
                 if not create_desktop_link(
                     app_name=result.options.app_name,
@@ -246,9 +270,9 @@ class DownloadsTab(QWidget):
                     link_type="desktop",
                 ):
                     # maybe add it to download summary, to show in finished downloads
-                    logger.error(f"Failed to create desktop link on {platform.system()}")
+                    self.logger.error(f"Failed to create desktop link on {platform.system()}")
                 else:
-                    logger.info(f"Created desktop link {result.folder_name} for {result.app_title}")
+                    self.logger.info(f"Created desktop link {result.folder_name} for {result.app_title}")
 
             self.signals.application.notify.emit(
                 self.tr("Downloads"),
@@ -259,7 +283,7 @@ class DownloadsTab(QWidget):
                 self.updates_group.set_widget_enabled(result.options.app_name, True)
 
         elif result.code == DlResultCode.ERROR:
-            logger.error(f"Download error: {result.options.app_name} ({result.message})")
+            self.logger.error(f"Download error: {result.options.app_name} ({result.message})")
             QMessageBox.warning(
                 self,
                 self.tr("Error - {}").format(result.app_title),
@@ -268,7 +292,7 @@ class DownloadsTab(QWidget):
             )
 
         elif result.code == DlResultCode.STOPPED:
-            logger.info(f"Download stopped: {result.options.app_name}")
+            self.logger.info(f"Download stopped: {result.options.app_name}")
             if not self.__omit_requeue:
                 self.__requeue_download(InstallQueueItemModel(options=result.options))
             else:
@@ -279,9 +303,9 @@ class DownloadsTab(QWidget):
             self.updates_group.set_widget_enabled(result.options.app_name, True)
 
         if result.code == DlResultCode.FINISHED and self.queue_group.count():
-            self.__start_download(self.queue_group.pop_front())
+            self.start_download(self.queue_group.pop_front())
         elif result.code == DlResultCode.STOPPED and self.__forced_item:
-            self.__start_download(self.__forced_item)
+            self.start_download(self.__forced_item)
             self.__forced_item = None
         else:
             self.__reset_download()
@@ -321,7 +345,7 @@ class DownloadsTab(QWidget):
         if item:
             # lk: start update only if there is no other active thread and there is no queue
             if self.__thread is None and not self.queue_group.count():
-                self.__start_download(item)
+                self.start_download(item)
             else:
                 rgame = self.rcore.get_game(item.options.app_name)
                 self.queue_group.push_back(item, rgame.igame)

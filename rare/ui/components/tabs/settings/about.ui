@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>507</width>
+    <width>508</width>
     <height>210</height>
    </rect>
   </property>
@@ -15,13 +15,12 @@
   </property>
   <layout class="QFormLayout" name="about_layout">
    <property name="labelAlignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
    </property>
    <item row="0" column="0">
     <widget class="QLabel" name="version_label">
      <property name="font">
       <font>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -41,7 +40,6 @@
     <widget class="QLabel" name="update_label">
      <property name="font">
       <font>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -51,7 +49,7 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QLabel" name="update_lbl">
+    <widget class="QLabel" name="update_field">
      <property name="text">
       <string notr="true">error</string>
      </property>
@@ -74,7 +72,6 @@
     <widget class="QLabel" name="dev_label">
      <property name="font">
       <font>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -102,7 +99,6 @@
     <widget class="QLabel" name="lgd_dev_label">
      <property name="font">
       <font>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -128,7 +124,6 @@
     <widget class="QLabel" name="license_label">
      <property name="font">
       <font>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -148,7 +143,6 @@
     <widget class="QLabel" name="contrib_label">
      <property name="font">
       <font>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>

@@ -52,12 +52,12 @@ class LoginDialog(BaseDialog):
 
         self.browser_page = BrowserLogin(self.core, self.login_stack)
         self.browser_index = self.login_stack.insertWidget(1, self.browser_page)
-        self.browser_page.success.connect(self.login_successful)
-        self.browser_page.isValid.connect(lambda x: self.ui.next_button.setEnabled(x))
+        self.browser_page.success.connect(self._on_login_successful)
+        self.browser_page.validated.connect(self._on_page_validated)
         self.import_page = ImportLogin(self.core, self.login_stack)
         self.import_index = self.login_stack.insertWidget(2, self.import_page)
-        self.import_page.success.connect(self.login_successful)
-        self.import_page.isValid.connect(lambda x: self.ui.next_button.setEnabled(x))
+        self.import_page.success.connect(self._on_login_successful)
+        self.import_page.validated.connect(self._on_page_validated)
 
         self.info_message = {
             self.landing_index: self.tr(
@@ -87,14 +87,14 @@ class LoginDialog(BaseDialog):
         self.ui.next_button.setEnabled(False)
         self.ui.back_button.setEnabled(False)
 
-        self.landing_page.ui.login_browser_radio.clicked.connect(lambda: self.ui.next_button.setEnabled(True))
-        self.landing_page.ui.login_browser_radio.clicked.connect(self.browser_radio_clicked)
-        self.landing_page.ui.login_import_radio.clicked.connect(lambda: self.ui.next_button.setEnabled(True))
-        self.landing_page.ui.login_import_radio.clicked.connect(self.import_radio_clicked)
+        self.landing_page.ui.login_browser_radio.clicked.connect(self._on_radio_clicked)
+        self.landing_page.ui.login_browser_radio.clicked.connect(self._on_browser_radio_clicked)
+        self.landing_page.ui.login_import_radio.clicked.connect(self._on_radio_clicked)
+        self.landing_page.ui.login_import_radio.clicked.connect(self._on_import_radio_clicked)
 
         self.ui.exit_button.clicked.connect(self.reject)
-        self.ui.back_button.clicked.connect(self.back_clicked)
-        self.ui.next_button.clicked.connect(self.next_clicked)
+        self.ui.back_button.clicked.connect(self._on_back_clicked)
+        self.ui.next_button.clicked.connect(self._on_next_clicked)
 
         self.login_stack.setCurrentWidget(self.landing_page)
 
@@ -110,33 +110,41 @@ class LoginDialog(BaseDialog):
         self.ui.main_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
 
     @Slot()
-    def browser_radio_clicked(self):
+    def _on_radio_clicked(self):
+        self.ui.next_button.setEnabled(True)
+
+    @Slot(bool)
+    def _on_page_validated(self, valid: bool):
+        self.ui.next_button.setEnabled(valid)
+
+    @Slot()
+    def _on_browser_radio_clicked(self):
         self.login_stack.slideInWidget(self.browser_page)
         self.ui.info_label.setText(self.info_message[self.browser_index])
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(False)
 
     @Slot()
-    def import_radio_clicked(self):
+    def _on_import_radio_clicked(self):
         self.login_stack.slideInWidget(self.import_page)
         self.ui.info_label.setText(self.info_message[self.import_index])
         self.ui.back_button.setEnabled(True)
         self.ui.next_button.setEnabled(self.import_page.is_valid())
 
     @Slot()
-    def back_clicked(self):
+    def _on_back_clicked(self):
         self.ui.back_button.setEnabled(False)
         self.ui.next_button.setEnabled(True)
         self.ui.info_label.setText(self.info_message[self.landing_index])
         self.login_stack.slideInWidget(self.landing_page)
 
     @Slot()
-    def next_clicked(self):
+    def _on_next_clicked(self):
         if self.login_stack.currentWidget() is self.landing_page:
             if self.landing_page.ui.login_browser_radio.isChecked():
-                self.browser_radio_clicked()
+                self._on_browser_radio_clicked()
             if self.landing_page.ui.login_import_radio.isChecked():
-                self.import_radio_clicked()
+                self._on_import_radio_clicked()
         elif self.login_stack.currentWidget() is self.browser_page:
             self.browser_page.do_login()
         elif self.login_stack.currentWidget() is self.import_page:
@@ -148,7 +156,7 @@ class LoginDialog(BaseDialog):
         self.open()
 
     @Slot()
-    def login_successful(self):
+    def _on_login_successful(self):
         try:
             if not self.core.login():
                 raise ValueError("Login failed.")

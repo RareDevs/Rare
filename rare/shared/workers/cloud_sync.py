@@ -2,7 +2,7 @@ from enum import Enum
 
 from PySide6.QtCore import QObject, Signal
 
-from rare.models.base_game import RareGameSlim
+from rare.models.game_slim import RareGameSlim
 
 from .worker import QueueWorker, QueueWorkerInfo
 

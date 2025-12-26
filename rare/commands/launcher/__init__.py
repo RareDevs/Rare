@@ -29,7 +29,7 @@ from PySide6.QtNetwork import QLocalServer, QLocalSocket
 from PySide6.QtWidgets import QApplication
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.base_game import RareGameSlim
+from rare.models.game_slim import RareGameSlim
 from rare.models.launcher import Actions, BaseModel, ErrorModel, FinishedModel, StateChangedModel
 from rare.shared.workers.cloud_sync import CloudSyncWorker
 from rare.utils.paths import get_rare_executable
@@ -50,16 +50,18 @@ DETACHED_APP_NAMES = {
 }
 
 
+class PreLaunchSignals(QObject):
+    ready_to_launch = Signal(LaunchParams)
+    pre_launch_command_started = Signal()
+    pre_launch_command_finished = Signal(int)  # exit_code
+    error_occurred = Signal(str)
+
+
 class PreLaunch(QRunnable):
-    class Signals(QObject):
-        ready_to_launch = Signal(LaunchParams)
-        pre_launch_command_started = Signal()
-        pre_launch_command_finished = Signal(int)  # exit_code
-        error_occurred = Signal(str)
 
     def __init__(self, args: InitParams, rgame: RareGameSlim, sync_action=None):
         super(PreLaunch, self).__init__()
-        self.signals = self.Signals()
+        self.signals = PreLaunchSignals()
         self.logger = getLogger(type(self).__name__)
         self.args = args
         self.rgame = rgame
@@ -76,8 +78,8 @@ class PreLaunch(QRunnable):
 
         if args := self.prepare_launch(self.args):
             self.signals.ready_to_launch.emit(args)
-        else:
-            return
+        self.signals.disconnect(self.signals)
+        self.signals.deleteLater()
 
     def prepare_launch(self, args: InitParams) -> Optional[LaunchParams]:
         try:
@@ -91,8 +93,14 @@ class PreLaunch(QRunnable):
         if launch.pre_launch_command:
             proc = get_configured_qprocess(shlex.split(launch.pre_launch_command), launch.environment)
             proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
+            # adapter = CallableSlotAdapter(
+            #     proc,
+            #     lambda: self.logger.info(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
+            # )
+            # proc.readyReadStandardOutput.connect(adapter.slot)
             proc.readyReadStandardOutput.connect(
-                lambda: self.logger.info(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
+                (lambda obj: obj.logger.debug(
+                    str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
             )
             self.signals.pre_launch_command_started.emit()
             self.logger.info("Running pre-launch command %s, %s", proc.program(), proc.arguments())
@@ -102,17 +110,20 @@ class PreLaunch(QRunnable):
                 proc.waitForFinished(-1)
             else:
                 proc.startDetached()
+
         return launch
 
 
+class SyncCheckWorkerSignals(QObject):
+    sync_state_ready = Signal()
+    error_occurred = Signal(str)
+
+
 class SyncCheckWorker(QRunnable):
-    class Signals(QObject):
-        sync_state_ready = Signal()
-        error_occurred = Signal(str)
 
     def __init__(self, core: LegendaryCore, rgame: RareGameSlim):
         super().__init__()
-        self.signals = self.Signals()
+        self.signals = SyncCheckWorkerSignals()
         self.core = core
         self.rgame = rgame
 
@@ -123,6 +134,8 @@ class SyncCheckWorker(QRunnable):
             self.signals.error_occurred.emit(str(e))
             return
         self.signals.sync_state_ready.emit()
+        self.signals.disconnect(self.signals)
+        self.signals.deleteLater()
 
 
 class RareLauncherException(RareAppException):
@@ -171,26 +184,17 @@ class RareLauncher(RareApp):
         if args.show_console:
             self.console = ConsoleDialog(game.app_title)
             self.console.show()
-            self.game_process.stateChanged.connect(
-                lambda s: self.console.kill_button.setEnabled(
-                    self.game_process.state() == QProcess.ProcessState.Running
-                )
-            )
-            self.game_process.stateChanged.connect(
-                lambda s: self.console.terminate_button.setEnabled(
-                    self.game_process.state() == QProcess.ProcessState.Running
-                )
-            )
+            self.game_process.stateChanged.connect(self._on_game_process_changed)
 
         self.sync_dialog: Optional[CloudSyncDialog] = None
 
         self.game_process.finished.connect(self.__process_finished)
         self.game_process.errorOccurred.connect(self.__process_errored)
         if self.console:
-            self.game_process.readyReadStandardOutput.connect(self.__proc_log_stdout)
-            self.game_process.readyReadStandardError.connect(self.__proc_log_stderr)
-            self.console.term.connect(self.__proc_term)
-            self.console.kill.connect(self.__proc_kill)
+            self.game_process.readyReadStandardOutput.connect(self._proc_log_stdout)
+            self.game_process.readyReadStandardError.connect(self._proc_log_stderr)
+            self.console.term.connect(self._proc_term)
+            self.console.kill.connect(self._proc_kill)
 
         ret = self.server.listen(f"rare_{args.app_name}")
         if not ret:
@@ -207,23 +211,28 @@ class RareLauncher(RareApp):
         # The timer's signal will be serviced once we call `exec()` on the application
         QTimer.singleShot(0, self.start)
 
+    @Slot(QProcess.ProcessState)
+    def _on_game_process_changed(self, state: QProcess.ProcessState):
+        self.console.kill_button.setEnabled(state == QProcess.ProcessState.Running)
+        self.console.terminate_button.setEnabled(state == QProcess.ProcessState.Running)
+
     @Slot()
-    def __proc_log_stdout(self):
+    def _proc_log_stdout(self):
         self.console.log_stdout(self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore"))
 
     @Slot()
-    def __proc_log_stderr(self):
+    def _proc_log_stderr(self):
         self.console.log_stderr(self.game_process.readAllStandardError().data().decode("utf-8", "ignore"))
 
     @Slot()
-    def __proc_term(self):
+    def _proc_term(self):
         if platform.system() == "Windows":
             self.game_process.terminate()
         else:
             os.kill(self.game_process.processId(), signal.SIGINT)
 
     @Slot()
-    def __proc_kill(self):
+    def _proc_kill(self):
         if platform.system() == "Windows":
             self.game_process.kill()
         else:
@@ -251,23 +260,32 @@ class RareLauncher(RareApp):
         else:
             self.logger.error("Can't send message")
 
-    def check_saves_finished(self, exit_code: int):
-        self.rgame.signals.widget.update.connect(lambda: self.on_exit(exit_code))
+    def check_saves(self, exit_code: int):
+        # self.rgame.signals.widget.refresh.connect(lambda: self.on_exit(exit_code))
+        self.rgame.signals.widget.refresh.connect(
+            (lambda obj: obj.on_exit(exit_code)).__get__(self)
+        )
 
         state, (dt_local, dt_remote) = self.rgame.save_game_state
 
         if state == SaveGameStatus.LOCAL_NEWER and not self.no_sync_on_exit:
             action = CloudSyncDialogResult.UPLOAD
-            self.__check_saves_finished(exit_code, action)
+            self.check_saves_finished(exit_code, action)
         else:
             self.sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
-            self.sync_dialog.result_ready.connect(lambda a: self.__check_saves_finished(exit_code, a))
+            # self.sync_dialog.result_ready.connect(
+            #     lambda a: self.__check_saves_finished(exit_code, a)
+            # )
+            self.sync_dialog.result_ready.connect(
+                (lambda obj, a: obj.check_saves_finished(exit_code, a)).__get__(self)
+            )
             self.sync_dialog.open()
 
     @Slot(int, int)
     @Slot(int, CloudSyncDialogResult)
-    def __check_saves_finished(self, exit_code, action):
+    def check_saves_finished(self, exit_code, action):
         if self.sync_dialog is not None:
+            self.sync_dialog.disconnect(self.sync_dialog)
             self.sync_dialog.deleteLater()
             self.sync_dialog = None
         action = CloudSyncDialogResult(action)
@@ -291,7 +309,7 @@ class RareLauncher(RareApp):
         self.logger.info("Game finished")
 
         if self.rgame.auto_sync_saves:
-            self.check_saves_finished(exit_code)
+            self.check_saves(exit_code)
         else:
             self.on_exit(exit_code)
 
@@ -482,9 +500,9 @@ class RareLauncher(RareApp):
         if shiboken6.isValid(self.game_process):  # pylint: disable=E1101
             if self.game_process.state() != QProcess.ProcessState.NotRunning:
                 if sig == signal.SIGTERM:
-                    self.__proc_term()
+                    self._proc_term()
                 elif sig == signal.SIGINT:
-                    self.__proc_kill()
+                    self._proc_kill()
             self.game_process.waitForFinished()
             exit_code = self.game_process.exitCode()
             self.game_process.deleteLater()

@@ -43,7 +43,7 @@ class TrayIcon(QSystemTrayIcon):
         # We need to reference this separator to add game actions before it
         self.separator = self.menu.addSeparator()
         self.exit_action = QAction(self.tr("Quit"))
-        self.exit_action.triggered.connect(lambda: self.exit_app.emit(0))
+        self.exit_action.triggered.connect(self._on_exit_triggered)
         self.menu.addAction(self.exit_action)
 
         self.game_actions: List[QAction] = []
@@ -59,6 +59,10 @@ class TrayIcon(QSystemTrayIcon):
         last_played = [game for game in self.rcore.games if (game.metadata and game.is_installed)]
         last_played.sort(key=lambda g: g.metadata.last_played, reverse=True)
         return last_played[:5]
+
+    @Slot()
+    def _on_exit_triggered(self):
+        self.exit_app.emit(0)
 
     @Slot(str, str)
     def notify(self, title: str, body: str):

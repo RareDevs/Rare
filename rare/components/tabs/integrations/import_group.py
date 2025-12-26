@@ -67,10 +67,12 @@ class ImportedGame:
     message: Optional[str] = None
 
 
+class ImportWorkerSignals(QObject):
+    progress = Signal(ImportedGame, int)
+    result = Signal(list)
+
+
 class ImportWorker(QRunnable):
-    class Signals(QObject):
-        progress = Signal(ImportedGame, int)
-        result = Signal(list)
 
     def __init__(
         self,
@@ -84,7 +86,7 @@ class ImportWorker(QRunnable):
     ):
         super(ImportWorker, self).__init__()
         self.setAutoDelete(True)
-        self.signals = ImportWorker.Signals()
+        self.signals = ImportWorkerSignals()
         self.core = core
 
         self.path = Path(path)
@@ -110,6 +112,8 @@ class ImportWorker(QRunnable):
             result_list.append(result)
             self.signals.progress.emit(result, 100)
         self.signals.result.emit(result_list)
+        self.signals.disconnect(self.signals)
+        self.signals.deleteLater()
 
     def _try_import(self, path: Path, app_name: str = None) -> ImportedGame:
         result = ImportedGame(ImportResult.ERROR)
@@ -188,13 +192,13 @@ class ImportGroup(QGroupBox):
             self.app_name_edit,
         )
 
-        self.ui.import_folder_check.checkStateChanged.connect(self.import_folder_changed)
+        self.ui.import_folder_check.checkStateChanged.connect(self._on_import_folder_changed)
         self.ui.import_dlcs_check.setEnabled(False)
-        self.ui.import_dlcs_check.checkStateChanged.connect(self.import_dlcs_changed)
+        self.ui.import_dlcs_check.checkStateChanged.connect(self._on_import_dlcs_changed)
 
         self.ui.import_button_label.setText("")
         self.ui.import_button.setEnabled(False)
-        self.ui.import_button.clicked.connect(lambda: self._import(self.path_edit.text()))
+        self.ui.import_button.clicked.connect(self._on_import_clicked)
 
         self.button_info_stack = QStackedWidget(self)
         self.button_info_stack.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -276,7 +280,7 @@ class ImportGroup(QGroupBox):
         self.ui.import_button.setEnabled(not bool(self.worker) and (self.app_name_edit.is_valid and self.path_edit.is_valid))
 
     @Slot(Qt.CheckState)
-    def import_folder_changed(self, state: Qt.CheckState):
+    def _on_import_folder_changed(self, state: Qt.CheckState):
         self.app_name_edit.setEnabled(not state)
         self.ui.platform_combo.setEnabled(not state)
         self.ui.platform_combo.setToolTip(
@@ -300,10 +304,14 @@ class ImportGroup(QGroupBox):
         )
 
     @Slot(Qt.CheckState)
-    def import_dlcs_changed(self, state: Qt.CheckState):
+    def _on_import_dlcs_changed(self, state: Qt.CheckState):
         self.ui.import_button.setEnabled(
             not bool(self.worker) and (state != Qt.CheckState.Unchecked or self.app_name_edit.is_valid)
         )
+
+    @Slot()
+    def _on_import_clicked(self):
+        self._import(self.path_edit.text())
 
     @Slot(str)
     def _import(self, path: Optional[str] = None):

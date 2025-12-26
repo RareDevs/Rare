@@ -102,8 +102,8 @@ class LandingWidget(QWidget, SideTabContents):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        self.api.get_free(self.__update_free_games)
-        self.api.get_wishlist(self.__update_wishlist_discounts)
+        self.api.get_free(self._update_free_games)
+        self.api.get_wishlist(self._update_wishlist_discounts)
         return super().showEvent(a0)
 
     def hideEvent(self, a0: QHideEvent) -> None:
@@ -112,9 +112,10 @@ class LandingWidget(QWidget, SideTabContents):
         # TODO: Implement tab unloading
         return super().hideEvent(a0)
 
-    def __update_wishlist_discounts(self, wishlist: List[WishlistItemModel]):
+    def _update_wishlist_discounts(self, wishlist: List[WishlistItemModel]):
         for w in self.discounts_group.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.discounts_group.layout().removeWidget(w)
+            w.disconnect(w)
             w.deleteLater()
 
         for item in filter(lambda x: bool(x.offer.price.totalPrice.discount), wishlist):
@@ -125,13 +126,15 @@ class LandingWidget(QWidget, SideTabContents):
         self.discounts_group.setVisible(have_discounts)
         self.discounts_group.loading(False)
 
-    def __update_free_games(self, free_games: List[CatalogOfferModel]):
+    def _update_free_games(self, free_games: List[CatalogOfferModel]):
         for w in self.free_games_now.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.free_games_now.layout().removeWidget(w)
+            w.disconnect(w)
             w.deleteLater()
 
         for w in self.free_games_next.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.free_games_next.layout().removeWidget(w)
+            w.disconnect(w)
             w.deleteLater()
 
         date = datetime.now(timezone.utc)
@@ -182,6 +185,7 @@ class LandingWidget(QWidget, SideTabContents):
 
         for w in self.games_group.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.games_group.layout().removeWidget(w)
+            w.disconnect(w)
             w.deleteLater()
 
         for game in data:

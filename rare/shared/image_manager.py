@@ -67,6 +67,8 @@ class ImageWorker(QRunnable):
     def run(self):
         self.func(self.game, self.force)
         self.signals.completed.emit(self.game)
+        self.signals.disconnect(self.signals)
+        self.signals.deleteLater()
 
 
 class ImageManager(QObject):

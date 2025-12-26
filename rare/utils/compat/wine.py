@@ -19,6 +19,7 @@ def find_lutris() -> Tuple[str, str]:
         if os.path.isdir(path) and os.path.isdir(runtime_path) and os.path.isdir(wine_path):
             __lutris_runtime, __lutris_wine = runtime_path, wine_path
             return runtime_path, wine_path
+    return "", ""
 
 
 @dataclass
@@ -40,6 +41,7 @@ def find_lutris_wines(runtime_path: str = None, wine_path: str = None) -> List[W
     runners = []
     if not runtime_path and not wine_path:
         return runners
+    return runners
 
 
 def __get_lib_path(executable: str, basename: str = "") -> str:

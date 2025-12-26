@@ -66,6 +66,7 @@ class UpdateGroup(QGroupBox):
         widget: UpdateWidget = self.__find_widget(game.app_name)
         if widget is not None:
             self.__container.layout().removeWidget(widget)
+            widget.disconnect(widget)
             widget.deleteLater()
         widget = UpdateWidget(self.imgmgr, game, igame, parent=self.__container)
         widget.destroyed.connect(self.__update_group)
@@ -75,6 +76,7 @@ class UpdateGroup(QGroupBox):
     def remove(self, app_name: str):
         widget: UpdateWidget = self.__find_widget(app_name)
         self.__container.layout().removeWidget(widget)
+        widget.disconnect(widget)
         widget.deleteLater()
 
     def set_widget_enabled(self, app_name: str, enabled: bool):
@@ -191,6 +193,7 @@ class QueueGroup(QGroupBox):
         self.__queue.remove(app_name)
         widget: QueueWidget = self.__find_widget(app_name)
         self.__container.layout().removeWidget(widget)
+        widget.disconnect(widget)
         widget.deleteLater()
 
     @Slot(str)

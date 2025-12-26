@@ -25,7 +25,7 @@ from rare.widgets.loading_widget import LoadingWidget
 
 
 class UbiGetInfoWorkerSignals(QObject):
-    worker_finished = Signal(set, set, str)
+    result = Signal(set, set, str)
 
 
 class UbiGetInfoWorker(Worker):
@@ -45,7 +45,7 @@ class UbiGetInfoWorker(Worker):
                 ubi_account_id = ext_auth["externalAuthId"]
                 break
             else:
-                self.signals.worker_finished.emit(set(), set(), "")
+                self.signals.result.emit(set(), set(), "")
                 return
 
             with timelogger(self.logger, "Request uplay codes"):
@@ -62,10 +62,10 @@ class UbiGetInfoWorker(Worker):
                 self.core.lgd.entitlements = entitlements
             entitlements = {i["entitlementName"] for i in entitlements}
 
-            self.signals.worker_finished.emit(redeemed, entitlements, ubi_account_id)
+            self.signals.result.emit(redeemed, entitlements, ubi_account_id)
         except Exception as e:
             self.logger.error(e)
-            self.signals.worker_finished.emit(set(), set(), "error")
+            self.signals.result.emit(set(), set(), "error")
 
 
 class UbiConnectWorkerSignals(QObject):
@@ -138,10 +138,10 @@ class UbiLinkWidget(QFrame):
             worker = UbiConnectWorker(self.core, None, None)
         else:
             worker = UbiConnectWorker(self.core, self.ubi_account_id, self.game.partner_link_id)
-        worker.signals.linked.connect(self.worker_finished)
+        worker.signals.linked.connect(self._on_linked)
         QThreadPool.globalInstance().start(worker)
 
-    def worker_finished(self, error):
+    def _on_linked(self, error):
         if not error:
             self.redeem_indicator.setPixmap(
                 qta_icon("fa.check-circle-o", "fa5.check-circle", color="green").pixmap(QSize(20, 20))
@@ -173,7 +173,7 @@ class UbisoftGroup(QGroupBox):
         self.info_label.setText(self.tr("Getting information about your redeemable Ubisoft games."))
         self.link_button = QPushButton(self.tr("Link Ubisoft acccount"), parent=self)
         self.link_button.setMinimumWidth(140)
-        self.link_button.clicked.connect(lambda: webbrowser.open("https://www.epicgames.com/id/link/ubisoft"))
+        self.link_button.clicked.connect(self._on_link_clicked)
         self.link_button.setEnabled(False)
 
         self.loading_widget = LoadingWidget(self)
@@ -187,6 +187,10 @@ class UbisoftGroup(QGroupBox):
         layout.addLayout(header_layout)
         layout.addWidget(self.loading_widget)
 
+    @Slot()
+    def _on_link_clicked(self):
+        webbrowser.open("https://www.epicgames.com/id/link/ubisoft")
+
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
@@ -195,16 +199,17 @@ class UbisoftGroup(QGroupBox):
             return super().showEvent(a0)
 
         for widget in self.findChildren(UbiLinkWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
+            widget.disconnect(widget)
             widget.deleteLater()
         self.loading_widget.start()
 
         self.worker = UbiGetInfoWorker(self.core)
-        self.worker.signals.worker_finished.connect(self.show_ubi_games)
+        self.worker.signals.result.connect(self._on_result)
         self.thread_pool.start(self.worker)
         return super().showEvent(a0)
 
     @Slot(set, set, str)
-    def show_ubi_games(self, redeemed: set, entitlements: set, ubi_account_id: str):
+    def _on_result(self, redeemed: set, entitlements: set, ubi_account_id: str):
         self.worker = None
         self.loading_widget.stop()
         if not redeemed and ubi_account_id != "error":

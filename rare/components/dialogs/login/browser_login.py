@@ -1,11 +1,10 @@
 import json
-from logging import getLogger
 from typing import Tuple
 
 from legendary.utils import webview_login
-from PySide6.QtCore import QProcess, QUrl, Signal, Slot
+from PySide6.QtCore import QProcess, QUrl, Slot
 from PySide6.QtGui import QDesktopServices
-from PySide6.QtWidgets import QApplication, QFormLayout, QFrame, QLineEdit
+from PySide6.QtWidgets import QApplication, QFormLayout, QLineEdit
 
 from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.exception import LgndrException
@@ -14,20 +13,17 @@ from rare.utils.misc import qta_icon
 from rare.utils.paths import get_rare_executable
 from rare.widgets.indicator_edit import IndicatorLineEdit, IndicatorReasonsCommon
 
+from .login_frame import LoginFrame
 
-class BrowserLogin(QFrame):
-    success = Signal()
-    isValid = Signal(bool)
+
+class BrowserLogin(LoginFrame):
 
     def __init__(self, core: LegendaryCore, parent=None):
-        super(BrowserLogin, self).__init__(parent=parent)
-        self.logger = getLogger(type(self).__name__)
+        super(BrowserLogin, self).__init__(core, parent=parent)
 
-        self.setFrameStyle(QFrame.Shape.StyledPanel)
         self.ui = Ui_BrowserLogin()
         self.ui.setupUi(self)
 
-        self.core = core
         self.login_url = self.core.egs.get_auth_url()
 
         self.auth_edit = IndicatorLineEdit(
@@ -36,23 +32,23 @@ class BrowserLogin(QFrame):
         self.auth_edit.line_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.ui.link_text.setText(self.login_url)
         self.ui.copy_button.setIcon(qta_icon("mdi.content-copy", "fa5.copy"))
-        self.ui.copy_button.clicked.connect(self.copy_link)
+        self.ui.copy_button.clicked.connect(self._on_copy_link)
         self.ui.form_layout.setWidget(
             self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0],
             QFormLayout.ItemRole.FieldRole,
             self.auth_edit
         )
 
-        self.ui.open_button.clicked.connect(self.open_browser)
-        self.auth_edit.textChanged.connect(lambda _: self.isValid.emit(self.is_valid()))
+        self.ui.open_button.clicked.connect(self._on_open_browser)
+        self.auth_edit.textChanged.connect(self._on_input_changed)
 
     @Slot()
-    def copy_link(self):
+    def _on_copy_link(self):
         clipboard = QApplication.instance().clipboard()
         clipboard.setText(self.login_url)
         self.ui.status_field.setText(self.tr("Copied to clipboard"))
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return self.auth_edit.is_valid
 
     @staticmethod
@@ -70,7 +66,7 @@ class BrowserLogin(QFrame):
         else:
             return False, text, IndicatorReasonsCommon.VALID
 
-    def do_login(self):
+    def do_login(self) -> None:
         self.ui.status_field.setText(self.tr("Logging in..."))
         auth_code = self.auth_edit.text()
         try:
@@ -84,7 +80,7 @@ class BrowserLogin(QFrame):
             self.logger.error(e)
 
     @Slot()
-    def open_browser(self):
+    def _on_open_browser(self):
         if not webview_login.webview_available:
             self.logger.warning("You don't have webengine installed, you will need to manually copy the authorizationCode.")
             QDesktopServices.openUrl(QUrl(self.login_url))
