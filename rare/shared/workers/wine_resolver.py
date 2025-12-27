@@ -25,13 +25,15 @@ else:
     from rare.utils.compat import utils as compat_utils
 
 
+class WinePathResolverSignals(QObject):
+    result_ready = Signal(str, str)
+
+
 class WinePathResolver(Worker):
-    class Signals(QObject):
-        result_ready = Signal(str, str)
 
     def __init__(self, core: LegendaryCore, app_name: str, path: str):
         super(WinePathResolver, self).__init__()
-        self.signals = WinePathResolver.Signals()
+        self.signals = WinePathResolverSignals()
         self.core = core
         self.app_name = app_name
         self.path = path

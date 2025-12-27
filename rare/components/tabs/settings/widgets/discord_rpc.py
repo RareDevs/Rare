@@ -1,6 +1,6 @@
 import importlib.util
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import QGroupBox
 
 from rare.models.settings import DiscordRPCMode, RareAppSettings, app_settings
@@ -28,28 +28,35 @@ class DiscordRPCSettings(QGroupBox):
             self.ui.mode_combo.setCurrentIndex(self.ui.mode_combo.findData(rpc_mode, Qt.ItemDataRole.UserRole))
         else:
             self.ui.mode_combo.setCurrentIndex(index)
-        self.ui.mode_combo.currentIndexChanged.connect(self.__mode_changed)
+        self.ui.mode_combo.currentIndexChanged.connect(self._mode_changed)
 
         self.ui.game_check.setChecked(self.settings.get_value(app_settings.discord_rpc_game))
-        self.ui.game_check.checkStateChanged.connect(
-            lambda s: self.settings.set_value(app_settings.discord_rpc_game, s != Qt.CheckState.Unchecked)
-        )
+        self.ui.game_check.checkStateChanged.connect(self._on_game_changed)
 
         self.ui.os_check.setChecked(self.settings.get_value(app_settings.discord_rpc_os))
-        self.ui.os_check.checkStateChanged.connect(
-            lambda s: self.settings.set_value(app_settings.discord_rpc_os, s != Qt.CheckState.Unchecked)
-        )
+        self.ui.os_check.checkStateChanged.connect(self._on_os_changed)
 
         self.ui.time_check.setChecked(self.settings.get_value(app_settings.discord_rpc_time))
-        self.ui.time_check.checkStateChanged.connect(
-            lambda s: self.settings.set_value(app_settings.discord_rpc_time, s != Qt.CheckState.Unchecked)
-        )
+        self.ui.time_check.checkStateChanged.connect(self._on_time_changed)
 
         if not importlib.util.find_spec("pypresence"):
             self.setDisabled(True)
             self.setToolTip(self.tr("Pypresence is not installed"))
 
-    def __mode_changed(self, index):
+    @Slot(Qt.CheckState)
+    def _on_game_changed(self, state: Qt.CheckState):
+        self.settings.set_value(app_settings.discord_rpc_game, state != Qt.CheckState.Unchecked)
+
+    @Slot(Qt.CheckState)
+    def _on_os_changed(self, state: Qt.CheckState):
+        self.settings.set_value(app_settings.discord_rpc_os, state != Qt.CheckState.Unchecked)
+
+    @Slot(Qt.CheckState)
+    def _on_time_changed(self, state: Qt.CheckState):
+        self.settings.set_value(app_settings.discord_rpc_time, state != Qt.CheckState.Unchecked)
+
+    @Slot(int)
+    def _mode_changed(self, index: int):
         data = self.ui.mode_combo.itemData(index, Qt.ItemDataRole.UserRole)
         self.settings.set_value(app_settings.discord_rpc_mode, data)
         self.signals.discord_rpc.update_settings.emit()

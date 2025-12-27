@@ -101,16 +101,37 @@ class SearchWidget(QWidget, SideTabContents):
             # self.show_info.emit(self.search_bar.text())
 
     def init_filter(self):
-        self.ui.none_price.toggled.connect(lambda: self.prepare_request("") if self.ui.none_price.isChecked() else None)
-        self.ui.free_button.toggled.connect(lambda: self.prepare_request("free") if self.ui.free_button.isChecked() else None)
-        self.ui.under10.toggled.connect(lambda: self.prepare_request("<price>[0, 1000)") if self.ui.under10.isChecked() else None)
-        self.ui.under20.toggled.connect(lambda: self.prepare_request("<price>[0, 2000)") if self.ui.under20.isChecked() else None)
-        self.ui.under30.toggled.connect(lambda: self.prepare_request("<price>[0, 3000)") if self.ui.under30.isChecked() else None)
-        self.ui.above.toggled.connect(lambda: self.prepare_request("<price>[1499,]") if self.ui.above.isChecked() else None)
+        # self.ui.none_price.toggled.connect(lambda: self.prepare_request("") if self.ui.none_price.isChecked() else None)
+        self.ui.none_price.toggled.connect(
+            (lambda obj: obj.prepare_request("") if self.ui.none_price.isChecked() else None).__get__(self)
+        )
+        # self.ui.free_button.toggled.connect(lambda: self.prepare_request("free") if self.ui.free_button.isChecked() else None)
+        self.ui.free_button.toggled.connect(
+            (lambda obj: obj.prepare_request("free") if self.ui.free_button.isChecked() else None).__get__(self)
+        )
+        # self.ui.under10.toggled.connect(lambda: self.prepare_request("<price>[0, 1000)") if self.ui.under10.isChecked() else None)
+        self.ui.under10.toggled.connect(
+            (lambda obj: obj.prepare_request("<price>[0, 1000)") if self.ui.under10.isChecked() else None).__get__(self)
+        )
+        # self.ui.under20.toggled.connect(lambda: self.prepare_request("<price>[0, 2000)") if self.ui.under20.isChecked() else None)
+        self.ui.under20.toggled.connect(
+            (lambda obj: obj.prepare_request("<price>[0, 2000)") if self.ui.under20.isChecked() else None).__get__(self)
+        )
+        # self.ui.under30.toggled.connect(lambda: self.prepare_request("<price>[0, 3000)") if self.ui.under30.isChecked() else None)
+        self.ui.under30.toggled.connect(
+            (lambda obj: obj.prepare_request("<price>[0, 3000)") if self.ui.under30.isChecked() else None).__get__(self)
+        )
+        # self.ui.above.toggled.connect(lambda: self.prepare_request("<price>[1499,]") if self.ui.above.isChecked() else None)
+        self.ui.above.toggled.connect(
+            (lambda obj: obj.prepare_request("<price>[1499,]") if self.ui.above.isChecked() else None).__get__(self)
+        )
         # self.on_discount.toggled.connect(
         #     lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None
         # )
-        self.ui.on_discount.toggled.connect(lambda: self.prepare_request())
+        # self.ui.on_discount.toggled.connect(lambda: self.prepare_request())
+        self.ui.on_discount.toggled.connect(
+            (lambda obj: obj.prepare_request()).__get__(self)
+        )
         constants = Constants()
 
         self.checkboxes = []
@@ -123,8 +144,14 @@ class SearchWidget(QWidget, SideTabContents):
         ]:
             for text, tag in variables:
                 checkbox = CheckBox(text, tag)
-                checkbox.activated.connect(lambda x: self.prepare_request(added_tag=x))
-                checkbox.deactivated.connect(lambda x: self.prepare_request(removed_tag=x))
+                # checkbox.activated.connect(lambda x: self.prepare_request(added_tag=x))
+                checkbox.activated.connect(
+                    (lambda obj, x: obj.prepare_request(added_tag=x)).__get__(self)
+                )
+                # checkbox.deactivated.connect(lambda x: self.prepare_request(removed_tag=x))
+                checkbox.deactivated.connect(
+                    (lambda obj, x: obj.prepare_request(removed_tag=x)).__get__(self)
+                )
                 groupbox.layout().addWidget(checkbox)
                 self.checkboxes.append(checkbox)
         self.ui.reset_button.clicked.connect(self.reset_filters)
@@ -237,9 +264,11 @@ class ResultsWidget(QScrollArea):
     def show_results(self, results: dict):
         for w in self.results_container.findChildren(QLabel, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.results_layout.removeWidget(w)
+            w.disconnect(w)
             w.deleteLater()
         for w in self.results_container.findChildren(SearchItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.results_layout.removeWidget(w)
+            w.disconnect(w)
             w.deleteLater()
 
         if not results:
@@ -247,7 +276,7 @@ class ResultsWidget(QScrollArea):
         else:
             for res in results:
                 w = SearchItemWidget(self.store_api.cached_manager, res, parent=self.results_container)
-                w.show_details.connect(self.show_details.emit)
+                w.show_details.connect(self.show_details)
                 self.results_layout.addWidget(w)
         self.results_layout.update()
         self.setEnabled(True)

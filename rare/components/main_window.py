@@ -118,7 +118,7 @@ class RareWindow(QMainWindow):
         self.tray_icon: TrayIcon = TrayIcon(self.settings, self.rcore, self)
         self.tray_icon.exit_app.connect(self.__on_exit_app)
         self.tray_icon.show_app.connect(self.show)
-        self.tray_icon.activated.connect(lambda r: self.toggle() if r == QSystemTrayIcon.ActivationReason.DoubleClick else None)
+        self.tray_icon.activated.connect(self._on_tray_icon_activated)
 
         # enable kinetic scrolling
         for scroll_area in self.findChildren(QScrollArea):
@@ -131,6 +131,11 @@ class RareWindow(QMainWindow):
             # fix scrolling
             for combo_box in scroll_area.findChildren(QComboBox):
                 combo_box.wheelEvent = lambda e: e.ignore()
+
+    @Slot(QSystemTrayIcon.ActivationReason)
+    def _on_tray_icon_activated(self, reason: QSystemTrayIcon.ActivationReason):
+        if reason == QSystemTrayIcon.ActivationReason.DoubleClick:
+            self.toggle()
 
     def center_window(self):
         # get the margins of the decorated window

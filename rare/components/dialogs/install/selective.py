@@ -75,6 +75,7 @@ class InstallDialogSelective(CollapsibleFrame):
 
     def update_list(self, platform: str):
         if self.widget is not None:
+            self.widget.disconnect(self.widget)
             self.widget.deleteLater()
         self.widget = SelectiveWidget(self.rgame, platform, parent=self)
         self.widget.stateChanged.connect(self.stateChanged)

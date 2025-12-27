@@ -10,7 +10,7 @@ from typing import Dict, List, Tuple
 from legendary.models.game import LaunchParameters
 from PySide6.QtCore import QProcess, QProcessEnvironment
 
-from rare.models.base_game import RareGameSlim
+from rare.models.game_slim import RareGameSlim
 from rare.utils.paths import setup_compat_shaders_dir
 
 logger = getLogger("RareLauncherUtils")

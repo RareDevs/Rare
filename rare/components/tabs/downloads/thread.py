@@ -58,16 +58,17 @@ class DlThread(QThread):
         self.rgame = rgame
         self.debug = debug
 
-    def __finish(self, result):
+    def _finish(self, result):
         if result.code == DlResultCode.FINISHED and not result.options.no_install:
             self.rgame.set_installed(True)
         self.rgame.state = RareGame.State.IDLE
         self.rgame.signals.progress.finish.emit(result.code != DlResultCode.FINISHED)
         self.result.emit(result)
+        self.quit()
 
-    def __status_callback(self, status: UIUpdate):
+    def _status_callback(self, status: UIUpdate):
         self.progress.emit(status, self.dl_size)
-        self.rgame.signals.progress.update.emit(int(status.progress))
+        self.rgame.signals.progress.refresh.emit(int(status.progress))
 
     def run(self):
         cli = LegendaryCLI(self.core)
@@ -115,7 +116,7 @@ class DlThread(QThread):
             time.sleep(1)
             while self.item.download.dlm.is_alive():
                 try:
-                    self.__status_callback(self.item.download.dlm.status_queue.get(timeout=1.0))
+                    self._status_callback(self.item.download.dlm.status_queue.get(timeout=1.0))
                 except queue.Empty:
                     pass
                 if self.dlm_signals.update:
@@ -194,7 +195,7 @@ class DlThread(QThread):
             sign_thread.stop = True
             ticket_thread.join()
             sign_thread.join()
-            self.__finish(result)
+            self._finish(result)
 
     def _handle_postinstall(self, postinstall, igame):
         self.logger.info("This game lists the following prerequisites to be installed:")
@@ -209,7 +210,8 @@ class DlThread(QThread):
                 proc = QProcess(self)
                 proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
                 proc.readyReadStandardOutput.connect(
-                    lambda: self.logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
+                    (lambda obj: obj.logger.debug(
+                        str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
                 )
                 proc.setProgram(fullpath)
                 proc.setArguments(postinstall.get("args", "").split(" "))

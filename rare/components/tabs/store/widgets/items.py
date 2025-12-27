@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QPushButton
 
@@ -106,6 +106,7 @@ class WishlistItemWidget(ItemWidgetSpinner):
         super(WishlistItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.DisplayWide)
         self.ui.setupUi(self)
+
         for attr in catalog_game.customAttributes:
             if attr["key"] == "developerName":
                 developer = attr["value"]
@@ -130,5 +131,9 @@ class WishlistItemWidget(ItemWidgetSpinner):
 
         self.delete_button = QPushButton(self)
         self.delete_button.setIcon(qta_icon("mdi.delete", color="white"))
-        self.delete_button.clicked.connect(lambda: self.delete_from_wishlist.emit(self.catalog_game))
+        self.delete_button.clicked.connect(self._on_delete_clicked)
         self.layout().insertWidget(0, self.delete_button, alignment=Qt.AlignmentFlag.AlignRight)
+
+    @Slot()
+    def _on_delete_clicked(self):
+        self.delete_from_wishlist.emit(self.catalog_game)

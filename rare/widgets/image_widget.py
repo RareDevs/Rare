@@ -29,16 +29,17 @@ class ImageWidget(QWidget):
         Rounded = 0
         Squared = 1
 
-    _pixmap: Optional[QPixmap] = None
-    _opacity: float = 1.0
-    _transform: QTransform
-    _smooth_transform: bool = False
     _rounded_overlay: Optional[OverlayPath] = None
     _squared_overlay: Optional[OverlayPath] = None
-    _image_size: Optional[ImageSize.Preset] = None
 
     def __init__(self, parent=None) -> None:
         super(ImageWidget, self).__init__(parent=parent)
+        self._pixmap: Optional[QPixmap] = None
+        self._opacity: float = 1.0
+        self._transform: QTransform = None
+        self._smooth_transform: bool = False
+        self._image_size: Optional[ImageSize.Preset] = None
+
         self.setObjectName(type(self).__name__)
         self.setContentsMargins(0, 0, 0, 0)
         self.paint_image = self.paint_image_empty
@@ -187,8 +188,8 @@ class LoadingSpinnerImageWidget(LoadingImageWidget):
         self.spinner.setVisible(False)
 
     def fetchPixmap(self, url: str, params: Dict = None):
-        self.spinner.start()
         self.spinner.setFixedSize(self._image_size.size)
+        self.spinner.start()
         params = {
             "resize": 1,
             "w": self._image_size.base.size.width(),

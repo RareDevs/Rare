@@ -99,20 +99,22 @@ class IndicatorReasonsStrings(QObject):
         self.__text.update(reasons)
 
 
-class EditFuncRunnable(QRunnable):
-    class Signals(QObject):
-        result = Signal(bool, str, int)
+class EditFuncRunnableSignals(QObject):
+    result = Signal(bool, str, int)
 
+
+class EditFuncRunnable(QRunnable):
     def __init__(self, func: Callable[[str], Tuple[bool, str, int]], args: str):
         super(EditFuncRunnable, self).__init__()
         self.setAutoDelete(True)
-        self.signals = EditFuncRunnable.Signals()
+        self.signals = EditFuncRunnableSignals()
         self.func = self.__wrap_edit_function(func)
         self.args = args
 
     def run(self):
         o0, o1, o2 = self.func(self.args)
         self.signals.result.emit(o0, o1, o2)
+        self.signals.disconnect(self.signals)
         self.signals.deleteLater()
 
     @staticmethod

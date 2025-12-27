@@ -265,21 +265,32 @@ class EGLSyncListGroup(QGroupBox):
         self.ui.setupUi(self)
         self.ui.list.setFrameShape(QFrame.Shape.NoFrame)
 
-        self.ui.list.itemDoubleClicked.connect(
-            lambda item: item.setCheckState(Qt.CheckState.Unchecked)
-            if item.checkState() != Qt.CheckState.Unchecked
-            else item.setCheckState(Qt.CheckState.Checked)
-        )
-        self.ui.list.itemChanged.connect(self.has_selected)
+        self.ui.list.itemDoubleClicked.connect(self._on_item_double_clicked)
+        self.ui.list.itemChanged.connect(self._has_selected)
 
-        self.ui.select_all_button.clicked.connect(lambda: self.mark(Qt.CheckState.Checked))
-        self.ui.select_none_button.clicked.connect(lambda: self.mark(Qt.CheckState.Unchecked))
+        self.ui.select_all_button.clicked.connect(self._on_mark_all)
+        self.ui.select_none_button.clicked.connect(self._on_mark_none)
 
         self.ui.action_button.clicked.connect(self.action)
 
         self.action_errors.connect(self.show_errors)
 
-    def has_selected(self):
+    @Slot()
+    def _on_mark_all(self):
+        self.mark(Qt.CheckState.Checked)
+
+    @Slot()
+    def _on_mark_none(self):
+        self.mark(Qt.CheckState.Unchecked)
+
+    @Slot(QListWidgetItem)
+    def _on_item_double_clicked(self, item: QListWidgetItem):
+        if item.checkState() != Qt.CheckState.Unchecked:
+            item.setCheckState(Qt.CheckState.Unchecked)
+        else:
+            item.setCheckState(Qt.CheckState.Checked)
+
+    def _has_selected(self):
         for item in self.items:
             if item.is_checked():
                 self.ui.action_button.setEnabled(True)

@@ -121,9 +121,7 @@ class QtRequests(QObject):
         item = self.__active_requests.pop(reply, None)
         if item is None:
             self.logger.error("QNetworkReply: %s without associated item", reply.url().toString())
-            reply.deleteLater()
-            return
-        if reply.error() != QNetworkReply.NetworkError.NoError:
+        elif reply.error() != QNetworkReply.NetworkError.NoError:
             self.logger.error(reply.errorString())
         else:
             mimetype, charset = self.__parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))
@@ -137,4 +135,5 @@ class QtRequests(QObject):
                 data = None
             for handler in item.handlers:
                 handler(data)
+        reply.disconnect(reply)
         reply.deleteLater()
