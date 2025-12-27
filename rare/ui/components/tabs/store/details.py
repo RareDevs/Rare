@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'details.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -29,7 +29,7 @@ class Ui_StoreDetailsWidget(object):
     def setupUi(self, StoreDetailsWidget):
         if not StoreDetailsWidget.objectName():
             StoreDetailsWidget.setObjectName(u"StoreDetailsWidget")
-        StoreDetailsWidget.resize(706, 302)
+        StoreDetailsWidget.resize(850, 492)
         StoreDetailsWidget.setWindowTitle(u"StoreDetailsWidget")
         self.main_layout = QHBoxLayout(StoreDetailsWidget)
         self.main_layout.setObjectName(u"main_layout")
@@ -54,15 +54,41 @@ class Ui_StoreDetailsWidget(object):
         self.right_layout = QGridLayout()
         self.right_layout.setSpacing(24)
         self.right_layout.setObjectName(u"right_layout")
-        self.details_layout = QFormLayout()
+        self.requirements_frame = QFrame(StoreDetailsWidget)
+        self.requirements_frame.setObjectName(u"requirements_frame")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.requirements_frame.sizePolicy().hasHeightForWidth())
+        self.requirements_frame.setSizePolicy(sizePolicy1)
+        self.requirements_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.requirements_frame.setFrameShadow(QFrame.Shadow.Sunken)
+        self.requirements_layout = QHBoxLayout(self.requirements_frame)
+        self.requirements_layout.setObjectName(u"requirements_layout")
+        self.requirements_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.right_layout.addWidget(self.requirements_frame, 2, 0, 1, 2, Qt.AlignmentFlag.AlignBottom)
+
+        self.description_label = QTextBrowser(StoreDetailsWidget)
+        self.description_label.setObjectName(u"description_label")
+        self.description_label.setMinimumSize(QSize(450, 0))
+        self.description_label.setOpenExternalLinks(True)
+
+        self.right_layout.addWidget(self.description_label, 1, 0, 1, 1)
+
+        self.details_widget = QWidget(StoreDetailsWidget)
+        self.details_widget.setObjectName(u"details_widget")
+        sizePolicy1.setHeightForWidth(self.details_widget.sizePolicy().hasHeightForWidth())
+        self.details_widget.setSizePolicy(sizePolicy1)
+        self.details_widget.setMinimumSize(QSize(450, 0))
+        self.details_layout = QFormLayout(self.details_widget)
         self.details_layout.setObjectName(u"details_layout")
-        self.details_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         self.details_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         self.details_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.details_layout.setHorizontalSpacing(12)
         self.details_layout.setVerticalSpacing(12)
-        self.details_layout.setContentsMargins(12, -1, -1, -1)
-        self.title_label = QLabel(StoreDetailsWidget)
+        self.details_layout.setContentsMargins(12, 0, 0, 0)
+        self.title_label = QLabel(self.details_widget)
         self.title_label.setObjectName(u"title_label")
         font = QFont()
         font.setBold(True)
@@ -71,88 +97,88 @@ class Ui_StoreDetailsWidget(object):
 
         self.details_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.title_label)
 
-        self.title = QLabel(StoreDetailsWidget)
+        self.title = QLabel(self.details_widget)
         self.title.setObjectName(u"title")
         self.title.setText(u"title")
         self.title.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.details_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.title)
 
-        self.developer_label = QLabel(StoreDetailsWidget)
+        self.developer_label = QLabel(self.details_widget)
         self.developer_label.setObjectName(u"developer_label")
         self.developer_label.setFont(font)
         self.developer_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.developer_label)
 
-        self.developer = QLabel(StoreDetailsWidget)
+        self.developer = QLabel(self.details_widget)
         self.developer.setObjectName(u"developer")
         self.developer.setText(u"developer")
         self.developer.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.details_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.developer)
 
-        self.publisher_label = QLabel(StoreDetailsWidget)
+        self.publisher_label = QLabel(self.details_widget)
         self.publisher_label.setObjectName(u"publisher_label")
         self.publisher_label.setFont(font)
         self.publisher_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.publisher_label)
 
-        self.publisher = QLabel(StoreDetailsWidget)
+        self.publisher = QLabel(self.details_widget)
         self.publisher.setObjectName(u"publisher")
         self.publisher.setText(u"publisher")
         self.publisher.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.details_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.publisher)
 
-        self.status_label = QLabel(StoreDetailsWidget)
+        self.status_label = QLabel(self.details_widget)
         self.status_label.setObjectName(u"status_label")
         self.status_label.setFont(font)
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.status_label)
 
-        self.status = QLabel(StoreDetailsWidget)
+        self.status = QLabel(self.details_widget)
         self.status.setObjectName(u"status")
 
         self.details_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.status)
 
-        self.price_label = QLabel(StoreDetailsWidget)
+        self.price_label = QLabel(self.details_widget)
         self.price_label.setObjectName(u"price_label")
         self.price_label.setFont(font)
         self.price_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.price_label)
 
-        self.tags_label = QLabel(StoreDetailsWidget)
+        self.tags_label = QLabel(self.details_widget)
         self.tags_label.setObjectName(u"tags_label")
         self.tags_label.setFont(font)
         self.tags_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(5, QFormLayout.ItemRole.LabelRole, self.tags_label)
 
-        self.tags = QLabel(StoreDetailsWidget)
+        self.tags = QLabel(self.details_widget)
         self.tags.setObjectName(u"tags")
         self.tags.setText(u"tags")
 
         self.details_layout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.tags)
 
-        self.social_links_label = QLabel(StoreDetailsWidget)
+        self.social_links_label = QLabel(self.details_widget)
         self.social_links_label.setObjectName(u"social_links_label")
         self.social_links_label.setFont(font)
         self.social_links_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.social_links_label)
 
-        self.actions_label = QLabel(StoreDetailsWidget)
+        self.actions_label = QLabel(self.details_widget)
         self.actions_label.setObjectName(u"actions_label")
         self.actions_label.setFont(font)
         self.actions_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(7, QFormLayout.ItemRole.LabelRole, self.actions_label)
 
-        self.social_links = QWidget(StoreDetailsWidget)
+        self.social_links = QWidget(self.details_widget)
         self.social_links.setObjectName(u"social_links")
         self.social_links_layout = QHBoxLayout(self.social_links)
         self.social_links_layout.setObjectName(u"social_links_layout")
@@ -161,15 +187,9 @@ class Ui_StoreDetailsWidget(object):
 
         self.details_layout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.social_links)
 
-        self.actions_widget = QWidget(StoreDetailsWidget)
+        self.actions_widget = QWidget(self.details_widget)
         self.actions_widget.setObjectName(u"actions_widget")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.actions_widget.sizePolicy().hasHeightForWidth())
-        self.actions_widget.setSizePolicy(sizePolicy1)
         self.actions_widget.setMinimumSize(QSize(300, 0))
-        self.actions_widget.setMaximumSize(QSize(300, 16777215))
         self.actions_layout = QVBoxLayout(self.actions_widget)
         self.actions_layout.setObjectName(u"actions_layout")
         self.actions_layout.setContentsMargins(0, 0, 0, 0)
@@ -186,10 +206,13 @@ class Ui_StoreDetailsWidget(object):
 
         self.details_layout.setWidget(7, QFormLayout.ItemRole.FieldRole, self.actions_widget)
 
-        self.price = QWidget(StoreDetailsWidget)
+        self.price = QWidget(self.details_widget)
         self.price.setObjectName(u"price")
-        sizePolicy1.setHeightForWidth(self.price.sizePolicy().hasHeightForWidth())
-        self.price.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.price.sizePolicy().hasHeightForWidth())
+        self.price.setSizePolicy(sizePolicy2)
         self.price_layout = QHBoxLayout(self.price)
         self.price_layout.setObjectName(u"price_layout")
         self.price_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
@@ -211,28 +234,7 @@ class Ui_StoreDetailsWidget(object):
         self.details_layout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.price)
 
 
-        self.right_layout.addLayout(self.details_layout, 0, 0, 1, 1)
-
-        self.description_label = QTextBrowser(StoreDetailsWidget)
-        self.description_label.setObjectName(u"description_label")
-        self.description_label.setOpenExternalLinks(True)
-
-        self.right_layout.addWidget(self.description_label, 0, 1, 1, 1)
-
-        self.requirements_frame = QFrame(StoreDetailsWidget)
-        self.requirements_frame.setObjectName(u"requirements_frame")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.requirements_frame.sizePolicy().hasHeightForWidth())
-        self.requirements_frame.setSizePolicy(sizePolicy2)
-        self.requirements_frame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.requirements_frame.setFrameShadow(QFrame.Shadow.Sunken)
-        self.requirements_layout = QHBoxLayout(self.requirements_frame)
-        self.requirements_layout.setObjectName(u"requirements_layout")
-        self.requirements_layout.setContentsMargins(0, 0, 0, 0)
-
-        self.right_layout.addWidget(self.requirements_frame, 1, 0, 1, 2, Qt.AlignmentFlag.AlignBottom)
+        self.right_layout.addWidget(self.details_widget, 0, 0, 1, 1)
 
         self.right_layout.setRowStretch(1, 1)
         self.right_layout.setColumnStretch(1, 1)
