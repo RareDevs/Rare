@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'about.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,10 +17,10 @@ class Ui_About(object):
     def setupUi(self, About):
         if not About.objectName():
             About.setObjectName(u"About")
-        About.resize(507, 210)
+        About.resize(508, 210)
         self.about_layout = QFormLayout(About)
         self.about_layout.setObjectName(u"about_layout")
-        self.about_layout.setLabelAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.about_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.version_label = QLabel(About)
         self.version_label.setObjectName(u"version_label")
         font = QFont()
@@ -41,11 +41,11 @@ class Ui_About(object):
 
         self.about_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.update_label)
 
-        self.update_lbl = QLabel(About)
-        self.update_lbl.setObjectName(u"update_lbl")
-        self.update_lbl.setText(u"error")
+        self.update_field = QLabel(About)
+        self.update_field.setObjectName(u"update_field")
+        self.update_field.setText(u"error")
 
-        self.about_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.update_lbl)
+        self.about_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.update_field)
 
         self.open_browser = QPushButton(About)
         self.open_browser.setObjectName(u"open_browser")

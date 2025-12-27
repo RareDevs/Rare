@@ -57,7 +57,7 @@ class InstallDialog(ActionDialog):
         self.__queue_item: Optional[InstallQueueItemModel] = None
 
         self.selectable = InstallDialogSelective(rgame, parent=self)
-        self.selectable.stateChanged.connect(self.__on_option_changed)
+        self.selectable.stateChanged.connect(self._on_option_changed)
         self.ui.main_layout.insertRow(
             self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 1,
             # self.tr("Optional"),
@@ -102,13 +102,13 @@ class InstallDialog(ActionDialog):
         self.ui.shortcut_label.setDisabled(rgame.is_installed or rgame.is_dlc)
         self.ui.shortcut_check.setDisabled(rgame.is_installed or rgame.is_dlc)
         self.ui.shortcut_check.setChecked(not rgame.is_installed and self.settings.get_value(app_settings.create_shortcut))
-        self.ui.shortcut_check.checkStateChanged.connect(self.__on_option_changed_no_reload)
+        self.ui.shortcut_check.checkStateChanged.connect(self._on_option_changed_no_reload)
 
         self.set_error_labels()
 
         self.ui.platform_combo.addItems(reversed(rgame.platforms))
         self.ui.platform_combo.setCurrentIndex(self.ui.platform_combo.findText(options.platform))
-        self.ui.platform_combo.currentIndexChanged.connect(self.__on_option_changed)
+        self.ui.platform_combo.currentIndexChanged.connect(self._on_option_changed)
         self.ui.platform_combo.currentIndexChanged.connect(self.check_incompatible_platform)
         self.ui.platform_combo.currentIndexChanged.connect(self.reset_install_dir)
         self.ui.platform_combo.currentTextChanged.connect(self.selectable.update_list)
@@ -122,17 +122,28 @@ class InstallDialog(ActionDialog):
             self.selectable.click()
 
         self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
-        self.advanced.ui.max_workers_spin.valueChanged.connect(self.__on_option_changed)
+        self.advanced.ui.max_workers_spin.valueChanged.connect(self._on_option_changed)
 
         self.advanced.ui.max_memory_spin.setValue(self.core.lgd.config.getint("Legendary", "max_memory", fallback=0))
-        self.advanced.ui.max_memory_spin.valueChanged.connect(self.__on_option_changed)
+        self.advanced.ui.max_memory_spin.valueChanged.connect(self._on_option_changed)
 
-        self.advanced.ui.read_files_check.checkStateChanged.connect(self.__on_option_changed)
-        self.advanced.ui.use_signed_urls_check.checkStateChanged.connect(self.__on_option_changed)
-        self.advanced.ui.dl_optimizations_check.checkStateChanged.connect(self.__on_option_changed)
-        self.advanced.ui.force_download_check.checkStateChanged.connect(self.__on_option_changed)
-        self.advanced.ui.ignore_space_check.checkStateChanged.connect(self.__on_option_changed)
-        self.advanced.ui.download_only_check.checkStateChanged.connect(self.__on_option_changed_no_reload)
+        self.advanced.ui.read_files_check.setChecked(options.read_files)
+        self.advanced.ui.read_files_check.checkStateChanged.connect(self._on_option_changed)
+
+        self.advanced.ui.use_signed_urls_check.setChecked(options.always_use_signed_urls)
+        self.advanced.ui.use_signed_urls_check.checkStateChanged.connect(self._on_option_changed)
+
+        self.advanced.ui.dl_optimizations_check.setChecked(options.order_opt)
+        self.advanced.ui.dl_optimizations_check.checkStateChanged.connect(self._on_option_changed)
+
+        self.advanced.ui.force_download_check.setChecked(options.force)
+        self.advanced.ui.force_download_check.checkStateChanged.connect(self._on_option_changed)
+
+        self.advanced.ui.ignore_space_check.setChecked(options.ignore_space)
+        self.advanced.ui.ignore_space_check.checkStateChanged.connect(self._on_option_changed)
+
+        self.advanced.ui.download_only_check.setChecked(options.no_install)
+        self.advanced.ui.download_only_check.checkStateChanged.connect(self._on_option_changed_no_reload)
 
         self.reset_install_dir(self.ui.platform_combo.currentIndex())
         self.selectable.update_list(self.ui.platform_combo.currentText())
@@ -159,7 +170,7 @@ class InstallDialog(ActionDialog):
 
         self.advanced.ui.install_prereqs_label.setEnabled(False)
         self.advanced.ui.install_prereqs_check.setEnabled(False)
-        self.advanced.ui.install_prereqs_check.checkStateChanged.connect(self.__on_option_changed_no_reload)
+        self.advanced.ui.install_prereqs_check.checkStateChanged.connect(self._on_option_changed_no_reload)
         self.advanced.ui.install_prereqs_check.setChecked(self.__options.install_prereqs)
 
         # lk: set object names for CSS properties
@@ -241,13 +252,13 @@ class InstallDialog(ActionDialog):
         self.get_download_info()
 
     @Slot()
-    def __on_option_changed(self):
+    def _on_option_changed(self):
         self.options_changed = True
         self.accept_button.setEnabled(False)
         self.action_button.setEnabled(not self.active())
 
     @Slot(Qt.CheckState)
-    def __on_option_changed_no_reload(self, state: Qt.CheckState):
+    def _on_option_changed_no_reload(self, state: Qt.CheckState):
         if self.sender() is self.advanced.ui.download_only_check:
             self.__options.no_install = state != Qt.CheckState.Unchecked
         elif self.sender() is self.ui.shortcut_check:

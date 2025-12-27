@@ -25,13 +25,15 @@ class MovePathEditReasons(IndicatorReasons):
     MOVEDIALOG_NO_SPACE = auto()
 
 
+class MoveInfoWorkerSignals(QObject):
+    result: Signal = Signal(bool, object, object, MovePathEditReasons)
+
+
 class MoveInfoWorker(Worker):
-    class Signals(QObject):
-        result: Signal = Signal(bool, object, object, MovePathEditReasons)
 
     def __init__(self, rgame: RareGame, igames: Iterator[RareGame], options: MoveGameModel):
         super(MoveInfoWorker, self).__init__()
-        self.signals = MoveInfoWorker.Signals()
+        self.signals = MoveInfoWorkerSignals()
 
         self.rgame: RareGame = rgame
         self.installed_games: Iterator[RareGame] = igames
@@ -131,7 +133,7 @@ class MoveWorker(QueueWorker):
 
     def progress(self, src_size, dst_size):
         progress = dst_size * 100 // src_size
-        self.rgame.signals.progress.update.emit(progress)
+        self.rgame.signals.progress.refresh.emit(progress)
         self.signals.progress.emit(self.rgame, progress, src_size, dst_size)
 
     def run_real(self):

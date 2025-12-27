@@ -24,41 +24,50 @@ class RareSaveGame:
     description: Optional[str] = ""
 
 
+class RareGameSignalsProgress(QObject):
+    start = Signal()
+    refresh = Signal(int)
+    finish = Signal(bool)
+
+
+class RareGameSignalsWidget(QObject):
+    refresh = Signal()
+
+
+class RareGameSignalsDownload(QObject):
+    enqueue = Signal(str)
+    dequeue = Signal(str)
+
+
+class RareGameSignalsGame(QObject):
+    install = Signal(InstallOptionsModel)
+    installed = Signal(str)
+    uninstall = Signal(UninstallOptionsModel)
+    uninstalled = Signal(str)
+    launched = Signal(str)
+    finished = Signal(str)
+
+
 class RareGameSignals(QObject):
-    class Progress(QObject):
-        start = Signal()
-        update = Signal(int)
-        finish = Signal(bool)
-
-    class Widget(QObject):
-        update = Signal()
-
-    class Download(QObject):
-        enqueue = Signal(str)
-        dequeue = Signal(str)
-
-    class Game(QObject):
-        install = Signal(InstallOptionsModel)
-        installed = Signal(str)
-        uninstall = Signal(UninstallOptionsModel)
-        uninstalled = Signal(str)
-        launched = Signal(str)
-        finished = Signal(str)
 
     def __init__(self, /):
         super(RareGameSignals, self).__init__()
-        self.progress = RareGameSignals.Progress()
-        self.widget = RareGameSignals.Widget()
-        self.download = RareGameSignals.Download()
-        self.game = RareGameSignals.Game()
+        self.progress = RareGameSignalsProgress()
+        self.widget = RareGameSignalsWidget()
+        self.download = RareGameSignalsDownload()
+        self.game = RareGameSignalsGame()
 
     def deleteLater(self):
+        self.progress.disconnect(self.progress)
         self.progress.deleteLater()
         del self.progress
+        self.widget.disconnect(self.widget)
         self.widget.deleteLater()
         del self.widget
+        self.download.disconnect(self.download)
         self.download.deleteLater()
         del self.download
+        self.game.disconnect(self.game)
         self.game.deleteLater()
         del self.game
         super(RareGameSignals, self).deleteLater()
@@ -84,6 +93,7 @@ class RareGameBase(QObject):
         self._state = RareGameBase.State.IDLE
 
     def deleteLater(self):
+        self.signals.disconnect(self.signals)
         self.signals.deleteLater()
         del self.signals
         super(RareGameBase, self).deleteLater()
@@ -96,7 +106,7 @@ class RareGameBase(QObject):
     def state(self, state: "RareGameBase.State"):
         if state != self._state:
             self._state = state
-            self.signals.widget.update.emit()
+            self.signals.widget.refresh.emit()
 
     @property
     def is_idle(self):
@@ -324,7 +334,7 @@ class RareGameSlim(RareGameBase):
                     dt_remote=save.datetime,
                 )
             self.saves.append(rsave)
-        self.signals.widget.update.emit()
+        self.signals.widget.refresh.emit()
 
     def update_saves(self):
         """Use only in a thread"""

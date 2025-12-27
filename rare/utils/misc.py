@@ -1,3 +1,4 @@
+import functools
 import os
 from datetime import UTC, datetime
 from enum import IntEnum
@@ -212,6 +213,16 @@ def qta_icon(icn_str: str, fallback: str = None, **kwargs):
     if kwargs.get("color"):
         kwargs["color"] = "red"
     return qtawesome.icon("ei.error", **kwargs)
+
+
+# Source - https://stackoverflow.com/a
+# Posted by benrg
+# Retrieved 2025-12-25, License - CC BY-SA 4.0
+
+def partial_bound_method(bound_method, *args, **kwargs):
+    f = functools.partialmethod(bound_method.__func__, *args, **kwargs)
+    # NB: the seemingly redundant lambda is needed to ensure the correct result type
+    return (lambda *args: f(*args)).__get__(bound_method.__self__)
 
 
 def widget_object_name(widget: Union[QObject, ShibokenObject, Type], suffix: str) -> str:

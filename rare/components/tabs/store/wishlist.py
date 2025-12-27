@@ -92,17 +92,17 @@ class WishlistWidget(QWidget, SideTabContents):
         self.ui.order_combo.currentIndexChanged.connect(self.order_wishlist)
 
         self.ui.reload_button.setIcon(qta_icon("fa.refresh", "fa5s.sync", color="white"))
-        self.ui.reload_button.clicked.connect(self.__update_widget)
+        self.ui.reload_button.clicked.connect(self._update_widget)
 
-        self.ui.reverse_check.stateChanged.connect(lambda: self.order_wishlist(self.ui.order_combo.currentIndex()))
+        self.ui.reverse_check.stateChanged.connect(self._on_reverse_changed)
 
         self.setEnabled(False)
 
     def showEvent(self, a0: QShowEvent) -> None:
-        self.__update_widget()
+        self._update_widget()
         return super().showEvent(a0)
 
-    def __update_widget(self):
+    def _update_widget(self):
         self.setEnabled(False)
         self.api.get_wishlist(self.set_wishlist)
 
@@ -110,7 +110,7 @@ class WishlistWidget(QWidget, SideTabContents):
         self.api.remove_from_wishlist(
             game.namespace,
             game.id,
-            lambda success: self.__update_widget()
+            lambda success: self._update_widget()
             if success
             else QMessageBox.warning(self, "Error", self.tr("Could not remove game from wishlist")),
         )
@@ -130,6 +130,13 @@ class WishlistWidget(QWidget, SideTabContents):
         have_visible = any(map(lambda x: x.isVisible(), widgets))
         self.ui.no_games_label.setVisible(not have_visible)
 
+    __ordering = {
+        WishlistOrder.NAME: lambda x: x.catalog_game.title,
+        WishlistOrder.PRICE: lambda x: x.catalog_game.price.totalPrice.discountPrice,
+        WishlistOrder.DEVELOPER: lambda x: x.catalog_game.seller["name"],
+        WishlistOrder.DISCOUNT: lambda x: 1 - (x.catalog_game.price.totalPrice.discountPrice / x.catalog_game.price.totalPrice.originalPrice)
+    }
+
     @Slot(int)
     def order_wishlist(self, index: int = int(WishlistOrder.NAME)):
         list_order = self.ui.order_combo.itemData(index, Qt.ItemDataRole.UserRole)
@@ -137,34 +144,16 @@ class WishlistWidget(QWidget, SideTabContents):
         for w in widgets:
             self.wishlist_layout.removeWidget(w)
 
-        if list_order == WishlistOrder.NAME:
-
-            def func(x: WishlistItemWidget):
-                return x.catalog_game.title
-        elif list_order == WishlistOrder.PRICE:
-
-            def func(x: WishlistItemWidget):
-                return x.catalog_game.price.totalPrice.discountPrice
-        elif list_order == WishlistOrder.DEVELOPER:
-
-            def func(x: WishlistItemWidget):
-                return x.catalog_game.seller["name"]
-        elif list_order == WishlistOrder.DISCOUNT:
-
-            def func(x: WishlistItemWidget):
-                discount = x.catalog_game.price.totalPrice.discountPrice
-                original = x.catalog_game.price.totalPrice.originalPrice
-                return 1 - (discount / original)
-        else:
-
-            def func(x: WishlistItemWidget):
-                return x.catalog_game.title
-
         reverse = self.ui.reverse_check.isChecked()
-        widgets = sorted(widgets, key=func, reverse=reverse)
+        widgets = sorted(widgets, key=self.__ordering[list_order], reverse=reverse)
         for w in widgets:
             self.wishlist_layout.addWidget(w)
 
+    @Slot(Qt.CheckState)
+    def _on_reverse_changed(self, state: Qt.CheckState):
+        self.order_wishlist(self.ui.order_combo.currentIndex())
+
+    @Slot(object)
     def set_wishlist(self, wishlist: List[WishlistItemModel] = None):
         if wishlist and wishlist[0] == "error":
             return
@@ -172,17 +161,24 @@ class WishlistWidget(QWidget, SideTabContents):
         widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
         for w in widgets:
             self.wishlist_layout.removeWidget(w)
+            w.disconnect(w)
             w.deleteLater()
 
         self.ui.no_games_label.setVisible(bool(wishlist))
 
+        widgets = []
         for game in wishlist:
             w = WishlistItemWidget(self.api.cached_manager, game.offer, self.ui.container)
             w.show_details.connect(self.show_details)
             w.delete_from_wishlist.connect(self.delete_from_wishlist)
+            widgets.append(w)
+
+        list_order = self.ui.order_combo.currentData(Qt.ItemDataRole.UserRole)
+        reverse = self.ui.reverse_check.isChecked()
+        widgets = sorted(widgets, key=self.__ordering[list_order], reverse=reverse)
+        for w in widgets:
             self.wishlist_layout.addWidget(w)
 
-        self.order_wishlist(self.ui.order_combo.currentIndex())
         self.filter_wishlist(self.ui.filter_combo.currentIndex())
 
         self.setEnabled(True)

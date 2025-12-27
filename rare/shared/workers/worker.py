@@ -2,7 +2,6 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from enum import IntEnum
 from logging import Logger, getLogger
-from typing import Optional
 
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
 
@@ -21,7 +20,10 @@ class Worker(QRunnable):
         super(Worker, self).__init__()
         self.setAutoDelete(True)
         self.__logger = getLogger(type(self).__name__)
-        self.__signals: Optional[QObject] = None
+        self.__signals: QObject = None
+
+    def __str__(self):
+        return type(self).__name__
 
     @property
     def logger(self) -> Logger:
@@ -44,6 +46,7 @@ class Worker(QRunnable):
     @Slot()
     def run(self):
         self.run_real()
+        self.signals.disconnect(self.signals)
         self.signals.deleteLater()
 
 
@@ -63,6 +66,13 @@ class QueueWorkerInfo:
     progress: int = 0
 
 
+class QueueWorkerSignals(QObject):
+    # object: worker object
+    started = Signal(object)
+    # object: worker object
+    finished = Signal(object)
+
+
 class QueueWorker(Worker):
     """
     Base queueable worker class
@@ -74,22 +84,20 @@ class QueueWorker(Worker):
     to the `QueueWorker.signals` attribute, implement `QueueWorker.run_real()` and `QueueWorker.worker_info()`
     """
 
-    class Signals(QObject):
-        started = Signal()
-        finished = Signal()
-
     def __init__(self):
         super(QueueWorker, self).__init__()
-        self.feedback = QueueWorker.Signals()
+        self.feedback = QueueWorkerSignals()
         self.state = QueueWorkerState.QUEUED
         self._kill = False
 
     @Slot()
     def run(self):
         self.state = QueueWorkerState.ACTIVE
-        self.feedback.started.emit()
+        self.feedback.started.emit(self)
         super(QueueWorker, self).run()
-        self.feedback.finished.emit()
+        self.feedback.finished.emit(self)
+        self.feedback.started.disconnect()
+        self.feedback.finished.disconnect()
         self.feedback.deleteLater()
 
     @abstractmethod

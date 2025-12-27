@@ -1,5 +1,7 @@
 import platform as pf
 
+from PySide6.QtCore import Signal, Slot
+
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.widgets.side_tab import SideTabWidget
@@ -13,6 +15,8 @@ from .rare import RareSettings
 
 
 class SettingsTab(SideTabWidget):
+    update_available = Signal()
+
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(SettingsTab, self).__init__(parent=parent)
 
@@ -32,10 +36,15 @@ class SettingsTab(SideTabWidget):
         self.about = About(self)
         title = self.tr("About")
         self.about_index = self.addTab(self.about, title, title)
-        self.about.update_available_ready.connect(lambda: self.tabBar().setTabText(self.about_index, "About (!)"))
+        self.about.update_available.connect(self._on_update_available)
+        self.about.update_available.connect(self.update_available)
 
         if rcore.args().debug:
             title = self.tr("Debug")
             self.debug_index = self.addTab(DebugSettings(rcore.signals(), self), title, title)
 
         self.setCurrentIndex(self.rare_index)
+
+    @Slot()
+    def _on_update_available(self):
+        self.tabBar().setTabText(self.about_index, "About (!)")

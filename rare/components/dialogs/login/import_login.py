@@ -1,20 +1,19 @@
 import os
 import platform
 from getpass import getuser
-from logging import getLogger
 
 from legendary.lfs.wine_helpers import get_shell_folders, read_registry
-from PySide6.QtCore import Signal, Slot
-from PySide6.QtWidgets import QFileDialog, QFrame
+from PySide6.QtCore import Slot
+from PySide6.QtWidgets import QFileDialog
 
 from rare.lgndr.core import LegendaryCore
 from rare.lgndr.glue.exception import LgndrException
 from rare.ui.components.dialogs.login.import_login import Ui_ImportLogin
 
+from .login_frame import LoginFrame
 
-class ImportLogin(QFrame):
-    success = Signal()
-    isValid = Signal(bool)
+
+class ImportLogin(LoginFrame):
 
     # FIXME: Use pathspec instead of duplicated code
     if platform.system() == "Windows":
@@ -25,14 +24,10 @@ class ImportLogin(QFrame):
     found = False
 
     def __init__(self, core: LegendaryCore, parent=None):
-        super(ImportLogin, self).__init__(parent=parent)
-        self.logger = getLogger(type(self).__name__)
+        super(ImportLogin, self).__init__(core, parent=parent)
 
-        self.setFrameStyle(QFrame.Shape.StyledPanel)
         self.ui = Ui_ImportLogin()
         self.ui.setupUi(self)
-
-        self.core = core
 
         self.text_egl_found = self.tr("Found EGL Program Data. Click 'Next' to import them.")
         self.text_egl_notfound = self.tr("Could not find EGL Program Data. ")
@@ -57,8 +52,8 @@ class ImportLogin(QFrame):
             else:
                 self.ui.status_field.setText(self.text_egl_notfound)
 
-        self.ui.prefix_button.clicked.connect(self.prefix_path)
-        self.ui.prefix_combo.editTextChanged.connect(lambda _: self.isValid.emit(self.is_valid()))
+        self.ui.prefix_button.clicked.connect(self._on_prefix_path)
+        self.ui.prefix_combo.editTextChanged.connect(self._on_input_changed)
 
     def get_wine_prefixes(self):
         possible_prefixes = [
@@ -72,7 +67,7 @@ class ImportLogin(QFrame):
         return prefixes
 
     @Slot()
-    def prefix_path(self):
+    def _on_prefix_path(self):
         prefix_dialog = QFileDialog(self, self.tr("Choose path"), os.path.expanduser("~/"))
         prefix_dialog.setFileMode(QFileDialog.FileMode.Directory)
         prefix_dialog.setOption(QFileDialog.Option.ShowDirsOnly)
@@ -96,7 +91,7 @@ class ImportLogin(QFrame):
             except KeyError:
                 return False
 
-    def do_login(self):
+    def do_login(self) -> None:
         self.ui.status_field.setText(self.tr("Loading..."))
         if os.name != "nt":
             self.logger.info("Using EGL appdata path at %s", {self.egl_appdata})

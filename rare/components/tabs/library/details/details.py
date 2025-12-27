@@ -395,6 +395,7 @@ class GameDetails(QWidget, SideTabContents):
             self.ui.actions_stack.setCurrentWidget(self.ui.uninstalled_page)
 
         for w in self.ui.tags_group.findChildren(GameTagCheckBox, options=Qt.FindChildOption.FindDirectChildrenOnly):
+            w.disconnect(w)
             w.deleteLater()
 
         for tag in self.rcore.game_tags:
@@ -417,11 +418,11 @@ class GameDetails(QWidget, SideTabContents):
                         worker.signals.progress.disconnect(self.__on_move_progress)
                     except TypeError as e:
                         logger.warning(f"{self.rgame.app_name} move worker: {e}")
-            self.rgame.signals.widget.update.disconnect(self.__update_widget)
+            self.rgame.signals.widget.refresh.disconnect(self.__update_widget)
 
         self.rgame = None
 
-        rgame.signals.widget.update.connect(self.__update_widget)
+        rgame.signals.widget.refresh.connect(self.__update_widget)
         if (worker := rgame.get_worker()) is not None:
             if isinstance(worker, VerifyWorker):
                 worker.signals.progress.connect(self.__on_verify_progress)
@@ -445,6 +446,7 @@ class GameDetails(QWidget, SideTabContents):
         ):
             for w in page.findChildren(AchievementWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
                 page.layout().removeWidget(w)
+                w.disconnect(w)
                 w.deleteLater()
 
         if ach := rgame.achievements:
@@ -525,11 +527,15 @@ class GameTagCheckBox(QCheckBox):
             ((base_color & 0xFF0000) >> 16) * 0.2126 + ((base_color & 0x00FF00) >> 8) * 0.7152 + (base_color & 0x0000FF) * 0.0722
         )
         font_color = "white" if luminance < 140 else "black"
-        style = ("QCheckBox#{0}{{color: {1};border-color: #{2:x};background-color: #{3:x};}}").format(
+        style = "QCheckBox#{0}{{color: {1};border-color: #{2:x};background-color: #{3:x};}}".format(
             self.objectName(), font_color, border_color, base_color
         )
         self.setStyleSheet(style)
-        self.checkStateChanged.connect(lambda state: self.checkStateChangedData.emit(state, self.tag))
+        self.checkStateChanged.connect(self._on_state_changed)
+
+    @Slot(Qt.CheckState)
+    def _on_state_changed(self, state: Qt.CheckState):
+        self.checkStateChangedData.emit(state, self.tag)
 
     def setText(self, text, /):
         fm = QFontMetrics(self.font())

@@ -45,15 +45,13 @@ class GameWidget(LibraryWidget):
         self.install_action.triggered.connect(self._install)
 
         self.desktop_link_action = QAction(self)
-        self.desktop_link_action.triggered.connect(lambda: self._create_link(self.rgame.folder_name, "desktop"))
+        self.desktop_link_action.triggered.connect(self._create_link_desktop)
 
         self.menu_link_action = QAction(self)
-        self.menu_link_action.triggered.connect(lambda: self._create_link(self.rgame.folder_name, "start_menu"))
+        self.menu_link_action.triggered.connect(self._create_link_start_menu)
 
         self.steam_shortcut_action = QAction(self)
-        self.steam_shortcut_action.triggered.connect(
-            lambda: self._create_steam_shortcut(self.rgame.app_name, self.rgame.app_title)
-        )
+        self.steam_shortcut_action.triggered.connect(self._create_steam_shortcut)
 
         self.reload_action = QAction(self.tr("Reload Image"), self)
         self.reload_action.triggered.connect(self._on_reload_image)
@@ -64,15 +62,15 @@ class GameWidget(LibraryWidget):
         self.update_actions()
 
         # signals
-        self.rgame.signals.widget.update.connect(self.update_pixmap)
-        self.rgame.signals.widget.update.connect(self.update_buttons)
-        self.rgame.signals.widget.update.connect(self.update_state)
+        self.rgame.signals.widget.refresh.connect(self.update_pixmap)
+        self.rgame.signals.widget.refresh.connect(self.update_buttons)
+        self.rgame.signals.widget.refresh.connect(self.update_state)
         self.rgame.signals.game.installed.connect(self.update_actions)
         self.rgame.signals.game.uninstalled.connect(self.update_actions)
 
         self.rgame.signals.progress.start.connect(self.start_progress)
-        self.rgame.signals.progress.update.connect(lambda p: self.updateProgress(p))
-        self.rgame.signals.progress.finish.connect(lambda e: self.hideProgress(e))
+        self.rgame.signals.progress.refresh.connect(self.updateProgress)
+        self.rgame.signals.progress.finish.connect(self.hideProgress)
 
         self.state_strings = {
             RareGame.State.IDLE: "",
@@ -134,7 +132,7 @@ class GameWidget(LibraryWidget):
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
-        super().showEvent(a0)
+        return super().showEvent(a0)
 
     @Slot()
     def update_state(self):
@@ -270,6 +268,14 @@ class GameWidget(LibraryWidget):
     def _uninstall(self):
         self.show_info.emit(self.rgame)
 
+    @Slot()
+    def _create_link_desktop(self):
+        self._create_link(self.rgame.folder_name, "desktop")
+
+    @Slot()
+    def _create_link_start_menu(self):
+        self._create_link(self.rgame.folder_name, "start_menu")
+
     @Slot(str, str)
     def _create_link(self, name: str, link_type: str):
         if not desktop_links_supported():
@@ -299,8 +305,9 @@ class GameWidget(LibraryWidget):
                 shortcut_path.unlink(missing_ok=True)
         self.update_actions()
 
-    @Slot(str, str)
-    def _create_steam_shortcut(self, app_name: str, app_title: str):
+    @Slot()
+    def _create_steam_shortcut(self):
+        app_name, app_title = self.rgame.app_name, self.rgame.app_title
         if steam_shortcut_exists(app_name):
             if shortcut := remove_steam_shortcut(app_name):
                 remove_steam_coverart(shortcut)

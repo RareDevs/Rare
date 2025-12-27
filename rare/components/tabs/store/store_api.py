@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Callable, Tuple
 
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication
@@ -45,7 +46,7 @@ class StoreAPI(QObject):
         self.browse_active = False
         self.next_browse_request = tuple(())
 
-    def get_free(self, callback: callable):
+    def get_free(self, callback: Callable):
         url = "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions"
         params = {
             "locale": self.locale,
@@ -54,7 +55,7 @@ class StoreAPI(QObject):
         }
         self.manager.get(url, lambda data: self.__handle_free_games(data, callback), params=params)
 
-    def __handle_free_games(self, data, callback):
+    def __handle_free_games(self, data, callback: Callable):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
@@ -68,7 +69,7 @@ class StoreAPI(QObject):
             self.logger.error("Free games request failed with: %s", e)
         callback(elements)
 
-    def get_wishlist(self, callback):
+    def get_wishlist(self, callback: Callable):
         self.authed_manager.post(
             graphql_url,
             lambda data: self.__handle_wishlist(data, callback),
@@ -82,7 +83,7 @@ class StoreAPI(QObject):
             },
         )
 
-    def __handle_wishlist(self, data, callback):
+    def __handle_wishlist(self, data, callback: Callable[[Tuple], None]):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
@@ -96,7 +97,7 @@ class StoreAPI(QObject):
             self.logger.error("Wishlist request failed with: %s", e)
         callback(elements)
 
-    def search_game(self, name, callback):
+    def search_game(self, name, callback: Callable):
         payload = {
             "query": search_query,
             "variables": {
@@ -116,7 +117,7 @@ class StoreAPI(QObject):
 
         self.manager.post(graphql_url, lambda data: self.__handle_search(data, callback), payload)
 
-    def __handle_search(self, data, callback):
+    def __handle_search(self, data, callback: Callable[[Tuple], None]):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
@@ -177,7 +178,7 @@ class StoreAPI(QObject):
     def __make_api_query(self):
         pass
 
-    def get_game_config_cms(self, slug: str, is_bundle: bool, callback):
+    def get_game_config_cms(self, slug: str, is_bundle: bool, callback: Callable):
         url = "https://store-content.ak.epicgames.com/api"
         url += f"/{self.locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
         self.logger.debug("Quering game config: %s", url)
@@ -194,7 +195,7 @@ class StoreAPI(QObject):
             # callback({})
 
     # needs a captcha
-    def add_to_wishlist(self, namespace, offer_id, callback: callable):
+    def add_to_wishlist(self, namespace, offer_id, callback: Callable):
         payload = {
             "query": wishlist_add_query,
             "variables": {
@@ -225,7 +226,7 @@ class StoreAPI(QObject):
         callback(success)
         self.update_wishlist.emit()
 
-    def remove_from_wishlist(self, namespace, offer_id, callback: callable):
+    def remove_from_wishlist(self, namespace, offer_id, callback: Callable):
         payload = {
             "query": wishlist_remove_query,
             "variables": {

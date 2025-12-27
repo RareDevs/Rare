@@ -164,11 +164,13 @@ class WrapperWidget(QFrame):
     def __on_state_changed(self, state: Qt.CheckState) -> None:
         new_wrapper = Wrapper(command=self.wrapper.command, enabled=self.text_lbl.isChecked())
         self.update_wrapper.emit(self.wrapper, new_wrapper)
+        self.disconnect(self)
         self.deleteLater()
 
     @Slot()
     def __on_delete(self) -> None:
         self.delete_wrapper.emit(self.wrapper)
+        self.disconnect(self)
         self.deleteLater()
 
     @Slot()
@@ -183,6 +185,7 @@ class WrapperWidget(QFrame):
         if accepted and command:
             new_wrapper = Wrapper(command=shlex.split(command))
             self.update_wrapper.emit(self.wrapper, new_wrapper)
+            self.disconnect(self)
             self.deleteLater()
 
     def mouseMoveEvent(self, a0: QMouseEvent) -> None:
@@ -381,6 +384,7 @@ class WrapperSettings(QWidget):
     @Slot()
     def update_state(self):
         for w in self.wrapper_container.findChildren(WrapperWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
+            w.disconnect(w)
             w.deleteLater()
         wrappers = self.wrappers.get_wrappers(self.app_name)
         if not wrappers:
