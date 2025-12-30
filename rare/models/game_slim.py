@@ -1,3 +1,4 @@
+import time
 from abc import abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
@@ -292,6 +293,8 @@ class RareGameSlim(RareGameBase):
         def _upload():
             self.logger.info("Uploading save for '%s'", self.app_title)
             self.core.upload_save(self.app_name, self.igame.save_path, dt_local)
+            self.igame.save_timestamp = time.time()
+            self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
             self.update_saves()
 
         _upload()
@@ -314,6 +317,8 @@ class RareGameSlim(RareGameBase):
         def _download():
             self.logger.info("Downloading save for '%s'", self.app_title)
             self.core.download_saves(self.app_name, self.latest_save.file.manifest_name, self.save_path)
+            self.igame.save_timestamp = time.time()
+            self.core.lgd.set_installed_game(self.igame.app_name, self.igame)
             self.update_saves()
 
         _download()
