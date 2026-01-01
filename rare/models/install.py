@@ -78,7 +78,7 @@ class InstallQueueItemModel:
 
     @property
     def expired(self) -> bool:
-        return datetime.now() > (self.__date + timedelta(minutes=30))
+        return datetime.now() > (self.__date + timedelta(minutes=5))
 
     def __bool__(self):
         return (self.download is not None) and (self.options is not None) and (not self.expired)

@@ -191,7 +191,7 @@ class DownloadsTab(QWidget):
                 f"Failed to refresh download for {item.options.app_name} with error: {m}")).__get__(self)
         )
         worker.signals.finished.connect(
-            (lambda obj, m: obj.logger.info(
+            (lambda obj: obj.logger.info(
                 f"Download refresh worker finished for {item.options.app_name}")).__get__(self)
         )
 
