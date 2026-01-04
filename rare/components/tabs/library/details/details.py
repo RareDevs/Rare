@@ -454,7 +454,12 @@ class GameDetails(QWidget, SideTabContents):
             self.ui.exp_field.setText(f"{ach.user_xp}/<b>{ach.total_product_xp}</b>")
 
             for group, page in zip(
-                (ach.hidden, ach.uninitiated, ach.completed, ach.in_progress, ),
+                (
+                    sorted(ach.hidden, key=lambda a: a['xp'], reverse=False),
+                    sorted(ach.uninitiated, key=lambda a: a['xp'], reverse=False),
+                    sorted(ach.completed, key=lambda a: a['unlock_date'], reverse=True),
+                    sorted(ach.in_progress, key=lambda a: a['progress'], reverse=True),
+                ),
                 (self.ui.ach_hidden_page, self.ui.ach_uninitiated_page, self.ui.ach_completed_page, self.ui.ach_progress_page, )
             ):
                 self.ui.achievements_toolbox.setItemEnabled(self.ui.achievements_toolbox.indexOf(page), bool(group))
