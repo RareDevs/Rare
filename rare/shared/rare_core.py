@@ -12,8 +12,8 @@ from PySide6.QtCore import QObject, QRunnable, QThreadPool, QTimer, Signal, Slot
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.base_game import RareSaveGame
 from rare.models.game import RareEosOverlay, RareGame
+from rare.models.game_slim import RareSaveGame
 from rare.models.settings import RareAppSettings
 from rare.models.signals import GlobalSignals
 from rare.utils import config_helper, steam_shortcuts
@@ -76,7 +76,7 @@ class RareCore(QObject):
         self.threadpool_net.setMaxThreadCount(2)
 
         self.__library: Dict[str, RareGame] = {}
-        self.__eos_overlay = RareEosOverlay(self.__core, EOSOverlayApp)
+        self.__eos_overlay = RareEosOverlay(self.__settings, self.__core, self.__image_manager, EOSOverlayApp)
         self.__eos_overlay.signals.game.install.connect(self.__signals.game.install)
         self.__eos_overlay.signals.game.uninstall.connect(self.__signals.game.uninstall)
 
@@ -90,30 +90,34 @@ class RareCore(QObject):
     def enqueue_worker(self, rgame: RareGame, worker: QueueWorker):
         rgame.set_worker(worker)
         worker.feedback.started.connect(self.__signals.application.update_statusbar)
-        worker.feedback.finished.connect(lambda: rgame.set_worker(None))
         # signals are serviced in the order they are connected, so we have to
         # connect the signal to update the statusbar after the one to remove the worker
         # from the corresponding list
+        worker.feedback.finished.connect(self._on_worker_finished)
+        worker.feedback.finished.connect(self.__signals.application.update_statusbar)
+
         if isinstance(worker, CloudSyncWorker):
-            worker.feedback.finished.connect(lambda: self.workers_net.remove(worker))
-            worker.feedback.finished.connect(self.__signals.application.update_statusbar)
             self.workers_net.append(worker)
             self.threadpool_net.start(worker, priority=0)
         elif isinstance(worker, (VerifyWorker, MoveWorker)):
-            worker.feedback.finished.connect(lambda: self.workers_disk.remove(worker))
-            worker.feedback.finished.connect(self.__signals.application.update_statusbar)
             self.workers_disk.append(worker)
             self.threadpool_disk.start(worker, priority=0)
         else:
             raise RuntimeError(f"Cannot enqueue unkown worker type {type(worker).__name__}")
         self.__signals.application.update_statusbar.emit()
 
+    def _on_worker_finished(self, worker: QueueWorker):
+        if worker in self.workers_disk:
+            self.workers_disk.remove(worker)
+        if worker in self.workers_net:
+            self.workers_net.remove(worker)
+
     def dequeue_worker(self, worker: QueueWorker):
         rgame = self.__library[worker.worker_info().app_name]
-        rgame.set_worker(None)
-        if worker in self.threadpool_disk:
+        rgame.del_worker(worker)
+        if worker in self.workers_disk:
             self.workers_disk.remove(worker)
-        if worker in self.threadpool_net:
+        if worker in self.workers_net:
             self.workers_net.remove(worker)
         self.__signals.application.update_statusbar.emit()
 
@@ -250,6 +254,7 @@ class RareCore(QObject):
         self.__eos_overlay = None
 
         for rgame in self.__instance.games_and_dlcs:
+            rgame.disconnect(rgame)
             rgame.deleteLater()
         RareCore.__instance = None
         super(RareCore, self).deleteLater()

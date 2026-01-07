@@ -1,3 +1,4 @@
+from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
 
 from rare.models.signals import GlobalSignals
@@ -12,7 +13,7 @@ class DebugSettings(QWidget):
         self.raise_runtime_exception_button = QPushButton("Raise Exception", self)
         self.raise_runtime_exception_button.clicked.connect(self.raise_exception)
         self.restart_button = QPushButton("Restart", self)
-        self.restart_button.clicked.connect(lambda: self.signals.application.quit.emit(ExitCodes.LOGOUT))
+        self.restart_button.clicked.connect(self._on_restart_clicked)
         self.send_notification_button = QPushButton("Notify", self)
         self.send_notification_button.clicked.connect(self.send_notification)
 
@@ -21,6 +22,10 @@ class DebugSettings(QWidget):
         layout.addWidget(self.restart_button)
         layout.addWidget(self.send_notification_button)
         layout.addStretch(1)
+
+    @Slot()
+    def _on_restart_clicked(self):
+        self.signals.application.quit.emit(ExitCodes.LOGOUT)
 
     def raise_exception(self):
         raise RuntimeError("Debug Crash")

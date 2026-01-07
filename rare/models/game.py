@@ -1,6 +1,8 @@
 import json
 import os
 import platform
+import re
+from argparse import Namespace
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from threading import Lock
@@ -12,7 +14,7 @@ from PySide6.QtCore import QProcess, QRunnable, QThreadPool, Slot
 from PySide6.QtGui import QPixmap
 
 from rare.lgndr.core import LegendaryCore
-from rare.models.base_game import RareGameBase, RareGameSlim
+from rare.models.game_slim import RareGameBase, RareGameSlim
 from rare.models.image import ImageSize
 from rare.models.install import InstallOptionsModel, UninstallOptionsModel
 from rare.models.settings import RareAppSettings, app_settings
@@ -20,59 +22,65 @@ from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils import config_helper as config
 from rare.utils.paths import compat_shaders_dir, data_dir, get_rare_executable
-from rare.utils.steam_grades import get_rating
+from rare.utils.steam_grades import SteamGrades
 from rare.utils.workarounds import apply_workarounds
 
 
+@dataclass
+class RareGameMetadata:
+    queued: bool = False
+    queue_pos: Optional[int] = None
+    last_played: datetime = datetime.min.replace(tzinfo=timezone.utc)
+    achievements_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
+    grant_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
+    steam_appid: Optional[str] = None
+    steam_grade: Optional[str] = None
+    steam_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
+    steam_shortcut: Optional[int] = None
+    tags: Tuple[str, ...] = field(default_factory=tuple)
+
+    # For compatibility with previously created game metadata
+    @staticmethod
+    def parse_date(strdate: str):
+        dt = datetime.fromisoformat(strdate) if strdate else datetime.min
+        return dt.replace(tzinfo=timezone.utc)
+
+    @classmethod
+    def from_dict(cls, data: Dict):
+        return cls(
+            queued=data.get("queued", False),
+            queue_pos=data.get("queue_pos", None),
+            last_played=RareGameMetadata.parse_date(data.get("last_played", "")),
+            achievements_date=RareGameMetadata.parse_date(data.get("achievements_date", "")),
+            grant_date=RareGameMetadata.parse_date(data.get("grant_date", "")),
+            steam_appid=str(appid) if (appid := data.get("steam_appid", "")) else None,
+            steam_grade=data.get("steam_grade", None),
+            steam_date=RareGameMetadata.parse_date(data.get("steam_date", "")),
+            steam_shortcut=data.get("steam_shortcut", None),
+            tags=data.get("tags", ()),
+        )
+
+    @property
+    def __dict__(self):
+        return dict(
+            queued=self.queued,
+            queue_pos=self.queue_pos,
+            last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=timezone.utc),
+            achievements_date=self.last_played.isoformat() if self.achievements_date else datetime.min.replace(
+                tzinfo=timezone.utc),
+            grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=timezone.utc),
+            steam_appid=str(self.steam_appid) if self.steam_appid else None,
+            steam_grade=self.steam_grade,
+            steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min.replace(tzinfo=timezone.utc),
+            steam_shortcut=self.steam_shortcut,
+            tags=self.tags,
+        )
+
+    def __bool__(self):
+        return self.queued or self.queue_pos is not None or self.last_played is not None
+
+
 class RareGame(RareGameSlim):
-    @dataclass
-    class Metadata:
-        queued: bool = False
-        queue_pos: Optional[int] = None
-        last_played: datetime = datetime.min.replace(tzinfo=timezone.utc)
-        grant_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
-        steam_appid: Optional[str] = None
-        steam_grade: Optional[str] = None
-        steam_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
-        steam_shortcut: Optional[int] = None
-        tags: Tuple[str, ...] = field(default_factory=tuple)
-
-        # For compatibility with previously created game metadata
-        @staticmethod
-        def parse_date(strdate: str):
-            dt = datetime.fromisoformat(strdate) if strdate else datetime.min
-            return dt.replace(tzinfo=timezone.utc)
-
-        @classmethod
-        def from_dict(cls, data: Dict):
-            return cls(
-                queued=data.get("queued", False),
-                queue_pos=data.get("queue_pos", None),
-                last_played=RareGame.Metadata.parse_date(data.get("last_played", "")),
-                grant_date=RareGame.Metadata.parse_date(data.get("grant_date", "")),
-                steam_appid=str(appid) if (appid := data.get("steam_appid", "")) else None,
-                steam_grade=data.get("steam_grade", None),
-                steam_date=RareGame.Metadata.parse_date(data.get("steam_date", "")),
-                steam_shortcut=data.get("steam_shortcut", None),
-                tags=data.get("tags", ()),
-            )
-
-        @property
-        def __dict__(self):
-            return dict(
-                queued=self.queued,
-                queue_pos=self.queue_pos,
-                last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=timezone.utc),
-                grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=timezone.utc),
-                steam_appid=str(self.steam_appid) if self.steam_appid else None,
-                steam_grade=self.steam_grade,
-                steam_date=self.steam_date.isoformat() if self.steam_date else datetime.min.replace(tzinfo=timezone.utc),
-                steam_shortcut=self.steam_shortcut,
-                tags=self.tags,
-            )
-
-        def __bool__(self):
-            return self.queued or self.queue_pos is not None or self.last_played is not None
 
     def __init__(
         self,
@@ -92,19 +100,20 @@ class RareGame(RareGameSlim):
             self.game.app_title += f" {self.game.app_name.split('_')[-1]}"
 
         self.has_pixmap: bool = False
-        self.metadata: RareGame.Metadata = RareGame.Metadata()
+        self.metadata: RareGameMetadata = RareGameMetadata()
         self.__load_metadata()
         self.grant_date()
 
         self.owned_dlcs: Set[RareGame] = set()
+        self.__parent_rgame: Optional[RareGame] = None
 
         if self.has_update:
             self.logger.info(f"Update available for game: {self.app_name} ({self.app_title})")
 
         self.__worker: Optional[QRunnable] = None
         self.progress: int = 0
-        self.signals.progress.start.connect(lambda: self.__on_progress_update(0))
-        self.signals.progress.update.connect(self.__on_progress_update)
+        self.signals.progress.start.connect(self.__on_progress_update)
+        self.signals.progress.refresh.connect(self.__on_progress_update)
         self.__steam_grade_pending: bool = False
 
         self.game_process = GameProcess(self.game)
@@ -119,23 +128,41 @@ class RareGame(RareGameSlim):
     def add_dlc(self, dlc) -> None:
         # lk: plug dlc progress signals to the game's
         dlc.signals.progress.start.connect(self.signals.progress.start)
-        dlc.signals.progress.update.connect(self.signals.progress.update)
+        dlc.signals.progress.refresh.connect(self.signals.progress.refresh)
         dlc.signals.progress.finish.connect(self.signals.progress.finish)
+        dlc.parent_rgame = self
         self.owned_dlcs.add(dlc)
 
-    def __on_progress_update(self, progress: int):
+    @property
+    def parent_rgame(self) -> Optional["RareGame"]:
+        return self.__parent_rgame if self.is_dlc else None
+
+    @parent_rgame.setter
+    def parent_rgame(self, rgame: "RareGame") -> None:
+        if self.is_dlc:
+            self.__parent_rgame = rgame
+
+    @Slot()
+    @Slot(int)
+    def __on_progress_update(self, progress: int = 0):
         self.progress = progress
 
     def get_worker(self) -> Optional[QRunnable]:
         return self.__worker
 
-    def set_worker(self, worker: Optional[QRunnable]):
+    @Slot(object)
+    def set_worker(self, worker: QRunnable):
         if worker and self.__worker is not None:
-            self.logger.error("Game '%s' already has attached worker %s", self.app_title, self.__worker)
+            self.logger.error("Game '%s' already has attached worker '%s'", self.app_title, str(self.__worker))
             raise RuntimeError
+        worker.feedback.finished.connect(self.del_worker)
         self.__worker = worker
-        if worker is None:
-            self.state = RareGame.State.IDLE
+
+    @Slot(object)
+    def del_worker(self, worker: QRunnable):
+        self.logger.debug("Removing worker '%s' from '%s'", str(worker), self.app_title)
+        self.__worker = None
+        self.state = RareGame.State.IDLE
 
     @Slot(int)
     def __game_launched(self, code: int):
@@ -179,7 +206,7 @@ class RareGame(RareGameSlim):
             # pylint: disable=unsupported-membership-test
             if self.app_name in metadata:
                 # pylint: disable=unsubscriptable-object
-                self.metadata = RareGame.Metadata.from_dict(metadata[self.app_name])
+                self.metadata = RareGameMetadata.from_dict(metadata[self.app_name])
 
     def __save_metadata(self):
         with RareGame.__metadata_lock:
@@ -310,7 +337,8 @@ class RareGame(RareGameSlim):
         else:
             if self.has_update:
                 self.signals.download.dequeue.emit(self.app_name)
-            self.core.egstore_delete(self.igame)
+            if not self.is_dlc:
+                self.core.egstore_delete(self.igame)
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
         self.__update_pixmap()
@@ -450,11 +478,55 @@ class RareGame(RareGameSlim):
         if self.igame and (self.game.supports_cloud_saves or self.game.supports_mac_cloud_saves):
             self.igame.save_path = path
             self.store_igame()
-            self.signals.widget.update.emit()
+            self.signals.widget.refresh.emit()
+
+    @property
+    def achievements(self) -> Optional[Namespace]:
+        if not self.game.achievements or not self.game.achievements.achievements:
+            self.logger.info("No achievements found for %s (%s)", self.app_name, self.app_title)
+            return None
+
+        # if self.game.achievements is None:
+        #     _ = self.core.get_game(self.app_name, update_meta=True, platform=self.default_platform)
+        # try:
+        #     ret = self.core.get_achievements(self.game, update=True)
+        # except Exception as e:
+        #     ret = self.core.get_achievements(self.game, update=False)
+
+        update = not self.core.lgd.achievements or not self.core.lgd.achievements.get(self.game.namespace, None)
+        update = update or self.metadata.achievements_date < self.metadata.last_played
+        if update:
+            self.logger.info("Updating achievements for %s (%s)", self.app_name, self.app_title)
+        ret = self.core.get_achievements(self.game, update=update)
+        self.metadata.achievements_date = self.metadata.last_played
+        self.__save_metadata()
+        if ret is not None:
+            ret = Namespace(**ret)
+        return ret
+
+    @property
+    def eulas(self) -> List:
+        eulas = self.game.metadata.get('eulaIds') or ['$']
+
+        pattern = r'\w+'
+        keys = []
+        for eula in eulas:
+            keys += re.findall(pattern, eula)
+
+        not_accepted_eulas = []
+        for key in keys:
+            # if args.skip_epic and key == 'egstore':
+            #     continue
+            self.logger.debug(f'Fetching eula status for "{key}"')
+            eula = self.core.egs.eula_get_status(key)
+            if eula:
+                not_accepted_eulas.append(eula)
+
+        return not_accepted_eulas
 
     def reset_steam_date(self):
         self.metadata.steam_date = datetime.min.replace(tzinfo=timezone.utc)
-        self.signals.widget.update.emit()
+        self.signals.widget.refresh.emit()
 
     @property
     def steam_appid(self) -> Optional[str]:
@@ -484,14 +556,14 @@ class RareGame(RareGameSlim):
         return self.metadata.steam_grade
 
     def set_steam_grade(self) -> None:
-        appid, grade = get_rating(self.core, self.app_name, self.steam_appid)
+        appid, grade = SteamGrades().get_rating(self.core, self.app_name, self.steam_appid)
         if appid and self.steam_appid is None:
             self.steam_appid = appid
         self.metadata.steam_grade = grade
         self.metadata.steam_date = datetime.now(timezone.utc)
         self.__steam_grade_pending = False
         self.__save_metadata()
-        self.signals.widget.update.emit()
+        self.signals.widget.refresh.emit()
 
     def grant_date(self, force=False) -> datetime:
         if not (entitlements := self.core.lgd.entitlements):
@@ -503,7 +575,7 @@ class RareGame(RareGameSlim):
             grant_date = (
                 datetime.fromisoformat(entitlement["grantDate"].replace("Z", "+00:00"))
                 if entitlement
-                else datetime.min.replace(tzinfo=timezone.utc)
+                else datetime.fromisoformat(self.game.metadata["creationDate"].replace("Z", "+00:00"))
             )
             self.metadata.grant_date = grant_date
             self.__save_metadata()
@@ -545,7 +617,7 @@ class RareGame(RareGameSlim):
     def __update_pixmap(self):
         self.has_pixmap = self.image_manager.has_pixmaps(self.app_name)
         if self.has_pixmap:
-            self.signals.widget.update.emit()
+            self.signals.widget.refresh.emit()
 
     def load_pixmaps(self):
         """Do not call this function, call set_pixmap instead. This is only used for initial image loading"""
@@ -555,16 +627,45 @@ class RareGame(RareGameSlim):
     def refresh_pixmap(self):
         self.image_manager.download_image(self.game, self.__update_pixmap, 0, True)
 
+    @property
+    def __install_base_path(self) -> str:
+        if self.is_installed:
+            return self.install_path
+        if self.parent_rgame and self.parent_rgame.is_installed:
+            return self.parent_rgame.install_path
+        return self.core.get_default_install_dir(self.default_platform)
+
+    @property
+    def __install_platform(self) -> str:
+        if self.is_installed:
+            return self.igame.platform
+        if self.parent_rgame and self.parent_rgame.is_installed:
+            return self.parent_rgame.igame.platform
+        return self.default_platform
+
     def install(self) -> bool:
         if not self.is_idle:
             return False
-        self.signals.game.install.emit(InstallOptionsModel(app_name=self.app_name))
+        self.signals.game.install.emit(
+            InstallOptionsModel(
+                app_name=self.app_name,
+                base_path=self.__install_base_path,
+                platform=self.__install_platform,
+            )
+        )
         return True
 
     def modify(self) -> bool:
         if not self.is_idle:
             return False
-        self.signals.game.install.emit(InstallOptionsModel(app_name=self.app_name, reset_sdl=True))
+        self.signals.game.install.emit(
+            InstallOptionsModel(
+                app_name=self.app_name,
+                base_path=self.__install_base_path,
+                platform=self.igame.platform,
+                reset_sdl=True
+            )
+        )
         return True
 
     def repair(self, repair_and_update) -> bool:
@@ -573,6 +674,8 @@ class RareGame(RareGameSlim):
         self.signals.game.install.emit(
             InstallOptionsModel(
                 app_name=self.app_name,
+                base_path=self.__install_base_path,
+                platform=self.igame.platform,
                 repair_mode=True,
                 repair_and_update=repair_and_update,
                 update=repair_and_update,
@@ -583,7 +686,12 @@ class RareGame(RareGameSlim):
     def uninstall(self) -> bool:
         if not self.is_idle:
             return False
-        self.signals.game.uninstall.emit(UninstallOptionsModel(app_name=self.app_name, keep_config=self.sdl_name is not None))
+        self.signals.game.uninstall.emit(
+            UninstallOptionsModel(
+                app_name=self.app_name,
+                keep_folder=self.is_dlc,
+                keep_config=self.sdl_name is not None or self.is_dlc or platform.system() not in {"Windows"},
+        ))
         return True
 
     def launch(
@@ -642,9 +750,26 @@ class RareGame(RareGameSlim):
 
 
 class RareEosOverlay(RareGameBase):
-    def __init__(self, legendary_core: LegendaryCore, game: Game):
+
+    def __init__(
+            self,
+            settings: RareAppSettings,
+            legendary_core: LegendaryCore,
+            image_manager: ImageManager,
+            game: Game,
+        ):
         super(RareEosOverlay, self).__init__(legendary_core, game)
+        self.settings = settings
+        self.image_manager = image_manager
+
         self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
+        self.image_manager.download_image(game, self.__update_pixmap, 0, False)
+
+    @Slot()
+    def __update_pixmap(self):
+        self.has_pixmap = self.image_manager.has_pixmaps(self.app_name)
+        if self.has_pixmap:
+            self.signals.widget.refresh.emit()
 
     @property
     def is_installed(self) -> bool:
@@ -743,5 +868,12 @@ class RareEosOverlay(RareGameBase):
     def uninstall(self) -> bool:
         if not self.is_idle or not self.is_installed:
             return False
-        self.signals.game.uninstall.emit(UninstallOptionsModel(app_name=self.app_name))
+        self.signals.game.uninstall.emit(
+            UninstallOptionsModel(
+                app_name=self.app_name,
+                keep_overlay_keys=platform.system() not in {"Windows"},
+            ))
         return True
+
+
+__all__ = ["RareGame", "RareEosOverlay"]

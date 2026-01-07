@@ -42,9 +42,7 @@ class GamesLibrary(QStackedWidget):
         library_page_right_layout.addWidget(self.head_bar)
 
         self.details_page = GameDetailsTabs(settings, rcore, self)
-        self.details_page.back_clicked.connect(lambda: self.setCurrentWidget(self.library_page))
-        # Update visibility of hidden games
-        self.details_page.back_clicked.connect(lambda: self.filter_games(self.head_bar.current_filter()))
+        self.details_page.back_clicked.connect(self._on_back_clicked)
         self.details_page.import_clicked.connect(self.import_clicked)
         self.addWidget(self.details_page)
 
@@ -59,11 +57,11 @@ class GamesLibrary(QStackedWidget):
         self.library_controller = LibraryWidgetController(rcore, library_view, self.view_scroll)
 
         self.head_bar.search_bar.textChanged.connect(self.search_games)
-        self.head_bar.search_bar.textChanged.connect(self.scroll_to_top)
+        self.head_bar.search_bar.textChanged.connect(self._scroll_to_top)
         self.head_bar.filterChanged.connect(self.filter_games)
-        self.head_bar.filterChanged.connect(self.scroll_to_top)
+        self.head_bar.filterChanged.connect(self._scroll_to_top)
         self.head_bar.orderChanged.connect(self.order_games)
-        self.head_bar.orderChanged.connect(self.scroll_to_top)
+        self.head_bar.orderChanged.connect(self._scroll_to_top)
 
         # signals
         self.signals.game.installed.connect(self.update_count_games_label)
@@ -79,7 +77,12 @@ class GamesLibrary(QStackedWidget):
         return super().showEvent(a0)
 
     @Slot()
-    def scroll_to_top(self):
+    def _on_back_clicked(self):
+        self.filter_games(self.head_bar.current_filter())
+        self.setCurrentWidget(self.library_page)
+
+    @Slot()
+    def _scroll_to_top(self):
         self.view_scroll.verticalScrollBar().setSliderPosition(self.view_scroll.verticalScrollBar().minimum())
 
     @Slot()

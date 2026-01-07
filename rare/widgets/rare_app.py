@@ -137,7 +137,7 @@ class RareApp(QApplication):
             set_style_sheet(str(style_sheet))
         else:
             self.setStyleSheet(get_static_style())
-        self.setWindowIcon(QIcon(":/images/Rare.png"))
+        self.setWindowIcon(QIcon(":/images/icon.png"))
 
     def load_translator(self, lang: str):
         # translator for qt stuff

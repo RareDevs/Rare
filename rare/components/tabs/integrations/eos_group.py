@@ -13,7 +13,7 @@ from PySide6.QtCore import (
     Signal,
     Slot,
 )
-from PySide6.QtGui import QShowEvent
+from PySide6.QtGui import QHideEvent, QShowEvent
 from PySide6.QtWidgets import (
     QComboBox,
     QFormLayout,
@@ -37,19 +37,23 @@ from rare.widgets.elide_label import ElideLabel
 logger = getLogger("EpicOverlay")
 
 
+class CheckForUpdateWorkerSignals(QObject):
+    update_available = Signal(bool)
+
+
 class CheckForUpdateWorker(QRunnable):
-    class CheckForUpdateSignals(QObject):
-        update_available = Signal(bool)
 
     def __init__(self, core: LegendaryCore):
         super(CheckForUpdateWorker, self).__init__()
-        self.signals = self.CheckForUpdateSignals()
+        self.signals = CheckForUpdateWorkerSignals()
         self.setAutoDelete(True)
         self.core = core
 
     def run(self) -> None:
         self.core.check_for_overlay_updates()
         self.signals.update_available.emit(self.core.overlay_update_available)
+        self.signals.disconnect(self.signals)
+        self.signals.deleteLater()
 
 
 class EosPrefixWidget(QFrame):
@@ -199,7 +203,7 @@ class EosGroup(QGroupBox):
         self.ui.info_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.version)
         self.ui.info_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.install_path)
 
-        self.overlay.signals.widget.update.connect(self.update_state)
+        self.overlay.signals.widget.refresh.connect(self.update_state)
         self.overlay.signals.game.installed.connect(self.install_finished)
         self.overlay.signals.game.uninstalled.connect(self.uninstall_finished)
 
@@ -210,13 +214,21 @@ class EosGroup(QGroupBox):
         self.threadpool = QThreadPool.globalInstance()
         self.worker: Optional[CheckForUpdateWorker] = None
 
-    def showEvent(self, a0: QShowEvent) -> None:
-        if a0.spontaneous():
-            return super().showEvent(a0)
+    def showEvent(self, e: QShowEvent) -> None:
+        if e.spontaneous():
+            return super().showEvent(e)
         self.update_state()
         self.update_prefixes()
         self.check_for_update()
-        super().showEvent(a0)
+        return super().showEvent(e)
+
+    def hideEvent(self, e: QHideEvent, /):
+        if e.spontaneous():
+            return super().hideEvent(e)
+        for widget in self.findChildren(EosPrefixWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
+            widget.disconnect(widget)
+            widget.deleteLater()
+        return super().hideEvent(e)
 
     @Slot()
     def update_state(self):
@@ -242,6 +254,7 @@ class EosGroup(QGroupBox):
 
     def update_prefixes(self):
         for widget in self.findChildren(EosPrefixWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
+            widget.disconnect(widget)
             widget.deleteLater()
 
         if platform.system() != "Windows":
@@ -283,6 +296,7 @@ class EosGroup(QGroupBox):
                 self,
                 "Error",
                 self.tr("Something went wrong while installing EOS Overlay"),
+                QMessageBox.StandardButton.Close,
             )
             return
         self.update_state()

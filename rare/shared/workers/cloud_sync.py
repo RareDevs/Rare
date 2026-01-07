@@ -2,7 +2,7 @@ from enum import Enum
 
 from PySide6.QtCore import QObject, Signal
 
-from rare.models.base_game import RareGameSlim
+from rare.models.game_slim import RareGameSlim
 
 from .worker import QueueWorker, QueueWorkerInfo
 
@@ -42,4 +42,3 @@ class CloudSyncWorker(QueueWorker):
             self.rgame.upload_saves()
         if self.mode == CloudSyncWorker.Mode.DOWNLOAD:
             self.rgame.download_saves()
-        self.rgame.state = RareGameSlim.State.IDLE

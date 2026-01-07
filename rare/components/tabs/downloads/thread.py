@@ -58,20 +58,22 @@ class DlThread(QThread):
         self.rgame = rgame
         self.debug = debug
 
-    def __finish(self, result):
+    def _finish(self, result):
         if result.code == DlResultCode.FINISHED and not result.options.no_install:
             self.rgame.set_installed(True)
         self.rgame.state = RareGame.State.IDLE
         self.rgame.signals.progress.finish.emit(result.code != DlResultCode.FINISHED)
         self.result.emit(result)
+        self.quit()
 
-    def __status_callback(self, status: UIUpdate):
+    def _status_callback(self, status: UIUpdate):
         self.progress.emit(status, self.dl_size)
-        self.rgame.signals.progress.update.emit(int(status.progress))
+        self.rgame.signals.progress.refresh.emit(int(status.progress))
 
     def run(self):
         cli = LegendaryCLI(self.core)
         result = DlResultModel(self.item.options)
+        result.app_title = self.rgame.app_title
 
         ticket_a, ticket_b = multiprocessing.Pipe()
         sign_a, sign_b = multiprocessing.Pipe()
@@ -114,7 +116,7 @@ class DlThread(QThread):
             time.sleep(1)
             while self.item.download.dlm.is_alive():
                 try:
-                    self.__status_callback(self.item.download.dlm.status_queue.get(timeout=1.0))
+                    self._status_callback(self.item.download.dlm.status_queue.get(timeout=1.0))
                 except queue.Empty:
                     pass
                 if self.dlm_signals.update:
@@ -132,14 +134,12 @@ class DlThread(QThread):
             self.logger.warning(f"The following exception occurred while waiting for the downloader to finish: {e!r}.")
             result.code = DlResultCode.ERROR
             result.message = f"{e!r}"
-            self.__finish(result)
             return
         else:
             end_t = time.time()
-            if self.dlm_signals.kill is True:
+            if self.dlm_signals.kill:
                 self.logger.info(f"Download stopped after {end_t - start_t:.02f} seconds.")
                 result.code = DlResultCode.STOPPED
-                self.__finish(result)
                 return
             self.logger.info(f"Download finished in {end_t - start_t:.02f} seconds.")
 
@@ -147,7 +147,6 @@ class DlThread(QThread):
 
             if self.item.options.overlay:
                 self.core.finish_overlay_install(self.item.download.igame)
-                self.__finish(result)
                 return
 
             if not self.item.options.no_install:
@@ -190,15 +189,13 @@ class DlThread(QThread):
 
             result.shortcut = not self.item.options.update and self.item.options.create_shortcut
             result.folder_name = self.rgame.folder_name
-            result.app_title = self.rgame.app_title
 
         finally:
             ticket_thread.stop = True
             sign_thread.stop = True
             ticket_thread.join()
             sign_thread.join()
-
-        self.__finish(result)
+            self._finish(result)
 
     def _handle_postinstall(self, postinstall, igame):
         self.logger.info("This game lists the following prerequisites to be installed:")
@@ -213,7 +210,8 @@ class DlThread(QThread):
                 proc = QProcess(self)
                 proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
                 proc.readyReadStandardOutput.connect(
-                    lambda: self.logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))
+                    (lambda obj: obj.logger.debug(
+                        str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
                 )
                 proc.setProgram(fullpath)
                 proc.setArguments(postinstall.get("args", "").split(" "))

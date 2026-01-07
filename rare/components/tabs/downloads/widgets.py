@@ -90,13 +90,27 @@ class UpdateWidget(QFrame):
         self.info_widget = QueueInfoWidget(imgmgr, game, igame, parent=self)
         self.ui.info_layout.addWidget(self.info_widget)
 
-        self.ui.update_button.clicked.connect(lambda: self.update_game(True))
-        self.ui.settings_button.clicked.connect(lambda: self.update_game(False))
+        self.ui.update_button.clicked.connect(self._on_update_clicked)
+        self.ui.settings_button.clicked.connect(self._on_settings_clicked)
 
-    def update_game(self, auto: bool):
+    @Slot()
+    def _on_update_clicked(self):
+        self._update_game(True)
+
+    @Slot()
+    def _on_settings_clicked(self):
+        self._update_game(False)
+
+    def _update_game(self, auto: bool):
         self.ui.update_button.setDisabled(True)
         self.ui.settings_button.setDisabled(True)
-        self.enqueue.emit(InstallOptionsModel(app_name=self.game.app_name, update=True, silent=auto))  # True if settings
+        self.enqueue.emit(InstallOptionsModel(
+            app_name=self.game.app_name,
+            base_path=self.igame.install_path,
+            platform=self.igame.platform,
+            update=True,
+            silent=auto, # True if settings
+        ))
 
     def set_enabled(self, enabled: bool):
         self.ui.update_button.setEnabled(enabled)
@@ -120,6 +134,7 @@ class QueueWidget(QFrame):
         self, core: LegendaryCore, imgmgr: ImageManager, item: InstallQueueItemModel, old_igame: InstalledGame, parent=None
     ):
         super(QueueWidget, self).__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
         self.ui = Ui_QueueBaseWidget()
         self.ui.setupUi(self)
         # lk: setObjectName has to be after `setupUi` because it is also set in that function
@@ -130,10 +145,14 @@ class QueueWidget(QFrame):
             worker = InstallInfoWorker(core, item.options)
             worker.signals.result.connect(self.__update_info)
             worker.signals.failed.connect(
-                lambda m: logger.error(f"Failed to requeue download for {item.options.app_name} with error: {m}")
+                (lambda obj, m: obj.logger.error(
+                    f"Failed to requeue download for {item.options.app_name} with error: {m}")).__get__(self)
             )
-            worker.signals.failed.connect(lambda m: self.remove.emit(item.options.app_name))
-            worker.signals.finished.connect(lambda: logger.info(f"Download requeue worker finished for {item.options.app_name}"))
+            worker.signals.failed.connect((lambda obj, m: obj.remove.emit(item.options.app_name)).__get__(self))
+            worker.signals.finished.connect(
+                (lambda obj: obj.logger.error(
+                    f"Download requeue worker finished for {item.options.app_name}")).__get__(self)
+            )
             QThreadPool.globalInstance().start(worker)
             self.info_widget = QueueInfoWidget(imgmgr, None, None, None, old_igame, parent=self)
         else:
@@ -152,13 +171,29 @@ class QueueWidget(QFrame):
         self.item = item
 
         self.ui.move_up_button.setIcon(qta_icon("fa.arrow-up", "fa5s.arrow-up"))
-        self.ui.move_up_button.clicked.connect(lambda: self.move_up.emit(self.item.options.app_name))
+        self.ui.move_up_button.clicked.connect(self._on_move_up)
 
         self.ui.move_down_button.setIcon(qta_icon("fa.arrow-down", "fa5s.arrow-down"))
-        self.ui.move_down_button.clicked.connect(lambda: self.move_down.emit(self.item.options.app_name))
+        self.ui.move_down_button.clicked.connect(self._on_move_down)
 
-        self.ui.remove_button.clicked.connect(lambda: self.remove.emit(self.item.options.app_name))
-        self.ui.force_button.clicked.connect(lambda: self.force.emit(self.item))
+        self.ui.remove_button.clicked.connect(self._on_remove)
+        self.ui.force_button.clicked.connect(self._on_force)
+
+    @Slot()
+    def _on_move_up(self):
+        self.move_up.emit(self.item.options.app_name)
+
+    @Slot()
+    def _on_move_down(self):
+        self.move_down.emit(self.item.options.app_name)
+
+    @Slot()
+    def _on_remove(self):
+        self.remove.emit(self.item.options.app_name)
+
+    @Slot()
+    def _on_force(self):
+        self.force.emit(self.item)
 
     @Slot(InstallDownloadModel)
     def __update_info(self, download: InstallDownloadModel):

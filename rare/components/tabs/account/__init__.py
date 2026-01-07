@@ -1,7 +1,7 @@
 import webbrowser
 
 from PySide6.QtCore import Signal, Slot
-from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QLabel, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.signals import GlobalSignals
@@ -26,25 +26,29 @@ class AccountWidget(QWidget):
             qta_icon("fa.external-link", "fa5s.external-link-alt"),
             self.tr("Account settings"),
         )
-        self.open_browser.clicked.connect(
-            lambda: webbrowser.open("https://www.epicgames.com/account/personal?productName=epicgames")
-        )
+        self.open_browser.clicked.connect(self._on_browser_clicked)
+
         self.logout_button = QPushButton(self.tr("Logout"), parent=self)
-        self.logout_button.clicked.connect(self.__on_logout)
+        self.logout_button.clicked.connect(self._on_logout)
         self.quit_button = QPushButton(self.tr("Quit"), parent=self)
-        self.quit_button.clicked.connect(self.__on_quit)
+        self.quit_button.clicked.connect(self._on_quit)
 
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel(self.tr("Account")))
         layout.addWidget(QLabel(self.tr("Logged in as <b>{}</b>").format(username)))
+        vspacer = QSpacerItem(10, 10, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        layout.addSpacerItem(vspacer)
         layout.addWidget(self.open_browser)
         layout.addWidget(self.logout_button)
         layout.addWidget(self.quit_button)
 
     @Slot()
-    def __on_quit(self):
+    def _on_browser_clicked(self):
+        webbrowser.open("https://www.epicgames.com/account/personal?productName=epicgames")
+
+    @Slot()
+    def _on_quit(self):
         self.exit_app.emit(ExitCodes.EXIT)
 
     @Slot()
-    def __on_logout(self):
+    def _on_logout(self):
         self.exit_app.emit(ExitCodes.LOGOUT)

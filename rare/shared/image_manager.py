@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
 
 import requests
+from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game
 from PySide6.QtCore import (
     QObject,
@@ -66,6 +67,8 @@ class ImageWorker(QRunnable):
     def run(self):
         self.func(self.game, self.force)
         self.signals.completed.emit(self.game)
+        self.signals.disconnect(self.signals)
+        self.signals.deleteLater()
 
 
 class ImageManager(QObject):
@@ -168,13 +171,14 @@ class ImageManager(QObject):
         # lk: so everything below it is skipped
         # TODO: Move this into the thread, maybe, concurrency could help here too
         updates = []
-        if not self.has_pixmaps(game.app_name):
+        if (not self.has_pixmaps(game.app_name)) or game.app_name == EOSOverlayApp.app_name:
             if not candidates:
+                cover = "epic.png" if game.app_name == EOSOverlayApp.app_name else "cover.png"
                 # lk: fast path for games without images, convert Rare's logo
                 cache_data: Dict = dict(zip(self.__img_types, [None] * len(self.__img_types)))
-                with open(resources_path.joinpath("images", "cover.png"), "rb") as fd:
+                with open(resources_path.joinpath("images", cover), "rb") as fd:
                     cache_data["DieselGameBoxTall"] = fd.read()
-                with open(resources_path.joinpath("images", "cover.png"), "rb") as fd:
+                with open(resources_path.joinpath("images", cover), "rb") as fd:
                     cache_data["DieselGameBoxWide"] = fd.read()
                 # cache_data["DieselGameBoxLogo"] = open(
                 #         resources_path.joinpath("images", "logo.png"), "rb").read()

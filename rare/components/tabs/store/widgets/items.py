@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QPushButton
 
@@ -8,17 +8,19 @@ from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.models.image import ImageSize
 from rare.utils.misc import qta_icon
 from rare.utils.qt_requests import QtRequests
+from rare.widgets.image_widget import LoadingSpinnerImageWidget
 
-from .image import LoadingImageWidget
+from .icon_widget import IconWidget
 
 logger = getLogger("StoreWidgets")
 
 
-class ItemWidget(LoadingImageWidget):
+class ItemWidgetSpinner(LoadingSpinnerImageWidget):
     show_details = Signal(CatalogOfferModel)
 
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel = None, parent=None):
-        super(ItemWidget, self).__init__(manager, parent=parent)
+        super(ItemWidgetSpinner, self).__init__(manager, parent=parent)
+        self.ui = IconWidget()
         self.catalog_game = catalog_game
 
     def mousePressEvent(self, a0: QMouseEvent) -> None:
@@ -29,7 +31,7 @@ class ItemWidget(LoadingImageWidget):
             a0.accept()
 
 
-class StoreItemWidget(ItemWidget):
+class StoreItemWidget(ItemWidgetSpinner):
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel = None, parent=None):
         super(StoreItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.DisplayWide)
@@ -74,7 +76,7 @@ class StoreItemWidget(ItemWidget):
         #     logger.info(", ".join([img["type"] for img in json_info["keyImages"]]))
 
 
-class SearchItemWidget(ItemWidget):
+class SearchItemWidget(ItemWidgetSpinner):
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
         super(SearchItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.LibraryTall)
@@ -97,13 +99,14 @@ class SearchItemWidget(ItemWidget):
             self.ui.discount_label.setVisible(False)
 
 
-class WishlistItemWidget(ItemWidget):
+class WishlistItemWidget(ItemWidgetSpinner):
     delete_from_wishlist = Signal(CatalogOfferModel)
 
     def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
         super(WishlistItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.DisplayWide)
         self.ui.setupUi(self)
+
         for attr in catalog_game.customAttributes:
             if attr["key"] == "developerName":
                 developer = attr["value"]
@@ -128,5 +131,9 @@ class WishlistItemWidget(ItemWidget):
 
         self.delete_button = QPushButton(self)
         self.delete_button.setIcon(qta_icon("mdi.delete", color="white"))
-        self.delete_button.clicked.connect(lambda: self.delete_from_wishlist.emit(self.catalog_game))
+        self.delete_button.clicked.connect(self._on_delete_clicked)
         self.layout().insertWidget(0, self.delete_button, alignment=Qt.AlignmentFlag.AlignRight)
+
+    @Slot()
+    def _on_delete_clicked(self):
+        self.delete_from_wishlist.emit(self.catalog_game)

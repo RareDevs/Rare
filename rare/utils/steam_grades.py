@@ -14,16 +14,6 @@ from rare.utils.paths import cache_dir
 
 logger = getLogger("SteamGrades")
 
-replace_chars = ",;.:-_ "
-steamids_url = "https://raredevs.github.io/wring/steam_appids.json.xz"
-protondb_url = "https://www.protondb.com/api/v1/reports/summaries/"
-
-__steam_appids: Dict = None
-__steam_titles: Dict = None
-__steam_appids_version: int = 3
-__active_download: bool = False
-
-
 class ProtondbRatings(int, Enum):
     # internal
     PENDING = ("pending", -2)
@@ -49,95 +39,104 @@ class ProtondbRatings(int, Enum):
         return self._value_
 
 
-def get_rating(core: LegendaryCore, app_name: str, steam_appid: int = None) -> Tuple[int, str]:
-    game = core.get_game(app_name)
-    try:
-        if steam_appid is None:
-            steam_appid = get_steam_id(game.app_title)
-            if not steam_appid:
-                raise RuntimeError
-        grade = get_grade(steam_appid)
-    except Exception as e:
-        logger.debug(e)
-        logger.error("Failed to get ProtonDB rating for %s", game.app_title)
-        return 0, "fail"
-    else:
-        return steam_appid, grade
+class SteamGrades:
+    __steam_appids: Dict[str, str] = {}
+    __steam_appids_version: int = 3
+    __active_download: bool = False
+    __replace_chars = ",;.:-_ "
+    __steamids_url = "https://raredevs.github.io/wring/steam_appids.json.xz"
+    __protondb_url = "https://www.protondb.com/api/v1/reports/summaries/"
 
+    def __init__(self):
+        pass
 
-# you should initiate the module with the game's steam code
-def get_grade(steam_code):
-    if steam_code == 0:
-        return "fail"
-    steam_code = str(steam_code)
-    res = requests.get(f"{protondb_url}{steam_code}.json")
-    try:
-        app = orjson.loads(res.text)
-    except orjson.JSONDecodeError as e:
-        logger.debug(e)
-        logger.error("Failed to get ProtonDB response for %s", steam_code)
-        return "fail"
+    def _download_steam_appids(self) -> bytes:
+        if SteamGrades.__active_download:
+            return b""
+        SteamGrades.__active_download = True
+        resp = requests.get(self.__steamids_url)
+        SteamGrades.__active_download = False
+        return resp.content
 
-    return app.get("tier", "fail")
+    def load_steam_appids(self) -> Dict:
 
+        if SteamGrades.__steam_appids:
+            return SteamGrades.__steam_appids
 
-def download_steam_appids() -> bytes:
-    global __active_download
-    if __active_download:
-        return b""
-    __active_download = True
-    resp = requests.get(steamids_url)
-    __active_download = False
-    return resp.content
+        file = os.path.join(cache_dir(), "steam_appids.json")
+        version = SteamGrades.__steam_appids_version
+        elapsed_days = 0
 
+        if os.path.exists(file):
+            mod_time = datetime.fromtimestamp(os.path.getmtime(file))
+            elapsed_days = abs(datetime.now() - mod_time).days
+            json = orjson.loads(open(file, "r").read())
+            version = json.get("version", 0)
+            if version >= SteamGrades.__steam_appids_version:
+                SteamGrades.__steam_appids = json["games"]
 
-def load_steam_appids() -> Tuple[Dict, Dict]:
-    global __steam_appids, __steam_titles
+        if not os.path.exists(file) or elapsed_days > 3 or version < SteamGrades.__steam_appids_version:
+            if content := self._download_steam_appids():
+                text = lzma.decompress(content).decode("utf-8")
+                with open(file, "w", encoding="utf-8") as f:
+                    f.write(text)
+                json = orjson.loads(text)
+                SteamGrades.__steam_appids = json["games"]
 
-    if __steam_appids and __steam_titles:
-        return __steam_appids, __steam_titles
+        return SteamGrades.__steam_appids
 
-    file = os.path.join(cache_dir(), "steam_appids.json")
-    version = __steam_appids_version
-    elapsed_days = 0
+    @property
+    def steam_appids(self) -> Dict[str, str]:
+        if not SteamGrades.__steam_appids:
+            SteamGrades.__steam_appids = self.load_steam_appids()
+        return SteamGrades.__steam_appids
 
-    if os.path.exists(file):
-        mod_time = datetime.fromtimestamp(os.path.getmtime(file))
-        elapsed_days = abs(datetime.now() - mod_time).days
-        json = orjson.loads(open(file, "r").read())
-        version = json.get("version", 0)
-        if version >= __steam_appids_version:
-            __steam_appids = json["games"]
+    @property
+    def steam_titles(self) -> Dict:
+        return {v: k for k, v in self.steam_appids.items()}
 
-    if not os.path.exists(file) or elapsed_days > 3 or version < __steam_appids_version:
-        if content := download_steam_appids():
-            text = lzma.decompress(content).decode("utf-8")
-            with open(file, "w", encoding="utf-8") as f:
-                f.write(text)
-            json = orjson.loads(text)
-            __steam_appids = json["games"]
+    def _get_steam_appid(self, title: str) -> str:
+        # workarounds for satisfactory
+        # FIXME: This has to be made smarter.
+        title = title.replace("Early Access", "").replace("Experimental", "").strip()
+        # title = title.split(":")[0]
+        # title = title.split("-")[0]
 
-    __steam_titles = {v: k for k, v in __steam_appids.items()}
+        if title in self.steam_titles.keys():
+            steam_name = [title]
+        else:
+            steam_name = difflib.get_close_matches(title, self.steam_appids.keys(), n=1, cutoff=0.5)
 
-    return __steam_appids, __steam_titles
+        if steam_name:
+            return self.steam_appids[steam_name[0]]
+        else:
+            return "0"
 
+    def _get_grade(self, steam_appid: str):
+        if steam_appid == "0":
+            return "fail"
+        steam_appid = str(steam_appid)
+        res = requests.get(f"{self.__protondb_url}/{steam_appid}.json")
+        try:
+            app = orjson.loads(res.text)
+        except orjson.JSONDecodeError as e:
+            logger.error(repr(e))
+            logger.error("Failed to get ProtonDB response for %s", steam_appid)
+            return "fail"
 
-def get_steam_id(title: str) -> int:
-    # workarounds for satisfactory
-    # FIXME: This has to be made smarter.
-    title = title.replace("Early Access", "").replace("Experimental", "").strip()
-    # title = title.split(":")[0]
-    # title = title.split("-")[0]
-    global __steam_appids, __steam_titles
-    if not __steam_appids or not __steam_titles:
-        __steam_appids, __steam_titles = load_steam_appids()
+        return app.get("tier", "fail")
 
-    if title in __steam_titles.keys():
-        steam_name = [title]
-    else:
-        steam_name = difflib.get_close_matches(title, __steam_appids.keys(), n=1, cutoff=0.5)
-
-    if steam_name:
-        return __steam_appids[steam_name[0]]
-    else:
-        return 0
+    def get_rating(self, core: LegendaryCore, app_name: str, steam_appid: str = None) -> Tuple[str, str]:
+        game = core.get_game(app_name)
+        try:
+            if steam_appid is None:
+                steam_appid = self._get_steam_appid(game.app_title)
+                if not steam_appid:
+                    raise RuntimeError
+            grade = self._get_grade(steam_appid)
+        except Exception as e:
+            logger.error(repr(e))
+            logger.error("Failed to get ProtonDB rating for %s", game.app_title)
+            return "0", "fail"
+        else:
+            return steam_appid, grade

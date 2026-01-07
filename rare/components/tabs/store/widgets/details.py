@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import List
 
-from PySide6.QtCore import Qt, QUrl, Signal
+from PySide6.QtCore import Qt, QUrl, Signal, Slot
 from PySide6.QtGui import QDesktopServices, QKeyEvent
 from PySide6.QtWidgets import (
     QGridLayout,
@@ -22,9 +22,8 @@ from rare.models.image import ImageSize
 from rare.ui.components.tabs.store.details import Ui_StoreDetailsWidget
 from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
+from rare.widgets.image_widget import LoadingSpinnerImageWidget
 from rare.widgets.side_tab import SideTabContents, SideTabWidget
-
-from .image import LoadingImageWidget
 
 logger = getLogger("StoreDetails")
 
@@ -45,7 +44,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.installed = installed
         self.catalog_offer: CatalogOfferModel = None
 
-        self.image = LoadingImageWidget(store_api.cached_manager, self)
+        self.image = LoadingSpinnerImageWidget(store_api.cached_manager, self)
         self.image.setFixedSize(ImageSize.DisplayTall)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignmentFlag.AlignTop)
         self.ui.left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -84,6 +83,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
 
         # lk: delete tabs in reverse order because indices are updated on deletion
         while self.requirements_tabs.count():
+            self.requirements_tabs.widget(0).disconnect(self.requirements_tabs.widget(0))
             self.requirements_tabs.widget(0).deleteLater()
             self.requirements_tabs.removeTab(0)
         self.requirements_tabs.clear()
@@ -203,6 +203,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         # clear Layout
         for b in self.ui.social_links.findChildren(SocialButton, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.ui.social_links_layout.removeWidget(b)
+            b.disconnect(b)
             b.deleteLater()
 
         links = product_data.socialLinks
@@ -249,8 +250,12 @@ class SocialButton(QPushButton):
         self.setFixedSize(36, 36)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.url = url
-        self.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(url)))
+        self.clicked.connect(self._on_clicked)
         self.setToolTip(url)
+
+    @Slot()
+    def _on_clicked(self):
+        QDesktopServices.openUrl(QUrl(self.url))
 
 
 class RequirementsWidget(QWidget, SideTabContents):

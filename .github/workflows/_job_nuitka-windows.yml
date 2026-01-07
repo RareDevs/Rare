@@ -9,8 +9,18 @@ on:
 
 jobs:
   build:
-    name: Package
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            pyarch: arm64
+            os: windows-11-arm
+          - arch: x86_64
+            pyarch: x64
+            os: windows-latest
+    name: Package ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -21,10 +31,10 @@ jobs:
           cache: pip
           python-version: '3.12'
           check-latest: true
-          architecture: x64
+          architecture: ${{ matrix.pyarch }}
       - name: Install build dependencies
         run: |
-          pip3 install nuitka ruff
+          pip3 install --upgrade nuitka ruff
       - name: Install target dependencies
         run: |
           pip3 install -r misc/requirements.in
@@ -46,7 +56,7 @@ jobs:
           --assume-yes-for-downloads
           --disable-ccache
           --show-scons
-          --clang
+          --msvc=latest
           --lto=no
           --jobs=4
           --static-libpython=no
@@ -85,10 +95,10 @@ jobs:
         run: |
           mv rare.dist Rare-${{ inputs.version }}
           python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}', 'zip', '.', 'Rare-${{ inputs.version }}')"
-          mv Rare-${{ inputs.version }}.zip Rare-${{ inputs.version }}-windows.zip
+          mv Rare-${{ inputs.version }}.zip Rare-${{ inputs.version }}-${{ matrix.arch }}-windows.zip
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
-          name: Rare-${{ inputs.version }}-windows.zip
-          path: Rare-${{ inputs.version }}-windows.zip
+          name: Rare-${{ inputs.version }}-${{ matrix.arch }}-windows.zip
+          path: Rare-${{ inputs.version }}-${{ matrix.arch }}-windows.zip

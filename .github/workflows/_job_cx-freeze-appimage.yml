@@ -13,6 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - arch: arm64
+            pyarch: arm64
+            os: ubuntu-24.04-arm
           - arch: x86_64
             pyarch: x64
             os: ubuntu-22.04
@@ -57,13 +60,13 @@ jobs:
           mv dist/Rare-*.AppImage.zsync Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage.zsync
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage
           path: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage.zsync
           path: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage.zsync

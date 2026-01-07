@@ -12,9 +12,7 @@ from rare.widgets.collapsible_widget import CollapsibleFrame
 class InstallTagCheckBox(QCheckBox):
     def __init__(self, text, desc, tags: List[str], parent=None):
         super(InstallTagCheckBox, self).__init__(parent)
-        font = self.font()
-        font.setStyleHint(QFont.StyleHint.Monospace)
-        self.setFont(font)
+        self.setFont(QFont("monospace"))
         self.setText(text)
         self.setToolTip(desc)
         self.tags = tags
@@ -77,6 +75,7 @@ class InstallDialogSelective(CollapsibleFrame):
 
     def update_list(self, platform: str):
         if self.widget is not None:
+            self.widget.disconnect(self.widget)
             self.widget.deleteLater()
         self.widget = SelectiveWidget(self.rgame, platform, parent=self)
         self.widget.stateChanged.connect(self.stateChanged)

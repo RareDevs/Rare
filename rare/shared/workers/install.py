@@ -12,15 +12,17 @@ from rare.models.install import InstallDownloadModel, InstallOptionsModel
 from .worker import Worker
 
 
+class InstallInfoWorkerSignals(QObject):
+    result = Signal(InstallDownloadModel)
+    failed = Signal(str)
+    finished = Signal()
+
+
 class InstallInfoWorker(Worker):
-    class Signals(QObject):
-        result = Signal(InstallDownloadModel)
-        failed = Signal(str)
-        finished = Signal()
 
     def __init__(self, core: LegendaryCore, options: InstallOptionsModel):
         super(InstallInfoWorker, self).__init__()
-        self.signals = InstallInfoWorker.Signals()
+        self.signals = InstallInfoWorkerSignals()
         self.core = core
         self.options = options
 

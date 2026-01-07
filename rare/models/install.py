@@ -27,7 +27,7 @@ class InstallOptionsModel:
     ignore_space: bool = False
     reset_sdl: bool = False
     disable_https: bool = False
-    always_use_signed_urls: bool = False
+    always_use_signed_urls: bool = True
     skip_dlcs: bool = False
     with_dlcs: bool = False
     # Rare's internal arguments
@@ -78,7 +78,7 @@ class InstallQueueItemModel:
 
     @property
     def expired(self) -> bool:
-        return datetime.now() > (self.__date + timedelta(minutes=30))
+        return datetime.now() > (self.__date + timedelta(minutes=5))
 
     def __bool__(self):
         return (self.download is not None) and (self.options is not None) and (not self.expired)

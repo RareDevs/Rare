@@ -3,7 +3,7 @@ installer
 setuptools-scm
 requests < 3.0
 QtAwesome
-legendary-gl @ git+https://github.com/RareDevs/legendary@4074375b789a4c2c87f72307bc9581900e34fa50
+legendary-gl @ git+https://github.com/RareDevs/legendary@rare-1.12.0
 orjson
 vdf @ git+https://github.com/solsticegamestudios/vdf@be1f7220238022f8b29fe747f0b643f280bfdb6e
 pypresence

@@ -65,7 +65,8 @@ jobs:
     uses: ./.github/workflows/_job_publish.yml
     with:
       version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
-      file1: Rare-${{ needs.version.outputs.version }}-linux.zip
+      file1: Rare-${{ needs.version.outputs.version }}-x86_64-linux.zip
+      file2: Rare-${{ needs.version.outputs.version }}-arm64-linux.zip
 
   nuitka-macos:
     if: ${{ true }}
@@ -98,7 +99,8 @@ jobs:
     uses: ./.github/workflows/_job_publish.yml
     with:
       version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
-      file1: Rare-${{ needs.version.outputs.version }}-windows.zip
+      file1: Rare-${{ needs.version.outputs.version }}-x86_64-windows.zip
+      file2: Rare-${{ needs.version.outputs.version }}-arm64-windows.zip
 
   cx-freeze-appimage:
     if: ${{ true }}
@@ -116,6 +118,8 @@ jobs:
       version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-x86_64.AppImage
       file2: Rare-${{ needs.version.outputs.version }}-x86_64.AppImage.zsync
+      file3: Rare-${{ needs.version.outputs.version }}-arm64.AppImage
+      file4: Rare-${{ needs.version.outputs.version }}-arm64.AppImage.zsync
 
   cx-freeze-dmg:
     if: ${{ true }}
@@ -148,4 +152,5 @@ jobs:
     uses: ./.github/workflows/_job_publish.yml
     with:
       version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
-      file1: Rare-${{ needs.version.outputs.version }}.msi
+      file1: Rare-${{ needs.version.outputs.version }}-x86_64.msi
+      file2: Rare-${{ needs.version.outputs.version }}-arm64.msi

@@ -1,8 +1,4 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import (
-    QImage,
-    QPixmap,
-)
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -11,10 +7,6 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-
-from rare.utils.qt_requests import QtRequests
-from rare.widgets.image_widget import ImageWidget
-from rare.widgets.loading_widget import LoadingWidget
 
 
 class IconWidget(object):
@@ -81,36 +73,3 @@ class IconWidget(object):
         image_layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding))
         image_layout.addWidget(self.mini_widget)
         widget.setLayout(image_layout)
-
-
-class LoadingImageWidget(ImageWidget):
-    def __init__(self, manager: QtRequests, parent=None):
-        super(LoadingImageWidget, self).__init__(parent=parent)
-        self.ui = IconWidget()
-        self.spinner = LoadingWidget(parent=self)
-        self.spinner.setVisible(False)
-        self.manager = manager
-
-    def fetchPixmap(self, url):
-        self.setPixmap(QPixmap())
-        self.spinner.setFixedSize(self._image_size.size)
-        self.spinner.start()
-        self.manager.get(
-            url,
-            self.__on_image_ready,
-            params={
-                "resize": 1,
-                "w": self._image_size.base.size.width(),
-                "h": self._image_size.base.size.height(),
-            },
-        )
-
-    def __on_image_ready(self, data):
-        cover = QImage()
-        cover.loadFromData(data)
-        # cover = cover.scaled(self._image_size.size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        cover.setDevicePixelRatio(self._image_size.base.pixel_ratio)
-        cover = cover.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
-        cover = QPixmap(cover)
-        self.setPixmap(cover)
-        self.spinner.stop()

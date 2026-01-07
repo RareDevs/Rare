@@ -33,7 +33,7 @@ class GameDlcWidget(QFrame):
         # self.image.setPixmap(rdlc.get_pixmap_icon(rdlc.is_installed))
         self.__update()
 
-        rdlc.signals.widget.update.connect(self.__update)
+        rdlc.signals.widget.refresh.connect(self.__update)
 
     @Slot()
     def __update(self):
@@ -153,6 +153,7 @@ class GameDlcs(QToolBox, SideTabContents):
         a_widget: AvailableGameDlcWidget = self.get_available(rdlc.app_name)
         if a_widget is not None:
             self.ui.available_dlc_container.layout().removeWidget(a_widget)
+            a_widget.disconnect(a_widget)
             a_widget.deleteLater()
         i_widget: InstalledGameDlcWidget = InstalledGameDlcWidget(self.rgame, rdlc, self.ui.installed_dlc_container)
         i_widget.destroyed.connect(self.update_installed_page)
@@ -177,10 +178,12 @@ class GameDlcs(QToolBox, SideTabContents):
 
         for i_widget in self.list_installed():
             self.ui.installed_dlc_container.layout().removeWidget(i_widget)
+            i_widget.disconnect(i_widget)
             i_widget.deleteLater()
 
         for a_widget in self.list_available():
             self.ui.available_dlc_container.layout().removeWidget(a_widget)
+            a_widget.disconnect(a_widget)
             a_widget.deleteLater()
 
         for dlc in sorted(self.rgame.owned_dlcs, key=lambda x: x.app_title):

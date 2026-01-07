@@ -2,9 +2,9 @@ build
 installer
 setuptools-scm
 requests < 3.0
-PySide6-Essentials >= 6.8.1, < 6.9.2
+PySide6-Essentials >= 6.8.1
 QtAwesome
-legendary-gl @ https://github.com/RareDevs/legendary/archive/4074375b789a4c2c87f72307bc9581900e34fa50.zip
+legendary-gl @ https://github.com/RareDevs/legendary/archive/85d9ea9.zip
 orjson
 vdf @ https://github.com/solsticegamestudios/vdf/archive/be1f7220238022f8b29fe747f0b643f280bfdb6e.zip
 pywin32 ; platform_system == "Windows"

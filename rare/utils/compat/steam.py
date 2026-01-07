@@ -8,6 +8,8 @@ from typing import Dict, List, Optional, Set, Union
 
 import vdf
 
+from rare.utils.paths import data_dir
+
 logger = getLogger("SteamTools")
 
 steam_client_install_paths = [os.path.expanduser("~/.local/share/Steam")]
@@ -254,10 +256,12 @@ def find_steam_tools(steam_path: str, library: str) -> List[ProtonTool]:
 
 def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
     compatibilitytools_paths = {
-        "/usr/share/steam/compatibilitytools.d",
+        data_dir().joinpath("compatibilitytools").as_posix(),
+        os.path.expanduser("~/.local/share/umu/compatibilitytools"),
         os.path.expanduser(os.path.join(steam_path, "compatibilitytools.d")),
         os.path.expanduser("~/.steam/compatibilitytools.d"),
         os.path.expanduser("~/.steam/root/compatibilitytools.d"),
+        "/usr/share/steam/compatibilitytools.d",
     }
     compatibilitytools_paths = {os.path.realpath(path) for path in compatibilitytools_paths if os.path.isdir(path)}
     tools = []

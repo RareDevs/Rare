@@ -1,5 +1,4 @@
 import os
-from collections.abc import ItemsView
 from enum import Enum, IntEnum
 from logging import getLogger
 from typing import Callable, Dict, Optional, Tuple
@@ -100,20 +99,22 @@ class IndicatorReasonsStrings(QObject):
         self.__text.update(reasons)
 
 
-class EditFuncRunnable(QRunnable):
-    class Signals(QObject):
-        result = Signal(bool, str, int)
+class EditFuncRunnableSignals(QObject):
+    result = Signal(bool, str, int)
 
+
+class EditFuncRunnable(QRunnable):
     def __init__(self, func: Callable[[str], Tuple[bool, str, int]], args: str):
         super(EditFuncRunnable, self).__init__()
         self.setAutoDelete(True)
-        self.signals = EditFuncRunnable.Signals()
+        self.signals = EditFuncRunnableSignals()
         self.func = self.__wrap_edit_function(func)
         self.args = args
 
     def run(self):
         o0, o1, o2 = self.func(self.args)
         self.signals.result.emit(o0, o1, o2)
+        self.signals.disconnect(self.signals)
         self.signals.deleteLater()
 
     @staticmethod
@@ -143,6 +144,9 @@ class IndicatorLineEdit(QWidget):
         layout = QHBoxLayout(self)
         layout.setObjectName(f"{self.objectName()}Layout")
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSizeConstraints(
+            QHBoxLayout.SizeConstraint.SetDefaultConstraint, QHBoxLayout.SizeConstraint.SetFixedSize
+        )
         # Add line_edit
         self.line_edit = QLineEdit(self)
         self.line_edit.setObjectName(f"{type(self).__name__}Edit")
@@ -217,6 +221,9 @@ class IndicatorLineEdit(QWidget):
         completer.popup().setItemDelegate(QStyledItemDelegate(self))
         completer.popup().setAlternatingRowColors(True)
         self.line_edit.setCompleter(completer)
+
+    def completer(self) -> QCompleter:
+        return self.line_edit.completer()
 
     @property
     def reasons(self):
@@ -402,23 +409,29 @@ class PathEdit(IndicatorLineEdit):
 
 
 class ColumnCompleter(QCompleter):
-    def __init__(self, items: ItemsView[str, str], parent=None):
+    def __init__(self, items: Optional[Dict[str, str]], parent=None):
         super(ColumnCompleter, self).__init__(parent)
 
-        model = QStandardItemModel(len(items), 2, self)
-        for idx, item in enumerate(items):
-            app_title, app_name = item
-            model.setData(model.index(idx, 0), app_title)
-            model.setData(model.index(idx, 1), app_name)
-        self.setModel(model)
+        self._treeview = QTreeView()
+        self.setPopup(self._treeview)
+        self._treeview.setRootIsDecorated(False)
+        self._treeview.header().hide()
+        # self._treeview.header().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        # self._treeview.header().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
 
-        treeview = QTreeView()
-        self.setPopup(treeview)
-        treeview.setRootIsDecorated(False)
-        treeview.header().hide()
-        treeview.header().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        treeview.header().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        if items:
+            self.setModel(items)
 
         self.setFilterMode(Qt.MatchFlag.MatchContains)
         self.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         # self.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+
+    def setModel(self, items: Dict[str, str]):
+        model = QStandardItemModel(len(items), 2, self)
+        for idx, item in enumerate(items.items()):
+            app_title, app_name = item
+            model.setData(model.index(idx, 0), app_title)
+            model.setData(model.index(idx, 1), app_name)
+        super().setModel(model)
+        self._treeview.header().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        self._treeview.header().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)

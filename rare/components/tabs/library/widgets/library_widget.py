@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 
-from PySide6.QtCore import QEvent, QObject, Qt
+from PySide6.QtCore import QEvent, QObject, Qt, Slot
 from PySide6.QtGui import (
     QBrush,
     QColor,
@@ -149,12 +149,14 @@ class LibraryWidget(ImageWidget):
         self.progress_label.setVisible(True)
         self.updateProgress(0)
 
+    @Slot(int)
     def updateProgress(self, progress: int):
         self.progress_label.setText(f"{progress:02}%")
         if progress > self._progress:
             self._progress = progress
             self.setPixmap(self.progressPixmap(self._color_pixmap, self._gray_pixmap, progress))
 
+    @Slot(bool)
     def hideProgress(self, stopped: bool):
         self._color_pixmap = None
         self._gray_pixmap = None

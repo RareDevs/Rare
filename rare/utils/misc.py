@@ -1,4 +1,6 @@
+import functools
 import os
+from datetime import UTC, datetime
 from enum import IntEnum
 from logging import getLogger
 from typing import Dict, Iterable, Tuple, Type, Union
@@ -171,6 +173,30 @@ def format_size(b: Union[int, float]) -> str:
         if b < 1024:
             return f"{b:.2f} {s}B"
         b /= 1024
+    return str(b)
+
+
+def relative_date(date):
+    diff = datetime.now(UTC) - date
+    s = diff.seconds
+    if diff.days > 7 or diff.days < 0:
+        return date.strftime('%d %b %y')
+    elif diff.days == 1:
+        return '1 day ago'
+    elif diff.days > 1:
+        return '{} days ago'.format(diff.days)
+    elif s <= 1:
+        return 'just now'
+    elif s < 60:
+        return '{} seconds ago'.format(s)
+    elif s < 120:
+        return '1 minute ago'
+    elif s < 3600:
+        return '{} minutes ago'.format(s//60)
+    elif s < 7200:
+        return '1 hour ago'
+    else:
+        return '{} hours ago'.format(s//3600)
 
 
 def qta_icon(icn_str: str, fallback: str = None, **kwargs):
@@ -187,6 +213,16 @@ def qta_icon(icn_str: str, fallback: str = None, **kwargs):
     if kwargs.get("color"):
         kwargs["color"] = "red"
     return qtawesome.icon("ei.error", **kwargs)
+
+
+# Source - https://stackoverflow.com/a
+# Posted by benrg
+# Retrieved 2025-12-25, License - CC BY-SA 4.0
+
+def partial_bound_method(bound_method, *args, **kwargs):
+    f = functools.partialmethod(bound_method.__func__, *args, **kwargs)
+    # NB: the seemingly redundant lambda is needed to ensure the correct result type
+    return (lambda *args: f(*args)).__get__(bound_method.__self__)
 
 
 def widget_object_name(widget: Union[QObject, ShibokenObject, Type], suffix: str) -> str:

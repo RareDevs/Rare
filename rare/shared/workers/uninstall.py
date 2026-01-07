@@ -95,13 +95,15 @@ def uninstall_game(
     return status.success, status.message
 
 
+class UninstallWorkerSignals(QObject):
+    result = Signal(RareGame, bool, str)
+
+
 class UninstallWorker(Worker):
-    class Signals(QObject):
-        result = Signal(RareGame, bool, str)
 
     def __init__(self, core: LegendaryCore, rgame: RareGame, options: UninstallOptionsModel):
         super(UninstallWorker, self).__init__()
-        self.signals = UninstallWorker.Signals()
+        self.signals = UninstallWorkerSignals()
         self.core = core
         self.rgame = rgame
         self.options = options
