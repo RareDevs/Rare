@@ -232,7 +232,7 @@ class InstallDialog(ActionDialog):
         self.__options.ignore_space = self.advanced.ui.ignore_space_check.isChecked()
         self.__options.no_install = self.advanced.ui.download_only_check.isChecked()
         self.__options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
-        self.__options.install_tag = self.selectable.install_tags()
+        self.__options.install_tag = self.selectable.enabled_tags()
         self.__options.reset_sdl = True
 
     def get_download_info(self):

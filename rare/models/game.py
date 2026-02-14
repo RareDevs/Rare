@@ -10,6 +10,7 @@ from typing import Dict, List, Optional, Set, Tuple
 
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
+from legendary.utils.selective_dl import get_sdl_appname
 from PySide6.QtCore import QProcess, QRunnable, QThreadPool, Slot
 from PySide6.QtGui import QPixmap
 
@@ -524,6 +525,44 @@ class RareGame(RareGameSlim):
 
         return not_accepted_eulas
 
+    def sdl_data(self, platform: str) -> Optional[Dict[str, Dict]]:
+        sdl_data = {}
+
+        sdl_name = get_sdl_appname(self.app_name)
+        if data := self.core.get_sdl_data(sdl_name, platform=platform):
+            sdl_data.update(data)
+        known_install_tags = set()
+        if sdl_data:
+            known_install_tags = set(tag for _, info in sdl_data.items() for tag in info["tags"])
+
+        if self.igame is not None and not self.has_update:
+            manifest_data = self.core.lgd.load_manifest(self.app_name, self.igame.version, self.igame.platform)
+        else:
+            manifest_data, _, _ = self.core.get_cdn_manifest(self.game, platform)
+        manifest = self.core.load_manifest(manifest_data)
+        manifest_install_tags = set()
+        for fm in manifest.file_manifest_list.elements:
+            for tag in fm.install_tags:
+                manifest_install_tags.add(tag)
+
+        extra_install_tags = manifest_install_tags.difference(known_install_tags)
+        for extra_tag in extra_install_tags:
+            sdl_data[extra_tag] = {"name": extra_tag, "description": "", "tags": [extra_tag]}
+
+        return sdl_data
+
+    @property
+    def sdl_available(self) -> bool:
+        if self.igame is not None:
+            manifest_data = self.core.lgd.load_manifest(self.app_name, self.igame.version, self.igame.platform)
+            manifest = self.core.load_manifest(manifest_data)
+            manifest_install_tags = set()
+            for fm in manifest.file_manifest_list.elements:
+                for tag in fm.install_tags:
+                    manifest_install_tags.add(tag)
+            return bool(manifest_install_tags)
+        return get_sdl_appname(self.app_name) is not None
+
     def reset_steam_date(self):
         self.metadata.steam_date = datetime.min.replace(tzinfo=timezone.utc)
         self.signals.widget.refresh.emit()
@@ -690,7 +729,7 @@ class RareGame(RareGameSlim):
             UninstallOptionsModel(
                 app_name=self.app_name,
                 keep_folder=self.is_dlc,
-                keep_config=self.sdl_name is not None or self.is_dlc or platform.system() not in {"Windows"},
+                keep_config=self.sdl_available or self.is_dlc or platform.system() not in {"Windows"},
         ))
         return True
 
