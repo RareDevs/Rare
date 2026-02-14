@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 from rare.models.wrapper import Wrapper, WrapperType
 from rare.shared import RareCore
 from rare.shared.wrappers import Wrappers
-from rare.utils import config_helper as lgd_conf
+from rare.utils import config_helper as lgd_config
 from rare.utils.compat import steam
 from rare.utils.paths import proton_compat_dir
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
@@ -49,18 +49,18 @@ class ProtonSettings(QGroupBox):
         self.setTitle(self.tr("Proton"))
 
         self.tool_combo = QComboBox(self)
-        self.tool_combo.currentIndexChanged.connect(self.__on_tool_changed)
+        self.tool_combo.currentIndexChanged.connect(self._on_tool_changed)
 
         self.compat_combo = QComboBox(self)
         self.compat_combo.addItem(self.tr("Shared"), ProtonSettings.CompatLocation.SHARED)
         self.compat_combo.addItem(self.tr("Isolated"), ProtonSettings.CompatLocation.ISOLATED)
         self.compat_combo.addItem(self.tr("Custom"), ProtonSettings.CompatLocation.CUSTOM)
-        self.compat_combo.currentIndexChanged.connect(self.__on_compat_changed)
+        self.compat_combo.currentIndexChanged.connect(self._on_compat_changed)
 
         self.compat_edit = PathEdit(
             file_mode=QFileDialog.FileMode.Directory,
-            edit_func=self.proton_prefix_edit,
-            save_func=self.proton_prefix_save,
+            edit_func=self._proton_prefix_edit,
+            save_func=self._proton_prefix_save,
             placeholder=self.tr("Please select path for proton prefix"),
             parent=self,
         )
@@ -127,7 +127,7 @@ class ProtonSettings(QGroupBox):
         self.tool_combo.blockSignals(False)
 
         enabled = bool(self.tool_combo.currentData(Qt.ItemDataRole.UserRole))
-        compat_path = lgd_conf.get_compat_data_path(self.app_name, fallback="")
+        compat_path = lgd_config.get_compat_data_path(self.app_name, fallback="")
 
         self.compat_combo.blockSignals(True)
         compat_location = self._update_compat_folder(compat_path)
@@ -142,7 +142,7 @@ class ProtonSettings(QGroupBox):
         return super().showEvent(a0)
 
     @Slot(int)
-    def __on_tool_changed(self, index):
+    def _on_tool_changed(self, index):
         steam_tool: Union[steam.ProtonTool, steam.CompatibilityTool] = self.tool_combo.itemData(index, Qt.ItemDataRole.UserRole)
 
         steam_environ = steam.get_steam_environment(steam_tool, self.compat_edit.text())
@@ -156,7 +156,7 @@ class ProtonSettings(QGroupBox):
             steam_environ["STEAM_COMPAT_INSTALL_PATH"] = install_path
         steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] = library_paths
         for key, value in steam_environ.items():
-            lgd_conf.adjust_envvar(self.app_name, key, value)
+            lgd_config.adjust_envvar(self.app_name, key, value)
             self.environ_changed.emit(key)
 
         wrappers = self.wrappers.get_wrappers(self.app_name)
@@ -178,7 +178,7 @@ class ProtonSettings(QGroupBox):
         self.compat_edit.setEnabled(steam_tool is not None)
         compat_path = ""
         if steam_tool:
-            compat_path = lgd_conf.get_compat_data_path(self.app_name, fallback="")
+            compat_path = lgd_config.get_compat_data_path(self.app_name, fallback="")
             if not compat_path:
                 compat_path = str(self._get_compat_path(ProtonSettings.CompatLocation.NONE))
             self._update_compat_folder(compat_path)
@@ -186,10 +186,10 @@ class ProtonSettings(QGroupBox):
         self.compat_tool_enabled.emit(steam_tool is not None, compat_path)
 
     @Slot(int)
-    def __on_compat_changed(self, index):
+    def _on_compat_changed(self, index):
         compat_location: ProtonSettings.CompatLocation = self.compat_combo.itemData(index, Qt.ItemDataRole.UserRole)
         compat_path = str(self._get_compat_path(compat_location))
-        lgd_conf.adjust_compat_data_path(self.app_name, compat_path)
+        lgd_config.adjust_compat_data_path(self.app_name, compat_path)
         self.compat_edit.setText(compat_path)
         self.compat_edit.setEnabled(
             compat_location
@@ -200,17 +200,23 @@ class ProtonSettings(QGroupBox):
         )
 
     @staticmethod
-    def proton_prefix_edit(text: str) -> Tuple[bool, str, int]:
+    def _proton_prefix_edit(text: str) -> Tuple[bool, str, int]:
         if not text:
             return False, text, IndicatorReasonsCommon.IS_EMPTY
         if os.path.isdir(text):
-            if os.listdir(text) and not os.path.exists(os.path.join(text, "pfx")):
-                return False, text, IndicatorReasonsCommon.DIR_NOT_EMPTY
-            return True, text, IndicatorReasonsCommon.VALID
+            dir_list = os.listdir(text)
+            if not dir_list:
+                return True, text, IndicatorReasonsCommon.VALID
+            if any(
+                (x in dir_list) for x in
+                ("pfx", "shadercache", "dosdevices", "drive_c", "system.reg", "user.reg", "userdef.reg")
+            ):
+                return True, text, IndicatorReasonsCommon.VALID
+            return False, text, IndicatorReasonsCommon.DIR_NOT_EMPTY
         else:
             return False, text, IndicatorReasonsCommon.DIR_NOT_EXISTS
 
-    def proton_prefix_save(self, text: str):
-        lgd_conf.adjust_compat_data_path(self.app_name, text)
+    def _proton_prefix_save(self, text: str):
+        lgd_config.adjust_compat_data_path(self.app_name, text)
         self.environ_changed.emit("STEAM_COMPAT_DATA_PATH")
         self.compat_path_changed.emit(text)

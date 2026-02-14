@@ -73,22 +73,22 @@ class Rare(RareApp):
     @Slot()
     def launch_app(self):
         self.launch_dialog = LaunchDialog(self.rcore, parent=None)
-        self.launch_dialog.rejected.connect(self.__on_exit_app)
+        self.launch_dialog.rejected.connect(self._on_exit_app)
         # lk: the reason we use the `start_app` signal here instead of accepted, is to keep the dialog
         # until the main window has been created, then we call `accept()` to close the dialog
-        self.launch_dialog.start_app.connect(self.__on_start_app)
+        self.launch_dialog.start_app.connect(self._on_start_app)
         self.launch_dialog.start_app.connect(self.launch_dialog.accept)
         self.launch_dialog.login()
 
     @Slot()
-    def __on_start_app(self):
+    def _on_start_app(self):
         self.relogin_timer = QTimer(self)
         self.relogin_timer.setTimerType(Qt.TimerType.VeryCoarseTimer)
         self.relogin_timer.timeout.connect(self.relogin)
         self.poke_timer()
 
         self.main_window = RareWindow(self.settings, self.rcore)
-        self.main_window.exit_app.connect(self.__on_exit_app)
+        self.main_window.exit_app.connect(self._on_exit_app)
 
         if (not self.args.silent) and (not self.settings.get_value(app_settings.sys_tray_start)):
             self.main_window.show()
@@ -96,11 +96,11 @@ class Rare(RareApp):
         if self.args.test_start:
             self.main_window.close()
             self.main_window = None
-            self.__on_exit_app(0)
+            self._on_exit_app(0)
 
     @Slot()
     @Slot(int)
-    def __on_exit_app(self, exit_code=0):
+    def _on_exit_app(self, exit_code=0):
         threadpool = QThreadPool.globalInstance()
         threadpool.waitForDone()
         if self.relogin_timer is not None:
@@ -118,7 +118,7 @@ class Rare(RareApp):
         self.exit(exit_code)
 
 
-def start(args) -> int:
+def start(args: Namespace) -> int:
     while True:
         QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
         QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)

@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QFileDialog, QFormLayout, QGroupBox
 
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
-from rare.utils import config_helper as lgd_conf
+from rare.utils import config_helper as lgd_config
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 logger = getLogger("WineSettings")
@@ -54,7 +54,7 @@ class WineSettings(QGroupBox):
 
         layout = QFormLayout(self)
         layout.addRow(self.tr("Executable"), self.wine_execut_edit)
-        layout.addRow(self.tr("Prefix"), self.wine_prefix_edit)
+        layout.addRow(self.tr("Prefix folder"), self.wine_prefix_edit)
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignVCenter)
@@ -64,7 +64,7 @@ class WineSettings(QGroupBox):
         self.wine_prefix_edit.setText(self.load_prefix())
         _ = QSignalBlocker(self.wine_execut_edit)
         self.wine_execut_edit.setText(self.load_execut())
-        self.setDisabled(lgd_conf.get_boolean(self.app_name, "no_wine", fallback=False))
+        self.setDisabled(lgd_config.get_boolean(self.app_name, "no_wine", fallback=False))
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
@@ -74,47 +74,48 @@ class WineSettings(QGroupBox):
 
     @Slot(str)
     def compat_path_changed(self, text: str):
-        self.wine_prefix_edit.setText(os.path.join(text, "pfx") if text else text)
+        path = os.path.join(text, "pfx") if text else text
+        self.wine_prefix_edit.setText(path)
 
     @Slot(bool)
     def compat_tool_enabled(self, enabled: bool, path: str):
         old_wine_execut = self.settings.value(f"{self.app_name}/wine_execut", defaultValue=None)
         old_wine_prefix = self.settings.value(f"{self.app_name}/wine_prefix", defaultValue=None)
         if enabled:
-            wine_execut = lgd_conf.get_option(self.app_name, "wine_executable", "")
-            wine_prefix = lgd_conf.get_wine_prefix(self.app_name, "")
+            wine_execut = lgd_config.get_option(self.app_name, "wine_executable", "")
+            wine_prefix = lgd_config.get_wine_prefix(self.app_name, "")
             if old_wine_execut is None:
                 self.settings.setValue(f"{self.app_name}/wine_execut", wine_execut)
             if old_wine_prefix is None:
                 self.settings.setValue(f"{self.app_name}/wine_prefix", wine_prefix)
             self.wine_execut_edit.setText("")
             self.wine_prefix_edit.setText(os.path.join(path, "pfx"))
-            lgd_conf.set_boolean(self.app_name, "no_wine", True)
+            lgd_config.set_boolean(self.app_name, "no_wine", True)
         else:
             self.settings.remove(f"{self.app_name}/wine_execut")
             self.settings.remove(f"{self.app_name}/wine_prefix")
             self.wine_execut_edit.setText(old_wine_execut)
             self.wine_prefix_edit.setText(old_wine_prefix)
-            lgd_conf.remove_option(self.app_name, "no_wine")
+            lgd_config.remove_option(self.app_name, "no_wine")
         self.setDisabled(enabled)
 
     def load_prefix(self) -> str:
         if self.app_name is None:
             raise RuntimeError
-        return lgd_conf.get_wine_prefix(self.app_name, "")
+        return lgd_config.get_wine_prefix(self.app_name, "")
 
     def save_prefix(self, path: str) -> None:
         if self.app_name is None:
             raise RuntimeError
-        lgd_conf.adjust_wine_prefix(self.app_name, path)
+        lgd_config.adjust_wine_prefix(self.app_name, path)
         self.environ_changed.emit("WINEPREFIX")
 
     def load_execut(self) -> str:
         if self.app_name is None:
             raise RuntimeError
-        return lgd_conf.get_option(self.app_name, "wine_executable", "")
+        return lgd_config.get_option(self.app_name, "wine_executable", "")
 
     def save_execut(self, text: str) -> None:
         if self.app_name is None:
             raise RuntimeError
-        lgd_conf.adjust_option(self.app_name, "wine_executable", text)
+        lgd_config.adjust_option(self.app_name, "wine_executable", text)

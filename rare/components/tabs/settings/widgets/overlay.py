@@ -151,9 +151,9 @@ class OverlaySettings(QGroupBox):
         # self.values: Dict[str, Union[OverlayLineEdit, OverlayComboBox]] = {}
 
         self.ui.options_group.setTitle(self.tr("Custom options"))
-        self.ui.overlay_state_combo.currentIndexChanged.connect(self.__update_settings)
+        self.ui.overlay_state_combo.currentIndexChanged.connect(self._update_settings)
 
-        self.environ_changed.connect(self.__update_current_value)
+        self.environ_changed.connect(self._update_current_value)
 
     def setupWidget(
         self,
@@ -174,26 +174,26 @@ class OverlaySettings(QGroupBox):
 
         self.ui.overlay_state_label.setText(label)
 
-        for i, widget in enumerate(grid_map):
+        for idx, widget in enumerate(grid_map):
             widget.setParent(self.ui.options_group)
-            self.ui.options_grid.addWidget(widget, i // 4, i % 4)
+            self.ui.options_grid.addWidget(widget, idx // 4, idx % 4)
             # self.checkboxes[widget.option] = widget
             self.option_widgets.append(widget)
-            widget.stateChanged.connect(self.__update_settings)
+            widget.stateChanged.connect(self._update_settings)
 
         for widget, label in form_map:
             widget.setParent(self.ui.options_group)
             self.ui.options_form.addRow(label, widget)
             # self.values[widget.option] = widget
             self.option_widgets.append(widget)
-            widget.valueChanged.connect(self.__update_settings)
+            widget.valueChanged.connect(self._update_settings)
 
     @abstractmethod
     def update_settings_override(self, state: ActivationStates):
         raise NotImplementedError
 
     @Slot()
-    def __update_settings(self):
+    def _update_settings(self):
         current_state = self.ui.overlay_state_combo.currentData(Qt.ItemDataRole.UserRole)
         self.ui.options_group.setEnabled(current_state == ActivationStates.CUSTOM)
 
@@ -212,14 +212,13 @@ class OverlaySettings(QGroupBox):
             self.ui.options_group.setDisabled(False)
             # custom options
             options = (name for widget in self.option_widgets if (name := widget.getValue()) is not None)
-
             config.set_envvar(self.app_name, self.config_key, self.separator.join(options))
 
         self.environ_changed.emit(self.config_key)
         self.update_settings_override(current_state)
 
     @Slot()
-    def __update_current_value(self):
+    def _update_current_value(self):
         self.ui.current_value_info.setText(config.get_envvar_with_global(self.app_name, self.config_key, ""))
 
     def setCurrentState(self, state: ActivationStates):
@@ -262,7 +261,7 @@ class OverlaySettings(QGroupBox):
                 )
 
         self.ui.options_group.blockSignals(False)
-        self.__update_current_value()
+        self._update_current_value()
         return super().showEvent(a0)
 
 
