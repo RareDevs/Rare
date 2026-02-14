@@ -348,12 +348,14 @@ class LegendaryCLI(LegendaryCLIReal):
             self.install_game_cleanup(game, igame, args.repair_mode, args.repair_file)
 
             logger.info(f'Finished installation process in {end_t - start_t:.02f} seconds.')
+
+            return ret
         finally:
             ticket_thread.stop = True
             sign_thread.stop = True
             ticket_thread.join()
             sign_thread.join()
-            return ret
+
 
     @unlock_installed.__func__
     def install_game_cleanup(self, game: Game, igame: InstalledGame, repair_mode: bool = False, repair_file: str = '') -> None:
