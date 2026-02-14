@@ -4,11 +4,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame, SaveGameFile, SaveGameStatus
-from legendary.utils.selective_dl import get_sdl_appname
 from PySide6.QtCore import QObject, Signal
 
 from rare.lgndr.core import LegendaryCore
@@ -202,10 +201,6 @@ class RareGameBase(QObject):
             return self.game.is_launchable_addon
         except AttributeError:
             return False
-
-    @property
-    def sdl_name(self) -> Optional[str]:
-        return get_sdl_appname(self.app_name)
 
     @property
     def version(self) -> str:

@@ -52,9 +52,9 @@ class InstallDialog(ActionDialog):
 
         self.core = rgame.core
         self.rgame = rgame
-        self.__options: InstallOptionsModel = options
-        self.__download: Optional[InstallDownloadModel] = None
-        self.__queue_item: Optional[InstallQueueItemModel] = None
+        self._options: InstallOptionsModel = options
+        self._download: Optional[InstallDownloadModel] = None
+        self._queue_item: Optional[InstallQueueItemModel] = None
 
         self.selectable = InstallDialogSelective(rgame, parent=self)
         self.selectable.stateChanged.connect(self._on_option_changed)
@@ -86,11 +86,11 @@ class InstallDialog(ActionDialog):
         self.install_dir_edit = PathEdit(
             path=options.base_path,
             file_mode=QFileDialog.FileMode.Directory,
-            edit_func=self.__install_dir_edit_callback,
-            save_func=self.__install_dir_save_callback,
+            edit_func=self._install_dir_edit_callback,
+            save_func=self._install_dir_save_callback,
             parent=self,
         )
-        self.install_dir_edit.validationFinished.connect(self.__on_install_dir_validation)
+        self.install_dir_edit.validationFinished.connect(self._on_install_dir_validation)
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)[0],
             QFormLayout.ItemRole.FieldRole,
@@ -145,13 +145,9 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.download_only_check.setChecked(options.no_install)
         self.advanced.ui.download_only_check.checkStateChanged.connect(self._on_option_changed_no_reload)
 
-        self.reset_install_dir(self.ui.platform_combo.currentIndex())
-        self.selectable.update_list(self.ui.platform_combo.currentText())
-        self.check_incompatible_platform(self.ui.platform_combo.currentIndex())
-
         self.accept_button.setEnabled(False)
 
-        if self.__options.overlay:
+        if self._options.overlay:
             self.ui.platform_label.setEnabled(False)
             self.ui.platform_combo.setEnabled(False)
             self.advanced.ui.ignore_space_label.setEnabled(False)
@@ -171,7 +167,7 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.install_prereqs_label.setEnabled(False)
         self.advanced.ui.install_prereqs_check.setEnabled(False)
         self.advanced.ui.install_prereqs_check.checkStateChanged.connect(self._on_option_changed_no_reload)
-        self.advanced.ui.install_prereqs_check.setChecked(self.__options.install_prereqs)
+        self.advanced.ui.install_prereqs_check.setChecked(self._options.install_prereqs)
 
         # lk: set object names for CSS properties
         self.accept_button.setText(header)
@@ -190,7 +186,11 @@ class InstallDialog(ActionDialog):
         return super().showEvent(a0)
 
     def execute(self):
-        if self.__options.silent:
+        self.reset_install_dir(self.ui.platform_combo.currentIndex())
+        self.check_incompatible_platform(self.ui.platform_combo.currentIndex())
+        self.selectable.update_list(self.ui.platform_combo.currentText())
+
+        if self._options.silent:
             self.get_download_info()
         else:
             self.action_handler()
@@ -215,31 +215,31 @@ class InstallDialog(ActionDialog):
             self.set_error_labels()
 
     def get_options(self):
-        base_path = os.path.join(self.install_dir_edit.text(), ".overlay" if self.__options.overlay else "")
+        base_path = os.path.join(self.install_dir_edit.text(), ".overlay" if self._options.overlay else "")
         # TODO: investigate if this check is needed
         if self.rgame.is_installed or self.rgame.is_dlc:
-            self.__options.base_path = ""
+            self._options.base_path = ""
         else:
-            self.__options.base_path = base_path
-        self.__options.platform = self.ui.platform_combo.currentText()
-        self.__options.create_shortcut = self.ui.shortcut_check.isChecked()
-        self.__options.max_workers = self.advanced.ui.max_workers_spin.value()
-        self.__options.shared_memory = self.advanced.ui.max_memory_spin.value()
-        self.__options.read_files = self.advanced.ui.read_files_check.isChecked()
-        self.__options.always_use_signed_urls = self.advanced.ui.use_signed_urls_check.isChecked()
-        self.__options.order_opt = self.advanced.ui.dl_optimizations_check.isChecked()
-        self.__options.force = self.advanced.ui.force_download_check.isChecked()
-        self.__options.ignore_space = self.advanced.ui.ignore_space_check.isChecked()
-        self.__options.no_install = self.advanced.ui.download_only_check.isChecked()
-        self.__options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
-        self.__options.install_tag = self.selectable.install_tags()
-        self.__options.reset_sdl = True
+            self._options.base_path = base_path
+        self._options.platform = self.ui.platform_combo.currentText()
+        self._options.create_shortcut = self.ui.shortcut_check.isChecked()
+        self._options.max_workers = self.advanced.ui.max_workers_spin.value()
+        self._options.shared_memory = self.advanced.ui.max_memory_spin.value()
+        self._options.read_files = self.advanced.ui.read_files_check.isChecked()
+        self._options.always_use_signed_urls = self.advanced.ui.use_signed_urls_check.isChecked()
+        self._options.order_opt = self.advanced.ui.dl_optimizations_check.isChecked()
+        self._options.force = self.advanced.ui.force_download_check.isChecked()
+        self._options.ignore_space = self.advanced.ui.ignore_space_check.isChecked()
+        self._options.no_install = self.advanced.ui.download_only_check.isChecked()
+        self._options.install_prereqs = self.advanced.ui.install_prereqs_check.isChecked()
+        self._options.install_tag = self.selectable.enabled_tags()
+        self._options.reset_sdl = True
 
     def get_download_info(self):
-        self.__download = None
-        info_worker = InstallInfoWorker(self.core, self.__options)
-        info_worker.signals.result.connect(self.__on_worker_result)
-        info_worker.signals.failed.connect(self.__on_worker_failed)
+        self._download = None
+        info_worker = InstallInfoWorker(self.core, self._options)
+        info_worker.signals.result.connect(self._on_worker_result)
+        info_worker.signals.failed.connect(self._on_worker_failed)
         self.threadpool.start(info_worker)
 
     def action_handler(self):
@@ -260,15 +260,15 @@ class InstallDialog(ActionDialog):
     @Slot(Qt.CheckState)
     def _on_option_changed_no_reload(self, state: Qt.CheckState):
         if self.sender() is self.advanced.ui.download_only_check:
-            self.__options.no_install = state != Qt.CheckState.Unchecked
+            self._options.no_install = state != Qt.CheckState.Unchecked
         elif self.sender() is self.ui.shortcut_check:
             self.settings.set_value(app_settings.create_shortcut, state != Qt.CheckState.Unchecked)
-            self.__options.create_shortcut = state != Qt.CheckState.Unchecked
+            self._options.create_shortcut = state != Qt.CheckState.Unchecked
         elif self.sender() is self.advanced.ui.install_prereqs_check:
-            self.__options.install_prereqs = state != Qt.CheckState.Unchecked
+            self._options.install_prereqs = state != Qt.CheckState.Unchecked
 
     @staticmethod
-    def __install_dir_edit_callback(path: str) -> Tuple[bool, str, int]:
+    def _install_dir_edit_callback(path: str) -> Tuple[bool, str, int]:
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:
@@ -281,14 +281,14 @@ class InstallDialog(ActionDialog):
             return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
         return True, path, IndicatorReasonsCommon.VALID
 
-    def __install_dir_save_callback(self, path: str):
+    def _install_dir_save_callback(self, path: str):
         if not os.path.exists(path):
             return
         _, _, free_space = shutil.disk_usage(path)
         self.ui.available_space_text.setText(format_size(free_space))
 
     @Slot(bool, str)
-    def __on_install_dir_validation(self, is_valid: bool, reason: str):
+    def _on_install_dir_validation(self, is_valid: bool, reason: str):
         self.accept_button.setEnabled(False)
         self.action_button.setEnabled(is_valid and not self.active())
         if not is_valid:
@@ -307,9 +307,9 @@ class InstallDialog(ActionDialog):
             return False
 
     @Slot(InstallDownloadModel)
-    def __on_worker_result(self, download: InstallDownloadModel):
+    def _on_worker_result(self, download: InstallDownloadModel):
         self.setActive(False)
-        self.__download = download
+        self._download = download
         download_size = download.analysis.dl_size
         install_size = download.analysis.install_size
         # install_size = self.dl_item.download.analysis.disk_space_delta
@@ -330,28 +330,30 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.install_prereqs_check.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setChecked(has_prereqs and self.same_platform(download))
 
-        # new_manifest_data, _, _ = self.core.get_cdn_manifest(download.game, download.igame.platform, self.__options.disable_https)
+        # TODO: there is information about the files to be downloaded in analres, don't fetch the manifest again
+        # TODO: see if you can re-use the one from selective downloads
+        # new_manifest_data, _, _ = self.core.get_cdn_manifest(download.game, download.igame.platform, self._options.disable_https)
         # new_manifest = self.core.load_manifest(new_manifest_data)
         # self.file_filters.clear()
         # for e in new_manifest.file_manifest_list.elements:
         #     self.file_filters.add_item(e.filename.lower())
 
-        if self.__options.silent:
+        if self._options.silent:
             self.accept()
 
     @Slot(str)
-    def __on_worker_failed(self, message: str):
+    def _on_worker_failed(self, message: str):
         self.setActive(False)
         error_text = self.tr("Error")
         self.set_size_labels(error_text, error_text)
         self.set_error_labels(error_text, message)
         self.action_button.setEnabled(self.options_changed)
         self.accept_button.setEnabled(False)
-        if self.__options.silent:
+        if self._options.silent:
             self.open()
 
     @staticmethod
-    def __set_size_label(label: QLabel, value: Union[int, float, str]):
+    def _set_size_label(label: QLabel, value: Union[int, float, str]):
         is_numeric = isinstance(value, (int, float))
         font = label.font()
         font.setBold(is_numeric)
@@ -361,8 +363,8 @@ class InstallDialog(ActionDialog):
         label.setText(text)
 
     def set_size_labels(self, download: Union[int, float, str], install: Union[int, float, str]):
-        self.__set_size_label(self.ui.download_size_text, download)
-        self.__set_size_label(self.ui.install_size_text, install)
+        self._set_size_label(self.ui.download_size_text, download)
+        self._set_size_label(self.ui.install_size_text, install)
 
     def set_error_labels(self, label: str = "", message: str = ""):
         self.ui.warning_label.setVisible(bool(label))
@@ -373,11 +375,11 @@ class InstallDialog(ActionDialog):
     def done_handler(self):
         self.threadpool.clear()
         self.threadpool.waitForDone()
-        self.result_ready.emit(self.__queue_item)
+        self.result_ready.emit(self._queue_item)
 
-    # lk: __download is already set at this point so just do nothing.
+    # lk: _download is already set at this point so just do nothing.
     def accept_handler(self):
-        self.__queue_item = InstallQueueItemModel(options=self.__options, download=self.__download)
+        self._queue_item = InstallQueueItemModel(options=self._options, download=self._download)
 
     def reject_handler(self):
-        self.__queue_item = InstallQueueItemModel(options=self.__options, download=None)
+        self._queue_item = InstallQueueItemModel(options=self._options, download=None)

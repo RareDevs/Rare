@@ -190,6 +190,7 @@ class DlThread(QThread):
             result.shortcut = not self.item.options.update and self.item.options.create_shortcut
             result.folder_name = self.rgame.folder_name
 
+            return
         finally:
             ticket_thread.stop = True
             sign_thread.stop = True

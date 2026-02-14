@@ -1,11 +1,15 @@
+import os.path
 import platform as pf
+from getpass import getuser
 from typing import Type, TypeVar
 
-from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtWidgets import QCheckBox, QFormLayout, QGroupBox, QVBoxLayout
+from PySide6.QtCore import Qt, QUrl, Signal, Slot
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QCheckBox, QFormLayout, QGroupBox, QHBoxLayout, QPushButton, QVBoxLayout
 
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
+from rare.utils import config_helper as lgd_config
 
 from .wine import WineSettings
 
@@ -33,20 +37,11 @@ class RunnerSettingsBase(QGroupBox):
 
         self.setTitle(self.tr("Compatibility"))
 
-        # self.compat_label = QLabel(self.tr("Runner"))
-        # self.compat_combo = QComboBox(self)
-        # self.compat_stack = QStackedWidget(self)
-
         self.main_layout = QVBoxLayout(self)
 
         self.wine = wine_widget(settings, rcore, self)
         self.wine.environ_changed.connect(self.environ_changed)
         self.main_layout.addWidget(self.wine)
-        # self.compat_layout = QFormLayout(self.compat)
-        # self.compat_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.compat_label)
-        # self.compat_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.compat_combo)
-        # self.compat_layout.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.compat_stack)
-        # self.compat_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
 
         self.ctool = False
         if proton_widget is not None:
@@ -55,7 +50,18 @@ class RunnerSettingsBase(QGroupBox):
             self.ctool.compat_tool_enabled.connect(self.wine.compat_tool_enabled)
             self.ctool.compat_path_changed.connect(self.wine.compat_path_changed)
             self.main_layout.addWidget(self.ctool)
-            # self.ctool.compat_tool_enabled.connect(self.compat_tool_enabled)
+
+        self.pfx_folder_button = QPushButton(self.tr("Open prefix folder"), self)
+        self.pfx_folder_button.clicked.connect(self._open_pfx_folder)
+        self.usr_folder_button = QPushButton(self.tr("Open user folder"), self)
+        self.usr_folder_button.clicked.connect(self._open_usr_folder)
+        self.winetricks_button = QPushButton(self.tr("Run winetricks"), self)
+
+        self.button_layout = QHBoxLayout()
+        self.button_layout.addWidget(self.pfx_folder_button)
+        self.button_layout.addWidget(self.usr_folder_button)
+        self.button_layout.addWidget(self.winetricks_button)
+        self.button_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         font = self.font()
         font.setItalic(True)
@@ -64,12 +70,8 @@ class RunnerSettingsBase(QGroupBox):
         self.shader_cache_check.setChecked(self.settings.get_value(app_settings.local_shader_cache))
         self.shader_cache_check.checkStateChanged.connect(self._shader_cache_check_changed)
 
-        # wine_index = self.compat_stack.addWidget(self.wine)
-        # self.compat_combo.addItem("Wine", wine_index)
-        # proton_index = self.compat_stack.addWidget(self.proton_tool)
-        # self.compat_combo.addItem("Proton", proton_index)
-
         self.form_layout = QFormLayout()
+        self.form_layout.addRow(self.tr(""), self.button_layout)
         self.form_layout.addRow(self.tr("Shader cache"), self.shader_cache_check)
         self.form_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         self.form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
@@ -79,6 +81,27 @@ class RunnerSettingsBase(QGroupBox):
     @Slot(Qt.CheckState)
     def _shader_cache_check_changed(self, state: Qt.CheckState):
         self.settings.set_value(app_settings.local_shader_cache, state != Qt.CheckState.Unchecked)
+
+    @Slot()
+    def _open_pfx_folder(self):
+        QDesktopServices.openUrl(
+            QUrl.fromLocalFile(lgd_config.get_wine_prefix_with_global(self.app_name))
+        )
+
+    @Slot()
+    def _open_usr_folder(self):
+        path = os.path.join(
+            lgd_config.get_wine_prefix_with_global(self.app_name), "drive_c", "users", getuser()
+        )
+        if not os.path.exists(path):
+            path = os.path.join(
+                lgd_config.get_wine_prefix_with_global(self.app_name), "drive_c", "users", "steamuser"
+            )
+        QDesktopServices.openUrl(path)
+
+    @Slot()
+    def _run_winetricks(self):
+        pass
 
 
 RunnerSettingsType = TypeVar("RunnerSettingsType", bound=RunnerSettingsBase)

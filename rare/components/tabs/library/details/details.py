@@ -184,7 +184,7 @@ class GameDetails(QWidget, SideTabContents):
                 self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.rgame.app_title),
             )
             return
-        if self.rgame.sdl_name is not None:
+        if self.rgame.sdl_available:
             selective_dialog = SelectiveDialog(self.rgame, parent=self)
             selective_dialog.result_ready.connect(self.verify_game)
             selective_dialog.open()
@@ -362,7 +362,7 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.import_button.setEnabled((not self.rgame.is_installed or self.rgame.is_non_asset) and self.rgame.is_idle)
 
         self.ui.modify_button.setEnabled(
-            self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle and self.rgame.sdl_name is not None
+            self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle and self.rgame.sdl_available
         )
 
         self.ui.verify_button.setEnabled(self.rgame.is_installed and (not self.rgame.is_non_asset) and self.rgame.is_idle)

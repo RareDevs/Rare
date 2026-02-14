@@ -11,6 +11,7 @@ from legendary.models.game import LaunchParameters
 from PySide6.QtCore import QProcess, QProcessEnvironment
 
 from rare.models.game_slim import RareGameSlim
+from rare.utils.compat.utils import create_compat_users
 from rare.utils.paths import setup_compat_shaders_dir
 
 logger = getLogger("RareLauncherUtils")
@@ -155,21 +156,21 @@ def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[st
 
     environ = environment.copy()
     # Sanity check environment (mostly for Linux)
-    command_line = shlex.join(command)
-    if os.environ.get("XDG_CURRENT_DESKTOP", None) == "gamescope" or "gamescope" in command_line:
-        # disable mangohud in gamescope
-        environ["MANGOHUD"] = "0"
     # ensure shader compat dirs exist
     if platform.system() in {"Linux", "FreeBSD"}:
-        environ["UMU_USE_STEAM"] = "1"
+        command_line = shlex.join(command)
+        if os.environ.get("XDG_CURRENT_DESKTOP", None) == "gamescope" or "gamescope" in command_line:
+            # disable mangohud in gamescope
+            environ["MANGOHUD"] = "0"
         if "STEAM_COMPAT_CLIENT_INSTALL_PATH" not in environ:
             environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
-        if "WINEPREFIX" in environ and not os.path.isdir(environ["WINEPREFIX"]):
-            os.makedirs(environ["WINEPREFIX"], exist_ok=True)
         if "STEAM_COMPAT_DATA_PATH" in environ:
             compat_pfx = os.path.join(environ["STEAM_COMPAT_DATA_PATH"], "pfx")
-            if not os.path.isdir(compat_pfx):
-                os.makedirs(compat_pfx, exist_ok=True)
+            os.makedirs(compat_pfx, exist_ok=True)
+            create_compat_users(compat_pfx)
+        if "WINEPREFIX" in environ and not os.path.isdir(environ["WINEPREFIX"]):
+            os.makedirs(environ["WINEPREFIX"], exist_ok=True)
+            create_compat_users(environ["WINEPREFIX"])
         if "STEAM_COMPAT_SHADER_PATH" in environ:
             environ.update(setup_compat_shaders_dir(environ["STEAM_COMPAT_SHADER_PATH"]))
         environ["WINEDLLOVERRIDES"] = environ.get("WINEDLLOVERRIDES", "") + ";lsteamclient=d;"

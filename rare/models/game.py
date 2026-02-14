@@ -10,6 +10,7 @@ from typing import Dict, List, Optional, Set, Tuple
 
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
+from legendary.utils.selective_dl import get_sdl_appname
 from PySide6.QtCore import QProcess, QRunnable, QThreadPool, Slot
 from PySide6.QtGui import QPixmap
 
@@ -117,8 +118,8 @@ class RareGame(RareGameSlim):
         self.__steam_grade_pending: bool = False
 
         self.game_process = GameProcess(self.game)
-        self.game_process.launched.connect(self.__game_launched)
-        self.game_process.finished.connect(self.__game_finished)
+        self.game_process.launched.connect(self._game_launched)
+        self.game_process.finished.connect(self._game_finished)
         if self.is_installed and not self.is_dlc:
             self.game_process.connect_to_server(on_startup=True)
 
@@ -165,7 +166,7 @@ class RareGame(RareGameSlim):
         self.state = RareGame.State.IDLE
 
     @Slot(int)
-    def __game_launched(self, code: int):
+    def _game_launched(self, code: int):
         self.state = RareGame.State.RUNNING
         self.metadata.last_played = datetime.now(timezone.utc)
         if code == GameProcess.Code.ON_STARTUP:
@@ -174,7 +175,7 @@ class RareGame(RareGameSlim):
         self.signals.game.launched.emit(self.app_name)
 
     @Slot(int)
-    def __game_finished(self, exit_code: int):
+    def _game_finished(self, exit_code: int):
         if exit_code == GameProcess.Code.ON_STARTUP:
             return
         if self.supports_cloud_saves:
@@ -341,7 +342,7 @@ class RareGame(RareGameSlim):
                 self.core.egstore_delete(self.igame)
             self.igame = None
             self.signals.game.uninstalled.emit(self.app_name)
-        self.__update_pixmap()
+        self._update_pixmap()
 
     @property
     def can_run_offline(self) -> bool:
@@ -524,6 +525,44 @@ class RareGame(RareGameSlim):
 
         return not_accepted_eulas
 
+    def sdl_data(self, platform: str) -> Optional[Dict[str, Dict]]:
+        sdl_data = {}
+
+        sdl_name = get_sdl_appname(self.app_name)
+        if data := self.core.get_sdl_data(sdl_name, platform=platform):
+            sdl_data.update(data)
+        known_install_tags = set()
+        if sdl_data:
+            known_install_tags = set(tag for _, info in sdl_data.items() for tag in info["tags"])
+
+        if self.igame is not None and not self.has_update:
+            manifest_data = self.core.lgd.load_manifest(self.app_name, self.igame.version, self.igame.platform)
+        else:
+            manifest_data, _, _ = self.core.get_cdn_manifest(self.game, platform)
+        manifest = self.core.load_manifest(manifest_data)
+        manifest_install_tags = set()
+        for fm in manifest.file_manifest_list.elements:
+            for tag in fm.install_tags:
+                manifest_install_tags.add(tag)
+
+        extra_install_tags = manifest_install_tags.difference(known_install_tags)
+        for extra_tag in extra_install_tags:
+            sdl_data[extra_tag] = {"name": extra_tag, "description": "", "tags": [extra_tag]}
+
+        return sdl_data
+
+    @property
+    def sdl_available(self) -> bool:
+        if self.igame is not None:
+            manifest_data = self.core.lgd.load_manifest(self.app_name, self.igame.version, self.igame.platform)
+            manifest = self.core.load_manifest(manifest_data)
+            manifest_install_tags = set()
+            for fm in manifest.file_manifest_list.elements:
+                for tag in fm.install_tags:
+                    manifest_install_tags.add(tag)
+            return bool(manifest_install_tags)
+        return get_sdl_appname(self.app_name) is not None
+
     def reset_steam_date(self):
         self.metadata.steam_date = datetime.min.replace(tzinfo=timezone.utc)
         self.signals.widget.refresh.emit()
@@ -598,7 +637,7 @@ class RareGame(RareGameSlim):
             self.signals.game.installed.emit(self.app_name)
         else:
             self.signals.game.uninstalled.emit(self.app_name)
-        self.__update_pixmap()
+        self._update_pixmap()
 
     @property
     def can_launch(self) -> bool:
@@ -614,7 +653,7 @@ class RareGame(RareGameSlim):
         return self.image_manager.get_pixmap(self.app_name, preset, color)
 
     @Slot()
-    def __update_pixmap(self):
+    def _update_pixmap(self):
         self.has_pixmap = self.image_manager.has_pixmaps(self.app_name)
         if self.has_pixmap:
             self.signals.widget.refresh.emit()
@@ -622,10 +661,10 @@ class RareGame(RareGameSlim):
     def load_pixmaps(self):
         """Do not call this function, call set_pixmap instead. This is only used for initial image loading"""
         if not self.has_pixmap:
-            self.image_manager.download_image(self.game, self.__update_pixmap, 0, False)
+            self.image_manager.download_image(self.game, self._update_pixmap, 0, False)
 
     def refresh_pixmap(self):
-        self.image_manager.download_image(self.game, self.__update_pixmap, 0, True)
+        self.image_manager.download_image(self.game, self._update_pixmap, 0, True)
 
     @property
     def __install_base_path(self) -> str:
@@ -690,7 +729,7 @@ class RareGame(RareGameSlim):
             UninstallOptionsModel(
                 app_name=self.app_name,
                 keep_folder=self.is_dlc,
-                keep_config=self.sdl_name is not None or self.is_dlc or platform.system() not in {"Windows"},
+                keep_config=self.sdl_available or self.is_dlc or platform.system() not in {"Windows"},
         ))
         return True
 
@@ -763,10 +802,10 @@ class RareEosOverlay(RareGameBase):
         self.image_manager = image_manager
 
         self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
-        self.image_manager.download_image(game, self.__update_pixmap, 0, False)
+        self.image_manager.download_image(game, self._update_pixmap, 0, False)
 
     @Slot()
-    def __update_pixmap(self):
+    def _update_pixmap(self):
         self.has_pixmap = self.image_manager.has_pixmaps(self.app_name)
         if self.has_pixmap:
             self.signals.widget.refresh.emit()

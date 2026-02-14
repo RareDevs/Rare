@@ -56,19 +56,19 @@ cloud_sync_color = QColor("#dbd3d1")
 
 # [Un]InstallButton
 style.QPushButton["#InstallButton"].setValues(
-    borderColor=QColor(0, 180, 0).name(), backgroundColor=QColor(0, 120, 0).name()
+    borderColor=QColor(0, 180, 0).name(), backgroundColor=QColor(0, 100, 0).name()
 )
 style.QPushButton["#InstallButton"].hover.setValues(
-    borderColor=QColor(0, 135, 0).name(), backgroundColor=QColor(0, 90, 0).name()
+    borderColor=QColor(0, 135, 0).name(), backgroundColor=QColor(0, 70, 0).name()
 )
 style.QPushButton["#InstallButton"].disabled.setValues(
     borderColor=QColor(0, 60, 0).name(), backgroundColor=QColor(0, 40, 0).name()
 )
 style.QPushButton["#UninstallButton"].setValues(
-    borderColor=QColor(180, 0, 0).name(), backgroundColor=QColor(120, 0, 0).name()
+    borderColor=QColor(180, 0, 0).name(), backgroundColor=QColor(100, 0, 0).name()
 )
 style.QPushButton["#UninstallButton"].hover.setValues(
-    borderColor=QColor(135, 0, 0).name(), backgroundColor=QColor(90, 0, 0).name()
+    borderColor=QColor(135, 0, 0).name(), backgroundColor=QColor(70, 0, 0).name()
 )
 style.QPushButton["#UninstallButton"].disabled.setValues(
     borderColor=QColor(60, 0, 0).name(), backgroundColor=QColor(40, 0, 0).name()

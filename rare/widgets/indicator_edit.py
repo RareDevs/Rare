@@ -371,6 +371,7 @@ class PathEdit(IndicatorLineEdit):
         )
         self.setObjectName(type(self).__name__)
         self.line_edit.setMinimumSize(QSize(250, 0))
+        self.line_edit.setReadOnly(True)
         self.path_select = QPushButton(self)
         self.path_select.setObjectName(f"{type(self).__name__}Button")
         layout = self.layout()
