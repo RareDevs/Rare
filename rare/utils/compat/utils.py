@@ -2,6 +2,7 @@ import os
 import platform as pf
 import subprocess
 from configparser import ConfigParser
+from getpass import getuser
 from logging import getLogger
 from typing import Dict, List, Mapping, Tuple
 
@@ -174,3 +175,19 @@ def get_host_environment(app_environment: Dict, silent: bool = False) -> Dict:
         # lk: pressure-vessel complains about this but it doesn't fail due to it
         # _environ["DISPLAY"] = ""
     return _environ
+
+
+def create_compat_users(pfx: str):
+    pfx_users = os.path.join(pfx, "drive_c", "users")
+    os.makedirs(pfx_users, exist_ok=True)
+    steam_user = os.path.join(pfx_users, "steamuser")
+    unix_user = os.path.join(pfx_users, getuser())
+    if not os.path.exists(steam_user) and not os.path.exists(unix_user):
+        os.makedirs(steam_user, exist_ok=True)
+    pwd = os.getcwd()
+    os.chdir(pfx_users)
+    if os.path.exists(steam_user) and not os.path.exists(unix_user):
+        os.symlink("steamuser", getuser())
+    if not os.path.exists(steam_user) and os.path.exists(unix_user):
+        os.symlink(getuser(), "steamuser")
+    os.chdir(pwd)
