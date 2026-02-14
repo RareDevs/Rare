@@ -256,7 +256,7 @@ def find_steam_tools(steam_path: str, library: str) -> List[ProtonTool]:
 
 def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
     compatibilitytools_paths = {
-        data_dir().joinpath("compatibilitytools").as_posix(),
+        data_dir().joinpath("tools").as_posix(),
         os.path.expanduser("~/.local/share/umu/compatibilitytools"),
         os.path.expanduser(os.path.join(steam_path, "compatibilitytools.d")),
         os.path.expanduser("~/.steam/compatibilitytools.d"),
