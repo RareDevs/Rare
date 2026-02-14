@@ -30,11 +30,11 @@ QLabel#InfoLabel {
 }
 QPushButton#InstallButton {
     border-color: #00b400;
-    background-color: #007800;
+    background-color: #006400;
 }
 QPushButton#InstallButton:hover {
     border-color: #008700;
-    background-color: #005a00;
+    background-color: #004600;
 }
 QPushButton#InstallButton:disabled {
     border-color: #003c00;
@@ -42,11 +42,11 @@ QPushButton#InstallButton:disabled {
 }
 QPushButton#UninstallButton {
     border-color: #b40000;
-    background-color: #780000;
+    background-color: #640000;
 }
 QPushButton#UninstallButton:hover {
     border-color: #870000;
-    background-color: #5a0000;
+    background-color: #460000;
 }
 QPushButton#UninstallButton:disabled {
     border-color: #3c0000;
