@@ -111,6 +111,8 @@ class ProtonSettings(QGroupBox):
         tools = steam.find_tools()
         for tool in tools:
             self.tool_combo.addItem(tool.name, tool)
+        if not tools:
+            self._on_tool_changed(0)
         try:
             wrapper = next(
                 filter(
@@ -142,8 +144,8 @@ class ProtonSettings(QGroupBox):
         return super().showEvent(a0)
 
     @Slot(int)
-    def _on_tool_changed(self, index):
-        steam_tool: Union[steam.ProtonTool, steam.CompatibilityTool] = self.tool_combo.itemData(index, Qt.ItemDataRole.UserRole)
+    def _on_tool_changed(self, index: int):
+        steam_tool: Union[steam.ProtonTool, steam.CompatibilityTool, None] = self.tool_combo.itemData(index, Qt.ItemDataRole.UserRole)
 
         steam_environ = steam.get_steam_environment(steam_tool, self.compat_edit.text())
         library_paths = steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] if "STEAM_COMPAT_LIBRARY_PATHS" in steam_environ else ""
