@@ -13,6 +13,7 @@ from rare.utils.paths import data_dir
 logger = getLogger("SteamTools")
 
 steam_client_install_paths = [os.path.expanduser("~/.local/share/Steam")]
+umu_install_paths = [os.path.expanduser("~/.local/share/umu")]
 
 
 def find_steam() -> Optional[str]:
@@ -33,6 +34,22 @@ def find_libraries(steam_path: str) -> Set[str]:
     libraries = {os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()}
     libraries = set(filter(lambda x: os.path.isdir(x), libraries))
     return libraries
+
+
+UMU_RUNTIMES = {
+    "1391110": "steamrt2",
+    "1628350": "steamrt3",
+    "3810310": "steamrt3-arm64",
+    "4183110": "steamrt4",
+    "4185400": "steamrt4-arm64",
+}
+
+
+def find_umu() -> Optional[str]:
+    for path in umu_install_paths:
+        if os.path.isdir(path) and any(rt in os.listdir(path) for rt in UMU_RUNTIMES.values()):
+            return path
+    return None
 
 
 # Notes:
@@ -107,6 +124,12 @@ class SteamRuntime(SteamBase):
 
 
 @dataclass
+class UmuRuntime(SteamBase):
+    name: str
+    appid: str
+
+
+@dataclass
 class SteamAntiCheat:
     steam_path: str
     tool_path: str
@@ -130,7 +153,7 @@ class SteamAntiCheat:
 
 @dataclass
 class ProtonTool(SteamRuntime):
-    runtime: SteamRuntime = None
+    runtime: Union[SteamRuntime, UmuRuntime] = None
     anticheat: Dict[str, SteamAntiCheat] = None
 
     def __bool__(self) -> bool:
@@ -147,7 +170,7 @@ class ProtonTool(SteamRuntime):
 @dataclass
 class CompatibilityTool(SteamBase):
     compatibilitytool: Dict
-    runtime: SteamRuntime = None
+    runtime: Union[SteamRuntime, UmuRuntime] = None
     anticheat: Dict[str, SteamAntiCheat] = None
 
     def __bool__(self) -> bool:
@@ -229,6 +252,31 @@ def find_steam_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime
     return runtimes
 
 
+def find_umu_runtimes(umu_path: str) -> Dict[str, UmuRuntime]:
+    runtimes = {}
+    for appid, folder in UMU_RUNTIMES.items():
+        tool_path = os.path.join(umu_path, folder)
+        if os.path.isdir(tool_path) and os.path.isfile(vdf_file := os.path.join(tool_path, "toolmanifest.vdf")):
+            with open(vdf_file, "r", encoding="utf-8") as f:
+                toolmanifest = vdf.load(f)
+            if toolmanifest["manifest"].get("version") != "2":
+                continue
+            if toolmanifest["manifest"].get("compatmanager_layer_name") == "container-runtime":
+                runtimes.update(
+                    {
+                        appid: UmuRuntime(
+                            steam_path=None,
+                            name=f"umu-{folder}",
+                            appid=appid,
+                            tool_path=tool_path,
+                            toolmanifest=toolmanifest["manifest"],
+                        )
+                    }
+                )
+
+    return runtimes
+
+
 def find_steam_tools(steam_path: str, library: str) -> List[ProtonTool]:
     tools = []
     appmanifests = find_appmanifests(library)
@@ -258,11 +306,14 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
     compatibilitytools_paths = {
         data_dir().joinpath("tools").as_posix(),
         os.path.expanduser("~/.local/share/umu/compatibilitytools"),
-        os.path.expanduser(os.path.join(steam_path, "compatibilitytools.d")),
         os.path.expanduser("~/.steam/compatibilitytools.d"),
         os.path.expanduser("~/.steam/root/compatibilitytools.d"),
         "/usr/share/steam/compatibilitytools.d",
     }
+    if steam_path:
+        compatibilitytools_paths.add(
+            os.path.expanduser(os.path.join(steam_path, "compatibilitytools.d")),
+        )
     compatibilitytools_paths = {os.path.realpath(path) for path in compatibilitytools_paths if os.path.isdir(path)}
     tools = []
     for path in compatibilitytools_paths:
@@ -309,7 +360,10 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
     return tools
 
 
-def get_runtime(tool: Union[ProtonTool, CompatibilityTool], runtimes: Dict[str, SteamRuntime]) -> Optional[SteamRuntime]:
+def get_runtime(
+        tool: Union[ProtonTool, CompatibilityTool],
+        runtimes: Dict[str, Union[SteamRuntime, UmuRuntime]]
+) -> Union[SteamRuntime, UmuRuntime, None]:
     required_tool = tool.required_tool
     if required_tool is None:
         return None
@@ -339,21 +393,23 @@ def get_steam_environment(
     # If the tool is unset, return all affected env variable names
     # IMPORTANT: keep this in sync with the code below
     environ = {"STEAM_COMPAT_DATA_PATH": compat_path if compat_path else ""}
+
+    environ["STORE"] = ""
+    environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
+    environ["STEAM_COMPAT_LAUNCHER_SERVICE"] = ""
+    environ["STEAM_COMPAT_LIBRARY_PATHS"] = ""
+    environ["STEAM_COMPAT_MOUNTS"] = ""
+    environ["STEAM_COMPAT_TOOL_PATHS"] = ""
+    environ["PROTON_EAC_RUNTIME"] = ""
+    environ["PROTON_BATTLEYE_RUNTIME"] = ""
     if tool is None:
-        environ["STORE"] = ""
         environ["STEAM_COMPAT_DATA_PATH"] = ""
-        environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
-        environ["STEAM_COMPAT_LAUNCHER_SERVICE"] = ""
         environ["STEAM_COMPAT_INSTALL_PATH"] = ""
-        environ["STEAM_COMPAT_LIBRARY_PATHS"] = ""
-        environ["STEAM_COMPAT_MOUNTS"] = ""
-        environ["STEAM_COMPAT_TOOL_PATHS"] = ""
-        environ["PROTON_EAC_RUNTIME"] = ""
-        environ["PROTON_BATTLEYE_RUNTIME"] = ""
         return environ
 
     environ["STORE"] = "egs"
-    environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = tool.steam_path
+    if tool.steam_path:
+        environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = tool.steam_path
     environ["STEAM_COMPAT_LAUNCHER_SERVICE"] = tool.layer
     if isinstance(tool, ProtonTool):
         environ["STEAM_COMPAT_LIBRARY_PATHS"] = tool.steam_library
@@ -375,17 +431,28 @@ def get_steam_environment(
 def _find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     steam_path = find_steam()
     if steam_path is None:
-        logger.info("Steam could not be found")
-        return []
-    logger.info("Found Steam in %s", steam_path)
+        logger.info("Steam folder could not be found")
+    else:
+        logger.info("Found Steam folder in %s", steam_path)
 
-    steam_libraries = find_libraries(steam_path)
-    logger.debug("Searching for tools in libraries:")
-    logger.debug("%s", steam_libraries)
+    steam_libraries = set()
+    if steam_path:
+        steam_libraries.update(find_libraries(steam_path))
+        logger.debug("Searching for tools in Steam libraries:")
+        logger.debug("%s", steam_libraries)
 
     runtimes = {}
     for library in steam_libraries:
         runtimes.update(find_steam_runtimes(steam_path, library))
+
+    umu_path = find_umu()
+    if umu_path is None:
+        logger.info("UMU folder could not be found")
+    else:
+        logger.info("Found UMU folder in %s", umu_path)
+
+    if umu_path:
+        runtimes.update(find_umu_runtimes(umu_path))
 
     anticheat = {}
     for library in steam_libraries:

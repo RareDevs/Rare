@@ -11,7 +11,7 @@ from logging import getLogger
 from pathlib import Path
 from typing import Any, Generator, List
 
-# Constant defined in prctl.h
+# Constants defined in prctl.h
 # See prctl(2) for more details
 PR_SET_NAME = 15
 PR_SET_CHILD_SUBREAPER = 36
@@ -74,8 +74,13 @@ def subreaper(args: Namespace, other: List[str]) -> int:
     workdir: str = args.workdir
     child_status: int = 0
 
-    libc: str = get_libc()
-    prctl = CDLL(libc).prctl
+    libc_path: str = get_libc()
+    if not libc_path:
+        logger.error("Could not find libc")
+        return 1
+    libc: CDLL = CDLL(libc_path)
+
+    prctl = libc.prctl
     prctl.restype = c_int
     prctl.argtypes = [
         c_int,
@@ -110,7 +115,7 @@ def subreaper(args: Namespace, other: List[str]) -> int:
     while True:
         try:
             child_pid, child_status = os.wait()  # pylint: disable=E1101
-            logger.info("Child %s exited with wait status: %s", child_pid, child_status)
+            logger.info("Child %s exited with status: %s", child_pid, child_status)
         except ChildProcessError as e:
             logger.info(e)
             break

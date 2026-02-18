@@ -3,7 +3,6 @@
 import os
 import subprocess
 import sys
-from getpass import getuser
 from pathlib import Path
 from typing import Any, Dict, List
 
