@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame, SaveGameFile, SaveGameStatus

@@ -1,6 +1,5 @@
 from typing import List, Union
 
-from legendary.utils.selective_dl import get_sdl_appname
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QCheckBox, QVBoxLayout, QWidget
