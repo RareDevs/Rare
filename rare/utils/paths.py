@@ -327,6 +327,8 @@ def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "",
 
         if os.environ.get("SNAP"):
             executable = "snap run rare"
+        elif os.environ.get("container") == "flatpak":
+            executable = "flatpak run io.github.dummerle.rare"
         else:
             executable = get_rare_executable()
             executable = shlex.join(executable)
