@@ -152,7 +152,7 @@ def add_steam_shortcut(app_name: str, app_title: str) -> SteamShortcut:
         logger.info("Removing old Steam shortcut for %s", app_name)
         remove_steam_shortcut(app_name)
 
-    command = get_rare_executable()
+    command = get_rare_executable(external=True)
     arguments = ["launch", app_name]
     if len(command) > 1:
         arguments = command[1:] + arguments

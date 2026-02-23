@@ -243,8 +243,22 @@ def desktop_link_path(link_name: str, link_type: str) -> Path:
     return __link_type[link_type].joinpath(f"{link_name}.{__link_suffix[platform.system()]['link']}")
 
 
-def get_rare_executable() -> List[str]:
+def get_rare_executable(*, external: bool = False) -> List[str]:
+    """
+    Returns the command list to invoke Rare for different platforms and packaging solutions
+    When used with container based packaging, such as Flatpak or Snap, returns the command
+    invoke Rare outside of the container
+
+    :param external: if True return the command to invoke Rare through Flatpak or Snap, defaults to false
+    :return: command list
+    """
     logger.debug(f"Trying to find executable: {sys.executable}, {sys.argv}")
+
+    if os.environ.get("SNAP") and external:
+        return ["snap", "run", "rare"]
+    if os.environ.get("container") == "flatpak" and external:
+        return ["flatpak",  "run", "io.github.dummerle.rare"]
+
     # lk: detect if nuitka
     if "__compiled__" in globals():
         executable = [sys.executable]
@@ -324,15 +338,8 @@ def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "",
         logger.info(f"Creating shortcut for {app_title} at {shortcut_path}")
 
     if platform.system() in {"Linux", "FreeBSD"}:
-
-        if os.environ.get("SNAP"):
-            executable = "snap run rare"
-        elif os.environ.get("container") == "flatpak":
-            executable = "flatpak run io.github.dummerle.rare"
-        else:
-            executable = get_rare_executable()
-            executable = shlex.join(executable)
-
+        executable = get_rare_executable(external=True)
+        executable = shlex.join(executable)
         if not for_rare:
             executable = f"{executable} launch {app_name}"
 
@@ -377,3 +384,5 @@ def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "",
 
         shortcut.save()
         return True
+
+    return False
