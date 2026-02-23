@@ -324,8 +324,13 @@ def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "",
         logger.info(f"Creating shortcut for {app_title} at {shortcut_path}")
 
     if platform.system() in {"Linux", "FreeBSD"}:
-        executable = get_rare_executable()
-        executable = shlex.join(executable)
+
+        if os.environ.get("SNAP"):
+            executable = "snap run rare"
+        else:
+            executable = get_rare_executable()
+            executable = shlex.join(executable)
+
         if not for_rare:
             executable = f"{executable} launch {app_name}"
 
