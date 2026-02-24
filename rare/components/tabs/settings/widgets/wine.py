@@ -1,6 +1,6 @@
 import os
 from logging import getLogger
-from typing import Optional
+from typing import Optional, Tuple
 
 from PySide6.QtCore import QSignalBlocker, Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -31,11 +31,7 @@ class WineSettings(QGroupBox):
         self.wine_prefix_edit = PathEdit(
             path="",
             file_mode=QFileDialog.FileMode.Directory,
-            edit_func=lambda path: (
-                os.path.isdir(path) or not path,
-                path,
-                IndicatorReasonsCommon.DIR_NOT_EXISTS,
-            ),
+            edit_func=self._wine_prefix_edit,
             save_func=self.save_prefix,
         )
 
@@ -94,8 +90,10 @@ class WineSettings(QGroupBox):
         else:
             self.settings.remove(f"{self.app_name}/wine_execut")
             self.settings.remove(f"{self.app_name}/wine_prefix")
-            self.wine_execut_edit.setText(old_wine_execut)
-            self.wine_prefix_edit.setText(old_wine_prefix)
+            if old_wine_execut is not None:
+                self.wine_execut_edit.setText(old_wine_execut)
+            if old_wine_prefix is not None:
+                self.wine_prefix_edit.setText(old_wine_prefix)
             lgd_config.remove_option(self.app_name, "no_wine")
         self.setDisabled(enabled)
 
@@ -103,6 +101,23 @@ class WineSettings(QGroupBox):
         if self.app_name is None:
             raise RuntimeError
         return lgd_config.get_wine_prefix(self.app_name, "")
+
+    @staticmethod
+    def _wine_prefix_edit(text: str) -> Tuple[bool, str, int]:
+        if not text:
+            return True, text, IndicatorReasonsCommon.VALID
+        if os.path.isdir(text):
+            dir_list = os.listdir(text)
+            if not dir_list:
+                return True, text, IndicatorReasonsCommon.VALID
+            if any(
+                (x in dir_list) for x in
+                ("dosdevices", "drive_c", "system.reg", "user.reg", "userdef.reg")
+            ):
+                return True, text, IndicatorReasonsCommon.VALID
+            return False, text, IndicatorReasonsCommon.DIR_NOT_EMPTY
+        else:
+            return False, text, IndicatorReasonsCommon.DIR_NOT_EXISTS
 
     def save_prefix(self, path: str) -> None:
         if self.app_name is None:
