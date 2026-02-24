@@ -37,7 +37,7 @@ jobs:
   title:
     needs: version
     name: Version ${{ needs.version.outputs.version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - run: "true"
 
