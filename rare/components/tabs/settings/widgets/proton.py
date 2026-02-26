@@ -64,6 +64,7 @@ class ProtonSettings(QGroupBox):
             placeholder=self.tr("Please select path for proton prefix"),
             parent=self,
         )
+        self.compat_edit.setReadOnly(True)
 
         # self.winetricks_button = QPushButton(self.tr("Winetricks"), self)
         # self.create_button = QPushButton(self.tr("Create prefix"), self)

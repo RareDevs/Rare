@@ -60,7 +60,6 @@ class LocalLaunchSettings(LaunchSettingsBase):
             save_func=self.__override_exe_save_callback,
             parent=self,
         )
-        self.override_exe_edit.line_edit.setReadOnly(False)
 
         self.launch_params_edit = QLineEdit(self)
         self.launch_params_edit.setPlaceholderText(self.tr("Game specific command line arguments"))

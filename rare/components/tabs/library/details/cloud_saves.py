@@ -72,6 +72,7 @@ class CloudSaves(QWidget, SideTabContents):
             edit_func=self.edit_save_path,
             save_func=self.save_save_path,
         )
+        self.cloud_save_path_edit.setReadOnly(True)
         self.cloud_ui.main_layout.setWidget(
             self.cloud_ui.main_layout.getWidgetPosition(self.cloud_ui.path_label)[0],
             QFormLayout.ItemRole.FieldRole,

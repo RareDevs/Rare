@@ -34,7 +34,6 @@ class WineSettings(QGroupBox):
             edit_func=self._wine_prefix_edit,
             save_func=self.save_prefix,
         )
-        self.wine_prefix_edit.line_edit.setReadOnly(False)
 
         # Wine executable
         self.wine_execut_edit = PathEdit(
@@ -48,7 +47,6 @@ class WineSettings(QGroupBox):
             ),
             save_func=self.save_execut,
         )
-        self.wine_execut_edit.line_edit.setReadOnly(False)
 
         layout = QFormLayout(self)
         layout.addRow(self.tr("Executable"), self.wine_execut_edit)
