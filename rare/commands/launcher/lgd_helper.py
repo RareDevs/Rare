@@ -154,38 +154,38 @@ def get_launch_params(rgame: RareGameSlim, init: InitParams = None) -> LaunchPar
 def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[str], Dict]:
     logger.debug("Preparing process: %s", command)
 
-    environ = environment.copy()
+    _env = environment.copy()
     # Sanity check environment (mostly for Linux)
     # ensure shader compat dirs exist
     if platform.system() in {"Linux", "FreeBSD"}:
-        command_line = shlex.join(command)
-        if os.environ.get("XDG_CURRENT_DESKTOP", None) == "gamescope" or "gamescope" in command_line:
+        _cmd_line = shlex.join(command)
+        if os.environ.get("XDG_CURRENT_DESKTOP", None) == "gamescope" or "gamescope" in _cmd_line:
             # disable mangohud in gamescope
-            environ["MANGOHUD"] = "0"
-        if "STEAM_COMPAT_CLIENT_INSTALL_PATH" not in environ:
-            environ["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
-        if "STEAM_COMPAT_DATA_PATH" in environ:
-            compat_pfx = os.path.join(environ["STEAM_COMPAT_DATA_PATH"], "pfx")
+            _env["MANGOHUD"] = "0"
+        if "STEAM_COMPAT_CLIENT_INSTALL_PATH" not in _env:
+            _env["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
+        if "STEAM_COMPAT_DATA_PATH" in _env:
+            compat_pfx = os.path.join(_env["STEAM_COMPAT_DATA_PATH"], "pfx")
             os.makedirs(compat_pfx, exist_ok=True)
             create_compat_users(compat_pfx)
-        if "WINEPREFIX" in environ and not os.path.isdir(environ["WINEPREFIX"]):
-            os.makedirs(environ["WINEPREFIX"], exist_ok=True)
-            create_compat_users(environ["WINEPREFIX"])
-        if "STEAM_COMPAT_SHADER_PATH" in environ:
-            environ.update(setup_compat_shaders_dir(environ["STEAM_COMPAT_SHADER_PATH"]))
-        environ["WINEDLLOVERRIDES"] = environ.get("WINEDLLOVERRIDES", "") + ";lsteamclient=d;"
+        if "WINEPREFIX" in _env and not os.path.isdir(_env["WINEPREFIX"]):
+            os.makedirs(_env["WINEPREFIX"], exist_ok=True)
+            create_compat_users(_env["WINEPREFIX"])
+        if "STEAM_COMPAT_SHADER_PATH" in _env:
+            _env.update(setup_compat_shaders_dir(_env["STEAM_COMPAT_SHADER_PATH"]))
+        _env["WINEDLLOVERRIDES"] = _env.get("WINEDLLOVERRIDES", "") + ";lsteamclient=d;"
 
-    _env = os.environ.copy()
-    _command = command.copy()
+    final_env = os.environ.copy()
+    final_cmd = command.copy()
 
     if os.environ.get("container") == "flatpak":
-        flatpak_command = ["flatpak-spawn", "--host"]
-        flatpak_command.extend(f"--env={name}={value}" for name, value in environ.items())
-        _command = flatpak_command + command
+        _flat_cmd = ["flatpak-spawn", "--host"]
+        _flat_cmd.extend(f"--env={name}={value}" for name, value in _env.items())
+        final_cmd = _flat_cmd + command
     else:
-        _env.update(environ)
+        final_env.update(_env)
 
-    return _command[0], _command[1:] if len(_command) > 1 else [], _env
+    return final_cmd[0], final_cmd[1:] if len(final_cmd) > 1 else [], final_env
 
 
 def dict_to_qprocenv(env: Dict) -> QProcessEnvironment:
