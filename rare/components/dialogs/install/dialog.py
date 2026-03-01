@@ -90,6 +90,7 @@ class InstallDialog(ActionDialog):
             save_func=self._install_dir_save_callback,
             parent=self,
         )
+        self.install_dir_edit.setReadOnly(True)
         self.install_dir_edit.validationFinished.connect(self._on_install_dir_validation)
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)[0],

@@ -61,6 +61,7 @@ class LegendarySettings(QWidget):
                 edit_func=self.__path_edit_callback,
                 save_func=self._path_save_callback_mac,
             )
+            self.mac_install_dir_edit.setReadOnly(True)
             self.ui.install_dir_layout.addWidget(self.mac_install_dir_edit)
 
         # Platform-independent installation directory
@@ -71,6 +72,7 @@ class LegendarySettings(QWidget):
             edit_func=self.__path_edit_callback,
             save_func=self._path_save_callback_win,
         )
+        self.install_dir_edit.setReadOnly(True)
         self.ui.install_dir_layout.addWidget(self.install_dir_edit)
 
         # Max Workers

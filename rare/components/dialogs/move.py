@@ -45,6 +45,7 @@ class MoveDialog(ActionDialog):
             edit_func=self.__target_path_edit_callback,
             parent=self,
         )
+        self.target_path_edit.setReadOnly(True)
         self.target_path_edit.reasons = {
             MovePathEditReasons.MOVEDIALOG_DST_MISSING: self.tr("You need to provide the destination directory."),
             MovePathEditReasons.MOVEDIALOG_NO_WRITE: self.tr("No write permission on destination."),

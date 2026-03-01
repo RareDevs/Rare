@@ -144,9 +144,7 @@ class IndicatorLineEdit(QWidget):
         layout = QHBoxLayout(self)
         layout.setObjectName(f"{self.objectName()}Layout")
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSizeConstraints(
-            QHBoxLayout.SizeConstraint.SetDefaultConstraint, QHBoxLayout.SizeConstraint.SetFixedSize
-        )
+        layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetDefaultConstraint)
         # Add line_edit
         self.line_edit = QLineEdit(self)
         self.line_edit.setObjectName(f"{type(self).__name__}Edit")
@@ -371,7 +369,6 @@ class PathEdit(IndicatorLineEdit):
         )
         self.setObjectName(type(self).__name__)
         self.line_edit.setMinimumSize(QSize(250, 0))
-        self.line_edit.setReadOnly(True)
         self.path_select = QPushButton(self)
         self.path_select.setObjectName(f"{type(self).__name__}Button")
         layout = self.layout()
@@ -384,6 +381,9 @@ class PathEdit(IndicatorLineEdit):
         self.__name_filter = name_filters
 
         self.path_select.clicked.connect(self.__set_path)
+
+    def setReadOnly(self, read_only: bool):
+        self.line_edit.setReadOnly(read_only)
 
     def setRootPath(self, path: str):
         self.__root_path = path

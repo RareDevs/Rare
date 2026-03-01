@@ -48,6 +48,7 @@ class EGLSyncGroup(QGroupBox):
             save_func=self.egl_path_edit_save_cb,
             parent=self,
         )
+        self.egl_path_edit.setReadOnly(True)
         self.ui.egl_sync_layout.setWidget(
             self.ui.egl_sync_layout.getWidgetPosition(self.ui.egl_path_edit_label)[0],
             QFormLayout.ItemRole.FieldRole,

@@ -36,7 +36,6 @@ class LaunchSettingsBase(QGroupBox):
             edit_func=self.__prelaunch_cmd_edit_callback,
             save_func=self.__prelaunch_cmd_save_callback,
         )
-        self.prelaunch_cmd.line_edit.setReadOnly(False)
 
         self.prelaunch_args = QLineEdit("")
         self.prelaunch_args.setPlaceholderText(self.tr("Arguments to the script or program to run before the game"))

@@ -166,17 +166,18 @@ class ImportGroup(QGroupBox):
         self._app_titles: Dict[str, str] = {}
         self._install_dirs: Set[str] = set()
 
-        self.path_edit = PathEdit(
+        self.import_path_edit = PathEdit(
             path=self.core.get_default_install_dir(self.core.default_platform),
             file_mode=QFileDialog.FileMode.Directory,
             edit_func=self._path_edit_callback,
             parent=self,
         )
-        self.path_edit.textChanged.connect(self._path_changed)
+        self.import_path_edit.setReadOnly(True)
+        self.import_path_edit.textChanged.connect(self._path_changed)
         self.ui.import_layout.setWidget(
             self.ui.import_layout.getWidgetPosition(self.ui.path_edit_label)[0],
             QFormLayout.ItemRole.FieldRole,
-            self.path_edit,
+            self.import_path_edit,
         )
 
         self.app_name_edit = IndicatorLineEdit(
@@ -226,7 +227,7 @@ class ImportGroup(QGroupBox):
     def set_game(self, app_name: str):
         if app_name:
             rgame = self.rcore.get_game(app_name)
-            self.path_edit.setText(
+            self.import_path_edit.setText(
                 os.path.join(
                     self.core.get_default_install_dir(rgame.default_platform),
                     rgame.folder_name,
@@ -248,7 +249,7 @@ class ImportGroup(QGroupBox):
         self.info_label.setText("")
         self.ui.import_folder_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
-        if self.path_edit.is_valid:
+        if self.import_path_edit.is_valid:
             self.app_name_edit.setText(find_app_name(self.core, path))
         else:
             self.app_name_edit.setText("")
@@ -277,7 +278,7 @@ class ImportGroup(QGroupBox):
         self.ui.import_dlcs_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_dlcs_check.setEnabled(self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(app_name)))
-        self.ui.import_button.setEnabled(not bool(self.worker) and (self.app_name_edit.is_valid and self.path_edit.is_valid))
+        self.ui.import_button.setEnabled(not bool(self.worker) and (self.app_name_edit.is_valid and self.import_path_edit.is_valid))
 
     @Slot(Qt.CheckState)
     def _on_import_folder_changed(self, state: Qt.CheckState):
@@ -311,7 +312,7 @@ class ImportGroup(QGroupBox):
 
     @Slot()
     def _on_import_clicked(self):
-        self._import(self.path_edit.text())
+        self._import(self.import_path_edit.text())
 
     @Slot(str)
     def _import(self, path: Optional[str] = None):
@@ -321,7 +322,7 @@ class ImportGroup(QGroupBox):
         self.button_info_stack.setCurrentWidget(self.info_progress)
 
         if not path:
-            path = self.path_edit.text()
+            path = self.import_path_edit.text()
         self.worker = ImportWorker(
             self.core,
             path,
