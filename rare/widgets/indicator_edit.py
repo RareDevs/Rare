@@ -144,9 +144,7 @@ class IndicatorLineEdit(QWidget):
         layout = QHBoxLayout(self)
         layout.setObjectName(f"{self.objectName()}Layout")
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSizeConstraints(
-            QHBoxLayout.SizeConstraint.SetDefaultConstraint, QHBoxLayout.SizeConstraint.SetFixedSize
-        )
+        layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetDefaultConstraint)
         # Add line_edit
         self.line_edit = QLineEdit(self)
         self.line_edit.setObjectName(f"{type(self).__name__}Edit")
