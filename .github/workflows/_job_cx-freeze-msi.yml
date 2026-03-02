@@ -56,7 +56,7 @@ jobs:
           mv dist/*.msi Rare-${{ inputs.version }}-${{ matrix.arch }}.msi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: Rare-${{ inputs.version }}-${{ matrix.arch }}.msi
           path: Rare-${{ inputs.version }}-${{ matrix.arch }}.msi

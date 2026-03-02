@@ -100,7 +100,7 @@ jobs:
           mv Rare-${{ inputs.version }}.zip Rare-${{ inputs.version }}-${{ matrix.arch }}-linux.zip
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: Rare-${{ inputs.version }}-${{ matrix.arch }}-linux.zip
           path: Rare-${{ inputs.version }}-${{ matrix.arch }}-linux.zip
