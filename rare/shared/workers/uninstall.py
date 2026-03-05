@@ -100,7 +100,6 @@ class UninstallWorkerSignals(QObject):
 
 
 class UninstallWorker(Worker):
-
     def __init__(self, core: LegendaryCore, rgame: RareGame, options: UninstallOptionsModel):
         super(UninstallWorker, self).__init__()
         self.signals = UninstallWorkerSignals()

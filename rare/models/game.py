@@ -67,8 +67,9 @@ class RareGameMetadata:
             queued=self.queued,
             queue_pos=self.queue_pos,
             last_played=self.last_played.isoformat() if self.last_played else datetime.min.replace(tzinfo=timezone.utc),
-            achievements_date=self.last_played.isoformat() if self.achievements_date else datetime.min.replace(
-                tzinfo=timezone.utc),
+            achievements_date=self.last_played.isoformat()
+            if self.achievements_date
+            else datetime.min.replace(tzinfo=timezone.utc),
             grant_date=self.grant_date.isoformat() if self.grant_date else datetime.min.replace(tzinfo=timezone.utc),
             steam_appid=str(self.steam_appid) if self.steam_appid else None,
             steam_grade=self.steam_grade,
@@ -82,7 +83,6 @@ class RareGameMetadata:
 
 
 class RareGame(RareGameSlim):
-
     def __init__(
         self,
         settings: RareAppSettings,
@@ -507,9 +507,9 @@ class RareGame(RareGameSlim):
 
     @property
     def eulas(self) -> List:
-        eulas = self.game.metadata.get('eulaIds') or ['$']
+        eulas = self.game.metadata.get("eulaIds") or ["$"]
 
-        pattern = r'\w+'
+        pattern = r"\w+"
         keys = []
         for eula in eulas:
             keys += re.findall(pattern, eula)
@@ -699,10 +699,7 @@ class RareGame(RareGameSlim):
             return False
         self.signals.game.install.emit(
             InstallOptionsModel(
-                app_name=self.app_name,
-                base_path=self.__install_base_path,
-                platform=self.igame.platform,
-                reset_sdl=True
+                app_name=self.app_name, base_path=self.__install_base_path, platform=self.igame.platform, reset_sdl=True
             )
         )
         return True
@@ -730,7 +727,8 @@ class RareGame(RareGameSlim):
                 app_name=self.app_name,
                 keep_folder=self.is_dlc,
                 keep_config=self.sdl_available or self.is_dlc or platform.system() not in {"Windows"},
-        ))
+            )
+        )
         return True
 
     def launch(
@@ -789,14 +787,13 @@ class RareGame(RareGameSlim):
 
 
 class RareEosOverlay(RareGameBase):
-
     def __init__(
-            self,
-            settings: RareAppSettings,
-            legendary_core: LegendaryCore,
-            image_manager: ImageManager,
-            game: Game,
-        ):
+        self,
+        settings: RareAppSettings,
+        legendary_core: LegendaryCore,
+        image_manager: ImageManager,
+        game: Game,
+    ):
         super(RareEosOverlay, self).__init__(legendary_core, game)
         self.settings = settings
         self.image_manager = image_manager
@@ -911,7 +908,8 @@ class RareEosOverlay(RareGameBase):
             UninstallOptionsModel(
                 app_name=self.app_name,
                 keep_overlay_keys=platform.system() not in {"Windows"},
-            ))
+            )
+        )
         return True
 
 

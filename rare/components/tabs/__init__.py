@@ -98,7 +98,7 @@ class MainTabWidget(QTabWidget):
                 if e.button() == Qt.MouseButton.LeftButton:
                     origin = QPoint(
                         self.main_bar.tabRect(tab_idx).bottomRight().x() - self.account_menu.sizeHint().width(),
-                        self.main_bar.tabRect(tab_idx).bottomRight().y()
+                        self.main_bar.tabRect(tab_idx).bottomRight().y(),
                     )
                     self.account_menu.exec(self.mapToGlobal(origin))
                 return True

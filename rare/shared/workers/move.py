@@ -30,7 +30,6 @@ class MoveInfoWorkerSignals(QObject):
 
 
 class MoveInfoWorker(Worker):
-
     def __init__(self, rgame: RareGame, igames: Iterator[RareGame], options: MoveGameModel):
         super(MoveInfoWorker, self).__init__()
         self.signals = MoveInfoWorkerSignals()
@@ -109,7 +108,6 @@ class MoveWorkerSignals(QObject):
 
 
 class MoveWorker(QueueWorker):
-
     def __init__(self, core: LegendaryCore, rgame: RareGame, options: MoveGameModel):
         super(MoveWorker, self).__init__()
         self.signals = MoveWorkerSignals()

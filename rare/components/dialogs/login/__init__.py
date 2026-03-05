@@ -60,9 +60,7 @@ class LoginDialog(BaseDialog):
         self.import_page.validated.connect(self._on_page_validated)
 
         self.info_message = {
-            self.landing_index: self.tr(
-                "<i>Select log-in method.</i>"
-            ),
+            self.landing_index: self.tr("<i>Select log-in method.</i>"),
             self.browser_index: self.tr(
                 "<i>Click the <strong>Open Browser</strong> button to open the "
                 "login page in your web browser or copy the link and paste it "

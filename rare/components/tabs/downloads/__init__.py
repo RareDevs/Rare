@@ -183,16 +183,15 @@ class DownloadsTab(QWidget):
         worker = InstallInfoWorker(self.core, item.options)
 
         worker.signals.result.connect(
-            (lambda obj, d: obj.start_download(
-                InstallQueueItemModel(options=item.options, download=d))).__get__(self)
+            (lambda obj, d: obj.start_download(InstallQueueItemModel(options=item.options, download=d))).__get__(self)
         )
         worker.signals.failed.connect(
-            (lambda obj, m: obj.logger.error(
-                f"Failed to refresh download for {item.options.app_name} with error: {m}")).__get__(self)
+            (lambda obj, m: obj.logger.error(f"Failed to refresh download for {item.options.app_name} with error: {m}")).__get__(
+                self
+            )
         )
         worker.signals.finished.connect(
-            (lambda obj: obj.logger.info(
-                f"Download refresh worker finished for {item.options.app_name}")).__get__(self)
+            (lambda obj: obj.logger.info(f"Download refresh worker finished for {item.options.app_name}")).__get__(self)
         )
 
         QThreadPool.globalInstance().start(worker)

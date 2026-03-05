@@ -84,19 +84,13 @@ class RunnerSettingsBase(QGroupBox):
 
     @Slot()
     def _open_pfx_folder(self):
-        QDesktopServices.openUrl(
-            QUrl.fromLocalFile(lgd_config.get_wine_prefix_with_global(self.app_name))
-        )
+        QDesktopServices.openUrl(QUrl.fromLocalFile(lgd_config.get_wine_prefix_with_global(self.app_name)))
 
     @Slot()
     def _open_usr_folder(self):
-        path = os.path.join(
-            lgd_config.get_wine_prefix_with_global(self.app_name), "drive_c", "users", getuser()
-        )
+        path = os.path.join(lgd_config.get_wine_prefix_with_global(self.app_name), "drive_c", "users", getuser())
         if not os.path.exists(path):
-            path = os.path.join(
-                lgd_config.get_wine_prefix_with_global(self.app_name), "drive_c", "users", "steamuser"
-            )
+            path = os.path.join(lgd_config.get_wine_prefix_with_global(self.app_name), "drive_c", "users", "steamuser")
         QDesktopServices.openUrl(path)
 
     @Slot()

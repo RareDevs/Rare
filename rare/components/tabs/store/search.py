@@ -129,9 +129,7 @@ class SearchWidget(QWidget, SideTabContents):
         #     lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None
         # )
         # self.ui.on_discount.toggled.connect(lambda: self.prepare_request())
-        self.ui.on_discount.toggled.connect(
-            (lambda obj: obj.prepare_request()).__get__(self)
-        )
+        self.ui.on_discount.toggled.connect((lambda obj: obj.prepare_request()).__get__(self))
         constants = Constants()
 
         self.checkboxes = []
@@ -145,13 +143,9 @@ class SearchWidget(QWidget, SideTabContents):
             for text, tag in variables:
                 checkbox = CheckBox(text, tag)
                 # checkbox.activated.connect(lambda x: self.prepare_request(added_tag=x))
-                checkbox.activated.connect(
-                    (lambda obj, x: obj.prepare_request(added_tag=x)).__get__(self)
-                )
+                checkbox.activated.connect((lambda obj, x: obj.prepare_request(added_tag=x)).__get__(self))
                 # checkbox.deactivated.connect(lambda x: self.prepare_request(removed_tag=x))
-                checkbox.deactivated.connect(
-                    (lambda obj, x: obj.prepare_request(removed_tag=x)).__get__(self)
-                )
+                checkbox.deactivated.connect((lambda obj, x: obj.prepare_request(removed_tag=x)).__get__(self))
                 groupbox.layout().addWidget(checkbox)
                 self.checkboxes.append(checkbox)
         self.ui.reset_button.clicked.connect(self.reset_filters)

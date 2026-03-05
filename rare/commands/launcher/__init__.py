@@ -58,7 +58,6 @@ class PreLaunchSignals(QObject):
 
 
 class PreLaunch(QRunnable):
-
     def __init__(self, args: InitParams, rgame: RareGameSlim, sync_action=None):
         super(PreLaunch, self).__init__()
         self.signals = PreLaunchSignals()
@@ -94,8 +93,7 @@ class PreLaunch(QRunnable):
             proc = get_configured_qprocess(shlex.split(launch.pre_launch_command), launch.environment)
             proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
             proc.readyReadStandardOutput.connect(
-                (lambda obj: obj.logger.debug(
-                    str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
+                (lambda obj: obj.logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
             )
             self.signals.pre_launch_command_started.emit()
             self.logger.info("Running pre-launch command %s, %s", proc.program(), proc.arguments())
@@ -115,7 +113,6 @@ class SyncCheckWorkerSignals(QObject):
 
 
 class SyncCheckWorker(QRunnable):
-
     def __init__(self, core: LegendaryCore, rgame: RareGameSlim):
         super().__init__()
         self.signals = SyncCheckWorkerSignals()
@@ -257,9 +254,7 @@ class RareLauncher(RareApp):
 
     def check_saves(self, exit_code: int):
         # self.rgame.signals.widget.refresh.connect(lambda: self.on_exit(exit_code))
-        self.rgame.signals.widget.refresh.connect(
-            (lambda obj: obj.on_exit(exit_code)).__get__(self)
-        )
+        self.rgame.signals.widget.refresh.connect((lambda obj: obj.on_exit(exit_code)).__get__(self))
 
         state, (dt_local, dt_remote) = self.rgame.save_game_state
 
@@ -271,9 +266,7 @@ class RareLauncher(RareApp):
             # self.sync_dialog.result_ready.connect(
             #     lambda a: self.__check_saves_finished(exit_code, a)
             # )
-            self.sync_dialog.result_ready.connect(
-                (lambda obj, a: obj.check_saves_finished(exit_code, a)).__get__(self)
-            )
+            self.sync_dialog.result_ready.connect((lambda obj, a: obj.check_saves_finished(exit_code, a)).__get__(self))
             self.sync_dialog.open()
 
     @Slot(int, int)

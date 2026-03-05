@@ -19,7 +19,6 @@ class InstallInfoWorkerSignals(QObject):
 
 
 class InstallInfoWorker(Worker):
-
     def __init__(self, core: LegendaryCore, options: InstallOptionsModel):
         super(InstallInfoWorker, self).__init__()
         self.signals = InstallInfoWorkerSignals()

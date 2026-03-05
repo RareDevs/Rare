@@ -49,7 +49,6 @@ class RareGameSignalsGame(QObject):
 
 
 class RareGameSignals(QObject):
-
     def __init__(self, /):
         super(RareGameSignals, self).__init__()
         self.progress = RareGameSignalsProgress()

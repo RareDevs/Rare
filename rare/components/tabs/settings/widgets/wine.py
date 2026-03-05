@@ -110,10 +110,7 @@ class WineSettings(QGroupBox):
             dir_list = os.listdir(text)
             if not dir_list:
                 return True, text, IndicatorReasonsCommon.VALID
-            if any(
-                (x in dir_list) for x in
-                ("dosdevices", "drive_c", "system.reg", "user.reg", "userdef.reg")
-            ):
+            if any((x in dir_list) for x in ("dosdevices", "drive_c", "system.reg", "user.reg", "userdef.reg")):
                 return True, text, IndicatorReasonsCommon.VALID
             return False, text, IndicatorReasonsCommon.DIR_NOT_EMPTY
         else:

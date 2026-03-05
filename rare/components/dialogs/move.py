@@ -35,9 +35,7 @@ class MoveDialog(ActionDialog):
         self.rcore = rcore
         self.core = rcore.core()
         self.rgame: Optional[RareGame] = rgame
-        self.options: MoveGameModel = MoveGameModel(
-            rgame.app_name, rgame.install_path, rgame.folder_name
-        )
+        self.options: MoveGameModel = MoveGameModel(rgame.app_name, rgame.install_path, rgame.folder_name)
 
         self.target_path_edit = PathEdit(
             path=self.options.target_path,
@@ -115,7 +113,7 @@ class MoveDialog(ActionDialog):
 
     @Slot(Qt.CheckState)
     def __on_rename_path_changed(self, state: Qt.CheckState):
-        self.options.rename_path = (state == Qt.CheckState.Checked)
+        self.options.rename_path = state == Qt.CheckState.Checked
         self.full_path_info.setText(self.options.full_path)
         _ = QSignalBlocker(self.ui.reset_name_check)
         self.ui.reset_name_check.setChecked(self.options.reset_name)
@@ -123,7 +121,7 @@ class MoveDialog(ActionDialog):
 
     @Slot(Qt.CheckState)
     def __on_reset_name_changed(self, state: Qt.CheckState):
-        self.options.reset_name = (state == Qt.CheckState.Checked)
+        self.options.reset_name = state == Qt.CheckState.Checked
         self.full_path_info.setText(self.options.full_path)
         _ = QSignalBlocker(self.ui.rename_path_check)
         self.ui.rename_path_check.setChecked(self.options.rename_path)

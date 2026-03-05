@@ -42,7 +42,6 @@ class CheckForUpdateWorkerSignals(QObject):
 
 
 class CheckForUpdateWorker(QRunnable):
-
     def __init__(self, core: LegendaryCore):
         super(CheckForUpdateWorker, self).__init__()
         self.signals = CheckForUpdateWorkerSignals()

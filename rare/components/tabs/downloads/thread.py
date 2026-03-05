@@ -211,8 +211,7 @@ class DlThread(QThread):
                 proc = QProcess(self)
                 proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
                 proc.readyReadStandardOutput.connect(
-                    (lambda obj: obj.logger.debug(
-                        str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
+                    (lambda obj: obj.logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
                 )
                 proc.setProgram(fullpath)
                 proc.setArguments(postinstall.get("args", "").split(" "))

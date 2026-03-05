@@ -14,7 +14,6 @@ from .login_frame import LoginFrame
 
 
 class ImportLogin(LoginFrame):
-
     # FIXME: Use pathspec instead of duplicated code
     if platform.system() == "Windows":
         localappdata = os.path.expandvars("%LOCALAPPDATA%")
