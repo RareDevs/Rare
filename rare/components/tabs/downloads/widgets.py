@@ -104,13 +104,15 @@ class UpdateWidget(QFrame):
     def _update_game(self, auto: bool):
         self.ui.update_button.setDisabled(True)
         self.ui.settings_button.setDisabled(True)
-        self.enqueue.emit(InstallOptionsModel(
-            app_name=self.game.app_name,
-            base_path=self.igame.install_path,
-            platform=self.igame.platform,
-            update=True,
-            silent=auto, # True if settings
-        ))
+        self.enqueue.emit(
+            InstallOptionsModel(
+                app_name=self.game.app_name,
+                base_path=self.igame.install_path,
+                platform=self.igame.platform,
+                update=True,
+                silent=auto,  # True if settings
+            )
+        )
 
     def set_enabled(self, enabled: bool):
         self.ui.update_button.setEnabled(enabled)
@@ -145,13 +147,13 @@ class QueueWidget(QFrame):
             worker = InstallInfoWorker(core, item.options)
             worker.signals.result.connect(self.__update_info)
             worker.signals.failed.connect(
-                (lambda obj, m: obj.logger.error(
-                    f"Failed to requeue download for {item.options.app_name} with error: {m}")).__get__(self)
+                (
+                    lambda obj, m: obj.logger.error(f"Failed to requeue download for {item.options.app_name} with error: {m}")
+                ).__get__(self)
             )
             worker.signals.failed.connect((lambda obj, m: obj.remove.emit(item.options.app_name)).__get__(self))
             worker.signals.finished.connect(
-                (lambda obj: obj.logger.error(
-                    f"Download requeue worker finished for {item.options.app_name}")).__get__(self)
+                (lambda obj: obj.logger.error(f"Download requeue worker finished for {item.options.app_name}")).__get__(self)
             )
             QThreadPool.globalInstance().start(worker)
             self.info_widget = QueueInfoWidget(imgmgr, None, None, None, old_igame, parent=self)

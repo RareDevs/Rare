@@ -30,4 +30,3 @@ class LoginFrame(QFrame):
     @abstractmethod
     def do_login(self) -> None:
         pass
-

@@ -134,7 +134,8 @@ class WishlistWidget(QWidget, SideTabContents):
         WishlistOrder.NAME: lambda x: x.catalog_game.title,
         WishlistOrder.PRICE: lambda x: x.catalog_game.price.totalPrice.discountPrice,
         WishlistOrder.DEVELOPER: lambda x: x.catalog_game.seller["name"],
-        WishlistOrder.DISCOUNT: lambda x: 1 - (x.catalog_game.price.totalPrice.discountPrice / x.catalog_game.price.totalPrice.originalPrice)
+        WishlistOrder.DISCOUNT: lambda x: 1
+        - (x.catalog_game.price.totalPrice.discountPrice / x.catalog_game.price.totalPrice.originalPrice),
     }
 
     @Slot(int)

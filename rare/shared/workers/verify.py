@@ -19,7 +19,6 @@ class VerifyWorkerSignals(QObject):
 
 
 class VerifyWorker(QueueWorker):
-
     def __init__(self, core: LegendaryCore, args: Namespace, rgame: RareGame):
         super(VerifyWorker, self).__init__()
         self.signals = VerifyWorkerSignals()

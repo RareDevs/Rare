@@ -30,7 +30,6 @@ class WinePathResolverSignals(QObject):
 
 
 class WinePathResolver(Worker):
-
     def __init__(self, core: LegendaryCore, app_name: str, path: str):
         super(WinePathResolver, self).__init__()
         self.signals = WinePathResolverSignals()

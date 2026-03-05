@@ -166,7 +166,7 @@ class GameDetails(QWidget, SideTabContents):
                     "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. Do you want to update the game while repairing it?"
                 ).format(rgame.app_title, rgame.version, rgame.remote_version),
             )
-            ans = (mbox == QMessageBox.StandardButton.Yes)
+            ans = mbox == QMessageBox.StandardButton.Yes
         rgame.repair(repair_and_update=ans)
 
     @Slot(RareGame, str)
@@ -252,9 +252,7 @@ class GameDetails(QWidget, SideTabContents):
             ans = QMessageBox.question(
                 self,
                 self.tr("Move game? - {}").format(self.rgame.app_title),
-                self.tr("Destination <b>{}</b> already exists. Are you sure you want to overwrite it?").format(
-                    new_install_path
-                ),
+                self.tr("Destination <b>{}</b> already exists. Are you sure you want to overwrite it?").format(new_install_path),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.Yes,
             )
@@ -439,10 +437,13 @@ class GameDetails(QWidget, SideTabContents):
         else:
             self.ui.install_button.setText(self.tr("Install"))
 
-        self.ui.description_field.setText(rgame.game.metadata['description'])
+        self.ui.description_field.setText(rgame.game.metadata["description"])
 
         for page in (
-            self.ui.ach_progress_page, self.ui.ach_completed_page, self.ui.ach_uninitiated_page, self.ui.ach_hidden_page,
+            self.ui.ach_progress_page,
+            self.ui.ach_completed_page,
+            self.ui.ach_uninitiated_page,
+            self.ui.ach_hidden_page,
         ):
             for w in page.findChildren(AchievementWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
                 page.layout().removeWidget(w)
@@ -455,12 +456,17 @@ class GameDetails(QWidget, SideTabContents):
 
             for group, page in zip(
                 (
-                    sorted(ach.hidden, key=lambda a: a['xp'], reverse=False),
-                    sorted(ach.uninitiated, key=lambda a: a['xp'], reverse=False),
-                    sorted(ach.completed, key=lambda a: a['unlock_date'], reverse=True),
-                    sorted(ach.in_progress, key=lambda a: a['progress'], reverse=True),
+                    sorted(ach.hidden, key=lambda a: a["xp"], reverse=False),
+                    sorted(ach.uninitiated, key=lambda a: a["xp"], reverse=False),
+                    sorted(ach.completed, key=lambda a: a["unlock_date"], reverse=True),
+                    sorted(ach.in_progress, key=lambda a: a["progress"], reverse=True),
                 ),
-                (self.ui.ach_hidden_page, self.ui.ach_uninitiated_page, self.ui.ach_completed_page, self.ui.ach_progress_page, )
+                (
+                    self.ui.ach_hidden_page,
+                    self.ui.ach_uninitiated_page,
+                    self.ui.ach_completed_page,
+                    self.ui.ach_progress_page,
+                ),
             ):
                 self.ui.achievements_toolbox.setItemEnabled(self.ui.achievements_toolbox.indexOf(page), bool(group))
                 if bool(group):
@@ -483,17 +489,16 @@ class AchievementWidget(QFrame):
 
         image = LoadingImageWidget(manager, parent=self)
         image.setFixedSize(ImageSize.LibraryIcon)
-        image.fetchPixmap(achievement['icon_link'])
+        image.fetchPixmap(achievement["icon_link"])
 
         title = QLabel(
-            f"<b><font color={achievement['tier']['hexColor']}>{achievement['display_name']}</font></b>"
-            f" ({achievement['xp']} XP)",
-            parent=self
+            f"<b><font color={achievement['tier']['hexColor']}>{achievement['display_name']}</font></b> ({achievement['xp']} XP)",
+            parent=self,
         )
         title.setWordWrap(True)
-        description = QLabel(achievement['description'], parent=self)
+        description = QLabel(achievement["description"], parent=self)
         description.setWordWrap(True)
-        unlock_date = achievement['unlock_date'].astimezone() if achievement['unlock_date'] else None
+        unlock_date = achievement["unlock_date"].astimezone() if achievement["unlock_date"] else None
         unlock_date_str = f" ( On: {relative_date(unlock_date)} )" if unlock_date else ""
         progress = QLabel(f"Progress: <b>{achievement['progress'] * 100:,.2f}%</b> {unlock_date_str}", parent=self)
         if unlock_date:

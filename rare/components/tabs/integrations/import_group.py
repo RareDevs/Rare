@@ -73,7 +73,6 @@ class ImportWorkerSignals(QObject):
 
 
 class ImportWorker(QRunnable):
-
     def __init__(
         self,
         core: LegendaryCore,
@@ -278,7 +277,9 @@ class ImportGroup(QGroupBox):
         self.ui.import_dlcs_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_force_check.setCheckState(Qt.CheckState.Unchecked)
         self.ui.import_dlcs_check.setEnabled(self.app_name_edit.is_valid and bool(self.core.get_dlc_for_game(app_name)))
-        self.ui.import_button.setEnabled(not bool(self.worker) and (self.app_name_edit.is_valid and self.import_path_edit.is_valid))
+        self.ui.import_button.setEnabled(
+            not bool(self.worker) and (self.app_name_edit.is_valid and self.import_path_edit.is_valid)
+        )
 
     @Slot(Qt.CheckState)
     def _on_import_folder_changed(self, state: Qt.CheckState):

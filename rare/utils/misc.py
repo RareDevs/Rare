@@ -180,23 +180,23 @@ def relative_date(date):
     diff = datetime.now(UTC) - date
     s = diff.seconds
     if diff.days > 7 or diff.days < 0:
-        return date.strftime('%d %b %y')
+        return date.strftime("%d %b %y")
     elif diff.days == 1:
-        return '1 day ago'
+        return "1 day ago"
     elif diff.days > 1:
-        return '{} days ago'.format(diff.days)
+        return "{} days ago".format(diff.days)
     elif s <= 1:
-        return 'just now'
+        return "just now"
     elif s < 60:
-        return '{} seconds ago'.format(s)
+        return "{} seconds ago".format(s)
     elif s < 120:
-        return '1 minute ago'
+        return "1 minute ago"
     elif s < 3600:
-        return '{} minutes ago'.format(s//60)
+        return "{} minutes ago".format(s // 60)
     elif s < 7200:
-        return '1 hour ago'
+        return "1 hour ago"
     else:
-        return '{} hours ago'.format(s//3600)
+        return "{} hours ago".format(s // 3600)
 
 
 def qta_icon(icn_str: str, fallback: str = None, **kwargs):
@@ -218,6 +218,7 @@ def qta_icon(icn_str: str, fallback: str = None, **kwargs):
 # Source - https://stackoverflow.com/a
 # Posted by benrg
 # Retrieved 2025-12-25, License - CC BY-SA 4.0
+
 
 def partial_bound_method(bound_method, *args, **kwargs):
     f = functools.partialmethod(bound_method.__func__, *args, **kwargs)

@@ -146,7 +146,9 @@ class ProtonSettings(QGroupBox):
 
     @Slot(int)
     def _on_tool_changed(self, index: int):
-        steam_tool: Union[steam.ProtonTool, steam.CompatibilityTool, None] = self.tool_combo.itemData(index, Qt.ItemDataRole.UserRole)
+        steam_tool: Union[steam.ProtonTool, steam.CompatibilityTool, None] = self.tool_combo.itemData(
+            index, Qt.ItemDataRole.UserRole
+        )
 
         steam_environ = steam.get_steam_environment(steam_tool, self.compat_edit.text())
         library_paths = steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] if "STEAM_COMPAT_LIBRARY_PATHS" in steam_environ else ""
@@ -211,8 +213,7 @@ class ProtonSettings(QGroupBox):
             if not dir_list:
                 return True, text, IndicatorReasonsCommon.VALID
             if any(
-                (x in dir_list) for x in
-                ("pfx", "shadercache", "dosdevices", "drive_c", "system.reg", "user.reg", "userdef.reg")
+                (x in dir_list) for x in ("pfx", "shadercache", "dosdevices", "drive_c", "system.reg", "user.reg", "userdef.reg")
             ):
                 return True, text, IndicatorReasonsCommon.VALID
             return False, text, IndicatorReasonsCommon.DIR_NOT_EMPTY

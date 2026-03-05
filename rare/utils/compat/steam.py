@@ -361,8 +361,7 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
 
 
 def get_runtime(
-        tool: Union[ProtonTool, CompatibilityTool],
-        runtimes: Dict[str, Union[SteamRuntime, UmuRuntime]]
+    tool: Union[ProtonTool, CompatibilityTool], runtimes: Dict[str, Union[SteamRuntime, UmuRuntime]]
 ) -> Union[SteamRuntime, UmuRuntime, None]:
     required_tool = tool.required_tool
     if required_tool is None:

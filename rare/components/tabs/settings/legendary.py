@@ -28,7 +28,6 @@ class RefreshGameMetaWorkerSignals(QObject):
 
 
 class RefreshGameMetaWorker(Worker):
-
     def __init__(self, core: LegendaryCore, platforms: Set[str], include_unreal: bool):
         super(RefreshGameMetaWorker, self).__init__()
         self.core = core

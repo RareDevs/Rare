@@ -17,7 +17,6 @@ from .login_frame import LoginFrame
 
 
 class BrowserLogin(LoginFrame):
-
     def __init__(self, core: LegendaryCore, parent=None):
         super(BrowserLogin, self).__init__(core, parent=parent)
 
@@ -34,9 +33,7 @@ class BrowserLogin(LoginFrame):
         self.ui.copy_button.setIcon(qta_icon("mdi.content-copy", "fa5.copy"))
         self.ui.copy_button.clicked.connect(self._on_copy_link)
         self.ui.form_layout.setWidget(
-            self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0],
-            QFormLayout.ItemRole.FieldRole,
-            self.auth_edit
+            self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0], QFormLayout.ItemRole.FieldRole, self.auth_edit
         )
 
         self.ui.open_button.clicked.connect(self._on_open_browser)

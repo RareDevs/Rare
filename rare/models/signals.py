@@ -46,7 +46,6 @@ class GlobalSignalsDiscordRPCSignals(QObject):
 
 
 class GlobalSignals(QObject):
-
     def __init__(self):
         super(GlobalSignals, self).__init__()
         self.application = GlobalSignalsApplicationSignals()

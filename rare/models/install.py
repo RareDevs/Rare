@@ -137,7 +137,6 @@ class SelectiveDownloadsModel:
 
 
 class MoveGameModel:
-
     def __init__(self, app_name, install_path: str, default_name: str):
         self.app_name: str = app_name
         self.default_name: str = default_name

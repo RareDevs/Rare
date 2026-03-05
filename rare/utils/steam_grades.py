@@ -14,6 +14,7 @@ from rare.utils.paths import cache_dir
 
 logger = getLogger("SteamGrades")
 
+
 class ProtondbRatings(int, Enum):
     # internal
     PENDING = ("pending", -2)
@@ -59,7 +60,6 @@ class SteamGrades:
         return resp.content
 
     def load_steam_appids(self) -> Dict:
-
         if SteamGrades.__steam_appids:
             return SteamGrades.__steam_appids
 

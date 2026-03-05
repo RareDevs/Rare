@@ -42,7 +42,7 @@ if __name__ == "__main__":
         "d3d12": "n,b;",
         "d3d12core": "n,b",
     }
-    dlloverrides = ";".join(("=".join((k , v)) for k, v in dlls.items()))
+    dlloverrides = ";".join(("=".join((k, v)) for k, v in dlls.items()))
     dlloverrides = ";".join((os.environ.get("WINEDLLOVERRIDES", ""), dlloverrides))
 
     env = {
@@ -55,26 +55,26 @@ if __name__ == "__main__":
     local_env = os.environ.copy()
     local_env.update(env)
 
-    #determine mode
+    # determine mode
     rc = 0
     if sys.argv[1] == "run":
-        #start target app
+        # start target app
         rc = run_proc([wine_bin] + sys.argv[2:], local_env)
     elif sys.argv[1] == "waitforexitandrun":
-        #wait for wineserver to shut down
+        # wait for wineserver to shut down
         run_proc([wineserver_bin, "-w"], local_env)
-        #then run
+        # then run
         rc = run_proc([wine_bin] + sys.argv[2:], local_env)
     elif sys.argv[1] == "runinprefix":
         rc = run_proc([wine_bin] + sys.argv[2:], local_env)
     elif sys.argv[1] == "getcompatpath":
-        #linux -> windows path
+        # linux -> windows path
         path = subprocess.check_output([wine_bin, "winepath", "-w", sys.argv[2]], env=local_env, stderr=sys.stderr)
         sys.stdout.buffer.write(path)
         sys.stdout.buffer.flush()
         sys.stderr.buffer.flush()
     elif sys.argv[1] == "getnativepath":
-        #windows -> linux path
+        # windows -> linux path
         path = subprocess.check_output([wine_bin, "winepath", sys.argv[2]], env=local_env, stderr=sys.stderr)
         sys.stdout.buffer.write(path)
         sys.stdout.buffer.flush()
