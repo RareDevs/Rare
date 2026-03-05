@@ -3,21 +3,21 @@
 ################################################################################
 ## Form generated from reading UI file 'overlay.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import QCoreApplication, QSize, Qt
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QComboBox, QFormLayout, QFrame, QGridLayout, QGroupBox, QLabel, QSizePolicy, QSpacerItem
+from PySide6.QtWidgets import QComboBox, QFormLayout, QFrame, QGridLayout, QGroupBox, QLabel, QSizePolicy
 
 
 class Ui_OverlaySettings(object):
     def setupUi(self, OverlaySettings):
         if not OverlaySettings.objectName():
             OverlaySettings.setObjectName(u"OverlaySettings")
-        OverlaySettings.resize(343, 119)
+        OverlaySettings.resize(608, 256)
         OverlaySettings.setWindowTitle(u"OverlaySettings")
         OverlaySettings.setTitle(u"")
         self.main_layout = QFormLayout(OverlaySettings)
@@ -69,21 +69,25 @@ class Ui_OverlaySettings(object):
         self.options_group.setTitle(u"")
         self.options_layout = QGridLayout(self.options_group)
         self.options_layout.setObjectName(u"options_layout")
-        self.options_form = QFormLayout()
-        self.options_form.setObjectName(u"options_form")
-        self.options_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.left_options_form = QFormLayout()
+        self.left_options_form.setObjectName(u"left_options_form")
+        self.left_options_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.options_layout.addLayout(self.options_form, 1, 0, 1, 1)
+        self.options_layout.addLayout(self.left_options_form, 1, 0, 1, 1)
 
         self.options_grid = QGridLayout()
         self.options_grid.setObjectName(u"options_grid")
 
-        self.options_layout.addLayout(self.options_grid, 0, 0, 1, 1)
+        self.options_layout.addLayout(self.options_grid, 0, 0, 1, 2)
 
-        self.hspacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.right_options_form = QFormLayout()
+        self.right_options_form.setObjectName(u"right_options_form")
+        self.right_options_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.options_layout.addItem(self.hspacer, 0, 1, 2, 1)
+        self.options_layout.addLayout(self.right_options_form, 1, 1, 1, 1)
 
+        self.options_layout.setColumnStretch(0, 1)
+        self.options_layout.setColumnStretch(1, 1)
 
         self.main_layout.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.options_group)
 
