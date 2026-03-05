@@ -144,6 +144,7 @@ class OverlaySettings(QGroupBox):
         self.force_disabled: Union[str, None] = None
         self.force_defaults: Union[str, None] = None
         self.separator: Union[str, None] = None
+        self.grid_row_items: Union[int, None] = None
         self.app_name: str = "default"
 
         self.option_widgets: List[Union[OverlayCheckBox, OverlayLineEdit, OverlayComboBox]] = []
@@ -158,35 +159,50 @@ class OverlaySettings(QGroupBox):
     def setupWidget(
         self,
         grid_map: List[OverlayCheckBox],
-        form_map: List[Tuple[Union[OverlayLineEdit, OverlayComboBox], str]],
+        left_form_map: List[Tuple[Union[OverlayLineEdit, OverlayComboBox], str]],
+        right_form_map: List[Tuple[Union[OverlayLineEdit, OverlayComboBox], str]],
         label: str,
         control_key: str,
         config_key: str,
         force_disabled: str,
         force_defaults: str,
         separator: str,
+        grid_row_items: int,
     ):
         self.control_key = control_key
         self.config_key = config_key
         self.force_disabled = force_disabled
         self.force_defaults = force_defaults
         self.separator = separator
+        self.grid_row_items = grid_row_items
 
         self.ui.overlay_state_label.setText(label)
 
         for idx, widget in enumerate(grid_map):
             widget.setParent(self.ui.options_group)
-            self.ui.options_grid.addWidget(widget, idx // 4, idx % 4)
+            self.ui.options_grid.addWidget(widget, idx // self.grid_row_items, idx % self.grid_row_items)
             # self.checkboxes[widget.option] = widget
             self.option_widgets.append(widget)
             widget.stateChanged.connect(self._update_settings)
+        self.ui.options_grid.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
-        for widget, label in form_map:
+        for widget, label in left_form_map:
             widget.setParent(self.ui.options_group)
-            self.ui.options_form.addRow(label, widget)
+            self.ui.left_options_form.addRow(label, widget)
             # self.values[widget.option] = widget
             self.option_widgets.append(widget)
             widget.valueChanged.connect(self._update_settings)
+        self.ui.left_options_form.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+
+        for widget, label in right_form_map:
+            widget.setParent(self.ui.options_group)
+            self.ui.right_options_form.addRow(label, widget)
+            # self.values[widget.option] = widget
+            self.option_widgets.append(widget)
+            widget.valueChanged.connect(self._update_settings)
+        self.ui.right_options_form.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+
+        self.ui.options_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
     @abstractmethod
     def update_settings_override(self, state: ActivationStates):
@@ -282,19 +298,22 @@ class DxvkHudSettings(OverlaySettings):
             OverlayCheckBox("devinfo", self.tr("GPU driver and version")),
             OverlayCheckBox("drawcalls", self.tr("Draw calls per frame")),
         ]
-        form = [
+        left_form = [
             (OverlayNumberInput("scale", 1.0), self.tr("Scale")),
             (OverlayNumberInput("opacity", 1.0), self.tr("Opacity")),
         ]
+        right_form = []
         self.setupWidget(
             grid,
-            form,
+            left_form,
+            right_form,
             label=self.tr("Show HUD"),
             control_key="DXVK_HUD",
             config_key="DXVK_HUD",
             force_disabled="0",
             force_defaults="1",
             separator=",",
+            grid_row_items=4,
         )
 
     def update_settings_override(self, state: ActivationStates):
@@ -306,54 +325,31 @@ class DxvkConfigSettings(OverlaySettings):
         super(DxvkConfigSettings, self).__init__(parent=parent)
         self.setTitle(self.tr("DXVK Config"))
         dxvk_config_trinary = (("Auto", "Auto"), ("True", "True"), ("False", "False"))
+        # fmt: off
         grid = []
-        form = [
-            (
-                OverlayLineEdit(
-                    "dxvk.deviceFilter",
-                    "",
-                ),
-                "dxvk.deviceFilter",
-            ),
-            (
-                OverlayNumberInput(
-                    "dxgi.syncInterval",
-                    -1,
-                ),
-                "dxgi.syncInterval",
-            ),
-            (
-                OverlayNumberInput(
-                    "d3d9.presentInterval",
-                    -1,
-                ),
-                "d3d9.presentInterval",
-            ),
-            (
-                OverlayNumberInput(
-                    "dxgi.maxFrameRate",
-                    0,
-                ),
-                "dxgi.maxFrameRate",
-            ),
-            (
-                OverlayNumberInput(
-                    "d3d9.maxFrameRate",
-                    0,
-                ),
-                "d3d9.maxFrameRate",
-            ),
+        left_form = [
+            (OverlayLineEdit("dxvk.deviceFilter", ""), "dxvk.deviceFilter"),
+            (OverlayNumberInput("dxvk.numCompilerThreads", 0), "dxvk.numCompilerThreads"),
             (OverlaySelectInput("dxvk.tearFree", dxvk_config_trinary), "dxvk.tearFree"),
         ]
+        right_form = [
+            (OverlayNumberInput("dxgi.syncInterval", -1), "dxgi.syncInterval"),
+            (OverlayNumberInput("dxgi.maxFrameRate", 0), "dxgi.maxFrameRate"),
+            (OverlayNumberInput("d3d9.presentInterval", -1), "d3d9.presentInterval"),
+            (OverlayNumberInput("d3d9.maxFrameRate", 0), "d3d9.maxFrameRate"),
+        ]
+        # fmt: on
         self.setupWidget(
             grid,
-            form,
+            left_form,
+            right_form,
             label=self.tr("Mode"),
             control_key="DXVK_CONFIG",
             config_key="DXVK_CONFIG",
             force_disabled="0",
             force_defaults="",
             separator=";",
+            grid_row_items=4,
         )
 
     def update_settings_override(self, state: ActivationStates):
@@ -397,7 +393,7 @@ class DxvkNvapiDrsSettings(OverlaySettings):
                 values=("off", "on"),
             ),
         ]
-        form = [
+        left_form = [
             (
                 OverlaySelectInput("ngx_dlss_sr_override_render_preset_selection", ngx_sr_presets),
                 "Super Resolution preset",
@@ -407,15 +403,18 @@ class DxvkNvapiDrsSettings(OverlaySettings):
                 "Ray Reconstruction preset",
             ),
         ]
+        right_form = []
         self.setupWidget(
             grid,
-            form,
+            left_form,
+            right_form,
             label=self.tr("Mode"),
             control_key="DXVK_NVAPI_DRS_SETTINGS",
             config_key="DXVK_NVAPI_DRS_SETTINGS",
             force_disabled="0",
             force_defaults="",
             separator=",",
+            grid_row_items=4,
         )
 
     def update_settings_override(self, state: ActivationStates):
@@ -471,25 +470,26 @@ class MangoHudSettings(OverlaySettings):
             OverlayCheckBox("cpu_power", self.tr("CPU power consumption")),
             OverlayCheckBox("gpu_power", self.tr("GPU power consumption")),
         ]
-        form = [
+        left_form = [
             (OverlayNumberInput("fps_limit", 0), self.tr("FPS limit")),
             (OverlaySelectInput("vsync", mangohud_vsync), self.tr("Vulkan vsync")),
-            (
-                OverlaySelectInput("gl_vsync", mangohud_gl_vsync),
-                self.tr("OpenGL vsync"),
-            ),
+            (OverlaySelectInput("gl_vsync", mangohud_gl_vsync), self.tr("OpenGL vsync")),
+        ]
+        right_form = [
             (OverlayNumberInput("font_size", 24), self.tr("Font size")),
             (OverlaySelectInput("position", mangohud_position), self.tr("Position")),
         ]
         self.setupWidget(
             grid,
-            form,
+            left_form,
+            right_form,
             label=self.tr("Show HUD"),
             control_key="MANGOHUD",
             config_key="MANGOHUD_CONFIG",
             force_disabled="no_display",
             force_defaults="read_cfg",
             separator=",",
+            grid_row_items=4,
         )
 
     def showEvent(self, a0: QShowEvent):

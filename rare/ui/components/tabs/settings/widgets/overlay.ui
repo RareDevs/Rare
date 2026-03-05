@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>343</width>
-    <height>119</height>
+    <width>608</width>
+    <height>256</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -88,29 +88,23 @@
      <property name="title">
       <string notr="true"/>
      </property>
-     <layout class="QGridLayout" name="options_layout">
+     <layout class="QGridLayout" name="options_layout" columnstretch="1,1">
       <item row="1" column="0">
-       <layout class="QFormLayout" name="options_form">
+       <layout class="QFormLayout" name="left_options_form">
         <property name="labelAlignment">
          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </layout>
       </item>
-      <item row="0" column="0">
+      <item row="0" column="0" colspan="2">
        <layout class="QGridLayout" name="options_grid"/>
       </item>
-      <item row="0" column="1" rowspan="2">
-       <spacer name="hspacer">
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
+      <item row="1" column="1">
+       <layout class="QFormLayout" name="right_options_form">
+        <property name="labelAlignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       </layout>
       </item>
      </layout>
     </widget>
