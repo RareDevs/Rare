@@ -84,16 +84,13 @@ qt_resource_struct = b"\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x02\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00\x1a\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00\
-\x00\x00\x01\x9c]]\x00Y\
+\x00\x00\x01\x9c]y\xf9\xe9\
 "
-
 
 def qInitResources():
     QtCore.qRegisterResourceData(0x03, qt_resource_struct, qt_resource_name, qt_resource_data)
 
-
 def qCleanupResources():
     QtCore.qUnregisterResourceData(0x03, qt_resource_struct, qt_resource_name, qt_resource_data)
-
 
 qInitResources()
