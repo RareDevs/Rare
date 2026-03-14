@@ -297,6 +297,7 @@ class DxvkHudSettings(OverlaySettings):
             OverlayCheckBox("compiler", self.tr("Compiler activity")),
             OverlayCheckBox("devinfo", self.tr("GPU driver and version")),
             OverlayCheckBox("drawcalls", self.tr("Draw calls per frame")),
+            OverlayCheckBox("full", self.tr("All HUD elements")),
         ]
         left_form = [
             (OverlayNumberInput("scale", 1.0), self.tr("Scale")),
@@ -324,13 +325,17 @@ class DxvkConfigSettings(OverlaySettings):
     def __init__(self, parent=None):
         super(DxvkConfigSettings, self).__init__(parent=parent)
         self.setTitle(self.tr("DXVK Config"))
-        dxvk_config_trinary = (("Auto", "Auto"), ("True", "True"), ("False", "False"))
+        dxvk_config_boolean = (("Default", ""), ("True", "True"), ("False", "False"))
+        dxvk_config_tristate = (("Default", ""), ("Auto", "Auto"), ("True", "True"), ("False", "False"))
         # fmt: off
         grid = []
         left_form = [
             (OverlayLineEdit("dxvk.deviceFilter", ""), "dxvk.deviceFilter"),
             (OverlayNumberInput("dxvk.numCompilerThreads", 0), "dxvk.numCompilerThreads"),
-            (OverlaySelectInput("dxvk.tearFree", dxvk_config_trinary), "dxvk.tearFree"),
+            (OverlaySelectInput("dxvk.tearFree", dxvk_config_tristate), "dxvk.tearFree"),
+            (OverlaySelectInput("dxvk.enableGraphicsPipelineLibrary", dxvk_config_tristate),
+             "dxvk.enableGraphicsPipelineLibrary"),
+            (OverlaySelectInput("dxvk.enableAsync", dxvk_config_boolean), "dxvk.enableAsync"),
         ]
         right_form = [
             (OverlayNumberInput("dxgi.syncInterval", -1), "dxgi.syncInterval"),
