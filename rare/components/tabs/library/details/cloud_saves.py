@@ -96,12 +96,12 @@ class CloudSaves(QWidget, SideTabContents):
 
     def edit_save_path(self, text: str) -> Tuple[bool, str, int]:
         # Validate against raw_save_path (usefull when the user types the path manually)
-        path = os.path.normpath(text.lower()).split("/")
-        spec = os.path.normpath(self.save_path_spec.lower()).split("/")
-        depth = min((len(spec) - 1), (len(path) - 1))
-        depth = depth if depth > 0 else 1
-        if path[-depth:] != spec[-depth:]:
-            return False, text, IndicatorReasonsCommon.INVALID
+        # path = os.path.normpath(text.lower()).split("/")
+        # spec = os.path.normpath(self.save_path_spec.lower()).split("/")
+        # depth = min((len(spec) - 1), (len(path) - 1))
+        # depth = depth if depth > 0 else 1
+        # if path[-depth:] != spec[-depth:]:
+        #     return False, text, IndicatorReasonsCommon.INVALID
         if platform.system() != "Windows":
             if os.path.exists(text):
                 return True, text, IndicatorReasonsCommon.VALID
