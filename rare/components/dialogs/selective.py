@@ -41,7 +41,7 @@ class SelectiveDialog(ButtonDialog):
 
     def accept_handler(self):
         self.options.accepted = True
-        self.options.install_tag = self.selective_widget.install_tags()
+        self.options.install_tag = self.selective_widget.enabled_tags()
 
     def reject_handler(self):
         self.options.accepted = False
