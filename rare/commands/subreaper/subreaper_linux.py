@@ -11,6 +11,8 @@ from logging import getLogger
 from pathlib import Path
 from typing import Any, Generator, List
 
+from .util import find_mangohud_bin, find_mangohud_shim
+
 # Constants defined in prctl.h
 # See prctl(2) for more details
 PR_SET_NAME = 15
@@ -98,6 +100,12 @@ def subreaper(args: Namespace, other: List[str]) -> int:
 
     prctl_ret = prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0, 0)
     logger.debug("prctl PR_SET_CHILD_SUBREAPER exited with status: %s", prctl_ret)
+
+    if os.environ.get("MANGOHUD") == "1":
+        if mangoshim := find_mangohud_shim():
+            os.environ["LD_PRELOAD"] = f'{os.environ.get("LD_PRELOAD", "")}:{mangoshim}'
+        elif mangobin := find_mangohud_bin():
+            command.insert(0, mangobin)
 
     pid = os.fork()  # pylint: disable=E1101
     if pid == -1:
