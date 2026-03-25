@@ -1,7 +1,6 @@
 <RCC>
   <qresource prefix="schemes">
     <file alias="Adapta-Nokto">colors/Adapta-Nokto.scheme</file>
-    <file alias="Airy">colors/Airy.scheme</file>
     <file alias="Arc-Dark">colors/Arc-Dark.scheme</file>
     <file alias="Arc-Darker">colors/Arc-Darker.scheme</file>
     <file alias="Darker">colors/Darker.scheme</file>
