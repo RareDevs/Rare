@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>508</width>
-    <height>210</height>
+    <width>542</width>
+    <height>215</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -154,7 +154,9 @@
    <item row="4" column="1">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string notr="true">&lt;a href='https://github.com/MultisampledNight' style='color: #2980b9; text-decoration:none'&gt;MultisampledNight&lt;/a&gt; &lt;i&gt;artwork, bug hunting, testing&lt;/i&gt;
+      <string notr="true">&lt;a href='https://github.com/CommandMC' style='color: #2980b9; text-decoration:none'&gt;CommandMC&lt;/a&gt; &lt;i&gt;author of &lt;a href='https://github.com/CommandMC/Rare' style='color: #2980b9; text-decoration:none'&gt;original Rare&lt;/a&gt;, the very early base of this project&lt;/i&gt;
+&lt;br&gt;
+&lt;a href='https://github.com/MultisampledNight' style='color: #2980b9; text-decoration:none'&gt;MultisampledNight&lt;/a&gt; &lt;i&gt;artwork, bug hunting, testing&lt;/i&gt;
 &lt;br&gt;
 &lt;a href='https://github.com/invertedEcho' style='color: #2980b9; text-decoration:none'&gt;invertedEcho&lt;/a&gt; &lt;i&gt;moving games, environment variables&lt;/i&gt;
 &lt;br&gt;
