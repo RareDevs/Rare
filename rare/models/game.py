@@ -537,9 +537,12 @@ class RareGame(RareGameSlim):
 
         if self.igame is not None and not self.has_update:
             manifest_data = self.core.lgd.load_manifest(self.app_name, self.igame.version, self.igame.platform)
+            manifest = self.core.load_manifest(manifest_data)
         else:
-            manifest_data, _, _ = self.core.get_cdn_manifest(self.game, platform)
-        manifest = self.core.load_manifest(manifest_data)
+            manifest_data, _, _, manifest_secrets = self.core.get_cdn_manifest(self.game, platform=platform)
+            manifest = self.core.load_manifest(manifest_data)
+            manifest.decrypt(manifest_secrets)
+
         manifest_install_tags = set()
         for fm in manifest.file_manifest_list.elements:
             for tag in fm.install_tags:

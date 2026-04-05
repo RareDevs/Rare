@@ -131,9 +131,6 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.read_files_check.setChecked(options.read_files)
         self.advanced.ui.read_files_check.checkStateChanged.connect(self._on_option_changed)
 
-        self.advanced.ui.use_signed_urls_check.setChecked(options.always_use_signed_urls)
-        self.advanced.ui.use_signed_urls_check.checkStateChanged.connect(self._on_option_changed)
-
         self.advanced.ui.dl_optimizations_check.setChecked(options.order_opt)
         self.advanced.ui.dl_optimizations_check.checkStateChanged.connect(self._on_option_changed)
 
@@ -227,7 +224,6 @@ class InstallDialog(ActionDialog):
         self._options.max_workers = self.advanced.ui.max_workers_spin.value()
         self._options.shared_memory = self.advanced.ui.max_memory_spin.value()
         self._options.read_files = self.advanced.ui.read_files_check.isChecked()
-        self._options.always_use_signed_urls = self.advanced.ui.use_signed_urls_check.isChecked()
         self._options.order_opt = self.advanced.ui.dl_optimizations_check.isChecked()
         self._options.force = self.advanced.ui.force_download_check.isChecked()
         self._options.ignore_space = self.advanced.ui.ignore_space_check.isChecked()
