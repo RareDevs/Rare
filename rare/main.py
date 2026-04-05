@@ -30,6 +30,7 @@ def main() -> int:
     # remove QT_QPA_PLATFORMTHEME to avoid broken theming
     if "QT_QPA_PLATFORMTHEME" in os.environ:
         del os.environ["QT_QPA_PLATFORMTHEME"]
+    os.environ["QT_STYLE_OVERRIDE"] = "fusion"
     # remove XDG_CONFIG_HOME if running under Wine to stop legendary from using the Linux client config
     if platform.system() == "Windows" and "XDG_CONFIG_HOME" in os.environ:
         del os.environ["XDG_CONFIG_HOME"]

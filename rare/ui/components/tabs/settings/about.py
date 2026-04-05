@@ -17,7 +17,7 @@ class Ui_About(object):
     def setupUi(self, About):
         if not About.objectName():
             About.setObjectName(u"About")
-        About.resize(508, 210)
+        About.resize(542, 215)
         self.about_layout = QFormLayout(About)
         self.about_layout.setObjectName(u"about_layout")
         self.about_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
@@ -104,7 +104,9 @@ class Ui_About(object):
 
         self.label = QLabel(About)
         self.label.setObjectName(u"label")
-        self.label.setText(u"<a href='https://github.com/MultisampledNight' style='color: #2980b9; text-decoration:none'>MultisampledNight</a> <i>artwork, bug hunting, testing</i>\n"
+        self.label.setText(u"<a href='https://github.com/CommandMC' style='color: #2980b9; text-decoration:none'>CommandMC</a> <i>author of <a href='https://github.com/CommandMC/Rare' style='color: #2980b9; text-decoration:none'>original Rare</a>, the very early base of this project</i>\n"
+"<br>\n"
+"<a href='https://github.com/MultisampledNight' style='color: #2980b9; text-decoration:none'>MultisampledNight</a> <i>artwork, bug hunting, testing</i>\n"
 "<br>\n"
 "<a href='https://github.com/invertedEcho' style='color: #2980b9; text-decoration:none'>invertedEcho</a> <i>moving games, environment variables</i>\n"
 "<br>\n"

@@ -333,6 +333,8 @@ class DxvkConfigSettings(OverlaySettings):
             (OverlayLineEdit("dxvk.deviceFilter", ""), "dxvk.deviceFilter"),
             (OverlayNumberInput("dxvk.numCompilerThreads", 0), "dxvk.numCompilerThreads"),
             (OverlaySelectInput("dxvk.tearFree", dxvk_config_tristate), "dxvk.tearFree"),
+            (OverlaySelectInput("dxvk.enableDescriptorHeap", dxvk_config_tristate),
+             "dxvk.enableDescriptorHeap"),
             (OverlaySelectInput("dxvk.enableGraphicsPipelineLibrary", dxvk_config_tristate),
              "dxvk.enableGraphicsPipelineLibrary"),
             (OverlaySelectInput("dxvk.enableAsync", dxvk_config_boolean), "dxvk.enableAsync"),
