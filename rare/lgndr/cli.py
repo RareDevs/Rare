@@ -1,10 +1,8 @@
 import functools
 import logging
-import multiprocessing
 import os
 import queue
 import subprocess
-import threading
 import time
 from typing import Optional, Union, Tuple
 
@@ -214,8 +212,7 @@ class LegendaryCLI(LegendaryCLIReal):
                                                           override_delta_manifest=args.override_delta_manifest,
                                                           preferred_cdn=args.preferred_cdn,
                                                           disable_https=args.disable_https,
-                                                          bind_ip=args.bind_ip,
-                                                          always_use_signed_urls=args.always_use_signed_urls)
+                                                          bind_ip=args.bind_ip)
 
         # game is either up-to-date or hasn't changed, so we have nothing to do
         if not analysis.dl_size and not game.is_dlc:
@@ -245,43 +242,13 @@ class LegendaryCLI(LegendaryCLIReal):
                          'install/import/move applications at a time.')
             return ret
 
-        ticket_a, ticket_b = multiprocessing.Pipe()
-        sign_a, sign_b = multiprocessing.Pipe()
-
-        def ticket_creator_thread():
-            t = threading.current_thread()
-            while not getattr(t, 'stop', False):
-                if ticket_b.poll(1):
-                    catalog_item_id, build_version, app_name, namespace, label, platform = ticket_b.recv()
-                    ticket_b.send(self.core.egs.get_download_ticket(catalog_item_id, build_version, app_name,
-                                                                    namespace, label, platform))
-
-        def chunk_url_sign_thread():
-            t = threading.current_thread()
-            while not getattr(t, 'stop', False):
-                if sign_b.poll(1):
-                    ticket, chunk_paths = sign_b.recv()
-                    signed_chunk_urls = self.core.egs.get_signed_chunk_urls(ticket, chunk_paths)
-                    if args.disable_https:
-                        for key in signed_chunk_urls:
-                            signed_chunk_urls[key] = signed_chunk_urls[key].replace('https://', 'http://')
-                    sign_b.send(signed_chunk_urls)
-
-
-        ticket_thread = threading.Thread(target=ticket_creator_thread)
-        sign_thread = threading.Thread(target=chunk_url_sign_thread)
-
         start_t = time.time()
 
         try:
             # set up logging stuff (should be moved somewhere else later)
             dlm.logging_queue = self.logging_queue
             dlm.proc_debug = args.dlm_debug
-            dlm.ticket_pipe = ticket_a
-            dlm.sign_pipe = sign_a
 
-            ticket_thread.start()
-            sign_thread.start()
             dlm.start()
             while dlm.is_alive():
                 try:
@@ -350,12 +317,6 @@ class LegendaryCLI(LegendaryCLIReal):
             logger.info(f'Finished installation process in {end_t - start_t:.02f} seconds.')
 
             return ret
-        finally:
-            ticket_thread.stop = True
-            sign_thread.stop = True
-            ticket_thread.join()
-            sign_thread.join()
-
 
     @unlock_installed.__func__
     def install_game_cleanup(self, game: Game, igame: InstalledGame, repair_mode: bool = False, repair_file: str = '') -> None:
@@ -499,7 +460,7 @@ class LegendaryCLI(LegendaryCLIReal):
         args.app_name = self._resolve_aliases(args.app_name)
         if not self.core.is_installed(args.app_name):
             logger.error(f'Game "{args.app_name}" is not installed')
-            return
+            return None
 
         logger.info(f'Loading installed manifest for "{args.app_name}"')
         igame = self.core.get_installed_game(args.app_name)
@@ -507,9 +468,11 @@ class LegendaryCLI(LegendaryCLIReal):
             logger.error(f'Install path "{igame.install_path}" does not exist, make sure all necessary mounts '
                          f'are available. If you previously deleted the game folder without uninstalling, run '
                          f'"legendary uninstall -y {igame.app_name}" and reinstall from scratch.')
-            return
+            return None
 
         manifest_data, _ = self.core.get_installed_manifest(args.app_name)
+        manifest_secrets = dict()
+
         if manifest_data is None:
             if repair_mode:
                 if not repair_online:
@@ -518,18 +481,23 @@ class LegendaryCLI(LegendaryCLIReal):
 
                 logger.warning('No manifest could be loaded, the file may be missing. Downloading the latest manifest.')
                 game = self.core.get_game(args.app_name, platform=igame.platform)
-                manifest_data, _, _ = self.core.get_cdn_manifest(game, igame.platform)
+                manifest_data, _, _, manifest_secrets = self.core.get_cdn_manifest(game, igame.platform)
                 # Rare: Save the manifest if we downloaded it because it was missing
-                self.core.lgd.save_manifest(game.app_name, manifest_data,
-                                            version=self.core.load_manifest(manifest_data).meta.build_version,
+                manifest = self.core.load_manifest(manifest_data)
+                manifest.decrypt(manifest_secrets)
+                self.core.lgd.save_manifest(game.app_name, manifest,
+                                            version=manifest.meta.build_version,
                                             platform=igame.platform)
             else:
                 logger.critical(f'Manifest appears to be missing! To repair, run "legendary repair '
                                 f'{args.app_name} --repair-and-update", this will however redownload all files '
                                 f'that do not match the latest manifest in their entirety.')
-                return
+                return None
 
         manifest = self.core.load_manifest(manifest_data)
+        if not manifest.decrypt(manifest_secrets):
+            logger.critical('Unable to decrypt the manifest. The key appears to be missing. Please report this on GitHub.')
+            return None
 
         files = sorted(manifest.file_manifest_list.elements,
                        key=lambda a: a.filename.lower())

@@ -75,41 +75,11 @@ class DlThread(QThread):
         result = DlResultModel(self.item.options)
         result.app_title = self.rgame.app_title
 
-        ticket_a, ticket_b = multiprocessing.Pipe()
-        sign_a, sign_b = multiprocessing.Pipe()
-
-        def ticket_creator_thread():
-            t = threading.current_thread()
-            while not getattr(t, "stop", False):
-                if ticket_b.poll(1):
-                    catalog_item_id, build_version, app_name, namespace, label, platform = ticket_b.recv()
-                    ticket_b.send(
-                        self.core.egs.get_download_ticket(catalog_item_id, build_version, app_name, namespace, label, platform)
-                    )
-
-        def chunk_url_sign_thread():
-            t = threading.current_thread()
-            while not getattr(t, "stop", False):
-                if sign_b.poll(1):
-                    ticket, chunk_paths = sign_b.recv()
-                    signed_chunk_urls = self.core.egs.get_signed_chunk_urls(ticket, chunk_paths)
-                    if self.item.options.disable_https:
-                        for key in signed_chunk_urls:
-                            signed_chunk_urls[key] = signed_chunk_urls[key].replace("https://", "http://")
-                    sign_b.send(signed_chunk_urls)
-
-        ticket_thread = threading.Thread(target=ticket_creator_thread)
-        sign_thread = threading.Thread(target=chunk_url_sign_thread)
-
         start_t = time.time()
         try:
             self.item.download.dlm.logging_queue = cli.logging_queue
             self.item.download.dlm.proc_debug = self.debug
-            self.item.download.dlm.ticket_pipe = ticket_a
-            self.item.download.dlm.sign_pipe = sign_a
 
-            ticket_thread.start()
-            sign_thread.start()
             self.item.download.dlm.start()
             self.rgame.state = RareGame.State.DOWNLOADING
             self.rgame.signals.progress.start.emit()
@@ -192,10 +162,6 @@ class DlThread(QThread):
 
             return
         finally:
-            ticket_thread.stop = True
-            sign_thread.stop = True
-            ticket_thread.join()
-            sign_thread.join()
             self._finish(result)
 
     def _handle_postinstall(self, postinstall, igame):

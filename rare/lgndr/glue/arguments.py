@@ -92,7 +92,6 @@ class LgndrInstallGameArgs:
     skip_sdl: bool = False
     disable_https: bool = False
     bind_ip: str = ""
-    always_use_signed_urls: bool = False
     # FIXME: move to LgndrInstallGameRealArgs
     skip_dlcs: bool = False
     with_dlcs: bool = False

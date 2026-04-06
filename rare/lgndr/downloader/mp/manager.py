@@ -43,7 +43,6 @@ class DLManager(DLManagerReal):
         self.writer_queue = MPQueue(-1)
         self.dl_result_q = MPQueue(-1)
         self.writer_result_q = MPQueue(-1)
-        self.signed_chunks_q = MPQueue(-1)
 
         self.log.info(f'Starting download workers...')
 
@@ -54,7 +53,7 @@ class DLManager(DLManagerReal):
 
             w = DLWorker(f'DLWorker {i + 1}', self.dl_worker_queue, self.dl_result_q,
                          self.shared_memory.name, logging_queue=self.logging_queue,
-                         dl_timeout=self.dl_timeout, bind_addr=bind_ip)
+                         dl_timeout=self.dl_timeout, bind_addr=bind_ip, secrets=self.manifest_secrets)
             self.children.append(w)
             w.start()
 
@@ -80,13 +79,11 @@ class DLManager(DLManagerReal):
         # synchronization conditions
         shm_cond = Condition()
         task_cond = Condition()
-        sig_chunks_cond = Condition()
-        self.conditions = [shm_cond, task_cond, sig_chunks_cond]
+        self.conditions = [shm_cond, task_cond]
 
         # start threads
         s_time = time.perf_counter()
-        self.threads.append(Thread(target=self.chunk_signing_manager, args=(sig_chunks_cond,)))
-        self.threads.append(Thread(target=self.download_job_manager, args=(task_cond, shm_cond, sig_chunks_cond)))
+        self.threads.append(Thread(target=self.download_job_manager, args=(task_cond, shm_cond)))
         self.threads.append(Thread(target=self.dl_results_handler, args=(task_cond,)))
         self.threads.append(Thread(target=self.fw_results_handler, args=(shm_cond,)))
 
@@ -179,9 +176,8 @@ class DLManager(DLManagerReal):
             # Rare: queue of control signals
             try:
                 signals: DLManagerSignals = self.signals_queue.get(timeout=0.5)
-                self.log.warning('Immediate stop requested!')
                 if signals.kill:
-                    # lk: graceful but not what legendary does
+                    self.log.warning('Immediate stop requested!')
                     self.running = False
                     # send conditions to unlock threads if they aren't already
                     for cond in self.conditions:
@@ -206,7 +202,6 @@ class DLManager(DLManagerReal):
 
         self.log.info('Waiting for installation to finish...')
         self.writer_queue.put_nowait(TerminateWorkerTask())
-        self.signed_chunks_q.put_nowait((TerminateWorkerTask(), None))
 
         writer_p.join(timeout=10.0)
         if writer_p.exitcode is None:
@@ -231,7 +226,6 @@ class DLManager(DLManagerReal):
             ('Writer jobs', self.writer_queue),
             ('Download results', self.dl_result_q),
             ('Writer results', self.writer_result_q),
-            ('Signed chunks', self.signed_chunks_q)
         ]
         for name, q in queues:
             self.log.debug(f'Cleaning up queue "{name}"')
@@ -241,12 +235,6 @@ class DLManager(DLManagerReal):
             except queue.Empty:
                 q.close()
                 q.join_thread()
-
-        # clean up connections
-        pipes = [self.sign_pipe, self.ticket_pipe]
-        for pipe in pipes:
-            if pipe is not None:
-                pipe.close()
 
         # clean up resume file
         if self.resume_file and not kill_request:
