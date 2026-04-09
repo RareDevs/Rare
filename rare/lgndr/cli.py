@@ -218,7 +218,6 @@ class LegendaryCLI(LegendaryCLIReal):
         if not analysis.dl_size and not game.is_dlc:
             logger.info('Download size is 0, the game is either already up to date or has not changed. Exiting...')
             self.install_game_cleanup(game, igame, args.repair_mode, repair_file)
-            # return
             # Rare: Return what we know about the download to queue a 0 size DLC
             res = self.core.check_installation_conditions(analysis=analysis, install=igame, game=game,
                                                           updating=self.core.is_installed(args.app_name),
@@ -526,7 +525,8 @@ class LegendaryCLI(LegendaryCLIReal):
 
         logger.info(f'Verifying "{igame.title}" version "{manifest.meta.build_version}"')
         repair_file = []
-        for result, path, result_hash, bytes_read in validate_files(igame.install_path, file_list):
+        for result, path, result_hash, bytes_read in validate_files(igame.install_path, file_list,
+                                                                    case_insensitive=igame.platform.startswith('Win')):
             processed += bytes_read
             percentage = (processed / total_size) * 100.0
             num += 1

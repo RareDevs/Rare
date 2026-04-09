@@ -226,7 +226,7 @@ class RareGameSlim(RareGameBase):
         super(RareGameSlim, self).__init__(legendary_core, game)
         self.settings = settings
         # None if origin or not installed
-        self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
+        self.igame: InstalledGame = self.core.get_installed_game(game.app_name)
         self.saves: List[RareSaveGame] = []
 
     @property

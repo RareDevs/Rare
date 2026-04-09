@@ -207,7 +207,8 @@ class MoveWorker(QueueWorker):
                 dirs_exist_ok=True,
             )
 
-            for result, path, _, _ in validate_files(self.dst_path, file_list):
+            is_win = self.rgame.igame.platform.startswith('Win')
+            for result, path, _, _ in validate_files(self.dst_path, file_list, case_insensitive=is_win):
                 dst_path = os.path.join(self.dst_path, path)
                 src_path = os.path.join(self.rgame.install_path, path)
                 if os.path.isfile(src_path):

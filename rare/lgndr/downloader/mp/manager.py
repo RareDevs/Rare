@@ -59,7 +59,8 @@ class DLManager(DLManagerReal):
 
         self.log.info('Starting file writing worker...')
         writer_p = FileWorker(self.writer_queue, self.writer_result_q, self.dl_dir,
-                              self.shared_memory.name, self.cache_dir, self.logging_queue)
+                              self.shared_memory.name, self.cache_dir, self.logging_queue,
+                              self.case_insensitive)
         self.children.append(writer_p)
         writer_p.start()
 
