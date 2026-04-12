@@ -15,6 +15,7 @@ from .cloud_saves import CloudSaves
 from .compat import LocalCompatSettings
 from .details import GameDetails
 from .dlcs import GameDlcs
+from .environ import LocalEnvironSettings
 from .game import LocalGameSettings
 
 
@@ -40,6 +41,9 @@ class GameDetailsTabs(SideTabWidget):
             self.compat_settings_tab = LocalCompatSettings(settings, rcore, self)
             self.compat_settings_index = self.addTab(self.compat_settings_tab, self.tr("Compatibility"))
 
+        self.environ_tab = LocalEnvironSettings(rcore, self)
+        self.environ_index = self.addTab(self.environ_tab, self.tr("Environment"))
+
         self.cloud_saves_tab = CloudSaves(settings, rcore, self)
         self.cloud_saves_index = self.addTab(self.cloud_saves_tab, self.tr("Cloud Saves"))
 
@@ -62,11 +66,13 @@ class GameDetailsTabs(SideTabWidget):
 
         self.game_settings_tab.load_settings(rgame)
         self.game_settings_tab.launch.setEnabled(rgame.is_installed or rgame.is_origin)
-        self.game_settings_tab.env_vars.setEnabled(rgame.is_installed or rgame.is_origin)
 
         if pf.system() != "Windows":
             self.compat_settings_tab.load_settings(rgame)
             self.compat_settings_tab.setEnabled(rgame.is_installed or rgame.is_origin)
+
+        self.environ_tab.load_settings(rgame)
+        self.environ_tab.setEnabled(rgame.is_installed or rgame.is_origin)
 
         self.dlcs_tab.update_dlcs(rgame)
         self.dlcs_tab.setEnabled(rgame.is_installed and bool(rgame.owned_dlcs))

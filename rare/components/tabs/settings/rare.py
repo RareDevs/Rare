@@ -25,12 +25,12 @@ from rare.utils.paths import (
     log_dir,
 )
 
-logger = getLogger("RareSettings")
-
 
 class RareSettings(QWidget):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(RareSettings, self).__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
+
         self.settings = settings
         self.rcore = rcore
         self.core = rcore.core()
@@ -175,7 +175,7 @@ class RareSettings(QWidget):
                 if log_dir().joinpath(f).is_file():
                     log_dir().joinpath(f).unlink()
             except PermissionError as e:
-                logger.error(e)
+                self.logger.error(e)
         size = sum(log_dir().joinpath(f).stat().st_size for f in log_dir().iterdir() if log_dir().joinpath(f).is_file())
         self.ui.log_dir_size_label.setText(format_size(size))
 
@@ -190,7 +190,7 @@ class RareSettings(QWidget):
                 os.remove(self.start_menu_link)
                 self.ui.startmenu_link_btn.setText(self.tr("Create start menu link"))
         except PermissionError as e:
-            logger.error(str(e))
+            self.logger.error(str(e))
             QMessageBox.warning(
                 self,
                 self.tr("Error"),
@@ -208,8 +208,8 @@ class RareSettings(QWidget):
                 os.remove(self.desktop_link)
                 self.ui.desktop_link_btn.setText(self.tr("Create desktop link"))
         except PermissionError as e:
-            logger.error(str(e))
-            logger.warning(
+            self.logger.error(str(e))
+            QMessageBox.warning(
                 self,
                 self.tr("Error"),
                 self.tr("Permission error, cannot remove {}").format(self.start_menu_link),

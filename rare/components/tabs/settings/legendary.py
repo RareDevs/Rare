@@ -20,8 +20,6 @@ from rare.widgets.indicator_edit import (
     PathEdit,
 )
 
-logger = getLogger("LegendarySettings")
-
 
 class RefreshGameMetaWorkerSignals(QObject):
     finished = Signal()
@@ -44,6 +42,8 @@ class RefreshGameMetaWorker(Worker):
 class LegendarySettings(QWidget):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(LegendarySettings, self).__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
+
         self.ui = Ui_LegendarySettings()
         self.ui.setupUi(self)
 
@@ -230,21 +230,21 @@ class LegendarySettings(QWidget):
 
     def clean_metadata(self, keep_manifests: bool):
         before = self.core.lgd.get_dir_size()
-        logger.debug("Removing app metadata...")
+        self.logger.debug("Removing app metadata...")
         app_names = {g.app_name for g in self.core.get_assets(update_assets=False)}
         self.core.lgd.clean_metadata(app_names)
 
         if not keep_manifests:
-            logger.debug("Removing manifests...")
+            self.logger.debug("Removing manifests...")
             installed = [(ig.app_name, ig.version, ig.platform) for ig in self.core.get_installed_list()]
             installed.extend((ig.app_name, ig.version, ig.platform) for ig in self.core.get_installed_dlc_list())
             self.core.lgd.clean_manifests(installed)
 
-        logger.debug("Removing tmp data")
+        self.logger.debug("Removing tmp data")
         self.core.lgd.clean_tmp_data()
 
         after = self.core.lgd.get_dir_size()
-        logger.info(f"Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.")
+        self.logger.info(f"Cleanup complete! Removed {(before - after) / 1024 / 1024:.02f} MiB.")
         if (before - after) > 0:
             QMessageBox.information(
                 self,

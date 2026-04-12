@@ -1,11 +1,16 @@
 import platform
 import re
-import sys
 from collections import ChainMap
 from typing import Any, Union
 
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt, Slot
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QShowEvent
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHeaderView,
+    QTableView,
+    QVBoxLayout,
+)
 
 from rare.lgndr.core import LegendaryCore
 from rare.utils.misc import qta_icon
@@ -274,42 +279,58 @@ class EnvVarsTableModel(QAbstractTableModel):
         return True
 
 
-if __name__ == "__main__":
-    from PySide6.QtWidgets import (
-        QApplication,
-        QDialog,
-        QHeaderView,
-        QTableView,
-        QVBoxLayout,
-    )
+class EnvVars(QGroupBox):
+    def __init__(self, core: LegendaryCore, parent):
+        super(EnvVars, self).__init__(parent=parent)
+        self.setTitle(self.tr("Environment"))
 
-    from rare.lgndr.core import LegendaryCore
-    from rare.utils.misc import set_style_sheet
+        self.core = core
+        self.app_name: str = "default"
 
-    class MainDialog(QDialog):
-        def __init__(self):
-            super().__init__()
+        self.table_model = EnvVarsTableModel(self.core)
+        self.table_view = QTableView(self)
+        self.table_view.setModel(self.table_model)
+        self.table_view.verticalHeader().sectionPressed.disconnect()
+        self.table_view.horizontalHeader().sectionPressed.disconnect()
+        self.table_view.verticalHeader().sectionClicked.connect(self.table_model.removeRow)
+        self.table_view.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.table_view.horizontalHeader().setStretchLastSection(True)
+        self.table_view.setCornerButtonEnabled(False)
 
-            self.table = QTableView()
-            self.model = EnvVarsTableModel(LegendaryCore())
-            self.model.load("Tamarind")
+        # FIXME: investigate signaling between widgets
+        # We use this function to keep an eye on the config.
+        # When the user uses for example the wineprefix settings, we need to update the table.
+        # With this function, when the config file changes, we update the table.
+        # self.config_file_watcher = QFileSystemWatcher([str(self.core.lgd.config_path)], self)
+        # self.config_file_watcher.fileChanged.connect(self.table_model.reset)
 
-            self.table.setModel(self.model)
-            self.table.verticalHeader().sectionPressed.disconnect()
-            self.table.horizontalHeader().sectionPressed.disconnect()
-            self.table.verticalHeader().sectionClicked.connect(self.model.removeRow)
-            self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-            self.table.horizontalHeader().setStretchLastSection(True)
-            self.table.setCornerButtonEnabled(False)
+        row_height = self.table_view.rowHeight(0)
+        self.table_view.setMinimumHeight(row_height * 7)
 
-            self.setLayout(QVBoxLayout(self))
-            self.layout().addWidget(self.table)
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.table_view)
 
-    app = QApplication(sys.argv)
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        self.table_model.load(self.app_name)
+        return super().showEvent(a0)
 
-    set_style_sheet("RareStyle")
+    def keyPressEvent(self, a0):
+        if a0.key() in {Qt.Key.Key_Delete, Qt.Key.Key_Backspace}:
+            indexes = self.table_view.selectedIndexes()
+            if not len(indexes):
+                return
+            for idx in indexes:
+                if idx.column() == 0:
+                    self.table_view.model().removeRow(idx.row())
+                elif idx.column() == 1:
+                    self.table_view.model().setData(idx, "", Qt.ItemDataRole.EditRole)
+        elif a0.key() == Qt.Key.Key_Escape:
+            a0.ignore()
 
-    window = MainDialog()
-    window.setFixedSize(800, 600)
-    window.show()
-    app.exec()
+    def reset_model(self):
+        self.table_model.reset()
+
+
+__all__ = ["EnvVars"]

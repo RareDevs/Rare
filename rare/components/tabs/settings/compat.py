@@ -1,5 +1,4 @@
 import platform as pf
-from logging import getLogger
 from typing import Type
 
 from PySide6.QtCore import Qt, Signal
@@ -18,8 +17,6 @@ from .widgets.wine import WineSettings
 if pf.system() in {"Linux", "FreeBSD"}:
     from .widgets.overlay import MangoHudSettings
     from .widgets.proton import ProtonSettings
-
-logger = getLogger("GlobalCompatSettings")
 
 
 class CompatSettingsBase(QWidget, SideTabContents):

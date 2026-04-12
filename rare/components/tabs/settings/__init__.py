@@ -9,6 +9,7 @@ from rare.widgets.side_tab import SideTabWidget
 from .about import About
 from .compat import GlobalCompatSettings
 from .debug import DebugSettings
+from .environ import GlobalEnvironSettings
 from .game import GlobalGameSettings
 from .legendary import LegendarySettings
 from .rare import RareSettings
@@ -32,6 +33,9 @@ class SettingsTab(SideTabWidget):
         if pf.system() != "Windows":
             compat_settings = GlobalCompatSettings(settings, rcore, self)
             self.compat_index = self.addTab(compat_settings, self.tr("Compatibility"))
+
+        environ_settings = GlobalEnvironSettings(rcore, self)
+        self.environ_index = self.addTab(environ_settings, self.tr("Environment"))
 
         self.about = About(self)
         title = self.tr("About")

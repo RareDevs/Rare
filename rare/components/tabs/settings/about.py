@@ -27,6 +27,7 @@ class About(QWidget):
 
     def __init__(self, parent=None):
         super(About, self).__init__(parent=parent)
+
         self.ui = Ui_About()
         self.ui.setupUi(self)
 

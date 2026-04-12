@@ -8,7 +8,6 @@ from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QComboBox, QFileDialog, QLineEdit
 
 from rare.components.tabs.settings.game import GameSettingsBase
-from rare.components.tabs.settings.widgets.env_vars import EnvVars
 from rare.components.tabs.settings.widgets.launch import LaunchSettingsBase
 from rare.components.tabs.settings.widgets.wrappers import WrapperSettings
 from rare.models.game import RareGame
@@ -136,19 +135,13 @@ class LocalLaunchSettings(LaunchSettingsBase):
         self.wrappers_widget.load_settings(rgame.app_name)
 
 
-class LocalEnvVars(EnvVars):
-    def load_settings(self, app_name):
-        self.app_name = app_name
-
-
 class LocalGameSettings(GameSettingsBase):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(LocalGameSettings, self).__init__(
-            settings, rcore, launch_widget=LocalLaunchSettings, envvar_widget=LocalEnvVars, parent=parent
+            settings, rcore, launch_widget=LocalLaunchSettings, parent=parent
         )
 
     def load_settings(self, rgame: RareGame):
         self.set_title.emit(rgame.app_title)
         self.app_name = rgame.app_name
         self.launch.load_settings(rgame)
-        self.env_vars.load_settings(rgame.app_name)
