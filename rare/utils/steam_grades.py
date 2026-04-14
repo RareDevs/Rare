@@ -1,6 +1,5 @@
 import difflib
 import lzma
-import os
 from datetime import datetime
 from enum import Enum
 from logging import getLogger
@@ -11,8 +10,6 @@ import requests
 
 from rare.lgndr.core import LegendaryCore
 from rare.utils.paths import cache_dir
-
-logger = getLogger("SteamGrades")
 
 
 class ProtondbRatings(int, Enum):
@@ -28,7 +25,7 @@ class ProtondbRatings(int, Enum):
     PLATINUM = ("platinum", 5)
 
     def __new__(cls, name: str, value: int):
-        obj = int.__new__(cls, value)
+        obj = int.__new__(value)
         obj._value_ = value
         obj._name_ = name
         return obj
@@ -49,7 +46,7 @@ class SteamGrades:
     __protondb_url = "https://www.protondb.com/api/v1/reports/summaries/"
 
     def __init__(self):
-        pass
+        self.logger = getLogger(type(self).__name__)
 
     def _download_steam_appids(self) -> bytes:
         if SteamGrades.__active_download:
@@ -63,23 +60,24 @@ class SteamGrades:
         if SteamGrades.__steam_appids:
             return SteamGrades.__steam_appids
 
-        file = os.path.join(cache_dir(), "steam_appids.json")
+        file = cache_dir().joinpath("steam_appids.json")
         version = SteamGrades.__steam_appids_version
         elapsed_days = 0
 
-        if os.path.exists(file):
-            mod_time = datetime.fromtimestamp(os.path.getmtime(file))
+        if file.is_file():
+            mod_time = datetime.fromtimestamp(file.stat().st_mtime)
             elapsed_days = abs(datetime.now() - mod_time).days
-            json = orjson.loads(open(file, "r").read())
-            version = json.get("version", 0)
+            with file.open("r") as fd:
+                json = orjson.loads(fd.read())
+                version = json.get("version", 0)
             if version >= SteamGrades.__steam_appids_version:
                 SteamGrades.__steam_appids = json["games"]
 
-        if not os.path.exists(file) or elapsed_days > 3 or version < SteamGrades.__steam_appids_version:
+        if not file.is_file() or elapsed_days > 3 or version < SteamGrades.__steam_appids_version:
             if content := self._download_steam_appids():
                 text = lzma.decompress(content).decode("utf-8")
-                with open(file, "w", encoding="utf-8") as f:
-                    f.write(text)
+                with file.open("w", encoding="utf-8") as fd:
+                    fd.write(text)
                 json = orjson.loads(text)
                 SteamGrades.__steam_appids = json["games"]
 
@@ -120,8 +118,8 @@ class SteamGrades:
         try:
             app = orjson.loads(res.text)
         except orjson.JSONDecodeError as e:
-            logger.error(repr(e))
-            logger.error("Failed to get ProtonDB response for %s", steam_appid)
+            self.logger.error(repr(e))
+            self.logger.error("Failed to get ProtonDB response for %s", steam_appid)
             return "fail"
 
         return app.get("tier", "fail")
@@ -135,8 +133,8 @@ class SteamGrades:
                     raise RuntimeError
             grade = self._get_grade(steam_appid)
         except Exception as e:
-            logger.error(repr(e))
-            logger.error("Failed to get ProtonDB rating for %s", game.app_title)
+            self.logger.error(repr(e))
+            self.logger.error("Failed to get ProtonDB rating for %s", game.app_title)
             return "0", "fail"
         else:
             return steam_appid, grade
