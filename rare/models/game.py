@@ -23,7 +23,7 @@ from rare.shared.game_process import GameProcess
 from rare.shared.image_manager import ImageManager
 from rare.utils import config_helper as config
 from rare.utils.paths import compat_shaders_dir, data_dir, get_rare_executable
-from rare.utils.steam_grades import SteamGrades
+from rare.utils.steam_grades import steam_grades
 from rare.utils.workarounds import apply_workarounds
 
 
@@ -598,7 +598,7 @@ class RareGame(RareGameSlim):
         return self.metadata.steam_grade
 
     def set_steam_grade(self) -> None:
-        appid, grade = SteamGrades().get_rating(self.core, self.app_name, self.steam_appid)
+        appid, grade = steam_grades.get_rating(self.core, self.app_name, self.steam_appid)
         if appid and self.steam_appid is None:
             self.steam_appid = appid
         self.metadata.steam_grade = grade

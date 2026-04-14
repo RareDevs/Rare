@@ -8,7 +8,8 @@ from requests.exceptions import ConnectionError, HTTPError
 from rare.lgndr.core import LegendaryCore
 from rare.models.settings import RareAppSettings, app_settings
 from rare.utils.metrics import timelogger
-from rare.utils.steam_grades import SteamGrades
+from rare.utils.steam_grades import steam_grades
+from rare.utils.workarounds import workarounds
 
 from .worker import Worker
 
@@ -23,7 +24,7 @@ class FetchWorker(Worker):
         ERROR = 0
         GAMESDLCS = 1
         ENTITLEMENTS = 2
-        STEAMAPPIDS = 3
+        EXTRAS = 3
 
     def __init__(self, settings: RareAppSettings, core: LegendaryCore, args: Namespace):
         super(FetchWorker, self).__init__()
@@ -33,16 +34,22 @@ class FetchWorker(Worker):
         self.args = args
 
 
-class SteamAppIdsWorker(FetchWorker):
+class ExtrasWorker(FetchWorker):
     def run_real(self):
         if platform.system() != "Windows" and not self.args.offline:
             self.signals.progress.emit(0, self.signals.tr("Updating Steam AppIds"))
             with timelogger(self.logger, "Request Steam AppIds"):
                 try:
-                    SteamGrades().load_steam_appids()
+                    steam_grades.load_steam_appids()
                 except Exception as e:
                     self.logger.warning(e)
-        self.signals.result.emit((), FetchWorker.Result.STEAMAPPIDS)
+            self.signals.progress.emit(10, self.signals.tr("Updating workarounds"))
+            with timelogger(self.logger, "Request workarounds"):
+                try:
+                    workarounds.load_workarounds()
+                except Exception as e:
+                    self.logger.warning(e)
+        self.signals.result.emit((), FetchWorker.Result.EXTRAS)
         return
 
 

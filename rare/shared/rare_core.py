@@ -30,7 +30,7 @@ from .workers import (
     QueueWorker,
     VerifyWorker,
 )
-from .workers.fetch import SteamAppIdsWorker
+from .workers.fetch import ExtrasWorker
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
 from .wrappers import Wrappers
@@ -365,7 +365,7 @@ class RareCore(QObject):
             self.__core.lgd.entitlements = result
             self.__fetched_entitlements = True
 
-        if result_type == FetchWorker.Result.STEAMAPPIDS:
+        if result_type == FetchWorker.Result.EXTRAS:
             self.__fetched_steamappids = True
 
         self.logger.info("Acquired data from %s worker", FetchWorker.Result(result_type).name)
@@ -401,13 +401,13 @@ class RareCore(QObject):
         entitlements_worker.signals.progress.connect(self.__on_fetch_progress)
         entitlements_worker.signals.result.connect(self.__on_fetch_result)
 
-        steamappids_worker = SteamAppIdsWorker(self.__settings, self.__core, self.__args)
-        steamappids_worker.signals.progress.connect(self.__on_fetch_progress)
-        steamappids_worker.signals.result.connect(self.__on_fetch_result)
+        extras_worker = ExtrasWorker(self.__settings, self.__core, self.__args)
+        extras_worker.signals.progress.connect(self.__on_fetch_progress)
+        extras_worker.signals.result.connect(self.__on_fetch_result)
 
         QThreadPool.globalInstance().start(games_dlcs_worker)
         QThreadPool.globalInstance().start(entitlements_worker)
-        QThreadPool.globalInstance().start(steamappids_worker)
+        QThreadPool.globalInstance().start(extras_worker)
 
     def __fetch_saves(self) -> None:
         saves_dict: Dict[str, List[SaveGameFile]] = {}

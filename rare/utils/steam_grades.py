@@ -9,7 +9,7 @@ import orjson
 import requests
 
 from rare.lgndr.core import LegendaryCore
-from rare.utils.paths import cache_dir
+from rare.utils.paths import data_dir
 
 
 class ProtondbRatings(int, Enum):
@@ -25,7 +25,7 @@ class ProtondbRatings(int, Enum):
     PLATINUM = ("platinum", 5)
 
     def __new__(cls, name: str, value: int):
-        obj = int.__new__(value)
+        obj = int.__new__(cls, value)
         obj._value_ = value
         obj._name_ = name
         return obj
@@ -60,7 +60,7 @@ class SteamGrades:
         if SteamGrades.__steam_appids:
             return SteamGrades.__steam_appids
 
-        file = cache_dir().joinpath("steam_appids.json")
+        file = data_dir().joinpath("steam_appids.json")
         version = SteamGrades.__steam_appids_version
         elapsed_days = 0
 
@@ -75,10 +75,10 @@ class SteamGrades:
 
         if not file.is_file() or elapsed_days > 3 or version < SteamGrades.__steam_appids_version:
             if content := self._download_steam_appids():
-                text = lzma.decompress(content).decode("utf-8")
+                data = lzma.decompress(content).decode("utf-8")
                 with file.open("w", encoding="utf-8") as fd:
-                    fd.write(text)
-                json = orjson.loads(text)
+                    fd.write(data)
+                json = orjson.loads(data)
                 SteamGrades.__steam_appids = json["games"]
 
         return SteamGrades.__steam_appids
@@ -138,3 +138,7 @@ class SteamGrades:
             return "0", "fail"
         else:
             return steam_appid, grade
+
+steam_grades = SteamGrades()
+
+__all__ = ["steam_grades"]

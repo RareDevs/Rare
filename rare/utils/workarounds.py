@@ -1,175 +1,97 @@
 import platform
-from typing import Dict, Set, Union
+from logging import getLogger
+from typing import Dict, Tuple, Union
 
+import requests
+from orjson import orjson
 from PySide6.QtWidgets import QApplication
 
 from rare.utils import config_helper as config
-
-__os_compat: Set = {"Linux", "Darwin", "FreeBSD"}
-__os_native: Set = {"Windows"}
-__os_all: Set = {*__os_compat, *__os_native}
+from rare.utils.paths import data_dir
 
 
-def __screen_height() -> int:
-    return QApplication.instance().primaryScreen().geometry().height()
+class Workarounds:
+    __workarounds: Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Tuple]]]]] = {}
+    __workarounds_version: int
+    __active_download: bool = False
+    __workarounds_url = "https://raredevs.github.io/wring/workarounds.json"
+    __workarounds_version_url = "https://raredevs.github.io/wring/workarounds_version.json"
 
+    def __init__(self):
+        self.logger = getLogger(type(self).__name__)
 
-def __screen_width() -> int:
-    return QApplication.instance().primaryScreen().geometry().width()
+    def _download_workarounds(self) -> bytes:
+        if Workarounds.__active_download:
+            return b""
+        Workarounds.__active_download = True
+        resp = requests.get(self.__workarounds_url)
+        Workarounds.__active_download = False
+        return resp.content
 
+    def load_workarounds(self) -> Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Tuple]]]]]:
+        if Workarounds.__workarounds:
+            return Workarounds.__workarounds
 
-# Keeps a dictionary of workarounds.
-# Can use the following placeholders: res_width, res_height
-__workarounds: Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Set]]]]] = {
-    # XCOM2
-    "3be3c4d681bc46b3b8b26c5df3ae0a18": {
-        "options": {
-            "override_exe": {
-                "value": "Binaries/Win64/XCom2.exe",
-                "os": __os_all,
-            },
-        },
-    },
-    # Civilization VI
-    "Kinglet": {
-        "options": {
-            "override_exe": {
-                "value": "Base/Binaries/Win64EOS/CivilizationVI.exe",
-                "os": __os_all,
-            },
-        },
-    },
-    # Bioshock 2 Remastered
-    "b22ce34b4ce0408c97a888554447479b": {
-        "options": {
-            "override_exe": {
-                "value": "Build/FinalEpic/Bioshock2HD.exe",
-                "os": __os_all,
-            },
-        },
-    },
-    # Bioshock 1 Remastered
-    "bc2c95c6ff564a16b26644f1d3ac3c55": {
-        "options": {
-            "override_exe": {
-                "value": "Build/FinalEpic/BioshockHD.exe",
-                "os": __os_all,
-            },
-        },
-    },
-    # Eternal Threads
-    "ff1d9bf6b1304cb9a12b8754afa78ae5": {
-        "options": {
-            "override_exe": {
-                "value": "EternalThreadsBuild/EternalThreads.exe",
-                "os": __os_compat,
-            },
-        },
-    },
-    # Celeste
-    "Salt": {
-        "options": {
-            "start_params": {
-                "value": "/gldevice:OpenGL",
-                "os": __os_compat,
-            },
-        },
-    },
-    # Borderlands: The Pre Sequel
-    "Turkey": {
-        "options": {
-            "start_params": {
-                "value": "-NoLauncher",
-                "os": __os_compat,
-            },
-        },
-    },
-    # Borderlands 2
-    "Dodo": {
-        "options": {
-            "start_params": {
-                "value": "-NoLauncher",
-                "os": __os_compat,
-            },
-            # "override_exe": { "value": "Binaries/Win32/Borderlands2.exe", "os": __os_compat, },
-        },
-    },
-    # Tiny Tina's Assault on Dragon Keep: A Wonderlands One shot Adventure
-    "9e296d276ad447108f12c654c3341d59": {
-        "options": {
-            "start_params": {
-                "value": "-NoLauncher",
-                "os": __os_compat,
-            },
-        },
-    },
-    # Brothers: A Tale of Two Sons
-    "Tamarind": {
-        "options": {
-            "start_params": {
-                # value set at runtime
-                "value": "ResX={res_width} ResY={res_height} -nomovies -nosplash",
-                "os": __os_compat,
-            },
-            "override_exe": {
-                "value": "Binaries/Win32/Brothers.exe",
-                "os": __os_compat,
-            },
-        },
-    },
-    # Borderlands: The Pre Sequel
-    "9c203b6ed35846e8a4a9ff1e314f6593": {
-        "options": {
-            "start_params": {
-                "value": "/autorun /ed /autoquit",
-                "os": __os_compat,
-            },
-        },
-    },
-    # F1® Manager 2024
-    "03c9fe3b2869452ba8433ee7708a3e93": {
-        "options": {
-            "override_exe": {
-                "value": "F1Manager24/Binaries/Win64/F1Manage",
-                "os": __os_all,
-            },
-        },
-    },
-    # Cities Skylines
-    "bcbc03d8812a44c18f41cf7d5f849265": {
-        "options": {
-            "override_exe": {
-                "value": "Cities.exe",
-                "os": __os_all,
-            },
-        },
-    },
-}
+        try:
+            resp = requests.get(self.__workarounds_version_url, timeout=1)
+            data = resp.content.decode("utf-8")
+            remote_version = orjson.loads(data).get("version", 1)
+        except requests.exceptions.Timeout:
+            remote_version = 1
 
+        file = data_dir().joinpath("workarounds.json")
 
-def __subst(text: str) -> str:
-    return text.format(
-        res_width=__screen_width(),
-        res_height=__screen_height(),
-    )
+        if file.is_file():
+            json = orjson.loads(file.open("r").read())
+            version = json.get("version", 1)
+            if version >= remote_version:
+                Workarounds.__workarounds = json.get("workarounds", {})
+        else:
+             version = 0
 
+        if not file.is_file() or version < remote_version:
+            if content := self._download_workarounds():
+                data = content.decode("utf-8")
+                with file.open("w", encoding="utf-8") as fd:
+                    fd.write(data)
+                json = orjson.loads(data)
+                Workarounds.__workarounds = json.get("workarounds", {})
+
+        return Workarounds.__workarounds
+
+    @staticmethod
+    def screen_height() -> int:
+        return QApplication.instance().primaryScreen().geometry().height()
+
+    @staticmethod
+    def screen_width() -> int:
+        return QApplication.instance().primaryScreen().geometry().width()
+
+    @staticmethod
+    def subst(text: str) -> str:
+        return text.format(
+            res_width=Workarounds.screen_width(),
+            res_height=Workarounds.screen_height(),
+        )
+
+workarounds = Workarounds()
 
 def apply_workarounds(app_name: str):
-    if workaround := __workarounds.get(app_name):
+    if wa := workarounds.load_workarounds().get(app_name):
         # apply options
-        for opt in (options := workaround.get("options", {})):
+        for opt in (options := wa.get("options", {})):
             if config.get_option(app_name, opt, None) is not None:
                 continue
-            if platform.system() not in options[opt].get("os", set()):
+            if platform.system() not in options[opt].get("os", tuple()):
                 continue
-            config.set_option(app_name, opt, __subst(options[opt]["value"]))
+            config.set_option(app_name, opt, Workarounds.subst(options[opt]["value"]))
         # apply environment
-        for var in (environ := workaround.get("environ", {})):
+        for var in (environ := wa.get("environ", {})):
             if config.get_envvar(app_name, var, None) is not None:
                 continue
-            if platform.system() not in environ[var].get("os", set()):
+            if platform.system() not in environ[var].get("os", tuple()):
                 continue
-            config.set_envvar(app_name, var, __subst(environ[var]["value"]))
+            config.set_envvar(app_name, var, Workarounds.subst(environ[var]["value"]))
 
 
-__all__ = ["apply_workarounds"]
+__all__ = ["apply_workarounds", "workarounds"]

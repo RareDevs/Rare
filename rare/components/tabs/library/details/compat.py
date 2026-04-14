@@ -18,7 +18,7 @@ from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.utils.paths import compat_shaders_dir, proton_compat_dir, wine_prefix_dir
-from rare.utils.steam_grades import SteamGrades
+from rare.utils.steam_grades import steam_grades
 from rare.widgets.indicator_edit import (
     ColumnCompleter,
     IndicatorLineEdit,
@@ -76,7 +76,7 @@ class LocalRunnerSettings(RunnerSettingsBase):
         )
         self.form_layout.addRow(self.tr("Steam AppID"), self.steam_appid_edit)
 
-        self.__grades = SteamGrades()
+        self.__grades = steam_grades
 
     def showEvent(self, e: QShowEvent):
         if e.spontaneous():
