@@ -612,8 +612,7 @@ class RareGame(RareGameSlim):
             return self.metadata.grant_date
         if self.metadata.grant_date == datetime.min.replace(tzinfo=timezone.utc) or force:
             self.logger.info("Grant date for %s not found in metadata, resolving", self.app_name)
-            matching = filter(lambda ent: ent["namespace"] == self.game.namespace, entitlements)
-            entitlement = next(matching, None)
+            entitlement = next((ent for ent in entitlements if ent['namespace'] == self.game.namespace), None)
             grant_date = (
                 datetime.fromisoformat(entitlement["grantDate"].replace("Z", "+00:00"))
                 if entitlement

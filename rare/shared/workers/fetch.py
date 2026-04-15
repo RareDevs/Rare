@@ -1,5 +1,7 @@
+import os
 import platform
 from argparse import Namespace
+from datetime import datetime
 from enum import IntEnum
 
 from PySide6.QtCore import QObject, Signal
@@ -10,6 +12,7 @@ from rare.models.settings import RareAppSettings, app_settings
 from rare.utils.metrics import timelogger
 from rare.utils.steam_grades import steam_grades
 from rare.utils.workarounds import workarounds
+from rare.utils.wrapper_exe import download_wrapper_exe
 
 from .worker import Worker
 
@@ -37,7 +40,7 @@ class FetchWorker(Worker):
 
 class RuntimeAssetsWorker(FetchWorker):
     def run_real(self):
-        increment = self.segment//2
+        increment = self.segment//3
 
         if not self.args.offline and platform.system() not in {"Windows"}:
             self.signals.progress.emit(increment, self.signals.tr("Updating Steam AppIds"))
@@ -53,13 +56,23 @@ class RuntimeAssetsWorker(FetchWorker):
                     workarounds.load_workarounds()
                 except Exception as e:
                     self.logger.warning(e)
+        if not self.args.offline:
+            self.signals.progress.emit(increment, self.signals.tr("Updating workarounds"))
+            with timelogger(self.logger, "Request wrapper exe"):
+                try:
+                    download_wrapper_exe()
+                except Exception as e:
+                    self.logger.warning(e)
         self.signals.result.emit((), FetchWorker.Result.EXTRAS)
         return
 
 
 class EntitlementsWorker(FetchWorker):
     def run_real(self):
-        want_entitlements = not self.settings.get_value(app_settings.exclude_entitlements)
+        mod_time = datetime.fromtimestamp(os.path.getmtime((os.path.join(self.core.lgd.path, "entitlements.json"))))
+        elapsed_days = abs(datetime.now() - mod_time).days
+
+        want_entitlements = not self.settings.get_value(app_settings.exclude_entitlements) and elapsed_days > 1
         want_entitlements = want_entitlements and not self.args.offline
 
         entitlements = ()

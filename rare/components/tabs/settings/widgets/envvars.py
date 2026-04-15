@@ -42,6 +42,7 @@ class EnvVarsTableModel(QAbstractTableModel):
                     "DXVK_NVAPI_DRS_SETTINGS",
                     "MANGOHUD",
                     "MANGOHUD_CONFIG",
+                    "LEGENDARY_WRAPPER_EXE",
                 }
             )
             self.__readonly.update(get_wine_environment().keys())
