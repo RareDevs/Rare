@@ -29,11 +29,11 @@ class RequestQueueItem:
         return self.method == other.method and self.url == other.url
 
 
-class QtRequests(QObject):
+class QRequests(QObject):
     data_ready = Signal(object)
 
     def __init__(self, cache: str = None, token: str = None, parent=None):
-        super(QtRequests, self).__init__(parent=parent)
+        super(QRequests, self).__init__(parent=parent)
         self.logger = getLogger(f"{type(self).__name__}_{type(parent).__name__}")
         self._manager = QNetworkAccessManager(self)
         self._manager.finished.connect(self.__on_finished)

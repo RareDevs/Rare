@@ -17,7 +17,7 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 
 from rare.models.image import ImageSize
-from rare.utils.qt_requests import QtRequests
+from rare.utils.qrequests import QRequests
 
 from .loading_widget import LoadingWidget
 
@@ -160,7 +160,7 @@ class ImageWidget(QWidget):
 
 
 class LoadingImageWidget(ImageWidget):
-    def __init__(self, manager: QtRequests, parent=None):
+    def __init__(self, manager: QRequests, parent=None):
         super(LoadingImageWidget, self).__init__(parent=parent)
         self.manager = manager
 
@@ -182,7 +182,7 @@ class LoadingImageWidget(ImageWidget):
 
 
 class LoadingSpinnerImageWidget(LoadingImageWidget):
-    def __init__(self, manager: QtRequests, parent=None):
+    def __init__(self, manager: QRequests, parent=None):
         super(LoadingSpinnerImageWidget, self).__init__(manager, parent=parent)
         self.spinner = LoadingWidget(parent=self)
         self.spinner.setVisible(False)

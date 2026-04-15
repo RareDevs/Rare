@@ -33,7 +33,7 @@ from rare.shared.workers import MoveInfoWorker, MoveWorker, VerifyWorker
 from rare.ui.components.tabs.library.details.details import Ui_GameDetails
 from rare.utils.misc import format_size, qta_icon, relative_date, style_hyperlink
 from rare.utils.paths import cache_dir
-from rare.utils.qt_requests import QtRequests
+from rare.utils.qrequests import QRequests
 from rare.widgets.dialogs import ButtonDialog, game_title
 from rare.widgets.image_widget import ImageSize, ImageWidget, LoadingImageWidget
 from rare.widgets.side_tab import SideTabContents
@@ -73,7 +73,7 @@ class GameDetails(QWidget, SideTabContents):
         self.rcore = rcore
         self.core = rcore.core()
         self.args = rcore.args()
-        self.net_manager = QtRequests(cache=str(cache_dir().joinpath("achievements")), parent=self)
+        self.net_manager = QRequests(cache=str(cache_dir().joinpath("achievements")), parent=self)
 
         self.rgame: Optional[RareGame] = None
 
@@ -482,7 +482,7 @@ class GameDetails(QWidget, SideTabContents):
 
 
 class AchievementWidget(QFrame):
-    def __init__(self, manager: QtRequests, achievement: Dict, parent=None):
+    def __init__(self, manager: QRequests, achievement: Dict, parent=None):
         super().__init__(parent=parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setFrameShadow(QFrame.Shadow.Sunken)

@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QPushButton
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.models.image import ImageSize
 from rare.utils.misc import qta_icon
-from rare.utils.qt_requests import QtRequests
+from rare.utils.qrequests import QRequests
 from rare.widgets.image_widget import LoadingSpinnerImageWidget
 
 from .icon_widget import IconWidget
@@ -18,7 +18,7 @@ logger = getLogger("StoreWidgets")
 class ItemWidgetSpinner(LoadingSpinnerImageWidget):
     show_details = Signal(CatalogOfferModel)
 
-    def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel = None, parent=None):
+    def __init__(self, manager: QRequests, catalog_game: CatalogOfferModel = None, parent=None):
         super(ItemWidgetSpinner, self).__init__(manager, parent=parent)
         self.ui = IconWidget()
         self.catalog_game = catalog_game
@@ -32,7 +32,7 @@ class ItemWidgetSpinner(LoadingSpinnerImageWidget):
 
 
 class StoreItemWidget(ItemWidgetSpinner):
-    def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel = None, parent=None):
+    def __init__(self, manager: QRequests, catalog_game: CatalogOfferModel = None, parent=None):
         super(StoreItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.DisplayWide)
         self.ui.setupUi(self)
@@ -77,7 +77,7 @@ class StoreItemWidget(ItemWidgetSpinner):
 
 
 class SearchItemWidget(ItemWidgetSpinner):
-    def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
+    def __init__(self, manager: QRequests, catalog_game: CatalogOfferModel, parent=None):
         super(SearchItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.LibraryTall)
         self.ui.setupUi(self)
@@ -102,7 +102,7 @@ class SearchItemWidget(ItemWidgetSpinner):
 class WishlistItemWidget(ItemWidgetSpinner):
     delete_from_wishlist = Signal(CatalogOfferModel)
 
-    def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
+    def __init__(self, manager: QRequests, catalog_game: CatalogOfferModel, parent=None):
         super(WishlistItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.DisplayWide)
         self.ui.setupUi(self)

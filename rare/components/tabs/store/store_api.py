@@ -11,7 +11,7 @@ from rare.components.tabs.store.constants import (
     wishlist_remove_query,
 )
 from rare.utils.paths import cache_dir
-from rare.utils.qt_requests import QtRequests
+from rare.utils.qrequests import QRequests
 
 from .api.models.diesel import DieselProduct
 from .api.models.query import SearchStoreQuery
@@ -37,9 +37,9 @@ class StoreAPI(QObject):
         self.language_code: str = language
         self.country_code: str = country
         self.locale = f"{self.language_code}-{self.country_code}"
-        self.manager = QtRequests(parent=self)
-        self.authed_manager = QtRequests(token=token, parent=self)
-        self.cached_manager = QtRequests(cache=str(cache_dir().joinpath("store")), parent=self)
+        self.manager = QRequests(parent=self)
+        self.authed_manager = QRequests(token=token, parent=self)
+        self.cached_manager = QRequests(cache=str(cache_dir().joinpath("store")), parent=self)
 
         self.installed = installed
 

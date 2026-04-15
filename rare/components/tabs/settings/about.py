@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget
 
 from rare import __codename__, __version__
 from rare.ui.components.tabs.settings.about import Ui_About
-from rare.utils.qt_requests import QtRequests
+from rare.utils.qrequests import QRequests
 
 logger = getLogger("About")
 
@@ -40,7 +40,7 @@ class About(QWidget):
 
         self.releases_url = "https://api.github.com/repos/RareDevs/Rare/releases/latest"
 
-        self.manager = QtRequests(parent=self)
+        self.manager = QRequests(parent=self)
         self.manager.get(self.releases_url, self._on_update_check_finished)
 
         self.ui.open_browser.clicked.connect(self._on_browser_clicked)
