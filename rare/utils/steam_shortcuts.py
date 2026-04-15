@@ -118,6 +118,8 @@ def load_steam_shortcuts():
 
 
 def save_steam_shortcuts():
+    if not (__steam_dir and __steam_user):
+        return
     logger.info(
         "%s Steam shortcuts for user %s(%s)",
         "Saving" if __steam_shortcuts else "Removing",
@@ -171,6 +173,8 @@ def add_steam_shortcut(app_name: str, app_title: str) -> SteamShortcut:
 
 
 def add_steam_coverart(app_name: str, shortcut: SteamShortcut):
+    if not __steam_dir:
+        return
     steam_grid_dir = os.path.join(__steam_dir, "userdata", str(__steam_user.short_id), "config", "grid")
     if not os.path.exists(steam_grid_dir):
         os.mkdir(steam_grid_dir)
@@ -181,6 +185,8 @@ def add_steam_coverart(app_name: str, shortcut: SteamShortcut):
 
 
 def remove_steam_coverart(shortcut: SteamShortcut):
+    if not __steam_dir:
+        return
     steam_grid_dir = os.path.join(__steam_dir, "userdata", str(__steam_user.short_id), "config", "grid")
     if not os.path.exists(steam_grid_dir):
         logger.warning("Path does not exist %s", steam_grid_dir)

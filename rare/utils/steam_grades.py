@@ -38,30 +38,30 @@ class ProtondbRatings(int, Enum):
 
 
 class SteamGrades:
-    __steam_appids: Dict[str, str] = {}
-    __steam_appids_version: int = 3
-    __active_download: bool = False
-    __replace_chars = ",;.:-_ "
-    __steamids_url = "https://raredevs.github.io/wring/steam_appids.json.xz"
-    __protondb_url = "https://www.protondb.com/api/v1/reports/summaries/"
+    _steam_appids_version: int = 3
+    _replace_chars = ",;.:-_ "
+    _steamids_url = "https://raredevs.github.io/wring/steam_appids.json.xz"
+    _protondb_url = "https://www.protondb.com/api/v1/reports/summaries/"
 
     def __init__(self):
         self.logger = getLogger(type(self).__name__)
+        self._steam_appids: Dict[str, str] = {}
+        self._active_download: bool = False
 
     def _download_steam_appids(self) -> bytes:
-        if SteamGrades.__active_download:
+        if self._active_download:
             return b""
-        SteamGrades.__active_download = True
-        resp = requests.get(self.__steamids_url)
-        SteamGrades.__active_download = False
+        self._active_download = True
+        resp = requests.get(self._steamids_url)
+        self._active_download = False
         return resp.content
 
     def load_steam_appids(self) -> Dict:
-        if SteamGrades.__steam_appids:
-            return SteamGrades.__steam_appids
+        if self._steam_appids:
+            return self._steam_appids
 
         file = data_dir().joinpath("steam_appids.json")
-        version = SteamGrades.__steam_appids_version
+        version = self._steam_appids_version
         elapsed_days = 0
 
         if file.is_file():
@@ -70,24 +70,24 @@ class SteamGrades:
             with file.open("r") as fd:
                 json = orjson.loads(fd.read())
                 version = json.get("version", 0)
-            if version >= SteamGrades.__steam_appids_version:
-                SteamGrades.__steam_appids = json["games"]
+            if version >= self._steam_appids_version:
+                self._steam_appids = json["games"]
 
-        if not file.is_file() or elapsed_days > 3 or version < SteamGrades.__steam_appids_version:
+        if not file.is_file() or elapsed_days > 3 or version < self._steam_appids_version:
             if content := self._download_steam_appids():
                 data = lzma.decompress(content).decode("utf-8")
                 with file.open("w", encoding="utf-8") as fd:
                     fd.write(data)
                 json = orjson.loads(data)
-                SteamGrades.__steam_appids = json["games"]
+                self._steam_appids = json["games"]
 
-        return SteamGrades.__steam_appids
+        return self._steam_appids
 
     @property
     def steam_appids(self) -> Dict[str, str]:
-        if not SteamGrades.__steam_appids:
-            SteamGrades.__steam_appids = self.load_steam_appids()
-        return SteamGrades.__steam_appids
+        if not self._steam_appids:
+            self.load_steam_appids()
+        return self._steam_appids
 
     @property
     def steam_titles(self) -> Dict:
@@ -114,7 +114,7 @@ class SteamGrades:
         if steam_appid == "0":
             return "fail"
         steam_appid = str(steam_appid)
-        res = requests.get(f"{self.__protondb_url}/{steam_appid}.json")
+        res = requests.get(f"{self._protondb_url}/{steam_appid}.json")
         try:
             app = orjson.loads(res.text)
         except orjson.JSONDecodeError as e:

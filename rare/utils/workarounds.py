@@ -11,29 +11,28 @@ from rare.utils.paths import data_dir
 
 
 class Workarounds:
-    __workarounds: Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Tuple]]]]] = {}
-    __workarounds_version: int
-    __active_download: bool = False
-    __workarounds_url = "https://raredevs.github.io/wring/workarounds.json"
-    __workarounds_version_url = "https://raredevs.github.io/wring/workarounds_version.json"
+    _workarounds_url = "https://raredevs.github.io/wring/workarounds.json"
+    _workarounds_version_url = "https://raredevs.github.io/wring/workarounds_version.json"
 
     def __init__(self):
         self.logger = getLogger(type(self).__name__)
+        self._workarounds: Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Tuple]]]]] = {}
+        self._active_download: bool = False
 
     def _download_workarounds(self) -> bytes:
-        if Workarounds.__active_download:
+        if self._active_download:
             return b""
-        Workarounds.__active_download = True
-        resp = requests.get(self.__workarounds_url)
-        Workarounds.__active_download = False
+        self._active_download = True
+        resp = requests.get(self._workarounds_url)
+        self._active_download = False
         return resp.content
 
     def load_workarounds(self) -> Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Tuple]]]]]:
-        if Workarounds.__workarounds:
-            return Workarounds.__workarounds
+        if self._workarounds:
+            return self._workarounds
 
         try:
-            resp = requests.get(self.__workarounds_version_url, timeout=1)
+            resp = requests.get(self._workarounds_version_url, timeout=1)
             data = resp.content.decode("utf-8")
             remote_version = orjson.loads(data).get("version", 1)
         except requests.exceptions.Timeout:
@@ -45,7 +44,7 @@ class Workarounds:
             json = orjson.loads(file.open("r").read())
             version = json.get("version", 1)
             if version >= remote_version:
-                Workarounds.__workarounds = json.get("workarounds", {})
+                self._workarounds = json.get("workarounds", {})
         else:
              version = 0
 
@@ -55,9 +54,14 @@ class Workarounds:
                 with file.open("w", encoding="utf-8") as fd:
                     fd.write(data)
                 json = orjson.loads(data)
-                Workarounds.__workarounds = json.get("workarounds", {})
+                self._workarounds = json.get("workarounds", {})
 
-        return Workarounds.__workarounds
+        return self._workarounds
+
+    def get(self, app_name: str) -> Dict:
+        if not self._workarounds:
+            self.load_workarounds()
+        return self._workarounds.get(app_name, {})
 
     @staticmethod
     def screen_height() -> int:
@@ -77,7 +81,7 @@ class Workarounds:
 workarounds = Workarounds()
 
 def apply_workarounds(app_name: str):
-    if wa := workarounds.load_workarounds().get(app_name):
+    if wa := workarounds.get(app_name):
         # apply options
         for opt in (options := wa.get("options", {})):
             if config.get_option(app_name, opt, None) is not None:
