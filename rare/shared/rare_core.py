@@ -347,7 +347,7 @@ class RareCore(QObject):
                     self.logger.info(f'Marking "{rgame.app_title}" as not installed because an exception has occurred...')
                     self.logger.error(e)
                     rgame.set_installed(False)
-            progress = int(idx / length * self.__fetch_progress) + (100 - self.__fetch_progress)
+            progress = int((idx / length) * (100 - self.__fetch_progress)) + self.__fetch_progress
             self.progress.emit(progress, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
 
     @Slot(int, str)
@@ -393,15 +393,15 @@ class RareCore(QObject):
     def fetch(self):
         self.__start_time = time.perf_counter()
 
-        games_dlcs_worker = GamesDlcsWorker(self.__settings, self.__core, self.__args)
+        games_dlcs_worker = GamesDlcsWorker(self.__settings, self.__core, self.__args, segment=40)
         games_dlcs_worker.signals.progress.connect(self.__on_fetch_progress)
         games_dlcs_worker.signals.result.connect(self.__on_fetch_result)
 
-        entitlements_worker = EntitlementsWorker(self.__settings, self.__core, self.__args)
+        entitlements_worker = EntitlementsWorker(self.__settings, self.__core, self.__args, segment=5)
         entitlements_worker.signals.progress.connect(self.__on_fetch_progress)
         entitlements_worker.signals.result.connect(self.__on_fetch_result)
 
-        extras_worker = ExtrasWorker(self.__settings, self.__core, self.__args)
+        extras_worker = ExtrasWorker(self.__settings, self.__core, self.__args, segment=10)
         extras_worker.signals.progress.connect(self.__on_fetch_progress)
         extras_worker.signals.result.connect(self.__on_fetch_result)
 
