@@ -30,7 +30,7 @@ from .workers import (
     QueueWorker,
     VerifyWorker,
 )
-from .workers.fetch import ExtrasWorker
+from .workers.fetch import RuntimeAssetsWorker
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
 from .wrappers import Wrappers
@@ -401,13 +401,13 @@ class RareCore(QObject):
         entitlements_worker.signals.progress.connect(self.__on_fetch_progress)
         entitlements_worker.signals.result.connect(self.__on_fetch_result)
 
-        extras_worker = ExtrasWorker(self.__settings, self.__core, self.__args, segment=10)
-        extras_worker.signals.progress.connect(self.__on_fetch_progress)
-        extras_worker.signals.result.connect(self.__on_fetch_result)
+        runtime_assets_worker = RuntimeAssetsWorker(self.__settings, self.__core, self.__args, segment=10)
+        runtime_assets_worker.signals.progress.connect(self.__on_fetch_progress)
+        runtime_assets_worker.signals.result.connect(self.__on_fetch_result)
 
         QThreadPool.globalInstance().start(games_dlcs_worker)
         QThreadPool.globalInstance().start(entitlements_worker)
-        QThreadPool.globalInstance().start(extras_worker)
+        QThreadPool.globalInstance().start(runtime_assets_worker)
 
     def __fetch_saves(self) -> None:
         saves_dict: Dict[str, List[SaveGameFile]] = {}

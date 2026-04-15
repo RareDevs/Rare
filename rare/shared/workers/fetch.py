@@ -35,7 +35,7 @@ class FetchWorker(Worker):
         self.segment = segment
 
 
-class ExtrasWorker(FetchWorker):
+class RuntimeAssetsWorker(FetchWorker):
     def run_real(self):
         increment = self.segment//2
 
