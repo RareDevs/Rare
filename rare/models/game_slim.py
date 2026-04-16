@@ -147,7 +147,7 @@ class RareGameBase(QObject):
 
         @return bool
         """
-        return 'Mac' in self.game.asset_infos.keys()
+        return 'Mac' in self.game.asset_infos
 
     @property
     def is_win32(self) -> bool:
@@ -156,7 +156,7 @@ class RareGameBase(QObject):
 
         @return bool
         """
-        return 'Win32' in self.game.asset_infos.keys()
+        return 'Win32' in self.game.asset_infos
 
     @property
     def is_origin(self) -> bool:

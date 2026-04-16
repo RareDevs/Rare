@@ -52,21 +52,21 @@ class SingleInstance:
                 if os.path.exists(self.lockfile):
                     os.unlink(self.lockfile)
                 self.fd = os.open(self.lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR)
-            except OSError:
+            except OSError as exc:
                 type, e, tb = sys.exc_info()
                 if e.errno == 13:
                     logger.error('Another instance is already running, quitting.')
-                    raise SingleInstanceException()
+                    raise SingleInstanceException() from exc
                 print(e.errno)
                 raise
         else:  # non Windows
-            self.fp = open(self.lockfile, 'w')
+            self.fp = open(self.lockfile, 'w')  # noqa: SIM115
             self.fp.flush()
             try:
                 fcntl.lockf(self.fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except OSError:
+            except OSError as exc:
                 logger.warning('Another instance is already running, quitting.')
-                raise SingleInstanceException()
+                raise SingleInstanceException() from exc
         self.initialized = True
 
     def __del__(self):

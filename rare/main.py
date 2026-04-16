@@ -15,9 +15,9 @@ def main() -> int:
             # Check if stdout and stderr are None before redirecting
             # This is useful in the case of test builds that enable console
             if sys.stdout is None:
-                sys.stdout = open(os.devnull, 'w')
+                sys.stdout = open(os.devnull, 'w')  # noqa: SIM115
             if sys.stderr is None:
-                sys.stderr = open(os.devnull, 'w')
+                sys.stderr = open(os.devnull, 'w')  # noqa: SIM115
         # Nuitka and possibly cx_freeze have issues with launching multiprocessing's resource_tracker due
         # to the way it is invoked. To accomodate for that, check here if the "-c" argument was used, and
         # execute the incoming command instead of Rare itself.
@@ -171,7 +171,13 @@ def main() -> int:
 
     from rare.components import start
 
-    return start(args)
+    ec = start(args)
+    if os.name == 'nt':
+        if not sys.stdout.closed:
+            sys.stdout.close()
+        if not sys.stderr.closed:
+            sys.stderr.close()
+    return ec
 
 
 if __name__ == '__main__':

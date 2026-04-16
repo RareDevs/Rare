@@ -139,10 +139,11 @@ class ImageManager(QObject):
 
         # Load image checksums
         if not self._img_json(game.app_name).is_file():
-            json_data: dict = dict(zip(self._img_types, [None] * len(self._img_types)))
+            json_data: dict = dict(zip(self._img_types, [None] * len(self._img_types), strict=False))
             json_data['version'] = self._cache_version
         else:
-            json_data = json.load(open(self._img_json(game.app_name)))
+            with self._img_json(game.app_name).open() as fd:
+                json_data = json.load(fd)
 
         # Only download the best matching candidate for each image category
         def best_match(key_images: list, image_types: tuple) -> dict:
@@ -176,7 +177,7 @@ class ImageManager(QObject):
             if not candidates:
                 cover = 'epic.png' if game.app_name == EOSOverlayApp.app_name else 'cover.png'
                 # lk: fast path for games without images, convert Rare's logo
-                cache_data: dict = dict(zip(self._img_types, [None] * len(self._img_types)))
+                cache_data: dict = dict(zip(self._img_types, [None] * len(self._img_types), strict=False))
                 with open(resources_path.joinpath('images', cover), 'rb') as fd:
                     cache_data['DieselGameBoxTall'] = fd.read()
                 with open(resources_path.joinpath('images', cover), 'rb') as fd:
@@ -197,7 +198,7 @@ class ImageManager(QObject):
         else:
             for image in candidates:
                 if image['type'] in self._img_types:
-                    if image['type'] not in json_data.keys() or json_data[image['type']] != image['md5']:
+                    if image['type'] not in json_data or json_data[image['type']] != image['md5']:
                         updates.append(image)
 
         return updates, json_data
@@ -205,7 +206,7 @@ class ImageManager(QObject):
     def _download(self, updates: list, json_data: dict, game: Game) -> bool:
         # Decompress existing image.cache
         if not self._img_cache(game.app_name).is_file():
-            cache_data: dict[str, Any] = dict(zip(self._img_types, [None] * len(self._img_types)))
+            cache_data: dict[str, Any] = dict(zip(self._img_types, [None] * len(self._img_types), strict=False))
         else:
             cache_data = self._decompress(game)
 
@@ -437,18 +438,18 @@ class ImageManager(QObject):
         )
 
     def _compress(self, game: Game, data: dict) -> None:
-        archive = open(self._img_cache(game.app_name), 'wb')
+        archive = open(self._img_cache(game.app_name), 'wb')  # noqa: SIM115
         cdata = zlib.compress(pickle.dumps(data), level=-1)
         archive.write(cdata)
         archive.close()
 
     def _decompress(self, game: Game) -> dict:
-        archive = open(self._img_cache(game.app_name), 'rb')
+        archive = open(self._img_cache(game.app_name), 'rb')  # noqa: SIM115
         try:
             data = zlib.decompress(archive.read())
             data = pickle.loads(data)
         except zlib.error:
-            data = dict(zip(self._img_types, [None] * len(self._img_types)))
+            data = dict(zip(self._img_types, [None] * len(self._img_types), strict=False))
         finally:
             archive.close()
         return data

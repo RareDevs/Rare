@@ -102,9 +102,9 @@ class LocalRunnerSettings(RunnerSettingsBase):
         self.steam_appid_edit.setInfo('')
         if not text or len(text) < 3:
             return True, text, IndicatorReasonsCommon.UNDEFINED
-        if text in self.__grades.steam_appids.keys():
+        if text in self.__grades.steam_appids:
             return True, self.__grades.steam_appids[text], IndicatorReasonsCommon.VALID
-        if text in self.__grades.steam_titles.keys():
+        if text in self.__grades.steam_titles:
             return True, text, IndicatorReasonsCommon.VALID
         else:
             return False, text, IndicatorReasonsCommon.GAME_NOT_EXISTS

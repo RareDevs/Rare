@@ -127,7 +127,7 @@ class Wrappers:
     def set_wrappers(self, app_name: str, wrappers: list[Wrapper]) -> None:
         _wrappers = sorted(wrappers, key=lambda w: w.is_compat_tool)
         for w in _wrappers:
-            if (md5sum := w.checksum) in self._wrappers.keys():
+            if (md5sum := w.checksum) in self._wrappers:
                 if w != self._wrappers[md5sum]:
                     logger.error(
                         'Equal csum for unequal wrappers %s, %s',
@@ -147,7 +147,7 @@ class Wrappers:
         config.adjust_option(app_name, 'wrapper', command)
 
     def __save_wrappers(self):
-        existing = {csum for csum in self._wrappers.keys()}
+        existing = {csum for csum in self._wrappers}
         in_use = {entry.checksum for wrappers in self._applists.values() for entry in wrappers}
 
         for redudant in existing.difference(in_use):

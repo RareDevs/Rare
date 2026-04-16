@@ -30,7 +30,7 @@ def prepare_process(command: list[str], environment: dict) -> tuple[str, list[st
     logger.debug('Preparing process: %s', command)
     _env = os.environ.copy()
     _command = command.copy()
-    if os.environ.get('container') == 'flatpak':
+    if os.environ.get('container') == 'flatpak':  # noqa: SIM112
         flatpak_command = ['flatpak-spawn', '--host']
         flatpak_command.extend(f'--env={name}={value}' for name, value in environment.items())
         _command = flatpak_command + command

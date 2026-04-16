@@ -162,7 +162,8 @@ class GameDetails(QWidget, SideTabContents):
                 self,
                 self.tr('Repair and update? - {}').format(self.rgame.app_title),
                 self.tr(
-                    'There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. Do you want to update the game while repairing it?'
+                    'There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. '
+                    'Do you want to update the game while repairing it?'
                 ).format(rgame.app_title, rgame.version, rgame.remote_version),
             )
             ans = mbox == QMessageBox.StandardButton.Yes
@@ -224,7 +225,8 @@ class GameDetails(QWidget, SideTabContents):
                 self,
                 self.tr('Summary - {}').format(rgame.app_title),
                 self.tr(
-                    '<b>{}</b> failed verification, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. Do you want to repair them?'
+                    '<b>{}</b> failed verification, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. '
+                    'Do you want to repair them?'
                 ).format(rgame.app_title, failed, missing),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.Yes,
@@ -466,6 +468,7 @@ class GameDetails(QWidget, SideTabContents):
                     self.ui.ach_completed_page,
                     self.ui.ach_progress_page,
                 ),
+                strict=False,
             ):
                 self.ui.achievements_toolbox.setItemEnabled(self.ui.achievements_toolbox.indexOf(page), bool(group))
                 if bool(group):
@@ -536,7 +539,10 @@ class GameTagCheckBox(QCheckBox):
             ((base_color & 0xFF0000) >> 16) * 0.2126 + ((base_color & 0x00FF00) >> 8) * 0.7152 + (base_color & 0x0000FF) * 0.0722
         )
         font_color = 'white' if luminance < 140 else 'black'
-        style = f'QCheckBox#{self.objectName()}{{color: {font_color};border-color: #{border_color:x};background-color: #{base_color:x};}}'
+        style = (
+            f'QCheckBox#{self.objectName()}'
+            f'{{color: {font_color};border-color: #{border_color:x};background-color: #{base_color:x};}}'
+        )
         self.setStyleSheet(style)
         self.checkStateChanged.connect(self._on_state_changed)
 

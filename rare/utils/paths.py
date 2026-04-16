@@ -259,7 +259,7 @@ def get_rare_executable(*, external: bool = False) -> list[str]:
 
     if os.environ.get('SNAP') and external:
         return ['snap', 'run', 'rare']
-    if os.environ.get('container') == 'flatpak' and external:
+    if os.environ.get('container') == 'flatpak' and external:  # noqa: SIM112
         return ['flatpak', 'run', 'io.github.dummerle.rare']
 
     # lk: detect if nuitka

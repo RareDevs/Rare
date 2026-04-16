@@ -1,3 +1,4 @@
+import contextlib
 import json
 import os
 import platform
@@ -8,7 +9,6 @@ import time
 import traceback
 from argparse import Namespace
 from logging import getLogger
-from typing import Optional
 
 import shiboken6
 from legendary.models.game import SaveGameStatus
@@ -137,7 +137,7 @@ class RareLauncherException(RareAppException):
         self.__args = args
 
     def _handler(self, exc_type, exc_value, exc_tb) -> bool:
-        try:
+        with contextlib.suppress(RuntimeError):
             self.__app.send_message(
                 ErrorModel(
                     app_name=self.__args.app_name,
@@ -145,8 +145,6 @@ class RareLauncherException(RareAppException):
                     error_string=''.join(traceback.format_exception(exc_type, exc_value, exc_tb)),
                 )
             )
-        except RuntimeError:
-            pass
         return False
 
 
@@ -232,10 +230,8 @@ class RareLauncher(RareApp):
 
     def new_server_connection(self):
         if self.socket is not None:
-            try:
+            with contextlib.suppress(RuntimeError):
                 self.socket.disconnectFromServer()
-            except RuntimeError:
-                pass
         self.logger.info('New connection')
         self.socket = self.server.nextPendingConnection()
         self.socket.disconnected.connect(self.socket_disconnected)
@@ -369,17 +365,15 @@ class RareLauncher(RareApp):
             cmd_line = get_rare_executable()
             executable, arguments = cmd_line[0], cmd_line[1:]
 
-            if appid := os.environ.get('SteamGameId', False):
+            if appid := os.environ.get('SteamGameId', False):  # noqa: SIM112
                 params.environment['SteamGameId'] = appid
             elif params.environment.get('SteamGameId', False):
                 appid = params.environment['SteamGameId']
 
             self.game_process.setProgram(executable)
             # TODO: Add "SteamLauch" and "AppId=xxxxxx" here for steamdeck/gamescope
-            try:
+            with contextlib.suppress(ValueError):
                 appid = int(appid) >> 32
-            except ValueError:
-                pass
             self.game_process.setArguments(
                 [*arguments, 'subreaper', 'SteamLaunch', f'AppId={appid}', '--', params.executable, *params.arguments]
             )

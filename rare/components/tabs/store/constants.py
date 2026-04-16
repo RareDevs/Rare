@@ -56,7 +56,7 @@ offerId
 prePurchaseOfferId
 """
 
-__PageSandboxModel = """
+__PageSandboxModel = f"""
 pageSlug
 pageType
 productId
@@ -64,25 +64,25 @@ sandboxId
 createdDate
 updatedDate
 deletedDate
-mappings {
-  %s
-}
-""" % (__StorePageMapping)
+mappings {{
+  {__StorePageMapping}
+}}
+"""
 
-__CatalogNamespace = """
+__CatalogNamespace = f"""
 parent
 displayName
 store
-home: mappings(pageType: "productHome") {
-  %s
-}
-addons: mappings(pageType: "addon--cms-hybrid") {
-  %s
-}
-offers: mappings(pageType: "offer") {
-  %s
-}
-""" % (__PageSandboxModel, __PageSandboxModel, __PageSandboxModel)
+home: mappings(pageType: "productHome") {{
+  {__PageSandboxModel}
+}}
+addons: mappings(pageType: "addon--cms-hybrid") {{
+  {__PageSandboxModel}
+}}
+offers: mappings(pageType: "offer") {{
+  {__PageSandboxModel}
+}}
+"""
 
 __CatalogItem = """
 id
@@ -140,7 +140,7 @@ upcomingPromotionalOffers {
 }
 """
 
-__CatalogOffer = """
+__CatalogOffer = f"""
 title
 id
 namespace
@@ -150,59 +150,52 @@ status
 isCodeRedemptionOnly
 description
 effectiveDate
-keyImages {
-    %(image)s
-}
+keyImages {{
+    {__Image}
+}}
 currentPrice
-seller {
+seller {{
   id
   name
-}
+}}
 productSlug
 urlSlug
 url
-tags {
+tags {{
   id
   name
   groupName
-}
-items {
-    %(catalog_item)s
-}
-customAttributes {
+}}
+items {{
+    {__CatalogItem}
+}}
+customAttributes {{
   key
   value
-}
-categories {
+}}
+categories {{
   path
-}
-catalogNs @include(if: $withMapping) {
-    %(catalog_namespace)s
-}
-offerMappings @include(if: $withMapping) {
-    %(page_sandbox_model)s
-}
-price(country: $country) @include(if: $withPrice) {
-    %(get_price_res)s
-}
-promotions(category: $category) @include(if: $withPromotions) {
-    %(promotions)s
-}
-""" % {
-    'image': __Image,
-    'catalog_item': __CatalogItem,
-    'catalog_namespace': __CatalogNamespace,
-    'page_sandbox_model': __PageSandboxModel,
-    'get_price_res': __GetPriceRes,
-    'promotions': __Promotions,
-}
+}}
+catalogNs @include(if: $withMapping) {{
+    {__CatalogNamespace}
+}}
+offerMappings @include(if: $withMapping) {{
+    {__PageSandboxModel}
+}}
+price(country: $country) @include(if: $withPrice) {{
+    {__GetPriceRes}
+}}
+promotions(category: $category) @include(if: $withPromotions) {{
+    {__Promotions}
+}}
+"""
 
 __Pagination = """
 count
 total
 """
 
-SEARCH_STORE_QUERY = """
+SEARCH_STORE_QUERY = f"""
 query searchStoreQuery(
   $allowCountries: String
   $category: String
@@ -224,8 +217,8 @@ query searchStoreQuery(
   $freeGame: Boolean
   $onSale: Boolean
   $effectiveDate: String
-) {
-  Catalog {
+) {{
+  Catalog {{
     searchStore(
       allowCountries: $allowCountries
       category: $category
@@ -244,20 +237,19 @@ query searchStoreQuery(
       freeGame: $freeGame
       onSale: $onSale
       effectiveDate: $effectiveDate
-    ) {
-      elements {
-        %s
-      }
-      paging {
-        %s
-      }
-    }
-  }
-}
-""" % (__CatalogOffer, __Pagination)
+    ) {{
+      elements {{
+        {__CatalogOffer}
+      }}
+      paging {{
+        {__Pagination}
+      }}
+    }}
+  }}
+}}
+"""
 
-__WISHLIST_ITEM = (
-    """
+__WISHLIST_ITEM = f"""
 id
 order
 created
@@ -265,15 +257,12 @@ offerId
 updated
 namespace
 isFirstTime
-offer(locale: $locale) {
-  %s
-}
+offer(locale: $locale) {{
+  {__CatalogOffer}
+}}
 """
-    % __CatalogOffer
-)
 
-WISHLIST_QUERY = (
-    """
+WISHLIST_QUERY = f"""
 query wishlistQuery(
   $country: String!
   $locale: String
@@ -281,21 +270,18 @@ query wishlistQuery(
   $withMapping: Boolean = false
   $withPrice: Boolean = false
   $withPromotions: Boolean = false
-) {
-  Wishlist {
-    wishlistItems {
-      elements {
-        %s
-      }
-    }
-  }
-}
+) {{
+  Wishlist {{
+    wishlistItems {{
+      elements {{
+        {__WISHLIST_ITEM}
+      }}
+    }}
+  }}
+}}
 """
-    % __WISHLIST_ITEM
-)
 
-WISHLIST_ADD_QUERY = (
-    """
+WISHLIST_ADD_QUERY = f"""
 mutation addWishlistMutation(
   $namespace: String!
   $offerId: String!
@@ -305,22 +291,20 @@ mutation addWishlistMutation(
   $withMapping: Boolean = false
   $withPrice: Boolean = false
   $withPromotions: Boolean = false
-) {
-  Wishlist {
+) {{
+  Wishlist {{
     addToWishlist(
       namespace: $namespace
       offerId: $offerId
-    ) {
-      wishlistItem {
-        %s
-      }
+    ) {{
+      wishlistItem {{
+        {__WISHLIST_ITEM}
+      }}
       success
-    }
-  }
-}
+    }}
+  }}
+}}
 """
-    % __WISHLIST_ITEM
-)
 
 WISHLIST_REMOVE_QUERY = """
 mutation removeFromWishlistMutation(

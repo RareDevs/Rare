@@ -86,8 +86,8 @@ def get_game_params(rgame: RareGameSlim, init: InitParams, launch: LaunchParams)
         if not init.skip_update_check and not rgame.core.is_noupdate_game(rgame.app_name):
             try:
                 latest = rgame.core.get_asset(rgame.app_name, rgame.igame.platform, update=False)
-            except ValueError:
-                raise GameArgsError("Metadata doesn't exist")
+            except ValueError as exc:
+                raise GameArgsError("Metadata doesn't exist") from exc
             else:
                 if latest.build_version != rgame.igame.version:
                     raise GameArgsError('Game is not up to date. Please update first')
@@ -181,7 +181,7 @@ def prepare_process(command: list[str], environment: dict) -> tuple[str, list[st
     final_env = os.environ.copy()
     final_cmd = command.copy()
 
-    if os.environ.get('container') == 'flatpak':
+    if os.environ.get('container') == 'flatpak':  # noqa: SIM112
         _flat_cmd = ['flatpak-spawn', '--host']
         _flat_cmd.extend(f'--env={name}={value}' for name, value in _env.items())
         final_cmd = _flat_cmd + command

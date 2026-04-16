@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Tuple, Type, TypeVar, Union
+from typing import TypeVar
 
 from PySide6.QtCore import QObject, Qt, Slot
 from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget

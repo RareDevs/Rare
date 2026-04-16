@@ -254,9 +254,9 @@ class ImportGroup(QGroupBox):
         self.app_name_edit.setInfo('')
         if not text:
             return False, text, IndicatorReasonsCommon.UNDEFINED
-        if text in self._app_names.keys():
+        if text in self._app_names:
             return True, self._app_names[text], IndicatorReasonsCommon.VALID
-        if text in self._app_titles.keys():
+        if text in self._app_titles:
             return True, text, IndicatorReasonsCommon.VALID
         else:
             return False, text, IndicatorReasonsCommon.GAME_NOT_EXISTS
@@ -364,7 +364,8 @@ class ImportGroup(QGroupBox):
                 QMessageBox.Icon.Information,
                 self.tr('Import summary'),
                 self.tr(
-                    'Tried to import {} folders.\n\nSuccessfully imported {} games, failed to import {} games and {} errors occurred'
+                    'Tried to import {} folders.\n\n'
+                    'Successfully imported {} games, failed to import {} games and {} errors occurred'
                 ).format(
                     len(success) + len(failure) + len(errored),
                     len(success),

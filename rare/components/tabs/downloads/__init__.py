@@ -2,7 +2,6 @@ import datetime
 import platform
 from copy import deepcopy
 from logging import getLogger
-from typing import Optional, Union
 
 from PySide6.QtCore import Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QPixmap
@@ -198,7 +197,7 @@ class DownloadsTab(QWidget):
 
     def start_download(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
-        if not rgame.state == RareGame.State.DOWNLOADING:
+        if rgame.state != RareGame.State.DOWNLOADING:
             self.logger.error(
                 f"Can't start download {item.options.app_name} due to incompatible state {RareGame.State(rgame.state).name}"
             )

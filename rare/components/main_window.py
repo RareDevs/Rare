@@ -235,7 +235,8 @@ class RareWindow(QMainWindow):
                 self,
                 self.tr('Quit {}?').format(QApplication.applicationName()),
                 self.tr(
-                    'There are currently running operations. Rare cannot exit until they are completed.\n\nDo you want to clear the queue?'
+                    'There are currently running operations. Rare cannot exit until they are completed.\n\n'
+                    'Do you want to clear the queue?'
                 ),
                 buttons=(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No),
                 defaultButton=QMessageBox.StandardButton.No,

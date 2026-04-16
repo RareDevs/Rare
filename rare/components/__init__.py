@@ -2,7 +2,6 @@ import os
 import shutil
 from argparse import Namespace
 from datetime import datetime, timezone
-from typing import Optional
 
 import requests.exceptions
 from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot

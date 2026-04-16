@@ -419,9 +419,9 @@ def get_steam_environment(
         tool_paths.append(tool.runtime.tool_path)
     environ['STEAM_COMPAT_TOOL_PATHS'] = ':'.join(tool_paths)
     if tool.anticheat is not None:
-        if (appid := ANTICHEAT_RUNTIMES['eac_runtime']) in tool.anticheat.keys():
+        if (appid := ANTICHEAT_RUNTIMES['eac_runtime']) in tool.anticheat:
             environ['PROTON_EAC_RUNTIME'] = tool.anticheat[appid].tool_path
-        if (appid := ANTICHEAT_RUNTIMES['battleye_runtime']) in tool.anticheat.keys():
+        if (appid := ANTICHEAT_RUNTIMES['battleye_runtime']) in tool.anticheat:
             environ['PROTON_BATTLEYE_RUNTIME'] = tool.anticheat[appid].tool_path
     return environ
 

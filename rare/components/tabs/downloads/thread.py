@@ -1,3 +1,4 @@
+import contextlib
 import os
 import platform
 import queue
@@ -82,15 +83,11 @@ class DlThread(QThread):
             self.rgame.signals.progress.start.emit()
             time.sleep(1)
             while self.item.download.dlm.is_alive():
-                try:
+                with contextlib.suppress(queue.Empty):
                     self._status_callback(self.item.download.dlm.status_queue.get(timeout=1.0))
-                except queue.Empty:
-                    pass
                 if self.dlm_signals.update:
-                    try:
+                    with contextlib.suppress(queue.Full):
                         self.item.download.dlm.signals_queue.put(self.dlm_signals, block=False, timeout=1.0)
-                    except queue.Full:
-                        pass
                 time.sleep(self.item.download.dlm.update_interval / 10)
             self.item.download.dlm.join()
         except Exception as e:

@@ -1,3 +1,4 @@
+import contextlib
 import json
 from enum import IntEnum
 from logging import getLogger
@@ -53,10 +54,8 @@ class GameProcess(QObject):
 
     @Slot()
     def __close(self):
-        try:
+        with contextlib.suppress(RuntimeError):
             self.socket.close()
-        except RuntimeError:
-            pass
 
     @Slot()
     def __connect(self):

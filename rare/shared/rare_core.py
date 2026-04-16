@@ -421,7 +421,7 @@ class RareCore(QObject):
                 else:
                     saves_dict[s.app_name].append(s)
             for app_name, saves in saves_dict.items():
-                if app_name not in self.__library.keys():
+                if app_name not in self.__library:
                     continue
                 self.__library[app_name].load_saves(saves)
         except (HTTPError, ConnectionError) as e:

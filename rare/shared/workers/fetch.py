@@ -171,7 +171,7 @@ class GamesDlcsWorker(FetchWorker):
             # Combine the two games lists and the two dlc dictionaries between regular and non-asset results
             games += na_games
             for catalog_id, dlcs in na_dlc_dict.items():
-                if catalog_id in dlc_dict.keys():
+                if catalog_id in dlc_dict:
                     dlc_dict[catalog_id] += dlcs
                 else:
                     dlc_dict[catalog_id] = dlcs

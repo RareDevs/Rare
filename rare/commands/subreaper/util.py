@@ -4,7 +4,7 @@ import shutil
 
 def find_all(name, path) -> list:
     result = []
-    for root, dirs, files in os.walk(path):
+    for root, _, files in os.walk(path):
         if name in files:
             result.append(os.path.join(root, name))
     return result
@@ -17,7 +17,7 @@ def find_mangohud_shim() -> str:
     if len(libs) == 1:
         return libs[0]
     ret = []
-    for left, right in zip(*(lib.split('/') for lib in libs)):
+    for left, right in zip(*(lib.split('/') for lib in libs), strict=False):
         if left == right:
             ret.append(left)
         elif left.startswith('lib') and right.startswith('lib'):

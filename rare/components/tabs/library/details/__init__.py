@@ -1,5 +1,5 @@
+import contextlib
 import platform as pf
-from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeyEvent, QShowEvent
@@ -112,8 +112,6 @@ class GameMetadataView(QTreeView, SideTabContents):
         self.rgame = rgame
         self.set_title.emit(self.rgame.app_title)
         self.model.clear()
-        try:
+        with contextlib.suppress(Exception):
             self.model.load(vars(view))
-        except Exception:
-            pass
         self.resizeColumnToContents(0)

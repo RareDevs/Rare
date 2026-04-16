@@ -152,7 +152,7 @@ class ConsoleEnv(QDialog):
         self.ui.table.clearContents()
         self.ui.table.setRowCount(len(env.keys()))
 
-        for idx, key in enumerate(env.keys()):
+        for idx, _ in enumerate(env.keys()):
             self.ui.table.setItem(idx, 0, QTableWidgetItem(env.keys()[idx]))
             self.ui.table.setItem(idx, 1, QTableWidgetItem(env.value(env.keys()[idx])))
 

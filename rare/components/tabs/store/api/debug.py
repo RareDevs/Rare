@@ -1,3 +1,5 @@
+import contextlib
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QTreeView, QVBoxLayout
 
@@ -12,10 +14,8 @@ class DebugView(QTreeView):
         self.model = QJsonModel(self)
         self.setModel(self.model)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
-        try:
+        with contextlib.suppress(Exception):
             self.model.load(data)
-        except Exception:
-            pass
         self.resizeColumnToContents(0)
 
 

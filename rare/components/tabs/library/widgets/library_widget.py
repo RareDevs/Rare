@@ -56,9 +56,9 @@ class ProgressLabel(QLabel):
         min_d = min(image.width(), image.height())
         origin_w = (image.width() - min_d) // 2
         origin_h = (image.height() - min_d) // 2
-        for x, y in zip(range(origin_w, min_d), range(origin_h, min_d)):
+        for x, y in zip(range(origin_w, min_d), range(origin_h, min_d), strict=False):
             pixel = image.pixelColor(x, y).getRgb()
-            color = list(map(lambda t: sum(t) // 2, zip(pixel[:3], color)))
+            color = list(map(lambda t: sum(t) // 2, zip(pixel[:3], color, strict=False)))
         # take the V component of the HSV color
         fg_color = QColor(0, 0, 0) if QColor(*color).value() < 127 else QColor(255, 255, 255)
         bg_color = QColor(*map(lambda c: 255 - c, color))

@@ -230,7 +230,7 @@ def widget_object_name(widget: QObject | ShibokenObject | type, suffix: str) -> 
     suffix = f'_{suffix}' if suffix else ''
     if isinstance(widget, QObject):
         return f'{type(widget).__name__}{suffix}'
-    elif isinstance(widget, ShibokenObject) or isinstance(widget, type):
+    elif isinstance(widget, (ShibokenObject, type)):
         return f'{widget.__name__}{suffix}'
     else:
         raise RuntimeError(f'Argument {widget} not a QObject or type of QObject')
