@@ -192,9 +192,9 @@ class LoadingSpinnerImageWidget(LoadingImageWidget):
         self.spinner.start()
         params = (
             {
-                "resize": 1,
-                "w": self._image_size.base.size.width(),
-                "h": self._image_size.base.size.height(),
+                'resize': 1,
+                'w': self._image_size.base.size.width(),
+                'h': self._image_size.base.size.height(),
             }
             if not params
             else params
@@ -206,4 +206,4 @@ class LoadingSpinnerImageWidget(LoadingImageWidget):
         self.spinner.stop()
 
 
-__all__ = ["ImageSize", "ImageWidget", "LoadingImageWidget", "LoadingSpinnerImageWidget"]
+__all__ = ['ImageSize', 'ImageWidget', 'LoadingImageWidget', 'LoadingSpinnerImageWidget']

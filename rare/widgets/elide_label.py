@@ -6,11 +6,11 @@ from PySide6.QtWidgets import QLabel
 
 
 class ElideLabel(QLabel):
-    def __init__(self, text="", parent=None):
+    def __init__(self, text='', parent=None):
         super(ElideLabel, self).__init__(parent=parent)
         self.__text = text
         self.__fm = QFontMetrics(self.font())
-        self.__tooltip = ""
+        self.__tooltip = ''
         self.setFixedHeight(True)
         self.setWordWrap(True)
         self.setText(text)
@@ -29,7 +29,7 @@ class ElideLabel(QLabel):
             if self.__fm.boundingRect(elided_text).width() < self.__fm.boundingRect(self.__text).width():
                 super(ElideLabel, self).setToolTip(self.__text)
             else:
-                super(ElideLabel, self).setToolTip("")
+                super(ElideLabel, self).setToolTip('')
         super(ElideLabel, self).setText(elided_text)
 
     def setToolTip(self, a0: str) -> None:

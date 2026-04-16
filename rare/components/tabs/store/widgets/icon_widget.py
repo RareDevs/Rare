@@ -20,12 +20,12 @@ class IconWidget(object):
     def setupUi(self, widget: QWidget):
         # on-hover popup
         self.mini_widget = QWidget(parent=widget)
-        self.mini_widget.setObjectName(f"{type(self).__name__}MiniWidget")
+        self.mini_widget.setObjectName(f'{type(self).__name__}MiniWidget')
         self.mini_widget.setFixedHeight(int(widget.height() // 3))
 
         # game title
         self.title_label = QLabel(parent=self.mini_widget)
-        self.title_label.setObjectName(f"{type(self).__name__}TitleLabel")
+        self.title_label.setObjectName(f'{type(self).__name__}TitleLabel')
         self.title_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.title_label.setAutoFillBackground(False)
@@ -33,17 +33,17 @@ class IconWidget(object):
 
         # information below title
         self.developer_label = QLabel(parent=self.mini_widget)
-        self.developer_label.setObjectName(f"{type(self).__name__}TooltipLabel")
+        self.developer_label.setObjectName(f'{type(self).__name__}TooltipLabel')
         self.developer_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         self.developer_label.setAutoFillBackground(False)
 
         self.price_label = QLabel(parent=self.mini_widget)
-        self.price_label.setObjectName(f"{type(self).__name__}TooltipLabel")
+        self.price_label.setObjectName(f'{type(self).__name__}TooltipLabel')
         self.price_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.price_label.setAutoFillBackground(False)
 
         self.discount_label = QLabel(parent=self.mini_widget)
-        self.discount_label.setObjectName(f"{type(self).__name__}TooltipLabel")
+        self.discount_label.setObjectName(f'{type(self).__name__}TooltipLabel')
         self.discount_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.discount_label.setAutoFillBackground(False)
 

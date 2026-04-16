@@ -9,13 +9,13 @@ from rare.models.image import ImageSize
 from .game_widget import GameWidget
 from .icon_widget import IconWidget
 
-logger = getLogger("IconGameWidget")
+logger = getLogger('IconGameWidget')
 
 
 class IconGameWidget(GameWidget):
     def __init__(self, rgame: RareGame, parent=None):
         super().__init__(rgame, parent)
-        self.setObjectName(f"{rgame.app_name}")
+        self.setObjectName(f'{rgame.app_name}')
         self.setFixedSize(ImageSize.LibraryTall)
         self.ui = IconWidget()
         self.ui.setupUi(self)

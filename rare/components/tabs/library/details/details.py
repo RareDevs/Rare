@@ -38,7 +38,7 @@ from rare.widgets.dialogs import ButtonDialog, game_title
 from rare.widgets.image_widget import ImageSize, ImageWidget, LoadingImageWidget
 from rare.widgets.side_tab import SideTabContents
 
-logger = getLogger("GameInfo")
+logger = getLogger('GameInfo')
 
 
 class GameDetails(QWidget, SideTabContents):
@@ -51,21 +51,21 @@ class GameDetails(QWidget, SideTabContents):
         self.ui = Ui_GameDetails()
         self.ui.setupUi(self)
         # lk: set object names for CSS properties
-        self.ui.install_path.setObjectName("LinkLabel")
-        self.ui.install_button.setObjectName("InstallButton")
-        self.ui.modify_button.setObjectName("InstallButton")
-        self.ui.verify_button.setObjectName("VerifyButton")
-        self.ui.move_button.setObjectName("MoveButton")
-        self.ui.uninstall_button.setObjectName("UninstallButton")
+        self.ui.install_path.setObjectName('LinkLabel')
+        self.ui.install_button.setObjectName('InstallButton')
+        self.ui.modify_button.setObjectName('InstallButton')
+        self.ui.verify_button.setObjectName('VerifyButton')
+        self.ui.move_button.setObjectName('MoveButton')
+        self.ui.uninstall_button.setObjectName('UninstallButton')
 
-        self.ui.install_button.setIcon(qta_icon("ri.install-line"))
-        self.ui.import_button.setIcon(qta_icon("mdi.application-import"))
+        self.ui.install_button.setIcon(qta_icon('ri.install-line'))
+        self.ui.import_button.setIcon(qta_icon('mdi.application-import'))
 
-        self.ui.modify_button.setIcon(qta_icon("mdi.content-save-edit-outline"))
-        self.ui.verify_button.setIcon(qta_icon("mdi.check-underline"))
-        self.ui.repair_button.setIcon(qta_icon("mdi.progress-wrench"))
-        self.ui.move_button.setIcon(qta_icon("mdi.folder-move-outline"))
-        self.ui.uninstall_button.setIcon(qta_icon("ri.uninstall-line"))
+        self.ui.modify_button.setIcon(qta_icon('mdi.content-save-edit-outline'))
+        self.ui.verify_button.setIcon(qta_icon('mdi.check-underline'))
+        self.ui.repair_button.setIcon(qta_icon('mdi.progress-wrench'))
+        self.ui.move_button.setIcon(qta_icon('mdi.folder-move-outline'))
+        self.ui.uninstall_button.setIcon(qta_icon('ri.uninstall-line'))
 
         self.ui.grade.setOpenExternalLinks(True)
         self.ui.install_path.setOpenExternalLinks(True)
@@ -73,7 +73,7 @@ class GameDetails(QWidget, SideTabContents):
         self.rcore = rcore
         self.core = rcore.core()
         self.args = rcore.args()
-        self.net_manager = QRequests(cache=str(cache_dir().joinpath("achievements")), parent=self)
+        self.net_manager = QRequests(cache=str(cache_dir().joinpath('achievements')), parent=self)
 
         self.rgame: Optional[RareGame] = None
 
@@ -91,17 +91,17 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.uninstall_button.clicked.connect(self.__on_uninstall)
 
         self.steam_grade_ratings = {
-            "platinum": self.tr("Platinum"),
-            "gold": self.tr("Gold"),
-            "silver": self.tr("Silver"),
-            "bronze": self.tr("Bronze"),
-            "borked": self.tr("Borked"),
-            "fail": self.tr("Failed to get rating"),
-            "pending": self.tr("Loading..."),
-            "na": self.tr("Not applicable"),
+            'platinum': self.tr('Platinum'),
+            'gold': self.tr('Gold'),
+            'silver': self.tr('Silver'),
+            'bronze': self.tr('Bronze'),
+            'borked': self.tr('Borked'),
+            'fail': self.tr('Failed to get rating'),
+            'pending': self.tr('Loading...'),
+            'na': self.tr('Not applicable'),
         }
 
-        self.ui.add_tag_button.setIcon(qta_icon("mdi.plus"))
+        self.ui.add_tag_button.setIcon(qta_icon('mdi.plus'))
         self.ui.add_tag_button.clicked.connect(self.__on_tag_add)
 
         ach_progress_layout = QVBoxLayout(self.ui.ach_progress_page)
@@ -145,12 +145,12 @@ class GameDetails(QWidget, SideTabContents):
     @Slot()
     def __on_repair(self):
         """This method is to be called from the button only"""
-        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.rgame.app_name}.repair")
+        repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.rgame.app_name}.repair')
         if not os.path.exists(repair_file):
             QMessageBox.warning(
                 self,
-                self.tr("Error - {}").format(self.rgame.app_title),
-                self.tr("Repair file does not exist or game does not need a repair. Please verify game first"),
+                self.tr('Error - {}').format(self.rgame.app_title),
+                self.tr('Repair file does not exist or game does not need a repair. Please verify game first'),
             )
             return
         self.repair_game(self.rgame)
@@ -161,9 +161,9 @@ class GameDetails(QWidget, SideTabContents):
         if rgame.has_update:
             mbox = QMessageBox.question(
                 self,
-                self.tr("Repair and update? - {}").format(self.rgame.app_title),
+                self.tr('Repair and update? - {}').format(self.rgame.app_title),
                 self.tr(
-                    "There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. Do you want to update the game while repairing it?"
+                    'There is an update for <b>{}</b> from <b>{}</b> to <b>{}</b>. Do you want to update the game while repairing it?'
                 ).format(rgame.app_title, rgame.version, rgame.remote_version),
             )
             ans = mbox == QMessageBox.StandardButton.Yes
@@ -171,17 +171,17 @@ class GameDetails(QWidget, SideTabContents):
 
     @Slot(RareGame, str)
     def __on_worker_error(self, rgame: RareGame, message: str):
-        QMessageBox.warning(self, self.tr("Error - {}").format(rgame.app_title), message)
+        QMessageBox.warning(self, self.tr('Error - {}').format(rgame.app_title), message)
 
     @Slot()
     def __on_verify(self):
         """This method is to be called from the button only"""
         if not os.path.exists(self.rgame.igame.install_path):
-            logger.error(f"Installation path {self.rgame.igame.install_path} for {self.rgame.app_title} does not exist")
+            logger.error(f'Installation path {self.rgame.igame.install_path} for {self.rgame.app_title} does not exist')
             QMessageBox.warning(
                 self,
-                self.tr("Error - {}").format(self.rgame.app_title),
-                self.tr("Installation path for <b>{}</b> does not exist. Cannot continue.").format(self.rgame.app_title),
+                self.tr('Error - {}').format(self.rgame.app_title),
+                self.tr('Installation path for <b>{}</b> does not exist. Cannot continue.').format(self.rgame.app_title),
             )
             return
         if self.rgame.sdl_available:
@@ -196,7 +196,7 @@ class GameDetails(QWidget, SideTabContents):
         if sdl_model is not None:
             if not sdl_model.accepted or sdl_model.install_tag is None:
                 return
-            self.core.lgd.config.set(rgame.app_name, "install_tags", ",".join(sdl_model.install_tag))
+            self.core.lgd.config.set(rgame.app_name, 'install_tags', ','.join(sdl_model.install_tag))
             self.core.lgd.save_config()
         worker = VerifyWorker(self.core, self.args, rgame)
         worker.signals.progress.connect(self.__on_verify_progress)
@@ -217,15 +217,15 @@ class GameDetails(QWidget, SideTabContents):
         if success:
             QMessageBox.information(
                 self,
-                self.tr("Summary - {}").format(rgame.app_title),
-                self.tr("<b>{}</b> has been verified successfully. No missing or corrupt files found").format(rgame.app_title),
+                self.tr('Summary - {}').format(rgame.app_title),
+                self.tr('<b>{}</b> has been verified successfully. No missing or corrupt files found').format(rgame.app_title),
             )
         else:
             ans = QMessageBox.question(
                 self,
-                self.tr("Summary - {}").format(rgame.app_title),
+                self.tr('Summary - {}').format(rgame.app_title),
                 self.tr(
-                    "<b>{}</b> failed verification, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. Do you want to repair them?"
+                    '<b>{}</b> failed verification, <b>{}</b> file(s) corrupted, <b>{}</b> file(s) are missing. Do you want to repair them?'
                 ).format(rgame.app_title, failed, missing),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.Yes,
@@ -251,8 +251,8 @@ class GameDetails(QWidget, SideTabContents):
         if not options.dst_exists and options.target_name in os.listdir(options.target_path):
             ans = QMessageBox.question(
                 self,
-                self.tr("Move game? - {}").format(self.rgame.app_title),
-                self.tr("Destination <b>{}</b> already exists. Are you sure you want to overwrite it?").format(new_install_path),
+                self.tr('Move game? - {}').format(self.rgame.app_title),
+                self.tr('Destination <b>{}</b> already exists. Are you sure you want to overwrite it?').format(new_install_path),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.Yes,
             )
@@ -279,8 +279,8 @@ class GameDetails(QWidget, SideTabContents):
     def __on_move_result(self, rgame: RareGame, dst_path: str):
         QMessageBox.information(
             self,
-            self.tr("Summary - {}").format(rgame.app_title),
-            self.tr("<b>{}</b> successfully moved to <b>{}<b>.").format(rgame.app_title, dst_path),
+            self.tr('Summary - {}').format(rgame.app_title),
+            self.tr('<b>{}</b> successfully moved to <b>{}<b>.').format(rgame.app_title, dst_path),
         )
 
     @Slot(Qt.CheckState, str)
@@ -325,11 +325,11 @@ class GameDetails(QWidget, SideTabContents):
 
         self.ui.version_label.setDisabled(self.rgame.is_non_asset)
         self.ui.version.setDisabled(self.rgame.is_non_asset)
-        self.ui.version.setText(self.rgame.version if not self.rgame.is_non_asset else "N/A")
+        self.ui.version.setText(self.rgame.version if not self.rgame.is_non_asset else 'N/A')
 
         self.ui.install_size_label.setEnabled(bool(self.rgame.install_size))
         self.ui.install_size.setEnabled(bool(self.rgame.install_size))
-        self.ui.install_size.setText(format_size(self.rgame.install_size) if self.rgame.install_size else "N/A")
+        self.ui.install_size.setText(format_size(self.rgame.install_size) if self.rgame.install_size else 'N/A')
 
         self.ui.install_path_label.setEnabled(bool(self.rgame.install_path))
         self.ui.install_path.setEnabled(bool(self.rgame.install_path))
@@ -339,19 +339,19 @@ class GameDetails(QWidget, SideTabContents):
                 self.rgame.install_path,
             )
             if self.rgame.install_path
-            else "N/A"
+            else 'N/A'
         )
 
         self.ui.platform.setText(
             self.rgame.igame.platform if self.rgame.is_installed and not self.rgame.is_non_asset else self.rgame.default_platform
         )
 
-        self.ui.grade_label.setDisabled(self.rgame.is_unreal or platform.system() == "Windows")
-        self.ui.grade.setDisabled(self.rgame.is_unreal or platform.system() == "Windows")
+        self.ui.grade_label.setDisabled(self.rgame.is_unreal or platform.system() == 'Windows')
+        self.ui.grade.setDisabled(self.rgame.is_unreal or platform.system() == 'Windows')
         self.ui.grade.setText(
             style_hyperlink(
-                f"https://www.protondb.com/app/{self.rgame.steam_appid}",
-                f"{self.steam_grade_ratings[self.rgame.get_steam_grade()]} ({self.rgame.steam_appid})",
+                f'https://www.protondb.com/app/{self.rgame.steam_appid}',
+                f'{self.steam_grade_ratings[self.rgame.get_steam_grade()]} ({self.rgame.steam_appid})',
             )
         )
 
@@ -410,12 +410,12 @@ class GameDetails(QWidget, SideTabContents):
                     try:
                         worker.signals.progress.disconnect(self.__on_verify_progress)
                     except TypeError as e:
-                        logger.warning(f"{self.rgame.app_name} verify worker: {e}")
+                        logger.warning(f'{self.rgame.app_name} verify worker: {e}')
                 if isinstance(worker, MoveWorker):
                     try:
                         worker.signals.progress.disconnect(self.__on_move_progress)
                     except TypeError as e:
-                        logger.warning(f"{self.rgame.app_name} move worker: {e}")
+                        logger.warning(f'{self.rgame.app_name} move worker: {e}')
             self.rgame.signals.widget.refresh.disconnect(self.__update_widget)
 
         self.rgame = None
@@ -432,12 +432,12 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.dev.setText(rgame.developer)
 
         if rgame.is_non_asset:
-            self.ui.install_button.setText(self.tr("Link/Launch"))
+            self.ui.install_button.setText(self.tr('Link/Launch'))
             self.ui.actions_stack.setCurrentWidget(self.ui.uninstalled_page)
         else:
-            self.ui.install_button.setText(self.tr("Install"))
+            self.ui.install_button.setText(self.tr('Install'))
 
-        self.ui.description_field.setText(rgame.game.metadata["description"])
+        self.ui.description_field.setText(rgame.game.metadata['description'])
 
         for page in (
             self.ui.ach_progress_page,
@@ -451,15 +451,15 @@ class GameDetails(QWidget, SideTabContents):
                 w.deleteLater()
 
         if ach := rgame.achievements:
-            self.ui.progress_field.setText(f"{ach.user_unlocked}/<b>{ach.total_achievements}</b>")
-            self.ui.exp_field.setText(f"{ach.user_xp}/<b>{ach.total_product_xp}</b>")
+            self.ui.progress_field.setText(f'{ach.user_unlocked}/<b>{ach.total_achievements}</b>')
+            self.ui.exp_field.setText(f'{ach.user_xp}/<b>{ach.total_product_xp}</b>')
 
             for group, page in zip(
                 (
-                    sorted(ach.hidden, key=lambda a: a["xp"], reverse=False),
-                    sorted(ach.uninitiated, key=lambda a: a["xp"], reverse=False),
-                    sorted(ach.completed, key=lambda a: a["unlock_date"], reverse=True),
-                    sorted(ach.in_progress, key=lambda a: a["progress"], reverse=True),
+                    sorted(ach.hidden, key=lambda a: a['xp'], reverse=False),
+                    sorted(ach.uninitiated, key=lambda a: a['xp'], reverse=False),
+                    sorted(ach.completed, key=lambda a: a['unlock_date'], reverse=True),
+                    sorted(ach.in_progress, key=lambda a: a['progress'], reverse=True),
                 ),
                 (
                     self.ui.ach_hidden_page,
@@ -474,8 +474,8 @@ class GameDetails(QWidget, SideTabContents):
                 for item in group:
                     page.layout().addWidget(AchievementWidget(self.net_manager, item), alignment=Qt.AlignmentFlag.AlignTop)
         else:
-            self.ui.progress_field.setText(self.tr("No data"))
-            self.ui.exp_field.setText(self.tr("No data"))
+            self.ui.progress_field.setText(self.tr('No data'))
+            self.ui.exp_field.setText(self.tr('No data'))
         self.ui.achievements_group.setVisible(bool(ach))
 
         self.rgame = rgame
@@ -489,18 +489,18 @@ class AchievementWidget(QFrame):
 
         image = LoadingImageWidget(manager, parent=self)
         image.setFixedSize(ImageSize.LibraryIcon)
-        image.fetchPixmap(achievement["icon_link"])
+        image.fetchPixmap(achievement['icon_link'])
 
         title = QLabel(
-            f"<b><font color={achievement['tier']['hexColor']}>{achievement['display_name']}</font></b> ({achievement['xp']} XP)",
+            f'<b><font color={achievement["tier"]["hexColor"]}>{achievement["display_name"]}</font></b> ({achievement["xp"]} XP)',
             parent=self,
         )
         title.setWordWrap(True)
-        description = QLabel(achievement["description"], parent=self)
+        description = QLabel(achievement['description'], parent=self)
         description.setWordWrap(True)
-        unlock_date = achievement["unlock_date"].astimezone() if achievement["unlock_date"] else None
-        unlock_date_str = f" ( On: {relative_date(unlock_date)} )" if unlock_date else ""
-        progress = QLabel(f"Progress: <b>{achievement['progress'] * 100:,.2f}%</b> {unlock_date_str}", parent=self)
+        unlock_date = achievement['unlock_date'].astimezone() if achievement['unlock_date'] else None
+        unlock_date_str = f' ( On: {relative_date(unlock_date)} )' if unlock_date else ''
+        progress = QLabel(f'Progress: <b>{achievement["progress"] * 100:,.2f}%</b> {unlock_date_str}', parent=self)
         if unlock_date:
             progress.setToolTip(str(unlock_date))
 
@@ -519,10 +519,10 @@ class GameTagCheckBox(QCheckBox):
     checkStateChangedData = Signal(Qt.CheckState, str)
 
     tag_translations = {
-        "backlog": QCoreApplication.translate("GameTagCheckBox", "Backlog", None),
-        "completed": QCoreApplication.translate("GameTagCheckBox", "Completed", None),
-        "favorite": QCoreApplication.translate("GameTagCheckBox", "Favorite", None),
-        "hidden": QCoreApplication.translate("GameTagCheckBox", "Hidden", None),
+        'backlog': QCoreApplication.translate('GameTagCheckBox', 'Backlog', None),
+        'completed': QCoreApplication.translate('GameTagCheckBox', 'Completed', None),
+        'favorite': QCoreApplication.translate('GameTagCheckBox', 'Favorite', None),
+        'hidden': QCoreApplication.translate('GameTagCheckBox', 'Hidden', None),
     }
 
     def __init__(self, tag: str, parent=None):
@@ -531,13 +531,13 @@ class GameTagCheckBox(QCheckBox):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.setText(self.tag_translations.get(tag, tag))
         self.tag = tag
-        base_color = (int(sha1(tag.encode("utf-8")).hexdigest()[0:6], base=16) & 0x707070) | 0x0C0C0C
+        base_color = (int(sha1(tag.encode('utf-8')).hexdigest()[0:6], base=16) & 0x707070) | 0x0C0C0C
         border_color = base_color | 0x3F3F3F
         luminance = (
             ((base_color & 0xFF0000) >> 16) * 0.2126 + ((base_color & 0x00FF00) >> 8) * 0.7152 + (base_color & 0x0000FF) * 0.0722
         )
-        font_color = "white" if luminance < 140 else "black"
-        style = "QCheckBox#{0}{{color: {1};border-color: #{2:x};background-color: #{3:x};}}".format(
+        font_color = 'white' if luminance < 140 else 'black'
+        style = 'QCheckBox#{0}{{color: {1};border-color: #{2:x};background-color: #{3:x};}}'.format(
             self.objectName(), font_color, border_color, base_color
         )
         self.setStyleSheet(style)
@@ -563,7 +563,7 @@ class GameTagAddDialog(ButtonDialog):
 
     def __init__(self, rgame: RareGame, tags: Tuple[str, ...], parent=None):
         super(GameTagAddDialog, self).__init__(parent=parent)
-        header = self.tr("Add tag")
+        header = self.tr('Add tag')
         self.setWindowTitle(header)
         self.setSubtitle(game_title(header, rgame.app_title))
 
@@ -575,12 +575,12 @@ class GameTagAddDialog(ButtonDialog):
 
         self.setCentralLayout(self.widget_layout)
 
-        self.accept_button.setText(self.tr("Save"))
-        self.accept_button.setIcon(qta_icon("fa.edit", "fa5s.edit"))
+        self.accept_button.setText(self.tr('Save'))
+        self.accept_button.setIcon(qta_icon('fa.edit', 'fa5s.edit'))
         self.accept_button.setEnabled(False)
 
         self.tags = tags
-        self.result: Tuple = (False, "")
+        self.result: Tuple = (False, '')
 
     @Slot(str)
     def __on_text_changed(self, text: str):

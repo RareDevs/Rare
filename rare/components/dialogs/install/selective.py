@@ -11,7 +11,7 @@ from rare.widgets.collapsible_widget import CollapsibleFrame
 class InstallTagCheckBox(QCheckBox):
     def __init__(self, text, desc, tags: List[str], parent=None):
         super(InstallTagCheckBox, self).__init__(parent)
-        self.setFont(QFont("monospace"))
+        self.setFont(QFont('monospace'))
         self.setText(text)
         self.setToolTip(desc)
         self.tags = tags
@@ -32,18 +32,18 @@ class SelectiveWidget(QWidget):
 
         core = rgame.core
 
-        config_tags = core.lgd.config.get(rgame.app_name, "install_tags", fallback=None)
-        config_disable_sdl = core.lgd.config.getboolean(rgame.app_name, "disable_sdl", fallback=False)
+        config_tags = core.lgd.config.get(rgame.app_name, 'install_tags', fallback=None)
+        config_disable_sdl = core.lgd.config.getboolean(rgame.app_name, 'disable_sdl', fallback=False)
 
         sdl_data = rgame.sdl_data(platform)
         if not config_disable_sdl and sdl_data:
             for group, info in sdl_data.items():
-                cb = InstallTagCheckBox(info["name"].strip(), info["description"].strip(), info["tags"])
-                if group == "__required":
+                cb = InstallTagCheckBox(info['name'].strip(), info['description'].strip(), info['tags'])
+                if group == '__required':
                     cb.setChecked(True)
                     cb.setDisabled(True)
                 if config_tags is not None:
-                    if all(tag in config_tags for tag in info["tags"]):
+                    if all(tag in config_tags for tag in info['tags']):
                         cb.setChecked(True)
                 cb.stateChanged.connect(self.stateChanged)
                 main_layout.addWidget(cb)
@@ -57,7 +57,7 @@ class SelectiveWidget(QWidget):
             if data := cb.isChecked():
                 # noinspection PyTypeChecker
                 install_tags.update(data)
-        install_tags = ["", *install_tags]
+        install_tags = ['', *install_tags]
         return install_tags
 
     def supports_tags(self) -> bool:
@@ -69,7 +69,7 @@ class InstallDialogSelective(CollapsibleFrame):
 
     def __init__(self, rgame: RareGame, parent=None):
         super(InstallDialogSelective, self).__init__(parent=parent)
-        title = self.tr("Optional downloads")
+        title = self.tr('Optional downloads')
         self.setTitle(title)
         self.setEnabled(False)
 
@@ -89,4 +89,4 @@ class InstallDialogSelective(CollapsibleFrame):
         return self.widget.enabled_tags()
 
 
-__all__ = ["InstallDialogSelective", "SelectiveWidget"]
+__all__ = ['InstallDialogSelective', 'SelectiveWidget']

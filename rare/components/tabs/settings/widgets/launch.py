@@ -24,28 +24,28 @@ from .wrappers import WrapperSettings
 class LaunchSettingsBase(QGroupBox):
     def __init__(self, rcore: RareCore, wrapper_widget: Type[WrapperSettings], parent=None):
         super(LaunchSettingsBase, self).__init__(parent=parent)
-        self.setTitle(self.tr("Launch"))
+        self.setTitle(self.tr('Launch'))
 
         self.core = rcore.core()
-        self.app_name: str = "default"
+        self.app_name: str = 'default'
 
         self.prelaunch_cmd = PathEdit(
-            path="",
-            placeholder=self.tr("Path to a script or program to run before the game"),
+            path='',
+            placeholder=self.tr('Path to a script or program to run before the game'),
             file_mode=QFileDialog.FileMode.ExistingFile,
             edit_func=self.__prelaunch_cmd_edit_callback,
             save_func=self.__prelaunch_cmd_save_callback,
         )
 
-        self.prelaunch_args = QLineEdit("")
-        self.prelaunch_args.setPlaceholderText(self.tr("Arguments to the script or program to run before the game"))
+        self.prelaunch_args = QLineEdit('')
+        self.prelaunch_args.setPlaceholderText(self.tr('Arguments to the script or program to run before the game'))
         self.prelaunch_args.setToolTip(self.prelaunch_args.placeholderText())
         self.prelaunch_args.textChanged.connect(self.__prelaunch_changed)
 
         font = self.font()
         font.setItalic(True)
 
-        self.prelaunch_check = QCheckBox(self.tr("Wait for the pre-launch command to finish before launching the game"))
+        self.prelaunch_check = QCheckBox(self.tr('Wait for the pre-launch command to finish before launching the game'))
         self.prelaunch_check.setFont(font)
         self.prelaunch_check.checkStateChanged.connect(self.__prelauch_check_changed)
 
@@ -61,16 +61,16 @@ class LaunchSettingsBase(QGroupBox):
 
         self.wrappers_widget = wrapper_widget(rcore, self)
 
-        self.main_layout.addRow(self.tr("Wrappers"), self.wrappers_widget)
-        self.main_layout.addRow(self.tr("Pre-launch"), prelaunch_layout)
+        self.main_layout.addRow(self.tr('Wrappers'), self.wrappers_widget)
+        self.main_layout.addRow(self.tr('Pre-launch'), prelaunch_layout)
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
             return super().showEvent(a0)
-        prelaunch = shlex.split(config.get_option(self.app_name, "pre_launch_command", fallback=""))
-        command = prelaunch.pop(0) if len(prelaunch) else ""
+        prelaunch = shlex.split(config.get_option(self.app_name, 'pre_launch_command', fallback=''))
+        command = prelaunch.pop(0) if len(prelaunch) else ''
         arguments = prelaunch if len(prelaunch) else []
-        wait = config.get_boolean(self.app_name, "pre_launch_wait", fallback=False)
+        wait = config.get_boolean(self.app_name, 'pre_launch_wait', fallback=False)
 
         self.prelaunch_cmd.setText(command)
         self.prelaunch_args.setText(shlex.join(arguments))
@@ -98,18 +98,18 @@ class LaunchSettingsBase(QGroupBox):
 
     @Slot(Qt.CheckState)
     def __prelauch_check_changed(self, state: Qt.CheckState):
-        config.set_boolean(self.app_name, "pre_launch_wait", state != Qt.CheckState.Unchecked)
+        config.set_boolean(self.app_name, 'pre_launch_wait', state != Qt.CheckState.Unchecked)
 
     @Slot()
     def __prelaunch_changed(self):
         command = self.prelaunch_cmd.text().strip()
         if not command:
-            config.adjust_option(self.app_name, "pre_launch_command", command)
-            config.remove_option(self.app_name, "pre_launch_wait")
+            config.adjust_option(self.app_name, 'pre_launch_command', command)
+            config.remove_option(self.app_name, 'pre_launch_wait')
             return
         command = shlex.quote(command)
         arguments = self.prelaunch_args.text().strip()
-        config.adjust_option(self.app_name, "pre_launch_command", " ".join([command, arguments]))
+        config.adjust_option(self.app_name, 'pre_launch_command', ' '.join([command, arguments]))
 
 
-LaunchSettingsType = TypeVar("LaunchSettingsType", bound=LaunchSettingsBase)
+LaunchSettingsType = TypeVar('LaunchSettingsType', bound=LaunchSettingsBase)

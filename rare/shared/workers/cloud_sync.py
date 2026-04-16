@@ -33,7 +33,7 @@ class CloudSyncWorker(QueueWorker):
             app_name=self.rgame.app_name,
             app_title=self.rgame.app_title,
             type=type(self).__name__,
-            prefix="Syncing",
+            prefix='Syncing',
             state=self.state,
         )
 

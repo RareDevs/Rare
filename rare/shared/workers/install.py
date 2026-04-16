@@ -44,7 +44,7 @@ class InstallInfoWorker(Worker):
                     igame=igame,
                     game=EOSOverlayApp,
                     repair=False,
-                    repair_file="",
+                    repair_file='',
                     res=ConditionCheckResult(),  # empty
                 )
 
@@ -52,7 +52,7 @@ class InstallInfoWorker(Worker):
                 self.signals.result.emit(download)
             else:
                 # self.signals.failed.emit("\n".join(str(i) for i in download.res.failures))
-                self.signals.failed.emit("\n".join(map(str, download.res.failures)))
+                self.signals.failed.emit('\n'.join(map(str, download.res.failures)))
         except LgndrException as ret:
             self.signals.failed.emit(ret.message)
         except Exception as e:

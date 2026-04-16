@@ -25,7 +25,7 @@ from rare.widgets.elide_label import ElideLabel
 from rare.widgets.image_widget import LoadingSpinnerImageWidget
 from rare.widgets.side_tab import SideTabContents, SideTabWidget
 
-logger = getLogger("StoreDetails")
+logger = getLogger('StoreDetails')
 
 
 class StoreDetailsWidget(QWidget, SideTabContents):
@@ -60,18 +60,18 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.ui.requirements_layout.addWidget(self.requirements_tabs)
         self.ui.requirements_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
 
-        self.ui.back_button.setIcon(qta_icon("fa.chevron-left", "fa5s.chevron-left"))
+        self.ui.back_button.setIcon(qta_icon('fa.chevron-left', 'fa5s.chevron-left'))
         self.ui.back_button.clicked.connect(self.back_clicked)
 
         self.setDisabled(False)
 
     def handle_wishlist_update(self, wishlist: List[CatalogOfferModel]):
-        if wishlist and wishlist[0] == "error":
+        if wishlist and wishlist[0] == 'error':
             return
         self.wishlist = [game.id for game in wishlist]
         if self.id_str in self.wishlist:
             self.in_wishlist = True
-            self.ui.wishlist_button.setText(self.tr("Remove from Wishlist"))
+            self.ui.wishlist_button.setText(self.tr('Remove from Wishlist'))
         else:
             self.in_wishlist = False
 
@@ -91,29 +91,29 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         slug = offer.productSlug
         if not slug:
             for mapping in offer.offerMappings:
-                if mapping["pageType"] == "productHome":
-                    slug = mapping["pageSlug"]
+                if mapping['pageType'] == 'productHome':
+                    slug = mapping['pageSlug']
                     break
             else:
-                logger.error("Could not get page information")
-                slug = ""
-        if "/home" in slug:
-            slug = slug.replace("/home", "")
+                logger.error('Could not get page information')
+                slug = ''
+        if '/home' in slug:
+            slug = slug.replace('/home', '')
         self.slug = slug
 
         if offer.namespace in self.installed:
-            self.ui.store_button.setText(self.tr("Show Game on Epic Page"))
+            self.ui.store_button.setText(self.tr('Show Game on Epic Page'))
             self.ui.status.setVisible(True)
         else:
-            self.ui.store_button.setText(self.tr("Buy Game in Epic Games Store"))
+            self.ui.store_button.setText(self.tr('Buy Game in Epic Games Store'))
             self.ui.status.setVisible(False)
 
-        self.ui.original_price.setText(self.tr("Loading"))
+        self.ui.original_price.setText(self.tr('Loading'))
         # self.title.setText(self.tr("Loading"))
         # self.image.setPixmap(QPixmap())
         is_bundle = False
         for i in offer.categories:
-            if "bundles" in i.get("path", ""):
+            if 'bundles' in i.get('path', ''):
                 is_bundle = True
 
         # init API request
@@ -128,17 +128,17 @@ class StoreDetailsWidget(QWidget, SideTabContents):
             self.store_api.add_to_wishlist(
                 self.catalog_offer.namespace,
                 self.catalog_offer.id,
-                lambda success: self.ui.wishlist_button.setText(self.tr("Remove from wishlist"))
+                lambda success: self.ui.wishlist_button.setText(self.tr('Remove from wishlist'))
                 if success
-                else self.ui.wishlist_button.setText("Something went wrong"),
+                else self.ui.wishlist_button.setText('Something went wrong'),
             )
         else:
             self.store_api.remove_from_wishlist(
                 self.catalog_offer.namespace,
                 self.catalog_offer.id,
-                lambda success: self.ui.wishlist_button.setText(self.tr("Add to wishlist"))
+                lambda success: self.ui.wishlist_button.setText(self.tr('Add to wishlist'))
                 if success
-                else self.ui.wishlist_button.setText("Something went wrong"),
+                else self.ui.wishlist_button.setText('Something went wrong'),
             )
 
     def data_received(self, product: DieselProduct):
@@ -152,17 +152,17 @@ class StoreDetailsWidget(QWidget, SideTabContents):
             logger.error(str(e))
 
         self.ui.original_price.setFont(self.font())
-        price = self.catalog_offer.price.totalPrice.fmtPrice["originalPrice"]
-        discount_price = self.catalog_offer.price.totalPrice.fmtPrice["discountPrice"]
-        if price == "0" or price == 0:
-            self.ui.original_price.setText(self.tr("Free"))
+        price = self.catalog_offer.price.totalPrice.fmtPrice['originalPrice']
+        discount_price = self.catalog_offer.price.totalPrice.fmtPrice['discountPrice']
+        if price == '0' or price == 0:
+            self.ui.original_price.setText(self.tr('Free'))
         else:
             self.ui.original_price.setText(price)
         if price != discount_price:
             font = self.font()
             font.setStrikeOut(True)
             self.ui.original_price.setFont(font)
-            self.ui.discount_price.setText(discount_price if discount_price != "0" else self.tr("Free"))
+            self.ui.discount_price.setText(discount_price if discount_price != '0' else self.tr('Free'))
             self.ui.discount_price.setVisible(True)
         else:
             self.ui.discount_price.setVisible(False)
@@ -185,9 +185,9 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         # self.image_stack.setCurrentIndex(0)
         about = product_data.about
         description = about.description
-        description = description.replace("### ", "##### ")
-        description = description.replace("## ", "#### ")
-        description = description.replace("# ", "### ")
+        description = description.replace('### ', '##### ')
+        description = description.replace('## ', '#### ')
+        description = description.replace('# ', '### ')
         self.ui.description_label.setMarkdown(description)
         self.ui.developer.setText(about.developerAttribution)
         # try:
@@ -197,8 +197,8 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         #         self.ui.dev.setText(self.game.developer)
         # except KeyError:
         #     pass
-        tags = product_data.unmapped["meta"].get("tags", [])
-        self.ui.tags.setText(", ".join(tags))
+        tags = product_data.unmapped['meta'].get('tags', [])
+        self.ui.tags.setText(', '.join(tags))
 
         # clear Layout
         for b in self.ui.social_links.findChildren(SocialButton, options=Qt.FindChildOption.FindDirectChildrenOnly):
@@ -209,16 +209,16 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         links = product_data.socialLinks
         link_count = 0
         for name, url in links.items():
-            if name == "_type":
+            if name == '_type':
                 continue
-            name = name.replace("link", "").lower()
-            if name == "homepage":
-                icn = qta_icon("mdi.web", "fa5s.globe", scale_factor=1.2)
-            elif name == "title":
-                icn = qta_icon("mdi.home-circle", "fa5s.home", scale_factor=1.2)
+            name = name.replace('link', '').lower()
+            if name == 'homepage':
+                icn = qta_icon('mdi.web', 'fa5s.globe', scale_factor=1.2)
+            elif name == 'title':
+                icn = qta_icon('mdi.home-circle', 'fa5s.home', scale_factor=1.2)
             else:
                 try:
-                    icn = qta_icon(f"mdi.{name}", f"fa5b.{name}", scale_factor=1.2)
+                    icn = qta_icon(f'mdi.{name}', f'fa5b.{name}', scale_factor=1.2)
                 except Exception as e:
                     logger.error(str(e))
                     continue
@@ -237,7 +237,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
     #         self.wishlist.append(game["offer"]["title"])
 
     def button_clicked(self):
-        QDesktopServices.openUrl(QUrl(f"https://www.epicgames.com/store/{self.store_api.language_code}/p/{self.slug}"))
+        QDesktopServices.openUrl(QUrl(f'https://www.epicgames.com/store/{self.store_api.language_code}/p/{self.slug}'))
 
     def keyPressEvent(self, a0: QKeyEvent):
         if a0.key() == Qt.Key.Key_Escape:
@@ -246,7 +246,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
 
 class SocialButton(QPushButton):
     def __init__(self, icn, url, parent=None):
-        super(SocialButton, self).__init__(icn, "", parent=parent)
+        super(SocialButton, self).__init__(icn, '', parent=parent)
         self.setFixedSize(36, 36)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.url = url
@@ -267,9 +267,9 @@ class RequirementsWidget(QWidget, SideTabContents):
         bold_font.setBold(True)
 
         req_layout = QGridLayout(self)
-        min_label = QLabel(self.tr("Minimum"), parent=self)
+        min_label = QLabel(self.tr('Minimum'), parent=self)
         min_label.setFont(bold_font)
-        rec_label = QLabel(self.tr("Recommend"), parent=self)
+        rec_label = QLabel(self.tr('Recommend'), parent=self)
         rec_label.setFont(bold_font)
         req_layout.addWidget(min_label, 0, 1)
         req_layout.addWidget(rec_label, 0, 2)

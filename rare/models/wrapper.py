@@ -43,7 +43,7 @@ class Wrapper:
 
     @property
     def checksum(self) -> str:
-        return md5(self.as_str.encode("utf-8")).hexdigest()
+        return md5(self.as_str.encode('utf-8')).hexdigest()
 
     @property
     def executable(self) -> str:
@@ -56,7 +56,7 @@ class Wrapper:
     @property
     def as_str(self) -> str:
         # return " ".join(shlex.quote(part) for part in self.__command)
-        return " ".join(map(shlex.quote, self.__command))
+        return ' '.join(map(shlex.quote, self.__command))
 
     @property
     def name(self) -> str:
@@ -78,9 +78,9 @@ class Wrapper:
     @classmethod
     def from_dict(cls, data: Dict):
         return cls(
-            command=data.get("command"),
-            name=data.get("name"),
-            wtype=WrapperType(data.get("wtype", WrapperType.USER_DEFINED)),
+            command=data.get('command'),
+            name=data.get('name'),
+            wtype=WrapperType(data.get('wtype', WrapperType.USER_DEFINED)),
         )
 
     @property

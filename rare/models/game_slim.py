@@ -21,7 +21,7 @@ class RareSaveGame:
     status: SaveGameStatus = SaveGameStatus.NO_SAVE
     dt_local: Optional[datetime] = None
     dt_remote: Optional[datetime] = None
-    description: Optional[str] = ""
+    description: Optional[str] = ''
 
 
 class RareGameSignalsProgress(QObject):
@@ -98,11 +98,11 @@ class RareGameBase(QObject):
         super(RareGameBase, self).deleteLater()
 
     @property
-    def state(self) -> "RareGameBase.State":
+    def state(self) -> 'RareGameBase.State':
         return self._state
 
     @state.setter
-    def state(self, state: "RareGameBase.State"):
+    def state(self, state: 'RareGameBase.State'):
         if state != self._state:
             self._state = state
             self.signals.widget.refresh.emit()
@@ -139,7 +139,7 @@ class RareGameBase(QObject):
 
     @property
     def default_platform(self) -> str:
-        return self.core.default_platform if self.core.default_platform in self.platforms else "Windows"
+        return self.core.default_platform if self.core.default_platform in self.platforms else 'Windows'
 
     @property
     def is_mac(self) -> bool:
@@ -148,7 +148,7 @@ class RareGameBase(QObject):
 
         @return bool
         """
-        return "Mac" in self.game.asset_infos.keys()
+        return 'Mac' in self.game.asset_infos.keys()
 
     @property
     def is_win32(self) -> bool:
@@ -157,7 +157,7 @@ class RareGameBase(QObject):
 
         @return bool
         """
-        return "Win32" in self.game.asset_infos.keys()
+        return 'Win32' in self.game.asset_infos.keys()
 
     @property
     def is_origin(self) -> bool:
@@ -170,14 +170,14 @@ class RareGameBase(QObject):
 
         @return bool If the game is an Origin game
         """
-        return self.game.third_party_store in {"Origin", "the EA app"}
+        return self.game.third_party_store in {'Origin', 'the EA app'}
 
     @property
     def is_android(self) -> bool:
-        release_info = self.game.metadata.get("releaseInfo")
+        release_info = self.game.metadata.get('releaseInfo')
         if not release_info:
             return False
-        return "Android" in release_info[0]["platform"]
+        return 'Android' in release_info[0]['platform']
 
     @property
     def is_overlay(self):
@@ -350,14 +350,14 @@ class RareGameSlim(RareGameBase):
     @property
     def raw_save_path(self) -> str:
         if self.game.supports_cloud_saves:
-            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
-        return ""
+            return self.game.metadata.get('customAttributes', {}).get('CloudSaveFolder', {}).get('value')
+        return ''
 
     @property
     def raw_save_path_mac(self) -> str:
         if self.game.supports_mac_cloud_saves:
-            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder_MAC", {}).get("value")
-        return ""
+            return self.game.metadata.get('customAttributes', {}).get('CloudSaveFolder_MAC', {}).get('value')
+        return ''
 
     @property
     def supports_cloud_saves(self):

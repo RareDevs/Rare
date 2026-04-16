@@ -7,40 +7,40 @@ class Constants(QObject):
         super(Constants, self).__init__()
         self.categories = sorted(
             [
-                (self.tr("Action"), "1216"),
-                (self.tr("Adventure"), "1117"),
-                (self.tr("Puzzle"), "1298"),
-                (self.tr("Open world"), "1307"),
-                (self.tr("Racing"), "1212"),
-                (self.tr("RPG"), "1367"),
-                (self.tr("Shooter"), "1210"),
-                (self.tr("Strategy"), "1115"),
-                (self.tr("Survival"), "1080"),
-                (self.tr("First Person"), "1294"),
-                (self.tr("Indie"), "1263"),
-                (self.tr("Simulation"), "1393"),
-                (self.tr("Sport"), "1283"),
+                (self.tr('Action'), '1216'),
+                (self.tr('Adventure'), '1117'),
+                (self.tr('Puzzle'), '1298'),
+                (self.tr('Open world'), '1307'),
+                (self.tr('Racing'), '1212'),
+                (self.tr('RPG'), '1367'),
+                (self.tr('Shooter'), '1210'),
+                (self.tr('Strategy'), '1115'),
+                (self.tr('Survival'), '1080'),
+                (self.tr('First Person'), '1294'),
+                (self.tr('Indie'), '1263'),
+                (self.tr('Simulation'), '1393'),
+                (self.tr('Sport'), '1283'),
             ],
             key=lambda x: x[0],
         )
 
         self.platforms = [
-            ("MacOS", "9548"),
-            ("Windows", "9547"),
+            ('MacOS', '9548'),
+            ('Windows', '9547'),
         ]
         self.others = [
-            (self.tr("Single player"), "1370"),
-            (self.tr("Multiplayer"), "1203"),
-            (self.tr("Controller"), "9549"),
-            (self.tr("Co-op"), "1264"),
+            (self.tr('Single player'), '1370'),
+            (self.tr('Multiplayer'), '1203'),
+            (self.tr('Controller'), '9549'),
+            (self.tr('Co-op'), '1264'),
         ]
 
         self.types = [
-            (self.tr("Editor"), "editors"),
-            (self.tr("Game"), "games/edition/base"),
-            (self.tr("Bundle"), "bundles/games"),
-            (self.tr("Add-on"), "addons"),
-            (self.tr("Apps"), "software/edition/base"),
+            (self.tr('Editor'), 'editors'),
+            (self.tr('Game'), 'games/edition/base'),
+            (self.tr('Bundle'), 'bundles/games'),
+            (self.tr('Add-on'), 'addons'),
+            (self.tr('Apps'), 'software/edition/base'),
         ]
 
 
@@ -189,12 +189,12 @@ promotions(category: $category) @include(if: $withPromotions) {
     %(promotions)s
 }
 """ % {
-    "image": __Image,
-    "catalog_item": __CatalogItem,
-    "catalog_namespace": __CatalogNamespace,
-    "page_sandbox_model": __PageSandboxModel,
-    "get_price_res": __GetPriceRes,
-    "promotions": __Promotions,
+    'image': __Image,
+    'catalog_item': __CatalogItem,
+    'catalog_namespace': __CatalogNamespace,
+    'page_sandbox_model': __PageSandboxModel,
+    'get_price_res': __GetPriceRes,
+    'promotions': __Promotions,
 }
 
 __Pagination = """
@@ -447,7 +447,7 @@ query getStoreConfig(
 
 
 def compress_query(query: str) -> str:
-    return query.replace("  ", "").replace("\n", " ")
+    return query.replace('  ', '').replace('\n', ' ')
 
 
 game_query = compress_query(SEARCH_STORE_QUERY)
@@ -459,5 +459,5 @@ coupons_query = compress_query(COUPONS_QUERY)
 store_config_query = compress_query(STORE_CONFIG_QUERY)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     print(SEARCH_STORE_QUERY)

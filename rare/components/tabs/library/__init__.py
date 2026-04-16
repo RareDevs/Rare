@@ -19,7 +19,7 @@ from .details import GameDetailsTabs
 from .head_bar import LibraryHeadBar
 from .widgets import LibraryFilter, LibraryOrder, LibraryView, LibraryWidgetController
 
-logger = getLogger("GamesLibrary")
+logger = getLogger('GamesLibrary')
 
 
 class GamesLibrary(QStackedWidget):
@@ -105,7 +105,7 @@ class GamesLibrary(QStackedWidget):
         for rgame in self.rcore.games:
             widget = self.add_library_widget(rgame)
             if not widget:
-                logger.warning("Excluding %s from the game list", rgame.app_title)
+                logger.warning('Excluding %s from the game list', rgame.app_title)
                 continue
         self.filter_games(self.head_bar.current_filter())
         self.order_games(self.head_bar.current_order())
@@ -115,18 +115,18 @@ class GamesLibrary(QStackedWidget):
         try:
             widget = self.library_controller.add_game(rgame)
         except Exception as e:
-            logger.error("Could not add widget for %s to library: %s", rgame.app_name, e)
+            logger.error('Could not add widget for %s to library: %s', rgame.app_name, e)
             return None
         widget.show_info.connect(self.show_game_info)
         return widget
 
     @Slot(str)
-    def search_games(self, search_text: str = ""):
+    def search_games(self, search_text: str = ''):
         self.filter_games(self.head_bar.current_filter(), search_text)
 
     @Slot(object)
     @Slot(object, str)
-    def filter_games(self, library_filter: LibraryFilter = None, search_text: str = ""):
+    def filter_games(self, library_filter: LibraryFilter = None, search_text: str = ''):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
 
@@ -134,7 +134,7 @@ class GamesLibrary(QStackedWidget):
 
     @Slot(object)
     @Slot(object, str)
-    def order_games(self, library_order: LibraryOrder = None, search_text: str = ""):
+    def order_games(self, library_order: LibraryOrder = None, search_text: str = ''):
         if not search_text and (t := self.head_bar.search_bar.text()):
             search_text = t
 

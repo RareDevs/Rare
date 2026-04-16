@@ -9,32 +9,32 @@ from typing import Dict, List
 
 from PySide6.QtCore import QStandardPaths
 
-if platform.system() == "Windows":
+if platform.system() == 'Windows':
     # noinspection PyUnresolvedReferences
     from win32com.client import Dispatch  # pylint: disable=E0401
 
-logger = getLogger("Paths")
+logger = getLogger('Paths')
 
 # This depends on the location of this file (obviously)
-resources_path = Path(__file__).absolute().parent.parent.joinpath("resources")
+resources_path = Path(__file__).absolute().parent.parent.joinpath('resources')
 
 # lk: delete old Rare directories
 for old_dir in [
     Path(
         QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation),
-        "rare",
-    ).joinpath("tmp"),
+        'rare',
+    ).joinpath('tmp'),
     Path(
         QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation),
-        "rare",
-    ).joinpath("images"),
+        'rare',
+    ).joinpath('images'),
     Path(
         QStandardPaths.writableLocation(QStandardPaths.StandardLocation.CacheLocation),
-        "rare",
+        'rare',
     ),
     Path(
         QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation),
-        "rare",
+        'rare',
     ),
 ]:
     if old_dir.exists():
@@ -48,7 +48,7 @@ for old_dir in [
 def lock_file() -> Path:
     return Path(
         QStandardPaths.writableLocation(QStandardPaths.StandardLocation.TempLocation),
-        "Rare.lock",
+        'Rare.lock',
     )
 
 
@@ -67,7 +67,7 @@ def cache_dir() -> Path:
 
 
 def image_dir() -> Path:
-    return data_dir().joinpath("images")
+    return data_dir().joinpath('images')
 
 
 def image_dir_game(app_name: str) -> Path:
@@ -75,34 +75,34 @@ def image_dir_game(app_name: str) -> Path:
 
 
 def image_tall_path(app_name: str, color: bool = True) -> Path:
-    return image_dir_game(app_name).joinpath("tall.png" if color else "tall_gray.png")
+    return image_dir_game(app_name).joinpath('tall.png' if color else 'tall_gray.png')
 
 
 def image_wide_path(app_name: str, color: bool = True) -> Path:
-    return image_dir_game(app_name).joinpath("wide.png" if color else "wide_gray.png")
+    return image_dir_game(app_name).joinpath('wide.png' if color else 'wide_gray.png')
 
 
 def image_icon_path(app_name: str, color: bool = True) -> Path:
-    return image_dir_game(app_name).joinpath("icon.png" if color else "icon_gray.png")
+    return image_dir_game(app_name).joinpath('icon.png' if color else 'icon_gray.png')
 
 
 def runtime_assets_json() -> Path:
-    return data_dir().joinpath("runtime_assets.json")
+    return data_dir().joinpath('runtime_assets.json')
 
 
 def log_dir() -> Path:
-    return cache_dir().joinpath("logs")
+    return cache_dir().joinpath('logs')
 
 
 def tmp_dir() -> Path:
-    return cache_dir().joinpath("tmp")
+    return cache_dir().joinpath('tmp')
 
 
 def create_dirs() -> None:
     for path in (data_dir(), cache_dir(), image_dir(), log_dir(), tmp_dir()):
         if not path.exists():
             path.mkdir(parents=True)
-            logger.info(f"Created directory at {path}")
+            logger.info(f'Created directory at {path}')
 
 
 def home_dir() -> Path:
@@ -118,27 +118,27 @@ def applications_dir() -> Path:
 
 
 def proton_compat_dir(name: str) -> Path:
-    if not (compat_dir := data_dir().joinpath(f"compatdata/{name}")).is_dir():
+    if not (compat_dir := data_dir().joinpath(f'compatdata/{name}')).is_dir():
         compat_dir.mkdir(parents=True)
-        if not (prefix_dir := compat_dir.joinpath("pfx")).is_dir():
+        if not (prefix_dir := compat_dir.joinpath('pfx')).is_dir():
             prefix_dir.mkdir(parents=True)
     return compat_dir
 
 
 def wine_prefix_dir(name: str) -> Path:
-    if not (prefix_dir := proton_compat_dir(name).joinpath("pfx")).is_dir():
+    if not (prefix_dir := proton_compat_dir(name).joinpath('pfx')).is_dir():
         prefix_dir.mkdir(parents=True)
     return prefix_dir
 
 
 def compat_shaders_dir(name: str) -> Path:
-    if not (shader_dir := proton_compat_dir(name).joinpath("shadercache")).is_dir():
+    if not (shader_dir := proton_compat_dir(name).joinpath('shadercache')).is_dir():
         shader_dir.mkdir(parents=True)
     return shader_dir
 
 
 def compat_logs_dir(name: str) -> Path:
-    if not (logs_dir := proton_compat_dir(name).joinpath("logs")).is_dir():
+    if not (logs_dir := proton_compat_dir(name).joinpath('logs')).is_dir():
         logs_dir.mkdir(parents=True)
     return logs_dir
 
@@ -146,38 +146,38 @@ def compat_logs_dir(name: str) -> Path:
 def setup_compat_shaders_dir(path: str) -> Dict:
     """Setup per-game shader cache if shader pre-caching is disabled"""
     environ = {}
-    shader_cache_name = "steamapp_shader_cache"
+    shader_cache_name = 'steamapp_shader_cache'
     shader_cache_vars = {
         # Nvidia
-        "__GL_SHADER_DISK_CACHE_APP_NAME": shader_cache_name,
-        "__GL_SHADER_DISK_CACHE_PATH": os.path.join(path, "nvidiav1"),
-        "__GL_SHADER_DISK_CACHE_READ_ONLY_APP_NAME": "steam_shader_cache;steamapp_merged_shader_cache",
-        "__GL_SHADER_DISK_CACHE_SIZE": "10737418240",  # 10GiB
+        '__GL_SHADER_DISK_CACHE_APP_NAME': shader_cache_name,
+        '__GL_SHADER_DISK_CACHE_PATH': os.path.join(path, 'nvidiav1'),
+        '__GL_SHADER_DISK_CACHE_READ_ONLY_APP_NAME': 'steam_shader_cache;steamapp_merged_shader_cache',
+        '__GL_SHADER_DISK_CACHE_SIZE': '10737418240',  # 10GiB
         # "__GL_SHADER_DISK_CACHE_SKIP_CLEANUP": "1",
         # Mesa
-        "MESA_DISK_CACHE_READ_ONLY_FOZ_DBS": "steam_cache,steam_precompiled",
-        "MESA_DISK_CACHE_SINGLE_FILE": "1",
-        "MESA_GLSL_CACHE_DIR": path,
-        "MESA_GLSL_CACHE_MAX_SIZE": "10G",
-        "MESA_SHADER_CACHE_DIR": path,
-        "MESA_SHADER_CACHE_MAX_SIZE": "10G",
+        'MESA_DISK_CACHE_READ_ONLY_FOZ_DBS': 'steam_cache,steam_precompiled',
+        'MESA_DISK_CACHE_SINGLE_FILE': '1',
+        'MESA_GLSL_CACHE_DIR': path,
+        'MESA_GLSL_CACHE_MAX_SIZE': '10G',
+        'MESA_SHADER_CACHE_DIR': path,
+        'MESA_SHADER_CACHE_MAX_SIZE': '10G',
         # AMD VK
-        "AMD_VK_PIPELINE_CACHE_FILENAME": shader_cache_name,
-        "AMD_VK_PIPELINE_CACHE_PATH": os.path.join(path, "AMDv1"),
-        "AMD_VK_USE_PIPELINE_CACHE": "1",
+        'AMD_VK_PIPELINE_CACHE_FILENAME': shader_cache_name,
+        'AMD_VK_PIPELINE_CACHE_PATH': os.path.join(path, 'AMDv1'),
+        'AMD_VK_USE_PIPELINE_CACHE': '1',
         # DXVK
-        "DXVK_STATE_CACHE_PATH": os.path.join(path, "DXVK_state_cache"),
+        'DXVK_STATE_CACHE_PATH': os.path.join(path, 'DXVK_state_cache'),
         # VKD3D
-        "VKD3D_SHADER_CACHE_PATH": os.path.join(path, "VKD3D_shader_cache"),
+        'VKD3D_SHADER_CACHE_PATH': os.path.join(path, 'VKD3D_shader_cache'),
     }
     for key, value in shader_cache_vars.items():
         if key in {
-            "__GL_SHADER_DISK_CACHE_PATH",
-            "MESA_GLSL_CACHE_DIR",
-            "MESA_SHADER_CACHE_DIR",
-            "AMD_VK_PIPELINE_CACHE_PATH",
-            "DXVK_STATE_CACHE_PATH",
-            "VKD3D_SHADER_CACHE_PATH",
+            '__GL_SHADER_DISK_CACHE_PATH',
+            'MESA_GLSL_CACHE_DIR',
+            'MESA_SHADER_CACHE_DIR',
+            'AMD_VK_PIPELINE_CACHE_PATH',
+            'DXVK_STATE_CACHE_PATH',
+            'VKD3D_SHADER_CACHE_PATH',
         }:
             os.makedirs(value, exist_ok=True)
         environ[key] = value
@@ -244,7 +244,7 @@ def desktop_link_path(link_name: str, link_type: str) -> Path:
     :return Path:
         shortcut path
     """
-    return __link_type[link_type].joinpath(f"{link_name}.{__link_suffix[platform.system()]['link']}")
+    return __link_type[link_type].joinpath(f'{link_name}.{__link_suffix[platform.system()]["link"]}')
 
 
 def get_rare_executable(*, external: bool = False) -> List[str]:
@@ -256,39 +256,39 @@ def get_rare_executable(*, external: bool = False) -> List[str]:
     :param external: if True return the command to invoke Rare through Flatpak or Snap, defaults to false
     :return: command list
     """
-    logger.debug(f"Trying to find executable: {sys.executable}, {sys.argv}")
+    logger.debug(f'Trying to find executable: {sys.executable}, {sys.argv}')
 
-    if os.environ.get("SNAP") and external:
-        return ["snap", "run", "rare"]
-    if os.environ.get("container") == "flatpak" and external:
-        return ["flatpak", "run", "io.github.dummerle.rare"]
+    if os.environ.get('SNAP') and external:
+        return ['snap', 'run', 'rare']
+    if os.environ.get('container') == 'flatpak' and external:
+        return ['flatpak', 'run', 'io.github.dummerle.rare']
 
     # lk: detect if nuitka
-    if "__compiled__" in globals():
+    if '__compiled__' in globals():
         executable = [sys.executable]
-    elif sys.argv[0].endswith("__main__.py"):
-        executable = [sys.executable, "-m", "rare"]
-    elif platform.system() in {"Linux", "FreeBSD", "Darwin"}:
-        if p := os.environ.get("APPIMAGE"):
+    elif sys.argv[0].endswith('__main__.py'):
+        executable = [sys.executable, '-m', 'rare']
+    elif platform.system() in {'Linux', 'FreeBSD', 'Darwin'}:
+        if p := os.environ.get('APPIMAGE'):
             executable = [p]
         else:
             if sys.executable == os.path.abspath(sys.argv[0]):
                 executable = [sys.executable]
             else:
                 executable = [os.path.abspath(sys.argv[0])]
-    elif platform.system() == "Windows":
+    elif platform.system() == 'Windows':
         executable = [sys.executable]
 
         if sys.executable != os.path.abspath(sys.argv[0]):
             executable.append(os.path.abspath(sys.argv[0]))
 
-        if executable[0].endswith("python.exe"):
+        if executable[0].endswith('python.exe'):
             # be sure to start console-less then
-            executable[0] = executable[0].replace("python.exe", "pythonw.exe")
+            executable[0] = executable[0].replace('python.exe', 'pythonw.exe')
 
-        if executable[0].endswith("pythonw.exe"):
-            if executable[1].endswith("rare"):
-                executable[1] = executable[1] + ".exe"
+        if executable[0].endswith('pythonw.exe'):
+            if executable[1].endswith('rare'):
+                executable[1] = executable[1] + '.exe'
     else:
         executable = [sys.executable]
 
@@ -296,7 +296,7 @@ def get_rare_executable(*, external: bool = False) -> List[str]:
     return executable
 
 
-def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "", link_type="desktop") -> bool:
+def create_desktop_link(app_name: str, app_title: str = '', link_name: str = '', link_type='desktop') -> bool:
     """
     Creates a desktop or start menu shortcut link
 
@@ -315,55 +315,55 @@ def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "",
     """
     # macOS is based on Darwin
     if not desktop_links_supported():
-        logger.error(f"Shortcut creation is not available on {platform.system()}")
+        logger.error(f'Shortcut creation is not available on {platform.system()}')
         return False
 
-    if link_type not in ["desktop", "start_menu"]:
-        logger.error(f"Invalid link type {link_type}")
+    if link_type not in ['desktop', 'start_menu']:
+        logger.error(f'Invalid link type {link_type}')
         return False
 
-    for_rare = app_name == "rare_shortcut"
+    for_rare = app_name == 'rare_shortcut'
 
     if for_rare:
-        icon_path = resources_path.joinpath("images", f"Rare.{desktop_icon_suffix()}")
-        app_title = "Rare"
-        link_name = "Rare"
+        icon_path = resources_path.joinpath('images', f'Rare.{desktop_icon_suffix()}')
+        app_title = 'Rare'
+        link_name = 'Rare'
     else:
         icon_path = desktop_icon_path(app_name)
         if not app_title or not link_name:
-            logger.error("Missing app_title or link_name")
+            logger.error('Missing app_title or link_name')
             return False
 
     shortcut_path = desktop_link_path(link_name, link_type)
     if not shortcut_path.parent.exists():
-        logger.error(f"Parent directory {shortcut_path.parent} does not exist")
+        logger.error(f'Parent directory {shortcut_path.parent} does not exist')
         return False
     else:
-        logger.info(f"Creating shortcut for {app_title} at {shortcut_path}")
+        logger.info(f'Creating shortcut for {app_title} at {shortcut_path}')
 
-    if platform.system() in {"Linux", "FreeBSD"}:
+    if platform.system() in {'Linux', 'FreeBSD'}:
         executable = get_rare_executable(external=True)
         executable = shlex.join(executable)
         if not for_rare:
-            executable = f"{executable} launch {app_name}"
+            executable = f'{executable} launch {app_name}'
 
-        with shortcut_path.open(mode="w") as desktop_file:
+        with shortcut_path.open(mode='w') as desktop_file:
             desktop_file.write(
-                "[Desktop Entry]\n"
-                f"Name={app_title}\n"
-                "Type=Application\n"
-                "Categories=Game;\n"
-                f"Icon={icon_path}\n"
-                f"Exec={executable}\n"
-                "Terminal=false\n"
-                "StartupWMClass=Rare\n"
+                '[Desktop Entry]\n'
+                f'Name={app_title}\n'
+                'Type=Application\n'
+                'Categories=Game;\n'
+                f'Icon={icon_path}\n'
+                f'Exec={executable}\n'
+                'Terminal=false\n'
+                'StartupWMClass=Rare\n'
             )
         # shortcut_path.chmod(0o755)
         return True
 
-    elif platform.system() == "Windows":
+    elif platform.system() == 'Windows':
         # Add shortcut
-        shell = Dispatch("WScript.Shell")
+        shell = Dispatch('WScript.Shell')
         shortcut = shell.CreateShortCut(str(shortcut_path))
 
         executable = get_rare_executable()
@@ -374,7 +374,7 @@ def create_desktop_link(app_name: str, app_title: str = "", link_name: str = "",
         executable = executable[0]
 
         if not for_rare:
-            arguments.extend(["launch", app_name])
+            arguments.extend(['launch', app_name])
         shortcut.Targetpath = executable
         # Maybe there is a better solution, but windows does not accept single quotes (Windows is weird)
         shortcut.Arguments = shlex.join(arguments).replace("'", '"')

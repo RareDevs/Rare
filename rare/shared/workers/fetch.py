@@ -40,25 +40,25 @@ class FetchWorker(Worker):
 
 class RuntimeAssetsWorker(FetchWorker):
     def run_real(self):
-        increment = self.segment//3
+        increment = self.segment // 3
 
-        if not self.args.offline and platform.system() not in {"Windows"}:
-            self.signals.progress.emit(increment, self.signals.tr("Updating Steam AppIds"))
-            with timelogger(self.logger, "Request Steam AppIds"):
+        if not self.args.offline and platform.system() not in {'Windows'}:
+            self.signals.progress.emit(increment, self.signals.tr('Updating Steam AppIds'))
+            with timelogger(self.logger, 'Request Steam AppIds'):
                 try:
                     steam_grades.load_steam_appids()
                 except Exception as e:
                     self.logger.warning(e)
         if not self.args.offline:
-            self.signals.progress.emit(increment, self.signals.tr("Updating workarounds"))
-            with timelogger(self.logger, "Request workarounds"):
+            self.signals.progress.emit(increment, self.signals.tr('Updating workarounds'))
+            with timelogger(self.logger, 'Request workarounds'):
                 try:
                     workarounds.load_workarounds()
                 except Exception as e:
                     self.logger.warning(e)
         if not self.args.offline:
-            self.signals.progress.emit(increment, self.signals.tr("Updating workarounds"))
-            with timelogger(self.logger, "Request wrapper exe"):
+            self.signals.progress.emit(increment, self.signals.tr('Updating workarounds'))
+            with timelogger(self.logger, 'Request wrapper exe'):
                 try:
                     download_wrapper_exe()
                 except Exception as e:
@@ -69,7 +69,7 @@ class RuntimeAssetsWorker(FetchWorker):
 
 class EntitlementsWorker(FetchWorker):
     def run_real(self):
-        mod_time = datetime.fromtimestamp(os.path.getmtime((os.path.join(self.core.lgd.path, "entitlements.json"))))
+        mod_time = datetime.fromtimestamp(os.path.getmtime((os.path.join(self.core.lgd.path, 'entitlements.json'))))
         elapsed_days = abs(datetime.now() - mod_time).days
 
         want_entitlements = not self.settings.get_value(app_settings.exclude_entitlements) and elapsed_days > 1
@@ -78,14 +78,14 @@ class EntitlementsWorker(FetchWorker):
         entitlements = ()
         if want_entitlements:
             # Get entitlements, Ubisoft integration also uses them
-            self.signals.progress.emit(self.segment, self.signals.tr("Updating entitlements"))
-            with timelogger(self.logger, "Request entitlements"):
+            self.signals.progress.emit(self.segment, self.signals.tr('Updating entitlements'))
+            with timelogger(self.logger, 'Request entitlements'):
                 try:
                     entitlements = self.core.egs.get_user_entitlements_full()
                 except Exception as e:
                     self.logger.warning(e)
             self.core.lgd.entitlements = entitlements
-            self.logger.info("Entitlements: %s", len(list(entitlements)))
+            self.logger.info('Entitlements: %s', len(list(entitlements)))
         self.signals.result.emit(entitlements, FetchWorker.Result.ENTITLEMENTS)
         return
 
@@ -100,7 +100,7 @@ class GamesDlcsWorker(FetchWorker):
         want_win32 = self.settings.get_value(app_settings.win32_meta)
         want_macos = self.settings.get_value(app_settings.macos_meta)
         want_non_asset = not self.settings.get_value(app_settings.exclude_non_asset)
-        need_macos = platform.system() == "Darwin"
+        need_macos = platform.system() == 'Darwin'
         need_windows = not any([want_win32, want_macos, need_macos]) and not self.args.offline
 
         # One more step for the "Preparing library" message
@@ -109,61 +109,61 @@ class GamesDlcsWorker(FetchWorker):
 
         if want_win32:
             self.logger.info(
-                "Requesting Win32 metadata due to %s, %s Unreal engine",
-                "settings" if want_win32 else "debug",
-                "with" if want_unreal else "without",
+                'Requesting Win32 metadata due to %s, %s Unreal engine',
+                'settings' if want_win32 else 'debug',
+                'with' if want_unreal else 'without',
             )
-            self.signals.progress.emit(increment, self.signals.tr("Updating game metadata for Windows"))
-            with timelogger(self.logger, "Request Win32 games"):
+            self.signals.progress.emit(increment, self.signals.tr('Updating game metadata for Windows'))
+            with timelogger(self.logger, 'Request Win32 games'):
                 self.core.get_game_and_dlc_list(
                     update_assets=not self.args.offline,
-                    platform="Win32",
+                    platform='Win32',
                     skip_ue=not want_unreal,
                 )
 
         if need_macos or want_macos:
             self.logger.info(
-                "Requesting macOS metadata due to %s, %s Unreal engine",
-                "platform" if need_macos else "settings" if want_macos else "debug",
-                "with" if want_unreal else "without",
+                'Requesting macOS metadata due to %s, %s Unreal engine',
+                'platform' if need_macos else 'settings' if want_macos else 'debug',
+                'with' if want_unreal else 'without',
             )
-            self.signals.progress.emit(increment, self.signals.tr("Updating game metadata for macOS"))
-            with timelogger(self.logger, "Request macOS games"):
+            self.signals.progress.emit(increment, self.signals.tr('Updating game metadata for macOS'))
+            with timelogger(self.logger, 'Request macOS games'):
                 self.core.get_game_and_dlc_list(
                     update_assets=not self.args.offline,
-                    platform="Mac",
+                    platform='Mac',
                     skip_ue=not want_unreal,
                 )
 
-        self.signals.progress.emit(increment, self.signals.tr("Updating game metadata for Windows"))
+        self.signals.progress.emit(increment, self.signals.tr('Updating game metadata for Windows'))
         self.logger.info(
-            "Requesting Windows metadata, %s Unreal engine",
-            "with" if want_unreal else "without",
+            'Requesting Windows metadata, %s Unreal engine',
+            'with' if want_unreal else 'without',
         )
-        with timelogger(self.logger, "Request Windows games"):
+        with timelogger(self.logger, 'Request Windows games'):
             games, dlc_dict = self.core.get_game_and_dlc_list(
-                update_assets=need_windows, platform="Windows", skip_ue=not want_unreal
+                update_assets=need_windows, platform='Windows', skip_ue=not want_unreal
             )
-        self.logger.info("Games: %s. Games with DLCs: %s", len(games), len(dlc_dict))
+        self.logger.info('Games: %s. Games with DLCs: %s', len(games), len(dlc_dict))
 
         # Fetch non-asset games
         if want_non_asset:
-            self.signals.progress.emit(increment, self.signals.tr("Updating non-asset game metadata"))
+            self.signals.progress.emit(increment, self.signals.tr('Updating non-asset game metadata'))
             try:
-                with timelogger(self.logger, "Request non-asset"):
+                with timelogger(self.logger, 'Request non-asset'):
                     na_games, na_dlc_dict = self.core.get_non_asset_library_items(force_refresh=False, skip_ue=False)
             except (HTTPError, ConnectionError) as e:
-                self.logger.error("Network error while updating non-asset games")
+                self.logger.error('Network error while updating non-asset games')
                 self.logger.error(e)
                 na_games, na_dlc_dict = ([], {})
             # NOTE: This is here because of broken appIds from Epic
             # https://discord.com/channels/826881530310819914/884510635642216499/1111321692703305729
             except Exception as e:
-                self.logger.error("General exception while updating non-asset games from EGS.")
+                self.logger.error('General exception while updating non-asset games from EGS.')
                 self.logger.error(e)
                 na_games, na_dlc_dict = ([], {})
             self.logger.info(
-                "Non-asset: %s. Non-asset with DLCs: %s",
+                'Non-asset: %s. Non-asset with DLCs: %s',
                 len(na_games),
                 len(na_dlc_dict),
             )
@@ -175,7 +175,7 @@ class GamesDlcsWorker(FetchWorker):
                     dlc_dict[catalog_id] += dlcs
                 else:
                     dlc_dict[catalog_id] = dlcs
-            self.logger.info(f"Games: {len(games)}. Games with DLCs: {len(dlc_dict)}")
+            self.logger.info(f'Games: {len(games)}. Games with DLCs: {len(dlc_dict)}')
 
-        self.signals.progress.emit(increment, self.signals.tr("Preparing library"))
+        self.signals.progress.emit(increment, self.signals.tr('Preparing library'))
         self.signals.result.emit((games, dlc_dict), FetchWorker.Result.GAMESDLCS)

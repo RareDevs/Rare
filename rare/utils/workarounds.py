@@ -11,8 +11,8 @@ from rare.utils.paths import data_dir
 
 
 class Workarounds:
-    _workarounds_url = "https://raredevs.github.io/wring/workarounds.json"
-    _workarounds_version_url = "https://raredevs.github.io/wring/workarounds_version.json"
+    _workarounds_url = 'https://raredevs.github.io/wring/workarounds.json'
+    _workarounds_version_url = 'https://raredevs.github.io/wring/workarounds_version.json'
 
     def __init__(self):
         self.logger = getLogger(type(self).__name__)
@@ -21,7 +21,7 @@ class Workarounds:
 
     def _download_workarounds(self) -> bytes:
         if self._active_download:
-            return b""
+            return b''
         self._active_download = True
         resp = requests.get(self._workarounds_url)
         self._active_download = False
@@ -33,28 +33,28 @@ class Workarounds:
 
         try:
             resp = requests.get(self._workarounds_version_url, timeout=1)
-            data = resp.content.decode("utf-8")
-            remote_version = orjson.loads(data).get("version", 1)
+            data = resp.content.decode('utf-8')
+            remote_version = orjson.loads(data).get('version', 1)
         except requests.exceptions.Timeout:
             remote_version = 1
 
-        file = data_dir().joinpath("workarounds.json")
+        file = data_dir().joinpath('workarounds.json')
 
         if file.is_file():
-            json = orjson.loads(file.open("r").read())
-            version = json.get("version", 1)
+            json = orjson.loads(file.open('r').read())
+            version = json.get('version', 1)
             if version >= remote_version:
-                self._workarounds = json.get("workarounds", {})
+                self._workarounds = json.get('workarounds', {})
         else:
-             version = 0
+            version = 0
 
         if not file.is_file() or version < remote_version:
             if content := self._download_workarounds():
-                data = content.decode("utf-8")
-                with file.open("w", encoding="utf-8") as fd:
+                data = content.decode('utf-8')
+                with file.open('w', encoding='utf-8') as fd:
                     fd.write(data)
                 json = orjson.loads(data)
-                self._workarounds = json.get("workarounds", {})
+                self._workarounds = json.get('workarounds', {})
 
         return self._workarounds
 
@@ -78,24 +78,26 @@ class Workarounds:
             res_height=Workarounds.screen_height(),
         )
 
+
 workarounds = Workarounds()
+
 
 def apply_workarounds(app_name: str):
     if wa := workarounds.get(app_name):
         # apply options
-        for opt in (options := wa.get("options", {})):
+        for opt in (options := wa.get('options', {})):
             if config.get_option(app_name, opt, None) is not None:
                 continue
-            if platform.system() not in options[opt].get("os", tuple()):
+            if platform.system() not in options[opt].get('os', tuple()):
                 continue
-            config.set_option(app_name, opt, Workarounds.subst(options[opt]["value"]))
+            config.set_option(app_name, opt, Workarounds.subst(options[opt]['value']))
         # apply environment
-        for var in (environ := wa.get("environ", {})):
+        for var in (environ := wa.get('environ', {})):
             if config.get_envvar(app_name, var, None) is not None:
                 continue
-            if platform.system() not in environ[var].get("os", tuple()):
+            if platform.system() not in environ[var].get('os', tuple()):
                 continue
-            config.set_envvar(app_name, var, Workarounds.subst(environ[var]["value"]))
+            config.set_envvar(app_name, var, Workarounds.subst(environ[var]['value']))
 
 
-__all__ = ["apply_workarounds", "workarounds"]
+__all__ = ['apply_workarounds', 'workarounds']

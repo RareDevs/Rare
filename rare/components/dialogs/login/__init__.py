@@ -60,19 +60,19 @@ class LoginDialog(BaseDialog):
         self.import_page.validated.connect(self._on_page_validated)
 
         self.info_message = {
-            self.landing_index: self.tr("<i>Select log-in method.</i>"),
+            self.landing_index: self.tr('<i>Select log-in method.</i>'),
             self.browser_index: self.tr(
-                "<i>Click the <strong>Open Browser</strong> button to open the "
-                "login page in your web browser or copy the link and paste it "
-                "in any web browser. After logging in using the browser, copy "
-                "the text in the quotes after </i><code><b>authorizationCode</b></code><i> "
-                "in the same line into the empty input above."
-                "<br><br><strong>DO NOT SHARE THE INFORMATION IN THE BROWSER PAGE WITH "
-                "ANYONE IN ANY FORM (TEXT OR SCREENSHOT)!</strong></i>"
+                '<i>Click the <strong>Open Browser</strong> button to open the '
+                'login page in your web browser or copy the link and paste it '
+                'in any web browser. After logging in using the browser, copy '
+                'the text in the quotes after </i><code><b>authorizationCode</b></code><i> '
+                'in the same line into the empty input above.'
+                '<br><br><strong>DO NOT SHARE THE INFORMATION IN THE BROWSER PAGE WITH '
+                'ANYONE IN ANY FORM (TEXT OR SCREENSHOT)!</strong></i>'
             ),
             self.import_index: self.tr(
-                "<i>Select the Wine prefix where Epic Games Launcher is installed. "
-                "You will get logged out from EGL in the process.</i>"
+                '<i>Select the Wine prefix where Epic Games Launcher is installed. '
+                'You will get logged out from EGL in the process.</i>'
             ),
         }
         self.ui.info_label.setText(self.info_message[self.landing_index])
@@ -96,9 +96,9 @@ class LoginDialog(BaseDialog):
 
         self.login_stack.setCurrentWidget(self.landing_page)
 
-        self.ui.exit_button.setIcon(qta_icon("fa.remove", "fa5s.times"))
-        self.ui.back_button.setIcon(qta_icon("fa.chevron-left", "fa5s.chevron-left"))
-        self.ui.next_button.setIcon(qta_icon("fa.chevron-right", "fa5s.chevron-right"))
+        self.ui.exit_button.setIcon(qta_icon('fa.remove', 'fa5s.times'))
+        self.ui.back_button.setIcon(qta_icon('fa.chevron-left', 'fa5s.chevron-left'))
+        self.ui.next_button.setIcon(qta_icon('fa.chevron-right', 'fa5s.chevron-right'))
 
         # lk: Set next as the default button only to stop closing the dialog when pressing enter
         self.ui.exit_button.setAutoDefault(False)
@@ -157,7 +157,7 @@ class LoginDialog(BaseDialog):
     def _on_login_successful(self):
         try:
             if not self.core.login():
-                raise ValueError("Login failed.")
+                raise ValueError('Login failed.')
             self.logged_in = True
             self.accept()
         except Exception as e:
@@ -165,4 +165,4 @@ class LoginDialog(BaseDialog):
             self.core.lgd.invalidate_userdata()
             self.ui.next_button.setEnabled(False)
             self.logged_in = False
-            QMessageBox.warning(None, self.tr("Login error"), str(e))
+            QMessageBox.warning(None, self.tr('Login error'), str(e))

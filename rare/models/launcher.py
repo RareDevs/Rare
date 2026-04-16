@@ -17,7 +17,7 @@ class BaseModel:
 
     @classmethod
     def from_json(cls, data: Dict):
-        return cls(action=data["action"], app_name=data["app_name"])
+        return cls(action=data['action'], app_name=data['app_name'])
 
 
 @dataclass
@@ -29,8 +29,8 @@ class FinishedModel(BaseModel):
     def from_json(cls, data: Dict):
         return cls(
             **vars(BaseModel.from_json(data)),
-            exit_code=data["exit_code"],
-            playtime=data["playtime"],
+            exit_code=data['exit_code'],
+            playtime=data['playtime'],
         )
 
 
@@ -47,9 +47,9 @@ class StateChangedModel(BaseModel):
     @classmethod
     def from_json(cls, data: Dict):
         return cls(
-            action=data["action"],
-            app_name=data["app_name"],
-            new_state=data["new_state"],
+            action=data['action'],
+            app_name=data['app_name'],
+            new_state=data['new_state'],
         )
 
 
@@ -59,4 +59,4 @@ class ErrorModel(BaseModel):
 
     @classmethod
     def from_json(cls, data: Dict):
-        return cls(**vars(BaseModel.from_json(data)), error_string=data["error_string"])
+        return cls(**vars(BaseModel.from_json(data)), error_string=data['error_string'])

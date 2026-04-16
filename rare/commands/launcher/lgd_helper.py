@@ -14,7 +14,7 @@ from rare.models.game_slim import RareGameSlim
 from rare.utils.compat.utils import create_compat_users
 from rare.utils.paths import setup_compat_shaders_dir
 
-logger = getLogger("RareLauncherUtils")
+logger = getLogger('RareLauncherUtils')
 
 
 class GameArgsError(Exception):
@@ -28,8 +28,8 @@ class InitParams(Namespace):
     dry_run: bool = False
     show_console: bool = False
     skip_update_check: bool = False
-    wine_prefix: str = ""
-    wine_bin: str = ""
+    wine_prefix: str = ''
+    wine_bin: str = ''
 
     @classmethod
     def from_argparse(cls, args):
@@ -40,18 +40,18 @@ class InitParams(Namespace):
             dry_run=args.dry_run,
             show_console=args.show_console,
             skip_update_check=args.skip_update_check,
-            wine_bin=args.wine_bin if hasattr(args, "wine_bin") else "",
-            wine_prefix=args.wine_pfx if hasattr(args, "wine_prefix") else "",
+            wine_bin=args.wine_bin if hasattr(args, 'wine_bin') else '',
+            wine_prefix=args.wine_pfx if hasattr(args, 'wine_prefix') else '',
         )
 
 
 @dataclass
 class LaunchParams:
-    executable: str = ""
+    executable: str = ''
     arguments: List[str] = field(default_factory=list)
-    working_directory: str = ""
+    working_directory: str = ''
     environment: Dict[str, str] = field(default_factory=dict)
-    pre_launch_command: str = ""
+    pre_launch_command: str = ''
     pre_launch_wait: bool = False
     is_origin_game: bool = False  # only for windows to launch as url
 
@@ -64,7 +64,7 @@ def get_origin_params(rgame: RareGameSlim, init: InitParams, launch: LaunchParam
     app_name = rgame.app_name
 
     origin_uri = core.get_origin_uri(app_name, init.offline)
-    if platform.system() == "Windows":
+    if platform.system() == 'Windows':
         command = [origin_uri]
     else:
         command = core.get_app_launch_command(app_name)
@@ -91,12 +91,12 @@ def get_game_params(rgame: RareGameSlim, init: InitParams, launch: LaunchParams)
                 raise GameArgsError("Metadata doesn't exist")
             else:
                 if latest.build_version != rgame.igame.version:
-                    raise GameArgsError("Game is not up to date. Please update first")
+                    raise GameArgsError('Game is not up to date. Please update first')
 
     if (not rgame.igame or not rgame.igame.executable) and rgame.game is not None:
         # override installed game with base title
         if rgame.is_launchable_addon:
-            app_name = rgame.game.metadata["mainGameItem"]["releaseInfo"][0]["appId"]
+            app_name = rgame.game.metadata['mainGameItem']['releaseInfo'][0]['appId']
             rgame.igame = rgame.core.get_installed_game(app_name)
 
     try:
@@ -104,13 +104,13 @@ def get_game_params(rgame: RareGameSlim, init: InitParams, launch: LaunchParams)
             app_name=rgame.igame.app_name, offline=init.offline, addon_app_name=rgame.game.app_name
         )
     except TypeError:
-        logger.warning("Using older get_launch_parameters due to legendary version")
+        logger.warning('Using older get_launch_parameters due to legendary version')
         params: LaunchParameters = rgame.core.get_launch_parameters(app_name=rgame.igame.app_name, offline=init.offline)
 
     full_params = []
     full_params.extend(params.launch_command)
-    if "LEGENDARY_WRAPPER_EXE" in params.environment:
-        lgd_wrapper = params.environment.pop("LEGENDARY_WRAPPER_EXE").strip()
+    if 'LEGENDARY_WRAPPER_EXE' in params.environment:
+        lgd_wrapper = params.environment.pop('LEGENDARY_WRAPPER_EXE').strip()
         if os.path.isfile(lgd_wrapper):
             full_params.append(lgd_wrapper)
     full_params.append(os.path.join(params.game_directory, params.game_executable))
@@ -132,18 +132,18 @@ def get_launch_params(rgame: RareGameSlim, init: InitParams = None) -> LaunchPar
     resp = LaunchParams()
 
     if not rgame.game:
-        raise GameArgsError(f"Could not find metadata for {rgame.app_title}")
+        raise GameArgsError(f'Could not find metadata for {rgame.app_title}')
 
     if rgame.is_origin:
         init.offline = False
     else:
         if not rgame.is_installed:
-            raise GameArgsError("Game is not installed or has unsupported format")
+            raise GameArgsError('Game is not installed or has unsupported format')
 
         if rgame.is_dlc and not rgame.is_launchable_addon:
-            raise GameArgsError("Game is a DLC")
+            raise GameArgsError('Game is a DLC')
         if not os.path.exists(rgame.install_path):
-            raise GameArgsError("Game path does not exist")
+            raise GameArgsError('Game path does not exist')
 
     if rgame.is_origin:
         resp = get_origin_params(rgame, init, resp)
@@ -156,35 +156,35 @@ def get_launch_params(rgame: RareGameSlim, init: InitParams = None) -> LaunchPar
 
 
 def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[str], Dict]:
-    logger.debug("Preparing process: %s", command)
+    logger.debug('Preparing process: %s', command)
 
     _env = environment.copy()
     # Sanity check environment (mostly for Linux)
     # ensure shader compat dirs exist
-    if platform.system() in {"Linux", "FreeBSD"}:
+    if platform.system() in {'Linux', 'FreeBSD'}:
         _cmd_line = shlex.join(command)
-        if os.environ.get("XDG_CURRENT_DESKTOP", None) == "gamescope" or "gamescope" in _cmd_line:
+        if os.environ.get('XDG_CURRENT_DESKTOP', None) == 'gamescope' or 'gamescope' in _cmd_line:
             # disable mangohud in gamescope
-            _env["MANGOHUD"] = "0"
-        if "STEAM_COMPAT_CLIENT_INSTALL_PATH" not in _env:
-            _env["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = ""
-        if "STEAM_COMPAT_DATA_PATH" in _env:
-            compat_pfx = os.path.join(_env["STEAM_COMPAT_DATA_PATH"], "pfx")
+            _env['MANGOHUD'] = '0'
+        if 'STEAM_COMPAT_CLIENT_INSTALL_PATH' not in _env:
+            _env['STEAM_COMPAT_CLIENT_INSTALL_PATH'] = ''
+        if 'STEAM_COMPAT_DATA_PATH' in _env:
+            compat_pfx = os.path.join(_env['STEAM_COMPAT_DATA_PATH'], 'pfx')
             os.makedirs(compat_pfx, exist_ok=True)
             create_compat_users(compat_pfx)
-        if "WINEPREFIX" in _env and not os.path.isdir(_env["WINEPREFIX"]):
-            os.makedirs(_env["WINEPREFIX"], exist_ok=True)
-            create_compat_users(_env["WINEPREFIX"])
-        if "STEAM_COMPAT_SHADER_PATH" in _env:
-            _env.update(setup_compat_shaders_dir(_env["STEAM_COMPAT_SHADER_PATH"]))
-        _env["WINEDLLOVERRIDES"] = _env.get("WINEDLLOVERRIDES", "") + ";lsteamclient=d;"
+        if 'WINEPREFIX' in _env and not os.path.isdir(_env['WINEPREFIX']):
+            os.makedirs(_env['WINEPREFIX'], exist_ok=True)
+            create_compat_users(_env['WINEPREFIX'])
+        if 'STEAM_COMPAT_SHADER_PATH' in _env:
+            _env.update(setup_compat_shaders_dir(_env['STEAM_COMPAT_SHADER_PATH']))
+        _env['WINEDLLOVERRIDES'] = _env.get('WINEDLLOVERRIDES', '') + ';lsteamclient=d;'
 
     final_env = os.environ.copy()
     final_cmd = command.copy()
 
-    if os.environ.get("container") == "flatpak":
-        _flat_cmd = ["flatpak-spawn", "--host"]
-        _flat_cmd.extend(f"--env={name}={value}" for name, value in _env.items())
+    if os.environ.get('container') == 'flatpak':
+        _flat_cmd = ['flatpak-spawn', '--host']
+        _flat_cmd.extend(f'--env={name}={value}' for name, value in _env.items())
         final_cmd = _flat_cmd + command
     else:
         final_env.update(_env)

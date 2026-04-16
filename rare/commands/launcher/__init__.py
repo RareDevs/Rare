@@ -40,13 +40,13 @@ from .console_dialog import ConsoleDialog
 from .lgd_helper import InitParams, LaunchParams, dict_to_qprocenv, get_configured_qprocess, get_launch_params
 
 DETACHED_APP_NAMES = {
-    "0a2d9f6403244d12969e11da6713137b",  # Fall Guys
-    "Fortnite",
-    "afdb5a85efcc45d8ae8e406e2121d81c",  # Fortnite Battle Royale
-    "09e442f830a341f698b4da42abd98c9b",  # Fortnite Festival
-    "d8f7763e07d74c209d760a679f9ed6ac",  # Lego Fortnite
-    "Fortnite_Studio",  # Unreal Editor for Fortnite
-    "dcfccf8d965a4f2281dddf9fead042de",  # Homeworld Remastered Collection (issue#376)
+    '0a2d9f6403244d12969e11da6713137b',  # Fall Guys
+    'Fortnite',
+    'afdb5a85efcc45d8ae8e406e2121d81c',  # Fortnite Battle Royale
+    '09e442f830a341f698b4da42abd98c9b',  # Fortnite Festival
+    'd8f7763e07d74c209d760a679f9ed6ac',  # Lego Fortnite
+    'Fortnite_Studio',  # Unreal Editor for Fortnite
+    'dcfccf8d965a4f2281dddf9fead042de',  # Homeworld Remastered Collection (issue#376)
 }
 
 
@@ -67,13 +67,13 @@ class PreLaunch(QRunnable):
         self.sync_action = sync_action
 
     def run(self) -> None:
-        self.logger.info(f"Sync action: {self.sync_action}")
+        self.logger.info(f'Sync action: {self.sync_action}')
         if self.sync_action == CloudSyncDialogResult.UPLOAD:
             self.rgame.upload_saves()
         elif self.sync_action == CloudSyncDialogResult.DOWNLOAD:
             self.rgame.download_saves()
         else:
-            self.logger.info("No sync action")
+            self.logger.info('No sync action')
 
         if args := self.prepare_launch(self.args):
             self.signals.ready_to_launch.emit(args)
@@ -93,13 +93,13 @@ class PreLaunch(QRunnable):
             proc = get_configured_qprocess(shlex.split(launch.pre_launch_command), launch.environment)
             proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
             proc.readyReadStandardOutput.connect(
-                (lambda obj: obj.logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
+                (lambda obj: obj.logger.debug(str(proc.readAllStandardOutput().data(), 'utf-8', 'ignore'))).__get__(self)
             )
             self.signals.pre_launch_command_started.emit()
-            self.logger.info("Running pre-launch command %s, %s", proc.program(), proc.arguments())
+            self.logger.info('Running pre-launch command %s, %s', proc.program(), proc.arguments())
             if launch.pre_launch_wait:
                 proc.start()
-                self.logger.info("Waiting for pre-launch command to finish")
+                self.logger.info('Waiting for pre-launch command to finish')
                 proc.waitForFinished(-1)
             else:
                 proc.startDetached()
@@ -131,7 +131,7 @@ class SyncCheckWorker(QRunnable):
 
 
 class RareLauncherException(RareAppException):
-    def __init__(self, app: "RareLauncher", args: Namespace, parent=None):
+    def __init__(self, app: 'RareLauncher', args: Namespace, parent=None):
         super(RareLauncherException, self).__init__(parent=parent)
         self.__app = app
         self.__args = args
@@ -142,7 +142,7 @@ class RareLauncherException(RareAppException):
                 ErrorModel(
                     app_name=self.__args.app_name,
                     action=Actions.error,
-                    error_string="".join(traceback.format_exception(exc_type, exc_value, exc_tb)),
+                    error_string=''.join(traceback.format_exception(exc_type, exc_value, exc_tb)),
                 )
             )
         except RuntimeError:
@@ -154,7 +154,7 @@ class RareLauncher(RareApp):
     exit_app = Signal()
 
     def __init__(self, args: InitParams):
-        super(RareLauncher, self).__init__(args, f"{type(self).__name__}_{args.app_name}_{{0}}.log")
+        super(RareLauncher, self).__init__(args, f'{type(self).__name__}_{args.app_name}_{{0}}.log')
         self.socket: Optional[QLocalSocket] = None
         self.console: Optional[ConsoleDialog] = None
         self.game_process: QProcess = QProcess(self)
@@ -169,7 +169,7 @@ class RareLauncher(RareApp):
         self.core = LegendaryCore()
         game = self.core.get_game(args.app_name)
         if not game:
-            self.logger.error(f"Game {args.app_name} not found. Exiting")
+            self.logger.error(f'Game {args.app_name} not found. Exiting')
             return
         self.rgame = RareGameSlim(self.settings, self.core, game)
 
@@ -188,10 +188,10 @@ class RareLauncher(RareApp):
             self.console.term.connect(self._proc_term)
             self.console.kill.connect(self._proc_kill)
 
-        ret = self.server.listen(f"rare_{args.app_name}")
+        ret = self.server.listen(f'rare_{args.app_name}')
         if not ret:
             self.logger.error(self.server.errorString())
-            self.logger.info("Server is running")
+            self.logger.info('Server is running')
             self.server.close()
             return
         self.server.newConnection.connect(self.new_server_connection)
@@ -210,22 +210,22 @@ class RareLauncher(RareApp):
 
     @Slot()
     def _proc_log_stdout(self):
-        self.console.log_stdout(self.game_process.readAllStandardOutput().data().decode("utf-8", "ignore"))
+        self.console.log_stdout(self.game_process.readAllStandardOutput().data().decode('utf-8', 'ignore'))
 
     @Slot()
     def _proc_log_stderr(self):
-        self.console.log_stderr(self.game_process.readAllStandardError().data().decode("utf-8", "ignore"))
+        self.console.log_stderr(self.game_process.readAllStandardError().data().decode('utf-8', 'ignore'))
 
     @Slot()
     def _proc_term(self):
-        if platform.system() == "Windows":
+        if platform.system() == 'Windows':
             self.game_process.terminate()
         else:
             os.kill(self.game_process.processId(), signal.SIGINT)
 
     @Slot()
     def _proc_kill(self):
-        if platform.system() == "Windows":
+        if platform.system() == 'Windows':
             self.game_process.kill()
         else:
             os.kill(self.game_process.processId(), signal.SIGINT)
@@ -236,18 +236,18 @@ class RareLauncher(RareApp):
                 self.socket.disconnectFromServer()
             except RuntimeError:
                 pass
-        self.logger.info("New connection")
+        self.logger.info('New connection')
         self.socket = self.server.nextPendingConnection()
         self.socket.disconnected.connect(self.socket_disconnected)
         self.socket.flush()
 
     def socket_disconnected(self):
-        self.logger.info("Server disconnected")
+        self.logger.info('Server disconnected')
         self.socket = None
 
     def send_message(self, message: BaseModel):
         if self.socket:
-            self.socket.write(json.dumps(vars(message)).encode("utf-8"))
+            self.socket.write(json.dumps(vars(message)).encode('utf-8'))
             self.socket.flush()
         else:
             self.logger.error("Can't send message")
@@ -279,13 +279,13 @@ class RareLauncher(RareApp):
         action = CloudSyncDialogResult(action)
         if action == CloudSyncDialogResult.UPLOAD:
             if self.console:
-                self.console.log("Uploading saves...")
+                self.console.log('Uploading saves...')
             worker = CloudSyncWorker(self.rgame, CloudSyncWorker.Mode.UPLOAD)
             QThreadPool.globalInstance().start(worker, priority=0)
             QThreadPool.globalInstance().waitForDone()
         elif action == CloudSyncDialogResult.DOWNLOAD:
             if self.console:
-                self.console.log("Downloading saves...")
+                self.console.log('Downloading saves...')
             worker = CloudSyncWorker(self.rgame, CloudSyncWorker.Mode.DOWNLOAD)
             QThreadPool.globalInstance().start(worker, priority=0)
             QThreadPool.globalInstance().waitForDone()
@@ -294,7 +294,7 @@ class RareLauncher(RareApp):
 
     @Slot(int, QProcess.ExitStatus)
     def __process_finished(self, exit_code: int, exit_status: QProcess.ExitStatus):
-        self.logger.info("Game finished")
+        self.logger.info('Game finished')
 
         if self.rgame.auto_sync_saves:
             self.check_saves(exit_code)
@@ -330,28 +330,28 @@ class RareLauncher(RareApp):
         self.start_time = time.time()
 
         if self.args.dry_run:
-            self.logger.info("Dry run %s (%s)", self.rgame.app_title, self.rgame.app_name)
-            self.logger.info("Command: %s, %s", params.executable, " ".join(params.arguments))
+            self.logger.info('Dry run %s (%s)', self.rgame.app_title, self.rgame.app_name)
+            self.logger.info('Command: %s, %s', params.executable, ' '.join(params.arguments))
             if self.console:
-                self.console.log(f"Dry run {self.rgame.app_title} ({self.rgame.app_name})")
-                self.console.log(f"{shlex.join((params.executable, *params.arguments))}")
+                self.console.log(f'Dry run {self.rgame.app_title} ({self.rgame.app_name})')
+                self.console.log(f'{shlex.join((params.executable, *params.arguments))}')
                 self.console.accept_close = True
             self.stop()
             return
 
-        if platform.system() == "Windows" and params.is_origin_game:
+        if platform.system() == 'Windows' and params.is_origin_game:
             # executable is a protocol link (link2ea://launchgame/...)
             QDesktopServices.openUrl(QUrl(params.executable))
             self.stop()  # stop because it is not a subprocess
             return
 
-        self.logger.info("Starting %s (%s)", self.rgame.app_title, self.rgame.app_name)
-        self.logger.info("Command: %s, %s", params.executable, " ".join(params.arguments))
-        self.logger.debug("Working directory %s", params.working_directory)
+        self.logger.info('Starting %s (%s)', self.rgame.app_title, self.rgame.app_name)
+        self.logger.info('Command: %s, %s', params.executable, ' '.join(params.arguments))
+        self.logger.debug('Working directory %s', params.working_directory)
 
-        if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == "Windows":
+        if self.rgame.app_name in DETACHED_APP_NAMES and platform.system() == 'Windows':
             if self.console:
-                self.console.log(f"Launching {params.executable} as a detached process")
+                self.console.log(f'Launching {params.executable} as a detached process')
             subprocess.Popen(
                 (params.executable, *params.arguments),
                 stdin=None,
@@ -365,14 +365,14 @@ class RareLauncher(RareApp):
             self.stop()  # stop because we do not attach to the output
             return
 
-        if platform.system() in {"Linux", "FreeBSD"}:
+        if platform.system() in {'Linux', 'FreeBSD'}:
             cmd_line = get_rare_executable()
             executable, arguments = cmd_line[0], cmd_line[1:]
 
-            if appid := os.environ.get("SteamGameId", False):
-                params.environment["SteamGameId"] = appid
-            elif params.environment.get("SteamGameId", False):
-                appid = params.environment["SteamGameId"]
+            if appid := os.environ.get('SteamGameId', False):
+                params.environment['SteamGameId'] = appid
+            elif params.environment.get('SteamGameId', False):
+                appid = params.environment['SteamGameId']
 
             self.game_process.setProgram(executable)
             # TODO: Add "SteamLauch" and "AppId=xxxxxx" here for steamdeck/gamescope
@@ -381,7 +381,7 @@ class RareLauncher(RareApp):
             except ValueError:
                 pass
             self.game_process.setArguments(
-                [*arguments, "subreaper", "SteamLaunch", f"AppId={appid}", "--", params.executable, *params.arguments]
+                [*arguments, 'subreaper', 'SteamLaunch', f'AppId={appid}', '--', params.executable, *params.arguments]
             )
             self.game_process.setUnixProcessParameters(
                 QProcess.UnixProcessFlag.ResetSignalHandlers | QProcess.UnixProcessFlag.CreateNewSession
@@ -428,7 +428,7 @@ class RareLauncher(RareApp):
     def sync_ready(self):
         if self.rgame.is_save_up_to_date:
             if self.console:
-                self.console.log("Sync worker ready. Sync not required")
+                self.console.log('Sync worker ready. Sync not required')
             self.start_prepare()
             return
 
@@ -448,23 +448,23 @@ class RareLauncher(RareApp):
             self.no_sync_on_exit = True
         if self.console:
             if action == CloudSyncDialogResult.DOWNLOAD:
-                self.console.log("Downloading saves...")
+                self.console.log('Downloading saves...')
             elif action == CloudSyncDialogResult.UPLOAD:
-                self.console.log("Uploading saves...")
+                self.console.log('Uploading saves...')
         self.start_prepare(action)
 
     def start(self):
         if not self.args.offline:
             try:
                 if not self.core.login():
-                    raise ValueError("You are not logged in")
+                    raise ValueError('You are not logged in')
             except ValueError:
                 # automatically launch offline if available
-                self.logger.error("Not logged in. Trying to launch the game in offline mode")
+                self.logger.error('Not logged in. Trying to launch the game in offline mode')
                 self.args.offline = True
 
         if not self.args.offline and self.rgame.auto_sync_saves:
-            self.logger.info("Start sync worker")
+            self.logger.info('Start sync worker')
             worker = SyncCheckWorker(self.core, self.rgame)
             worker.signals.error_occurred.connect(self.error_occurred)
             worker.signals.sync_state_ready.connect(self.sync_ready)
@@ -482,7 +482,7 @@ class RareLauncher(RareApp):
             if self.game_process.isSignalConnected(QMetaMethod.fromSignal(self.game_process.errorOccurred)):
                 self.game_process.errorOccurred.disconnect()
         except (TypeError, RuntimeError) as e:
-            self.logger.error("Failed to disconnect process signals: %s", e)
+            self.logger.error('Failed to disconnect process signals: %s', e)
 
         # FIXME: refactor to avoid this
         if shiboken6.isValid(self.game_process):  # pylint: disable=E1101
@@ -499,12 +499,12 @@ class RareLauncher(RareApp):
 
         # FIXME: refactor to avoid this
         if shiboken6.isValid(self.server):  # pylint: disable=E1101
-            self.logger.info("Stopping server %s", self.server.socketDescriptor())
+            self.logger.info('Stopping server %s', self.server.socketDescriptor())
             try:
                 self.server.close()
                 self.server.deleteLater()
             except RuntimeError as e:
-                self.logger.error("Error occurred while stopping server: %s", e)
+                self.logger.error('Error occurred while stopping server: %s', e)
 
         self.processEvents()
         if not self.console:
@@ -525,7 +525,7 @@ def launcher(args: Namespace) -> int:
     # This prevents ghost QLocalSockets, which block the name, which makes it unable to start
     # No handling for SIGKILL
     def signal_handler(sig, frame):
-        app.logger.info("%s received. Stopping", signal.strsignal(sig))
+        app.logger.info('%s received. Stopping', signal.strsignal(sig))
         app.stop(sig)
         app.exit(1)
         return 1
@@ -541,7 +541,7 @@ def launcher(args: Namespace) -> int:
     try:
         exit_code = app.exec()
     except Exception as e:
-        app.logger.error("Unhandled error %s", e)
+        app.logger.error('Unhandled error %s', e)
         exit_code = 1
     finally:
         pass
@@ -550,4 +550,4 @@ def launcher(args: Namespace) -> int:
     return exit_code
 
 
-__all__ = ["launcher"]
+__all__ = ['launcher']

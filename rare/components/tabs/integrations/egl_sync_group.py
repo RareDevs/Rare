@@ -29,7 +29,7 @@ from rare.ui.components.tabs.integrations.egl_sync_list_group import (
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
-logger = getLogger("EGLSync")
+logger = getLogger('EGLSync')
 
 
 class EGLSyncGroup(QGroupBox):
@@ -42,7 +42,7 @@ class EGLSyncGroup(QGroupBox):
 
         self.egl_path_edit = PathEdit(
             path=self.core.egl.programdata_path,
-            placeholder=self.tr("Path to the Wine prefix where EGL is installed, or the Manifests folder"),
+            placeholder=self.tr('Path to the Wine prefix where EGL is installed, or the Manifests folder'),
             file_mode=QFileDialog.FileMode.Directory,
             edit_func=self.egl_path_edit_edit_cb,
             save_func=self.egl_path_edit_save_cb,
@@ -62,7 +62,7 @@ class EGLSyncGroup(QGroupBox):
             self.egl_path_info,
         )
 
-        if platform.system() == "Windows":
+        if platform.system() == 'Windows':
             self.ui.egl_path_edit_label.setEnabled(False)
             self.egl_path_edit.setEnabled(False)
             self.ui.egl_path_info_label.setEnabled(False)
@@ -97,8 +97,8 @@ class EGLSyncGroup(QGroupBox):
         super().showEvent(a0)
 
     def __run_wine_resolver(self):
-        self.egl_path_info.setText(self.tr("Updating..."))
-        wine_resolver = WinePathResolver(self.core, "default", str(PathSpec.egl_programdata()))
+        self.egl_path_info.setText(self.tr('Updating...'))
+        wine_resolver = WinePathResolver(self.core, 'default', str(PathSpec.egl_programdata()))
         wine_resolver.signals.result_ready.connect(self.__on_wine_resolver_result)
         QThreadPool.globalInstance().start(wine_resolver)
 
@@ -106,13 +106,13 @@ class EGLSyncGroup(QGroupBox):
         self.egl_path_info.setText(path)
         if not path:
             self.egl_path_info.setText(
-                self.tr("Default Wine prefix is unset, or path does not exist. Create it or configure it in Settings -> Linux.")
+                self.tr('Default Wine prefix is unset, or path does not exist. Create it or configure it in Settings -> Linux.')
             )
         elif not os.path.exists(path):
             self.egl_path_info.setText(
                 self.tr(
-                    "Default Wine prefix is set but EGL manifests path does not exist. "
-                    "Your configured default Wine prefix might not be where EGL is installed."
+                    'Default Wine prefix is set but EGL manifests path does not exist. '
+                    'Your configured default Wine prefix might not be where EGL is installed.'
                 )
             )
         else:
@@ -122,10 +122,10 @@ class EGLSyncGroup(QGroupBox):
     def egl_path_edit_edit_cb(path) -> Tuple[bool, str, int]:
         if not path:
             return True, path, IndicatorReasonsCommon.VALID
-        if os.path.exists(os.path.join(path, "system.reg")) and os.path.exists(os.path.join(path, "dosdevices/c:")):
+        if os.path.exists(os.path.join(path, 'system.reg')) and os.path.exists(os.path.join(path, 'dosdevices/c:')):
             # path is a wine prefix
             path = PathSpec.prefix_egl_programdata(path)
-        elif not path.rstrip("/").endswith(PathSpec.wine_egl_programdata()):
+        elif not path.rstrip('/').endswith(PathSpec.wine_egl_programdata()):
             # lower() might or might not be needed in the check
             return False, path, IndicatorReasonsCommon.WRONG_FORMAT
         if os.path.exists(path):
@@ -136,15 +136,15 @@ class EGLSyncGroup(QGroupBox):
         if not path or not os.path.exists(path):
             # This is the same as "--unlink"
             self.core.egl.programdata_path = None
-            self.core.lgd.config.remove_option("Legendary", "egl_programdata")
-            self.core.lgd.config.remove_option("Legendary", "egl_sync")
+            self.core.lgd.config.remove_option('Legendary', 'egl_programdata')
+            self.core.lgd.config.remove_option('Legendary', 'egl_sync')
             # remove EGL GUIDs from all games, DO NOT remove .egstore folders because that would fuck things up.
             for igame in self.core.get_installed_list():
-                igame.egl_guid = ""
+                igame.egl_guid = ''
                 self.core.install_game(igame)
         else:
             self.core.egl.programdata_path = path
-            self.core.lgd.config.set("Legendary", "egl_programdata", path)
+            self.core.lgd.config.set('Legendary', 'egl_programdata', path)
 
         self.core.lgd.save_config()
 
@@ -160,9 +160,9 @@ class EGLSyncGroup(QGroupBox):
         if state == Qt.CheckState.Unchecked:
             self.import_list.setEnabled(bool(self.import_list.items))
             self.export_list.setEnabled(bool(self.export_list.items))
-            self.core.lgd.config.remove_option("Legendary", "egl_sync")
+            self.core.lgd.config.remove_option('Legendary', 'egl_sync')
         else:
-            self.core.lgd.config.set("Legendary", "egl_sync", str(True))
+            self.core.lgd.config.set('Legendary', 'egl_sync', str(True))
             # lk: do import/export here since automatic sync was selected
             self.import_list.mark(Qt.CheckState.Checked)
             self.export_list.mark(Qt.CheckState.Checked)
@@ -327,9 +327,9 @@ class EGLSyncListGroup(QGroupBox):
 class EGLSyncExportGroup(EGLSyncListGroup):
     def __init__(self, rcore: RareCore, parent=None):
         super(EGLSyncExportGroup, self).__init__(rcore, parent=parent)
-        self.setTitle(self.tr("Exportable games"))
-        self.ui.label.setText(self.tr("No games to export to EGL"))
-        self.ui.action_button.setText(self.tr("Export"))
+        self.setTitle(self.tr('Exportable games'))
+        self.ui.label.setText(self.tr('No games to export to EGL'))
+        self.ui.action_button.setText(self.tr('Export'))
 
     def populate(self, enabled: bool):
         if enabled:
@@ -339,7 +339,7 @@ class EGLSyncExportGroup(EGLSyncListGroup):
                     i = EGLSyncExportItem(self.core, item)
                 except AttributeError as e:
                     logger.error(
-                        "%s(%s) constructor failed with %s",
+                        '%s(%s) constructor failed with %s',
                         type(self).__name__,
                         item.app_name,
                         e,
@@ -352,8 +352,8 @@ class EGLSyncExportGroup(EGLSyncListGroup):
     def show_errors(self, errors: List):
         QMessageBox.warning(
             self.parent(),
-            self.tr("The following errors occurred while exporting."),
-            "\n".join(errors),
+            self.tr('The following errors occurred while exporting.'),
+            '\n'.join(errors),
         )
 
     def action(self):
@@ -370,9 +370,9 @@ class EGLSyncExportGroup(EGLSyncListGroup):
 class EGLSyncImportGroup(EGLSyncListGroup):
     def __init__(self, rcore: RareCore, parent=None):
         super(EGLSyncImportGroup, self).__init__(rcore, parent=parent)
-        self.setTitle(self.tr("Importable games"))
-        self.ui.label.setText(self.tr("No games to import from EGL"))
-        self.ui.action_button.setText(self.tr("Import"))
+        self.setTitle(self.tr('Importable games'))
+        self.ui.label.setText(self.tr('No games to import from EGL'))
+        self.ui.action_button.setText(self.tr('Import'))
 
     def populate(self, enabled: bool):
         if enabled:
@@ -382,7 +382,7 @@ class EGLSyncImportGroup(EGLSyncListGroup):
                     i = EGLSyncImportItem(self.core, item)
                 except AttributeError as e:
                     logger.error(
-                        "%s(%s) constructor failed with %s",
+                        '%s(%s) constructor failed with %s',
                         type(self).__name__,
                         item.app_name,
                         e,
@@ -395,8 +395,8 @@ class EGLSyncImportGroup(EGLSyncListGroup):
     def show_errors(self, errors: List):
         QMessageBox.warning(
             self.parent(),
-            self.tr("The following errors occurred while importing."),
-            "\n".join(errors),
+            self.tr('The following errors occurred while importing.'),
+            '\n'.join(errors),
         )
 
     def action(self):

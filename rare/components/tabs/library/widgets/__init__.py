@@ -12,7 +12,7 @@ from rare.widgets.library_layout import LibraryLayout
 from .icon_game_widget import IconGameWidget
 from .list_game_widget import ListGameWidget
 
-ViewWidget = TypeVar("ViewWidget", IconGameWidget, ListGameWidget)
+ViewWidget = TypeVar('ViewWidget', IconGameWidget, ListGameWidget)
 
 
 class ViewContainer(QWidget):
@@ -26,23 +26,23 @@ class ViewContainer(QWidget):
         return widget
 
     __is_visible = {
-        LibraryFilter.HIDDEN: lambda x: "hidden" in x.metadata.tags,
-        LibraryFilter.FAVORITES: lambda x: "favorite" in x.metadata.tags,
-        LibraryFilter.INSTALLED: lambda x: x.is_installed and not x.is_unreal and "hidden" not in x.metadata.tags,
-        LibraryFilter.OFFLINE: lambda x: x.can_run_offline and not x.is_unreal and "hidden" not in x.metadata.tags,
-        LibraryFilter.WIN32: lambda x: x.is_win32 and not x.is_unreal and "hidden" not in x.metadata.tags,
-        LibraryFilter.MAC: lambda x: x.is_mac and not x.is_unreal and "hidden" not in x.metadata.tags,
-        LibraryFilter.INSTALLABLE: lambda x: not x.is_non_asset and not x.is_unreal and "hidden" not in x.metadata.tags,
-        LibraryFilter.INCLUDE_UE: lambda x: not x.is_android_only and "hidden" not in x.metadata.tags,
+        LibraryFilter.HIDDEN: lambda x: 'hidden' in x.metadata.tags,
+        LibraryFilter.FAVORITES: lambda x: 'favorite' in x.metadata.tags,
+        LibraryFilter.INSTALLED: lambda x: x.is_installed and not x.is_unreal and 'hidden' not in x.metadata.tags,
+        LibraryFilter.OFFLINE: lambda x: x.can_run_offline and not x.is_unreal and 'hidden' not in x.metadata.tags,
+        LibraryFilter.WIN32: lambda x: x.is_win32 and not x.is_unreal and 'hidden' not in x.metadata.tags,
+        LibraryFilter.MAC: lambda x: x.is_mac and not x.is_unreal and 'hidden' not in x.metadata.tags,
+        LibraryFilter.INSTALLABLE: lambda x: not x.is_non_asset and not x.is_unreal and 'hidden' not in x.metadata.tags,
+        LibraryFilter.INCLUDE_UE: lambda x: not x.is_android_only and 'hidden' not in x.metadata.tags,
         LibraryFilter.ANDROID: lambda x: x.is_android_only,
-        LibraryFilter.ALL: lambda x: not x.is_unreal and not x.is_android_only and "hidden" not in x.metadata.tags,
+        LibraryFilter.ALL: lambda x: not x.is_unreal and not x.is_android_only and 'hidden' not in x.metadata.tags,
     }
 
     def __visibility(self, widget: ViewWidget, library_filter, search_text) -> Tuple[bool, float]:
         name_search = True
         tag_search = False
-        if search_text.startswith("::"):
-            search_text = search_text.removeprefix("::")
+        if search_text.startswith('::'):
+            search_text = search_text.removeprefix('::')
             tag_search = True
             name_search = False
             visible = True
@@ -66,7 +66,7 @@ class ViewContainer(QWidget):
         self,
         widget_type: Type[ViewWidget],
         filter_by: LibraryFilter = LibraryFilter.ALL,
-        search_text: str = "",
+        search_text: str = '',
     ):
         widgets = self.findChildren(widget_type)
         for iw in widgets:
@@ -116,13 +116,13 @@ class IconViewContainer(ViewContainer):
     def find_widget(self, app_name: str) -> ViewWidget:
         return self._find_widget(IconGameWidget, app_name)
 
-    def filter_view(self, filter_by: LibraryFilter, search_text: str = ""):
+    def filter_view(self, filter_by: LibraryFilter, search_text: str = ''):
         self._filter_view(IconGameWidget, filter_by, search_text)
 
-    def order_view(self, order_by: LibraryOrder, search_text: str = ""):
+    def order_view(self, order_by: LibraryOrder, search_text: str = ''):
         if search_text:
-            if search_text.startswith("::"):
-                self.layout().sort(lambda x: search_text.removeprefix("::") not in x.widget().rgame.metadata.tags)
+            if search_text.startswith('::'):
+                self.layout().sort(lambda x: search_text.removeprefix('::') not in x.widget().rgame.metadata.tags)
             else:
                 self.layout().sort(
                     lambda x: search_text not in x.widget().rgame.app_title.lower()
@@ -177,14 +177,14 @@ class ListViewContainer(ViewContainer):
     def find_widget(self, app_name: str) -> ViewWidget:
         return self._find_widget(ListGameWidget, app_name)
 
-    def filter_view(self, filter_by: LibraryFilter, search_text: str = ""):
+    def filter_view(self, filter_by: LibraryFilter, search_text: str = ''):
         self._filter_view(ListGameWidget, filter_by, search_text)
 
-    def order_view(self, order_by: LibraryOrder, search_text: str = ""):
+    def order_view(self, order_by: LibraryOrder, search_text: str = ''):
         list_widgets = self.findChildren(ListGameWidget)
         if search_text:
-            if search_text.startswith("::"):
-                list_widgets.sort(key=lambda x: search_text.removeprefix("::") not in x.rgame.metadata.tags)
+            if search_text.startswith('::'):
+                list_widgets.sort(key=lambda x: search_text.removeprefix('::') not in x.rgame.metadata.tags)
             else:
                 list_widgets.sort(
                     key=lambda x: search_text not in x.rgame.app_title.lower() and search_text not in x.rgame.app_name.lower()
@@ -246,13 +246,13 @@ class LibraryWidgetController(QObject):
     def add_widget(self, rgame: RareGame) -> ViewWidget:
         return self._container.add_widget(rgame)
 
-    def filter_game_view(self, filter_by: LibraryFilter = None, search_text: str = ""):
+    def filter_game_view(self, filter_by: LibraryFilter = None, search_text: str = ''):
         self._current_filter = filter_by if filter_by is not None else self._current_filter
         self._container.filter_view(self._current_filter, search_text)
         self.order_game_view(self._current_order, search_text=search_text)
 
     @Slot()
-    def order_game_view(self, order_by: LibraryOrder = None, search_text: str = ""):
+    def order_game_view(self, order_by: LibraryOrder = None, search_text: str = ''):
         self._current_order = order_by if order_by is not None else self._current_order
         self._container.order_view(self._current_order, search_text)
 

@@ -32,7 +32,7 @@ from PySide6.QtWidgets import (
 
 from rare.utils.misc import qta_icon
 
-logger = getLogger("IndicatorEdit")
+logger = getLogger('IndicatorEdit')
 
 
 class IndicatorReasonsCommon(IntEnum):
@@ -72,18 +72,18 @@ class IndicatorReasonsStrings(QObject):
     def __init__(self, parent=None):
         super(IndicatorReasonsStrings, self).__init__(parent=parent)
         self.__text = {
-            IndicatorReasonsCommon.VALID: self.tr("Ok!"),
-            IndicatorReasonsCommon.INVALID: self.tr("Unknown error occurred"),
-            IndicatorReasonsCommon.IS_EMPTY: self.tr("Value can not be empty"),
-            IndicatorReasonsCommon.WRONG_FORMAT: self.tr("Wrong format"),
-            IndicatorReasonsCommon.WRONG_PATH: self.tr("Wrong file or directory"),
-            IndicatorReasonsCommon.DIR_NOT_EMPTY: self.tr("Directory is not empty"),
-            IndicatorReasonsCommon.DIR_NOT_EXISTS: self.tr("Directory does not exist"),
-            IndicatorReasonsCommon.FILE_NOT_EXISTS: self.tr("File does not exist"),
-            IndicatorReasonsCommon.GAME_NOT_INSTALLED: self.tr("Game is not installed"),
-            IndicatorReasonsCommon.GAME_NOT_EXISTS: self.tr("Game does not exist"),
+            IndicatorReasonsCommon.VALID: self.tr('Ok!'),
+            IndicatorReasonsCommon.INVALID: self.tr('Unknown error occurred'),
+            IndicatorReasonsCommon.IS_EMPTY: self.tr('Value can not be empty'),
+            IndicatorReasonsCommon.WRONG_FORMAT: self.tr('Wrong format'),
+            IndicatorReasonsCommon.WRONG_PATH: self.tr('Wrong file or directory'),
+            IndicatorReasonsCommon.DIR_NOT_EMPTY: self.tr('Directory is not empty'),
+            IndicatorReasonsCommon.DIR_NOT_EXISTS: self.tr('Directory does not exist'),
+            IndicatorReasonsCommon.FILE_NOT_EXISTS: self.tr('File does not exist'),
+            IndicatorReasonsCommon.GAME_NOT_INSTALLED: self.tr('Game is not installed'),
+            IndicatorReasonsCommon.GAME_NOT_EXISTS: self.tr('Game does not exist'),
             IndicatorReasonsCommon.PERM_NO_WRITE: self.tr("No 'write' access to folder"),
-            IndicatorReasonsCommon.UNDEFINED: self.tr("Unset"),
+            IndicatorReasonsCommon.UNDEFINED: self.tr('Unset'),
         }
 
     def __getitem__(self, item: int) -> str:
@@ -95,7 +95,7 @@ class IndicatorReasonsStrings(QObject):
     def extend(self, reasons: Dict):
         for k in self.__text.keys():
             if k in reasons.keys():
-                raise RuntimeError(f"{reasons} contains existing values")
+                raise RuntimeError(f'{reasons} contains existing values')
         self.__text.update(reasons)
 
 
@@ -120,7 +120,7 @@ class EditFuncRunnable(QRunnable):
     @staticmethod
     def __wrap_edit_function(func: Callable[[str], Tuple[bool, str, int]]):
         if func:
-            return lambda text: func(os.path.expanduser(text) if text.startswith("~") else text)
+            return lambda text: func(os.path.expanduser(text) if text.startswith('~') else text)
         else:
             return func
 
@@ -131,8 +131,8 @@ class IndicatorLineEdit(QWidget):
 
     def __init__(
         self,
-        text: str = "",
-        placeholder: str = "",
+        text: str = '',
+        placeholder: str = '',
         completer: QCompleter = None,
         edit_func: Callable[[str], Tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
@@ -142,18 +142,18 @@ class IndicatorLineEdit(QWidget):
         super(IndicatorLineEdit, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         layout = QHBoxLayout(self)
-        layout.setObjectName(f"{self.objectName()}Layout")
+        layout.setObjectName(f'{self.objectName()}Layout')
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetDefaultConstraint)
         # Add line_edit
         self.line_edit = QLineEdit(self)
-        self.line_edit.setObjectName(f"{type(self).__name__}Edit")
-        self.line_edit.setPlaceholderText(placeholder if placeholder else self.tr("Use global/default settings"))
-        self.line_edit.setToolTip(placeholder if placeholder else "")
+        self.line_edit.setObjectName(f'{type(self).__name__}Edit')
+        self.line_edit.setPlaceholderText(placeholder if placeholder else self.tr('Use global/default settings'))
+        self.line_edit.setToolTip(placeholder if placeholder else '')
         self.line_edit.setSizePolicy(horiz_policy, QSizePolicy.Policy.Fixed)
         # Add informative label
         self.info_label = QLabel(self)
-        self.info_label.setObjectName(f"{self.objectName()}Label")
+        self.info_label.setObjectName(f'{self.objectName()}Label')
         self.info_label.setFrameStyle(QLabel.Shape.StyledPanel | QLabel.Shadow.Plain)
         self.info_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         line_edit_layout = QHBoxLayout(self.line_edit)
@@ -166,7 +166,7 @@ class IndicatorLineEdit(QWidget):
         layout.addWidget(self.line_edit)
         if edit_func is not None:
             self.indicator_label = QLabel(self)
-            self.indicator_label.setPixmap(qta_icon("ei.info-circle", color="gray").pixmap(16, 16))
+            self.indicator_label.setPixmap(qta_icon('ei.info-circle', color='gray').pixmap(16, 16))
             self.indicator_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             layout.addWidget(self.indicator_label)
 
@@ -236,8 +236,8 @@ class IndicatorLineEdit(QWidget):
         self.__threadpool.waitForDone()
 
     def __indicator(self, valid, reason: int = 0):
-        color = "gray" if reason == IndicatorReasonsCommon.UNDEFINED else "green" if valid else "red"
-        self.indicator_label.setPixmap(qta_icon("ei.info-circle", color=color).pixmap(16, 16))
+        color = 'gray' if reason == IndicatorReasonsCommon.UNDEFINED else 'green' if valid else 'red'
+        self.indicator_label.setPixmap(qta_icon('ei.info-circle', color=color).pixmap(16, 16))
         if not valid:
             self.indicator_label.setToolTip(self.__reasons[reason])
         else:
@@ -276,33 +276,33 @@ class PathEditIconProvider(QAbstractFileIconProvider):
         Executable = -2
 
     icons = {
-        CustomIconType.Unknown: ("mdi.file-cancel", "fa5.file-excel"),  # Unknown
+        CustomIconType.Unknown: ('mdi.file-cancel', 'fa5.file-excel'),  # Unknown
         QAbstractFileIconProvider.IconType.Computer: (
-            "mdi.desktop-classic",
-            "fa5s.desktop",
+            'mdi.desktop-classic',
+            'fa5s.desktop',
         ),  # Computer
         QAbstractFileIconProvider.IconType.Desktop: (
-            "mdi.desktop-mac",
-            "fa5s.desktop",
+            'mdi.desktop-mac',
+            'fa5s.desktop',
         ),  # Desktop
         QAbstractFileIconProvider.IconType.Trashcan: (
-            "mdi.trash-can",
-            "fa5s.trash",
+            'mdi.trash-can',
+            'fa5s.trash',
         ),  # Trashcan
         QAbstractFileIconProvider.IconType.Network: (
-            "mdi.server-network",
-            "fa5s.server",
+            'mdi.server-network',
+            'fa5s.server',
         ),  # Network
         QAbstractFileIconProvider.IconType.Drive: (
-            "mdi.harddisk",
-            "fa5s.desktop",
+            'mdi.harddisk',
+            'fa5s.desktop',
         ),  # Drive
         QAbstractFileIconProvider.IconType.Folder: (
-            "mdi.folder",
-            "fa5.folder",
+            'mdi.folder',
+            'fa5.folder',
         ),  # Folder
-        QAbstractFileIconProvider.IconType.File: ("mdi.file", "fa5.file"),  # File
-        CustomIconType.Executable: ("mdi.cog", "fa5s.cog"),  # Executable
+        QAbstractFileIconProvider.IconType.File: ('mdi.file', 'fa5.file'),  # File
+        CustomIconType.Executable: ('mdi.cog', 'fa5s.cog'),  # Executable
     }
 
     def __init__(self):
@@ -310,7 +310,7 @@ class PathEditIconProvider(QAbstractFileIconProvider):
         self.setOptions(QAbstractFileIconProvider.Option.DontUseCustomDirectoryIcons)
         self.icon_types = {}
         for idx, (icn, fallback) in PathEditIconProvider.icons.items():
-            self.icon_types.update({idx: qta_icon(icn, fallback, color="#eeeeee")})
+            self.icon_types.update({idx: qta_icon(icn, fallback, color='#eeeeee')})
 
     def icon(self, info_type):
         if isinstance(info_type, QFileInfo):
@@ -329,17 +329,17 @@ class PathEditIconProvider(QAbstractFileIconProvider):
 class PathEdit(IndicatorLineEdit):
     def __init__(
         self,
-        path: str = "",
+        path: str = '',
         file_mode: QFileDialog.FileMode = QFileDialog.FileMode.AnyFile,
         file_filter: QDir.Filter = 0,
         name_filters: Tuple[str, ...] = None,
-        placeholder: str = "",
+        placeholder: str = '',
         edit_func: Callable[[str], Tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
         horiz_policy: QSizePolicy.Policy = QSizePolicy.Policy.Expanding,
         parent=None,
     ):
-        self.__root_path = path if path else os.path.expanduser("~/")
+        self.__root_path = path if path else os.path.expanduser('~/')
         self.__completer = QCompleter()
         self.__completer_model = QFileSystemModel(self.__completer)
         try:
@@ -370,11 +370,11 @@ class PathEdit(IndicatorLineEdit):
         self.setObjectName(type(self).__name__)
         self.line_edit.setMinimumSize(QSize(250, 0))
         self.path_select = QPushButton(self)
-        self.path_select.setObjectName(f"{type(self).__name__}Button")
+        self.path_select.setObjectName(f'{type(self).__name__}Button')
         layout = self.layout()
         layout.addWidget(self.path_select)
 
-        self.path_select.setText(self.tr("Browse..."))
+        self.path_select.setText(self.tr('Browse...'))
 
         self.__file_mode = file_mode
         self.__file_filter = file_filter
@@ -393,7 +393,7 @@ class PathEdit(IndicatorLineEdit):
         dlg_path = self.line_edit.text()
         if not dlg_path or not os.path.isabs(dlg_path):
             dlg_path = self.__root_path
-        dlg = QFileDialog(self, self.tr("Choose path"), dlg_path)
+        dlg = QFileDialog(self, self.tr('Choose path'), dlg_path)
         dlg.setOption(QFileDialog.Option.DontUseCustomDirectoryIcons)
         dlg.setIconProvider(PathEditIconProvider())
         dlg.setFileMode(self.__file_mode)
@@ -402,7 +402,7 @@ class PathEdit(IndicatorLineEdit):
         if self.__file_filter:
             dlg.setFilter(self.__file_filter)
         if self.__name_filter:
-            dlg.setNameFilter(" ".join(self.__name_filter))
+            dlg.setNameFilter(' '.join(self.__name_filter))
         if dlg.exec_():
             name = dlg.selectedFiles()[0]
             self.__completer_model.setRootPath(name)

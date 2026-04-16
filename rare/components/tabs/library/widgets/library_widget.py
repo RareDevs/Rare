@@ -26,7 +26,7 @@ class ProgressLabel(QLabel):
 
     def __center_on_parent(self):
         fm = QFontMetrics(self.font())
-        rect = fm.boundingRect("  100%  ")
+        rect = fm.boundingRect('  100%  ')
         rect.moveCenter(self.parent().contentsRect().center())
         self.setGeometry(rect)
 
@@ -68,11 +68,11 @@ class ProgressLabel(QLabel):
 
     def setStyleSheetColors(self, bg: QColor, fg: QColor, brd: QColor):
         sheet = (
-            f"QLabel#{type(self).__name__} {{"
-            f"background-color: rgba({bg.red()}, {bg.green()}, {bg.blue()}, 65%);"
-            f"color: rgb({fg.red()}, {fg.green()}, {fg.blue()});"
-            f"border-color: rgb({brd.red()}, {brd.green()}, {brd.blue()});"
-            f"}}"
+            f'QLabel#{type(self).__name__} {{'
+            f'background-color: rgba({bg.red()}, {bg.green()}, {bg.blue()}, 65%);'
+            f'color: rgb({fg.red()}, {fg.green()}, {fg.blue()});'
+            f'border-color: rgb({brd.red()}, {brd.green()}, {brd.blue()});'
+            f'}}'
         )
         self.setStyleSheet(sheet)
 
@@ -151,7 +151,7 @@ class LibraryWidget(ImageWidget):
 
     @Slot(int)
     def updateProgress(self, progress: int):
-        self.progress_label.setText(f"{progress:02}%")
+        self.progress_label.setText(f'{progress:02}%')
         if progress > self._progress:
             self._progress = progress
             self.setPixmap(self.progressPixmap(self._color_pixmap, self._gray_pixmap, progress))

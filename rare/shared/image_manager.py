@@ -79,17 +79,17 @@ class ImageManager(QObject):
         # {'AndroidIcon', 'DieselGameBox', 'DieselGameBoxLogo', 'DieselGameBoxTall', 'DieselGameBoxWide',
         #  'ESRB', 'Featured', 'OfferImageTall', 'OfferImageWide', 'Screenshot', 'Thumbnail'}
         self._img_tall_types: Tuple = (
-            "DieselGameBoxTall",
-            "OfferImageTall",
-            "Thumbnail",
+            'DieselGameBoxTall',
+            'OfferImageTall',
+            'Thumbnail',
         )
         self._img_wide_types: Tuple = (
-            "DieselGameBoxWide",
-            "DieselGameBox",
-            "OfferImageWide",
-            "Screenshot",
+            'DieselGameBoxWide',
+            'DieselGameBox',
+            'OfferImageWide',
+            'Screenshot',
         )
-        self._img_logo_types: Tuple = ("DieselGameBoxLogo",)
+        self._img_logo_types: Tuple = ('DieselGameBoxLogo',)
         self._img_types: Tuple = self._img_tall_types + self._img_wide_types + self._img_logo_types
         self._dl_retries = 1
         self._worker_lock = threading.Lock()
@@ -101,18 +101,18 @@ class ImageManager(QObject):
         self.image_dir: Path = image_dir()
         if not self.image_dir.is_dir():
             self.image_dir.mkdir()
-            self.logger.info("Created image directory at %s", self.image_dir)
+            self.logger.info('Created image directory at %s', self.image_dir)
 
         self.threadpool = QThreadPool(self)
         self.threadpool.setMaxThreadCount(min(cpu_count() * 2, 16))
 
     @staticmethod
     def _img_json(app_name: str) -> Path:
-        return image_dir_game(app_name).joinpath("image.json")
+        return image_dir_game(app_name).joinpath('image.json')
 
     @staticmethod
     def _img_cache(app_name: str) -> Path:
-        return image_dir_game(app_name).joinpath("image.cache")
+        return image_dir_game(app_name).joinpath('image.cache')
 
     @staticmethod
     def _img_all(app_name: str) -> Tuple:
@@ -139,15 +139,15 @@ class ImageManager(QObject):
         # Load image checksums
         if not self._img_json(game.app_name).is_file():
             json_data: Dict = dict(zip(self._img_types, [None] * len(self._img_types)))
-            json_data["version"] = self._cache_version
+            json_data['version'] = self._cache_version
         else:
-            json_data = json.load(open(self._img_json(game.app_name), "r"))
+            json_data = json.load(open(self._img_json(game.app_name), 'r'))
 
         # Only download the best matching candidate for each image category
         def best_match(key_images: List, image_types: Tuple) -> Dict:
             matches = sorted(
-                filter(lambda image: image["type"] in image_types, key_images),
-                key=lambda x: image_types.index(x["type"]) if x["type"] in image_types else len(image_types),
+                filter(lambda image: image['type'] in image_types, key_images),
+                key=lambda x: image_types.index(x['type']) if x['type'] in image_types else len(image_types),
                 reverse=False,
             )
             try:
@@ -159,9 +159,9 @@ class ImageManager(QObject):
         candidates = tuple(
             image
             for image in [
-                best_match(game.metadata.get("keyImages", []), self._img_tall_types),
-                best_match(game.metadata.get("keyImages", []), self._img_wide_types),
-                best_match(game.metadata.get("keyImages", []), self._img_logo_types),
+                best_match(game.metadata.get('keyImages', []), self._img_tall_types),
+                best_match(game.metadata.get('keyImages', []), self._img_wide_types),
+                best_match(game.metadata.get('keyImages', []), self._img_logo_types),
             ]
             if bool(image)
         )
@@ -171,32 +171,32 @@ class ImageManager(QObject):
         # lk: so everything below it is skipped
         # TODO: Move this into the thread, maybe, concurrency could help here too
         updates = []
-        if (not self.has_pixmaps(game.app_name)):
+        if not self.has_pixmaps(game.app_name):
             if not candidates:
-                cover = "epic.png" if game.app_name == EOSOverlayApp.app_name else "cover.png"
+                cover = 'epic.png' if game.app_name == EOSOverlayApp.app_name else 'cover.png'
                 # lk: fast path for games without images, convert Rare's logo
                 cache_data: Dict = dict(zip(self._img_types, [None] * len(self._img_types)))
-                with open(resources_path.joinpath("images", cover), "rb") as fd:
-                    cache_data["DieselGameBoxTall"] = fd.read()
-                with open(resources_path.joinpath("images", cover), "rb") as fd:
-                    cache_data["DieselGameBoxWide"] = fd.read()
+                with open(resources_path.joinpath('images', cover), 'rb') as fd:
+                    cache_data['DieselGameBoxTall'] = fd.read()
+                with open(resources_path.joinpath('images', cover), 'rb') as fd:
+                    cache_data['DieselGameBoxWide'] = fd.read()
                 # cache_data["DieselGameBoxLogo"] = open(
                 #         resources_path.joinpath("images", "logo.png"), "rb").read()
                 self._convert(game, cache_data)
-                json_data["cache"] = None
-                json_data["scale"] = ImageSize.Tall.pixel_ratio
-                json_data["size"] = {
-                    "w": ImageSize.Tall.size.width(),
-                    "h": ImageSize.Tall.size.height(),
+                json_data['cache'] = None
+                json_data['scale'] = ImageSize.Tall.pixel_ratio
+                json_data['size'] = {
+                    'w': ImageSize.Tall.size.width(),
+                    'h': ImageSize.Tall.size.height(),
                 }
-                with open(self._img_json(game.app_name), "w", encoding="utf-8") as file:
+                with open(self._img_json(game.app_name), 'w', encoding='utf-8') as file:
                     json.dump(json_data, file)
             else:
-                updates = [image for image in candidates if image["type"] in self._img_types]
+                updates = [image for image in candidates if image['type'] in self._img_types]
         else:
             for image in candidates:
-                if image["type"] in self._img_types:
-                    if image["type"] not in json_data.keys() or json_data[image["type"]] != image["md5"]:
+                if image['type'] in self._img_types:
+                    if image['type'] not in json_data.keys() or json_data[image['type']] != image['md5']:
                         updates.append(image)
 
         return updates, json_data
@@ -213,38 +213,38 @@ class ImageManager(QObject):
         downloads = [
             image
             for image in updates
-            if (cache_data.get(image["type"], None) is None or json_data[image["type"]] != image["md5"])
+            if (cache_data.get(image['type'], None) is None or json_data[image['type']] != image['md5'])
         ]
 
         for image in downloads:
             self.logger.debug(
-                "Downloading %s for %s (%s)",
-                image["type"],
+                'Downloading %s for %s (%s)',
+                image['type'],
                 game.app_name,
                 game.app_title,
             )
-            json_data[image["type"]] = image["md5"]
-            if image["type"] in self._img_tall_types:
+            json_data[image['type']] = image['md5']
+            if image['type'] in self._img_tall_types:
                 payload = {
-                    "resize": 1,
-                    "w": ImageSize.Tall.size.width(),
-                    "h": ImageSize.Tall.size.height(),
+                    'resize': 1,
+                    'w': ImageSize.Tall.size.width(),
+                    'h': ImageSize.Tall.size.height(),
                 }
-            elif image["type"] in self._img_wide_types:
+            elif image['type'] in self._img_wide_types:
                 payload = {
-                    "resize": 1,
-                    "w": ImageSize.Wide.size.width(),
-                    "h": ImageSize.Wide.size.height(),
+                    'resize': 1,
+                    'w': ImageSize.Wide.size.width(),
+                    'h': ImageSize.Wide.size.height(),
                 }
             else:
                 # Set the larger of the sizes for everything else
                 payload = {
-                    "resize": 1,
-                    "w": ImageSize.Wide.size.width(),
-                    "h": ImageSize.Wide.size.height(),
+                    'resize': 1,
+                    'w': ImageSize.Wide.size.width(),
+                    'h': ImageSize.Wide.size.height(),
                 }
             try:
-                cache_data[image["type"]] = requests.get(image["url"], params=payload, timeout=10).content
+                cache_data[image['type']] = requests.get(image['url'], params=payload, timeout=10).content
             except Exception as e:
                 self.logger.error(e)
                 return False
@@ -252,14 +252,14 @@ class ImageManager(QObject):
         # lk: test the cached and downloaded data if they describe an image with valid dimensions
         # I do not like this, it should add a bunch of processing for something simple but I am out of ideas
         for image in updates:
-            image_data = QImage().fromData(cache_data[image["type"]])
+            image_data = QImage().fromData(cache_data[image['type']])
             if not (image_data.width() and image_data.height()):
-                with open(resources_path.joinpath("images", "cover.png"), "rb") as fd:
-                    cache_data[image["type"]] = fd.read()
-                json_data[image["type"]] = None
+                with open(resources_path.joinpath('images', 'cover.png'), 'rb') as fd:
+                    cache_data[image['type']] = fd.read()
+                json_data[image['type']] = None
                 self.logger.error(
-                    "Invalid image %s data for %s (%s)",
-                    image["type"],
+                    'Invalid image %s data for %s (%s)',
+                    image['type'],
                     game.app_name,
                     game.app_title,
                 )
@@ -273,20 +273,20 @@ class ImageManager(QObject):
 
         # hash image cache
         try:
-            with open(self._img_cache(game.app_name), "rb") as archive:
+            with open(self._img_cache(game.app_name), 'rb') as archive:
                 archive_hash = hashlib.md5(archive.read()).hexdigest()
         except FileNotFoundError:
             archive_hash = None
 
-        json_data["cache"] = archive_hash
-        json_data["scale"] = ImageSize.Tall.pixel_ratio
-        json_data["size"] = {
-            "w": ImageSize.Tall.size.width(),
-            "h": ImageSize.Tall.size.height(),
+        json_data['cache'] = archive_hash
+        json_data['scale'] = ImageSize.Tall.pixel_ratio
+        json_data['size'] = {
+            'w': ImageSize.Tall.size.width(),
+            'h': ImageSize.Tall.size.height(),
         }
 
         # write image.json
-        with open(self._img_json(game.app_name), "w", encoding="utf-8") as file:
+        with open(self._img_json(game.app_name), 'w', encoding='utf-8') as file:
             json.dump(json_data, file)
 
         return bool(updates)
@@ -376,14 +376,14 @@ class ImageManager(QObject):
         # image = image.convertToFormat(QImage.Format_Indexed8)
         # add the alpha channel back to the cover
         image = image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
-        image.save(color_path.as_posix(), format="PNG")
+        image.save(color_path.as_posix(), format='PNG')
         # quick way to convert to grayscale, but keep the alpha channel
         alpha = image.convertToFormat(QImage.Format.Format_Alpha8)
         image = image.convertToFormat(QImage.Format.Format_Grayscale8)
         # add the alpha channel back to the grayscale cover
         image = image.convertToFormat(QImage.Format.Format_ARGB32_Premultiplied)
         image.setAlphaChannel(alpha)
-        image.save(gray_path.as_posix(), format="PNG")
+        image.save(gray_path.as_posix(), format='PNG')
 
     def _convert(self, game, images, force=False) -> None:
         for file in self._img_all(game.app_name):
@@ -402,7 +402,7 @@ class ImageManager(QObject):
         wide_data = find_image_data(self._img_wide_types)
         logo_data = find_image_data(self._img_logo_types)
 
-        icon_source = "wide" if tall_data is None else "tall"
+        icon_source = 'wide' if tall_data is None else 'tall'
 
         if tall_data is None and wide_data is not None:
             tall_data = wide_data
@@ -424,7 +424,7 @@ class ImageManager(QObject):
             image_wide_path(game.app_name, color=False),
         )
 
-        icon = self._convert_icon(tall if icon_source == "tall" else wide)
+        icon = self._convert_icon(tall if icon_source == 'tall' else wide)
         self._save_image(
             icon,
             image_icon_path(game.app_name),
@@ -436,13 +436,13 @@ class ImageManager(QObject):
         )
 
     def _compress(self, game: Game, data: Dict) -> None:
-        archive = open(self._img_cache(game.app_name), "wb")
+        archive = open(self._img_cache(game.app_name), 'wb')
         cdata = zlib.compress(pickle.dumps(data), level=-1)
         archive.write(cdata)
         archive.close()
 
     def _decompress(self, game: Game) -> Dict:
-        archive = open(self._img_cache(game.app_name), "rb")
+        archive = open(self._img_cache(game.app_name), 'rb')
         try:
             data = zlib.decompress(archive.read())
             data = pickle.loads(data)
@@ -471,7 +471,7 @@ class ImageManager(QObject):
         updates, json_data = self._prepare_download(game, force)
         if updates:
             self._download(updates, json_data, game)
-        self.logger.debug("Emitting singal for %s (%s)", game.app_name, game.app_title)
+        self.logger.debug('Emitting singal for %s (%s)', game.app_name, game.app_title)
 
     def download_image(self, game: Game, load_callback: Callable[[], None], priority: int, force: bool = False) -> None:
         if game.app_name in self._worker_app_names:
@@ -515,7 +515,7 @@ class ImageManager(QObject):
             if image_wide_path(app_name, color).is_file():
                 ret.load(image_wide_path(app_name, color).as_posix())
         else:
-            raise RuntimeError("Unknown image preset")
+            raise RuntimeError('Unknown image preset')
         if not ret.isNull():
             device = ImageSize.Preset(
                 divisor=preset.base.divisor,

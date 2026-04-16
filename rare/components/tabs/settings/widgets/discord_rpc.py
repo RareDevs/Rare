@@ -17,9 +17,9 @@ class DiscordRPCSettings(QGroupBox):
         self.ui = Ui_DiscordRPCSettings()
         self.ui.setupUi(self)
 
-        self.ui.mode_combo.addItem(self.tr("When playing"), DiscordRPCMode.GAME_ONLY)
-        self.ui.mode_combo.addItem(self.tr("Always"), DiscordRPCMode.ALWAYS)
-        self.ui.mode_combo.addItem(self.tr("Never"), DiscordRPCMode.NEVER)
+        self.ui.mode_combo.addItem(self.tr('When playing'), DiscordRPCMode.GAME_ONLY)
+        self.ui.mode_combo.addItem(self.tr('Always'), DiscordRPCMode.ALWAYS)
+        self.ui.mode_combo.addItem(self.tr('Never'), DiscordRPCMode.NEVER)
 
         rpc_mode = DiscordRPCMode(self.settings.get_value(app_settings.discord_rpc_mode))
         if (index := self.ui.mode_combo.findData(rpc_mode, Qt.ItemDataRole.UserRole)) < 0:
@@ -39,9 +39,9 @@ class DiscordRPCSettings(QGroupBox):
         self.ui.time_check.setChecked(self.settings.get_value(app_settings.discord_rpc_time))
         self.ui.time_check.checkStateChanged.connect(self._on_time_changed)
 
-        if not importlib.util.find_spec("pypresence"):
+        if not importlib.util.find_spec('pypresence'):
             self.setDisabled(True)
-            self.setToolTip(self.tr("Pypresence is not installed"))
+            self.setToolTip(self.tr('Pypresence is not installed'))
 
     @Slot(Qt.CheckState)
     def _on_game_changed(self, state: Qt.CheckState):

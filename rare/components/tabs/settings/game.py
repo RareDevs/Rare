@@ -25,7 +25,7 @@ class GameSettingsBase(QWidget, SideTabContents):
         self.implements_scrollarea = True
 
         self.settings = settings
-        self.app_name: str = "default"
+        self.app_name: str = 'default'
 
         self.launch = launch_widget(rcore, self)
 
@@ -47,6 +47,4 @@ class GlobalLaunchSettings(LaunchSettingsBase):
 
 class GlobalGameSettings(GameSettingsBase):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
-        super(GlobalGameSettings, self).__init__(
-            settings, rcore, launch_widget=GlobalLaunchSettings, parent=parent
-        )
+        super(GlobalGameSettings, self).__init__(settings, rcore, launch_widget=GlobalLaunchSettings, parent=parent)

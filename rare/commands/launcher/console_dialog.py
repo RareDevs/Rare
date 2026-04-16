@@ -29,7 +29,7 @@ class ConsoleDialog(QDialog):
     def __init__(self, app_title: str, parent=None):
         super(ConsoleDialog, self).__init__(parent=parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
-        self.setWindowTitle(dialog_title(game_title(self.tr("Console"), app_title)))
+        self.setWindowTitle(dialog_title(game_title(self.tr('Console'), app_title)))
         self.setGeometry(0, 0, 640, 480)
         layout = QVBoxLayout()
 
@@ -38,27 +38,27 @@ class ConsoleDialog(QDialog):
 
         button_layout = QHBoxLayout()
 
-        self.env_button = QPushButton(self.tr("Show environment"))
+        self.env_button = QPushButton(self.tr('Show environment'))
         button_layout.addWidget(self.env_button)
         self.env_button.clicked.connect(self.show_env)
 
-        self.save_button = QPushButton(self.tr("Save output to file"))
+        self.save_button = QPushButton(self.tr('Save output to file'))
         button_layout.addWidget(self.save_button)
         self.save_button.clicked.connect(self.save)
 
-        self.clear_button = QPushButton(self.tr("Clear console"))
+        self.clear_button = QPushButton(self.tr('Clear console'))
         button_layout.addWidget(self.clear_button)
         self.clear_button.clicked.connect(self.console_edit.clear)
 
         button_layout.addItem(QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed))
 
-        self.terminate_button = QPushButton(self.tr("Terminate"))
+        self.terminate_button = QPushButton(self.tr('Terminate'))
         # self.terminate_button.setVisible(platform.system() == "Windows")
         button_layout.addWidget(self.terminate_button)
         self.terminate_button.clicked.connect(self.term)
         self.terminate_button.setEnabled(False)
 
-        self.kill_button = QPushButton(self.tr("Kill"))
+        self.kill_button = QPushButton(self.tr('Kill'))
         # self.kill_button.setVisible(platform.system() == "Windows")
         button_layout.addWidget(self.kill_button)
         self.kill_button.clicked.connect(self.kill)
@@ -95,14 +95,14 @@ class ConsoleDialog(QDialog):
         self.move(screen_rect.center() - self.rect().adjusted(0, 0, decor_width, decor_height).center())
 
     def save(self):
-        file, ok = QFileDialog.getSaveFileName(self, "Save output", "", "Log Files (*.log);;All Files (*)")
+        file, ok = QFileDialog.getSaveFileName(self, 'Save output', '', 'Log Files (*.log);;All Files (*)')
         if ok:
-            if "." not in file:
-                file += ".log"
-            with open(file, "w", encoding="utf-8") as f:
+            if '.' not in file:
+                file += '.log'
+            with open(file, 'w', encoding='utf-8') as f:
                 f.write(self.console_edit.toPlainText())
                 f.close()
-                self.save_button.setText(self.tr("Saved"))
+                self.save_button.setText(self.tr('Saved'))
 
     def set_env(self, env: Dict):
         self.env_variables = dict_to_qprocenv(env)
@@ -112,13 +112,13 @@ class ConsoleDialog(QDialog):
         self.env_console.show()
 
     def log(self, text: str):
-        self.console_edit.log(f"Rare: {text}")
+        self.console_edit.log(f'Rare: {text}')
 
     def log_stdout(self, text: str):
         self.console_edit.log(text)
 
     def error(self, text: str):
-        self.console_edit.error(f"Rare: {text}")
+        self.console_edit.error(f'Rare: {text}')
 
     def log_stderr(self, text: str):
         self.console_edit.error(text)
@@ -148,7 +148,7 @@ class ConsoleEnv(QDialog):
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, False)
         self.ui = Ui_ConsoleEnv()
         self.ui.setupUi(self)
-        self.setWindowTitle(dialog_title(game_title(self.tr("Environment"), app_title)))
+        self.setWindowTitle(dialog_title(game_title(self.tr('Environment'), app_title)))
 
     def setTable(self, env: QProcessEnvironment):
         self.ui.table.clearContents()
@@ -165,7 +165,7 @@ class ConsoleEdit(QPlainTextEdit):
     def __init__(self, parent=None):
         super(ConsoleEdit, self).__init__(parent=parent)
         self.setReadOnly(True)
-        self.setFont(QFont("monospace"))
+        self.setFont(QFont('monospace'))
 
     def scroll_to_last_line(self):
         cursor = self.textCursor()
@@ -179,7 +179,7 @@ class ConsoleEdit(QPlainTextEdit):
         self.scroll_to_last_line()
 
     def log(self, text):
-        self.print_to_console(text, "#aaa")
+        self.print_to_console(text, '#aaa')
 
     def error(self, text):
-        self.print_to_console(text, "#a33")
+        self.print_to_console(text, '#a33')

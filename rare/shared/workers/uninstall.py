@@ -33,16 +33,16 @@ def uninstall_game(
     keep_overlay_keys=False,
 ) -> Tuple[bool, str]:
     if rgame.is_overlay:
-        logger.info("Deleting overlay installation...")
+        logger.info('Deleting overlay installation...')
         core.remove_overlay_install()
 
         if keep_overlay_keys:
-            return True, ""
+            return True, ''
 
-        logger.info("Removing registry entries...")
-        if platform.system() != "Window":
+        logger.info('Removing registry entries...')
+        if platform.system() != 'Window':
             prefixes = config.get_prefixes()
-            if platform.system() == "Darwin":
+            if platform.system() == 'Darwin':
                 # TODO: add crossover support
                 pass
             if len(prefixes):
@@ -50,18 +50,18 @@ def uninstall_game(
                     try:
                         remove_registry_entries(prefix)
                     except Exception as e:
-                        logger.error("%s %s", e, prefix)
-                    logger.debug("Removed registry entries for prefix %s", prefix)
+                        logger.error('%s %s', e, prefix)
+                    logger.debug('Removed registry entries for prefix %s', prefix)
         else:
             remove_registry_entries()
 
-        return True, ""
+        return True, ''
 
     # remove shortcuts link
     if desktop_links_supported():
         for link_type in desktop_link_types():
             link_path = desktop_link_path(
-                rgame.game.metadata.get("customAttributes", {}).get("FolderName", {}).get("value"),
+                rgame.game.metadata.get('customAttributes', {}).get('FolderName', {}).get('value'),
                 link_type,
             )
             if link_path.exists():
@@ -82,13 +82,13 @@ def uninstall_game(
 
     keep_folder = keep_files if keep_files else keep_folder
     if not keep_folder:
-        logger.info("Removing game install directory")
+        logger.info('Removing game install directory')
         shutil.rmtree(install_path, ignore_errors=True)
 
     if not keep_config:
-        logger.info("Removing sections in config file")
+        logger.info('Removing sections in config file')
         config.remove_section(rgame.app_name)
-        config.remove_section(f"{rgame.app_name}.env")
+        config.remove_section(f'{rgame.app_name}.env')
 
         config.save_config()
 

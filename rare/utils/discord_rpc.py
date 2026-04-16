@@ -9,8 +9,8 @@ from PySide6.QtCore import QObject, Slot
 from rare.models.settings import DiscordRPCMode, RareAppSettings, app_settings
 from rare.shared import RareCore
 
-client_id = "830732538225360908"
-logger = getLogger("DiscordRPC")
+client_id = '830732538225360908'
+logger = getLogger('DiscordRPC')
 
 
 class DiscordRPC(QObject):
@@ -60,10 +60,10 @@ class DiscordRPC(QObject):
             try:
                 self.rpc.close()
             except Exception:
-                logger.warning("Already closed")
+                logger.warning('Already closed')
             del self.rpc
             self.rpc = None
-            logger.info("Remove RPC")
+            logger.info('Remove RPC')
         else:
             self.set_discord_rpc()
 
@@ -73,15 +73,15 @@ class DiscordRPC(QObject):
                 self.rpc = Presence(client_id)  # Rare app: https://discord.com/developers/applications
                 self.rpc.connect()
             except ConnectionRefusedError as e:
-                logger.warning(f"Discord is not active\n{e}")
+                logger.warning(f'Discord is not active\n{e}')
                 self.rpc = None
                 return
             except FileNotFoundError as e:
-                logger.warning(f"File not found error\n{e}")
+                logger.warning(f'File not found error\n{e}')
                 self.rpc = None
                 return
             except exceptions.InvalidPipe as e:
-                logger.error(f"Is Discord running? \n{e}")
+                logger.error(f'Is Discord running? \n{e}')
                 self.rpc = None
                 return
             except Exception as e:
@@ -97,19 +97,19 @@ class DiscordRPC(QObject):
             return
         title = None
         if not app_name:
-            self.rpc.update(large_image="logo", details="https://github.com/RareDevs/Rare")
+            self.rpc.update(large_image='logo', details='https://github.com/RareDevs/Rare')
             return
         if self.settings.get_value(app_settings.discord_rpc_game):
             try:
                 title = self.core.get_installed_game(app_name).title
             except AttributeError:
-                logger.error(f"Could not get title of game: {app_name}")
+                logger.error(f'Could not get title of game: {app_name}')
                 title = app_name
         start = None
         if self.settings.get_value(app_settings.discord_rpc_time):
-            start = str(time.time()).split(".")[0]
+            start = str(time.time()).split('.')[0]
         os = None
         if self.settings.get_value(app_settings.discord_rpc_os):
-            os = f"via Rare on {platform.system()}"
+            os = f'via Rare on {platform.system()}'
 
-        self.rpc.update(large_image="logo", details=title, large_text=title, state=os, start=start)
+        self.rpc.update(large_image='logo', details=title, large_text=title, state=os, start=start)

@@ -51,8 +51,8 @@ class LaunchDialog(BaseDialog):
                 # self.core.check_for_updates(force=True)
                 # self.core.force_show_update = True
                 if not self.core.login(force_refresh=True):
-                    raise ValueError("You are not logged in. Opening login window.")
-                self.logger.info("You are logged in")
+                    raise ValueError('You are not logged in. Opening login window.')
+                self.logger.info('You are logged in')
                 self.login_dialog.close()
         except ValueError as e:
             self.logger.info(str(e))
@@ -74,7 +74,7 @@ class LaunchDialog(BaseDialog):
         self.launch()
 
     def launch(self):
-        self.progress_info.setText(self.tr("Preparing Rare"))
+        self.progress_info.setText(self.tr('Preparing Rare'))
         self.rcore.fetch()
 
     @Slot(int, str)
@@ -83,5 +83,5 @@ class LaunchDialog(BaseDialog):
         self.progress_info.setText(m)
 
     def __on_completed(self):
-        self.logger.info("Application starting")
+        self.logger.info('Application starting')
         self.start_app.emit()

@@ -134,7 +134,13 @@ force-exclude = '''
 
 [tool.ruff]
 include = ["pyproject.toml", "rare/*.py"]
-exclude = ["rare/ui", "rare/lgndr"]
+exclude = [
+    "rare/ui",
+    "rare/lgndr",
+    "rare/resources/static_css/__init__.py",
+    "rare/resources/stylesheets/*/__init__.py"
+]
+
 line-length = 130
 indent-width = 4
 
@@ -142,7 +148,7 @@ indent-width = 4
 extend-select = ["I"]
 
 [tool.ruff.format]
-quote-style = "double"
+quote-style = "single"
 indent-style = "space"
 
 [tool.poetry]

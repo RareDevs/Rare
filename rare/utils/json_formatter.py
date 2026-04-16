@@ -46,8 +46,8 @@ class QJsonTreeItem(object):
     def __init__(self, parent=None):
         self._parent = parent
 
-        self._key = ""
-        self._value = ""
+        self._key = ''
+        self._value = ''
         self._type = None
         self._children = list()
 
@@ -93,7 +93,7 @@ class QJsonTreeItem(object):
     @classmethod
     def load(self, value, parent=None, sort=True):
         rootItem = QJsonTreeItem(parent)
-        rootItem.key = "root"
+        rootItem.key = 'root'
 
         if isinstance(value, dict):
             items = sorted(value.items()) if sort else value.items()
@@ -123,7 +123,7 @@ class QJsonModel(QtCore.QAbstractItemModel):
         super(QJsonModel, self).__init__(parent)
 
         self._rootItem = QJsonTreeItem()
-        self._headers = ("key", "value")
+        self._headers = ('key', 'value')
 
     def clear(self):
         self.load({})
@@ -136,7 +136,7 @@ class QJsonModel(QtCore.QAbstractItemModel):
 
         """
 
-        assert isinstance(document, (dict, list, tuple)), "`document` must be of dict, list or tuple, not %s" % type(document)
+        assert isinstance(document, (dict, list, tuple)), '`document` must be of dict, list or tuple, not %s' % type(document)
 
         self.beginResetModel()
 
@@ -268,7 +268,7 @@ class QJsonModel(QtCore.QAbstractItemModel):
             return item.value
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import sys
 
     app = QtWidgets.QApplication(sys.argv)

@@ -39,7 +39,7 @@ class RareSettings(QWidget):
         self.ui.setupUi(self)
 
         # Select lang
-        self.ui.lang_select.addItem(self.tr("System default"), app_settings.language.default)
+        self.ui.lang_select.addItem(self.tr('System default'), app_settings.language.default)
         for lang_code, title in get_translations():
             self.ui.lang_select.addItem(title, lang_code)
         language = self.settings.get_value(app_settings.language)
@@ -49,7 +49,7 @@ class RareSettings(QWidget):
             self.ui.lang_select.setCurrentIndex(0)
         self.ui.lang_select.currentIndexChanged.connect(self._on_lang_changed)
 
-        self.ui.color_select.addItem(self.tr("None"), "")
+        self.ui.color_select.addItem(self.tr('None'), '')
         for item in get_color_schemes():
             self.ui.color_select.addItem(item, item)
         color = self.settings.get_value(app_settings.color_scheme)
@@ -61,7 +61,7 @@ class RareSettings(QWidget):
             self.ui.color_select.setCurrentIndex(0)
         self.ui.color_select.currentIndexChanged.connect(self._on_color_select_changed)
 
-        self.ui.style_select.addItem(self.tr("None"), "")
+        self.ui.style_select.addItem(self.tr('None'), '')
         for item in get_style_sheets():
             self.ui.style_select.addItem(item, item)
         style = self.settings.get_value(app_settings.style_sheet)
@@ -73,8 +73,8 @@ class RareSettings(QWidget):
             self.ui.style_select.setCurrentIndex(0)
         self.ui.style_select.currentIndexChanged.connect(self._on_style_select_changed)
 
-        self.ui.view_combo.addItem(self.tr("Game covers"), LibraryView.COVER)
-        self.ui.view_combo.addItem(self.tr("Vertical list"), LibraryView.VLIST)
+        self.ui.view_combo.addItem(self.tr('Game covers'), LibraryView.COVER)
+        self.ui.view_combo.addItem(self.tr('Vertical list'), LibraryView.VLIST)
         view = LibraryView(self.settings.get_value(app_settings.library_view))
         if (index := self.ui.view_combo.findData(view)) > -1:
             self.ui.view_combo.setCurrentIndex(index)
@@ -112,21 +112,21 @@ class RareSettings(QWidget):
         self.ui.log_games.checkStateChanged.connect(self._on_log_games_changed)
 
         if desktop_links_supported():
-            self.desktop_link = desktop_link_path("Rare", "desktop")
-            self.start_menu_link = desktop_link_path("Rare", "start_menu")
+            self.desktop_link = desktop_link_path('Rare', 'desktop')
+            self.start_menu_link = desktop_link_path('Rare', 'start_menu')
         else:
-            self.ui.desktop_link_btn.setToolTip(self.tr("Not supported"))
+            self.ui.desktop_link_btn.setToolTip(self.tr('Not supported'))
             self.ui.desktop_link_btn.setDisabled(True)
-            self.ui.startmenu_link_btn.setToolTip(self.tr("Not supported"))
+            self.ui.startmenu_link_btn.setToolTip(self.tr('Not supported'))
             self.ui.startmenu_link_btn.setDisabled(True)
-            self.desktop_link = ""
-            self.start_menu_link = ""
+            self.desktop_link = ''
+            self.start_menu_link = ''
 
         if self.desktop_link and self.desktop_link.exists():
-            self.ui.desktop_link_btn.setText(self.tr("Remove desktop link"))
+            self.ui.desktop_link_btn.setText(self.tr('Remove desktop link'))
 
         if self.start_menu_link and self.start_menu_link.exists():
-            self.ui.startmenu_link_btn.setText(self.tr("Remove start menu link"))
+            self.ui.startmenu_link_btn.setText(self.tr('Remove start menu link'))
 
         self.ui.desktop_link_btn.clicked.connect(self._create_desktop_link)
         self.ui.startmenu_link_btn.clicked.connect(self._create_start_menu_link)
@@ -183,36 +183,36 @@ class RareSettings(QWidget):
     def _create_start_menu_link(self):
         try:
             if not os.path.exists(self.start_menu_link):
-                if not create_desktop_link(app_name="rare_shortcut", link_type="start_menu"):
+                if not create_desktop_link(app_name='rare_shortcut', link_type='start_menu'):
                     return
-                self.ui.startmenu_link_btn.setText(self.tr("Remove start menu link"))
+                self.ui.startmenu_link_btn.setText(self.tr('Remove start menu link'))
             else:
                 os.remove(self.start_menu_link)
-                self.ui.startmenu_link_btn.setText(self.tr("Create start menu link"))
+                self.ui.startmenu_link_btn.setText(self.tr('Create start menu link'))
         except PermissionError as e:
             self.logger.error(str(e))
             QMessageBox.warning(
                 self,
-                self.tr("Error"),
-                self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
+                self.tr('Error'),
+                self.tr('Permission error, cannot remove {}').format(self.start_menu_link),
             )
 
     @Slot()
     def _create_desktop_link(self):
         try:
             if not os.path.exists(self.desktop_link):
-                if not create_desktop_link(app_name="rare_shortcut", link_type="desktop"):
+                if not create_desktop_link(app_name='rare_shortcut', link_type='desktop'):
                     return
-                self.ui.desktop_link_btn.setText(self.tr("Remove Desktop link"))
+                self.ui.desktop_link_btn.setText(self.tr('Remove Desktop link'))
             else:
                 os.remove(self.desktop_link)
-                self.ui.desktop_link_btn.setText(self.tr("Create desktop link"))
+                self.ui.desktop_link_btn.setText(self.tr('Create desktop link'))
         except PermissionError as e:
             self.logger.error(str(e))
             QMessageBox.warning(
                 self,
-                self.tr("Error"),
-                self.tr("Permission error, cannot remove {}").format(self.start_menu_link),
+                self.tr('Error'),
+                self.tr('Permission error, cannot remove {}').format(self.start_menu_link),
             )
 
     @Slot(int)

@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 
-logger = getLogger("TrayIcon")
+logger = getLogger('TrayIcon')
 
 
 class TrayIcon(QSystemTrayIcon):
@@ -25,7 +25,7 @@ class TrayIcon(QSystemTrayIcon):
         self.signals = rcore.signals()
         self.core = rcore.core()
 
-        self.setIcon(QIcon(":/images/icon.png"))
+        self.setIcon(QIcon(':/images/icon.png'))
         self.setVisible(True)
         self.setToolTip(QApplication.applicationName())
 
@@ -36,13 +36,13 @@ class TrayIcon(QSystemTrayIcon):
         self.menu.addAction(self.show_action)
 
         self.menu.addSeparator()
-        self.text_action = QAction("Quick launch")
+        self.text_action = QAction('Quick launch')
         self.text_action.setEnabled(False)
         self.menu.addAction(self.text_action)
 
         # We need to reference this separator to add game actions before it
         self.separator = self.menu.addSeparator()
-        self.exit_action = QAction(self.tr("Quit"))
+        self.exit_action = QAction(self.tr('Quit'))
         self.exit_action.triggered.connect(self._on_exit_triggered)
         self.menu.addAction(self.exit_action)
 
@@ -68,7 +68,7 @@ class TrayIcon(QSystemTrayIcon):
     def notify(self, title: str, body: str):
         if self.settings.get_value(app_settings.notification):
             self.showMessage(
-                f"{title} - {QApplication.applicationName()}",
+                f'{title} - {QApplication.applicationName()}',
                 body,
                 QSystemTrayIcon.MessageIcon.Information,
                 4000,
@@ -86,7 +86,7 @@ class TrayIcon(QSystemTrayIcon):
 
     @Slot(str)
     def remove_button(self, app_name: str):
-        if action := next((i for i in self.game_actions if i.property("app_name") == app_name), None):
+        if action := next((i for i in self.game_actions if i.property('app_name') == app_name), None):
             self.game_actions.remove(action)
             action.deleteLater()
 

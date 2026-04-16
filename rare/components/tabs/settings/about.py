@@ -10,14 +10,14 @@ from rare import __codename__, __version__
 from rare.ui.components.tabs.settings.about import Ui_About
 from rare.utils.qrequests import QRequests
 
-logger = getLogger("About")
+logger = getLogger('About')
 
 
 def versiontuple(v) -> Tuple[int, ...]:
     try:
-        return tuple(map(int, (v.split("."))))
+        return tuple(map(int, (v.split('.'))))
     except Exception as e:
-        logger.error("Error while parsing version %s", v)
+        logger.error('Error while parsing version %s', v)
         logger.error(e)
         return 99, 99, 99, 999
 
@@ -31,14 +31,14 @@ class About(QWidget):
         self.ui = Ui_About()
         self.ui.setupUi(self)
 
-        self.ui.version.setText(f"{__version__}  {__codename__}")
+        self.ui.version.setText(f'{__version__}  {__codename__}')
 
         self.ui.update_label.setEnabled(False)
         self.ui.update_field.setEnabled(False)
         self.ui.open_browser.setVisible(False)
         self.ui.open_browser.setEnabled(False)
 
-        self.releases_url = "https://api.github.com/repos/RareDevs/Rare/releases/latest"
+        self.releases_url = 'https://api.github.com/repos/RareDevs/Rare/releases/latest'
 
         self.manager = QRequests(parent=self)
         self.manager.get(self.releases_url, self._on_update_check_finished)
@@ -55,21 +55,21 @@ class About(QWidget):
 
     @Slot()
     def _on_browser_clicked(self):
-        webbrowser.open("https://github.com/RareDevs/Rare/releases/latest")
+        webbrowser.open('https://github.com/RareDevs/Rare/releases/latest')
 
     @Slot(dict)
     def _on_update_check_finished(self, data: dict):
-        if latest_tag := data.get("tag_name"):
+        if latest_tag := data.get('tag_name'):
             self._update_available = versiontuple(latest_tag) > versiontuple(__version__)
         else:
             self._update_available = False
 
         if self._update_available:
-            logger.info(f"Update available: {__version__} -> {latest_tag}")
-            self.ui.update_field.setText(f"{__version__} -> {latest_tag}")
+            logger.info(f'Update available: {__version__} -> {latest_tag}')
+            self.ui.update_field.setText(f'{__version__} -> {latest_tag}')
             self.update_available.emit()
         else:
-            self.ui.update_field.setText(self.tr("You have the latest version"))
+            self.ui.update_field.setText(self.tr('You have the latest version'))
         self.ui.update_label.setEnabled(self._update_available)
         self.ui.update_field.setEnabled(self._update_available)
         self.ui.open_browser.setVisible(self._update_available)

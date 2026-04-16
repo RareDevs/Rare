@@ -21,7 +21,7 @@ from rare.utils.compat import steam
 from rare.utils.paths import proton_compat_dir
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
-logger = getLogger("ProtonSettings")
+logger = getLogger('ProtonSettings')
 
 
 class ProtonSettings(QGroupBox):
@@ -44,24 +44,24 @@ class ProtonSettings(QGroupBox):
         self.core = rcore.core()
         self.wrappers: Wrappers = rcore.wrappers()
         self.tool_wrapper: Optional[Wrapper] = None
-        self.app_name: str = "default"
+        self.app_name: str = 'default'
 
-        self.setTitle(self.tr("Proton"))
+        self.setTitle(self.tr('Proton'))
 
         self.tool_combo = QComboBox(self)
         self.tool_combo.currentIndexChanged.connect(self._on_tool_changed)
 
         self.compat_combo = QComboBox(self)
-        self.compat_combo.addItem(self.tr("Shared"), ProtonSettings.CompatLocation.SHARED)
-        self.compat_combo.addItem(self.tr("Isolated"), ProtonSettings.CompatLocation.ISOLATED)
-        self.compat_combo.addItem(self.tr("Custom"), ProtonSettings.CompatLocation.CUSTOM)
+        self.compat_combo.addItem(self.tr('Shared'), ProtonSettings.CompatLocation.SHARED)
+        self.compat_combo.addItem(self.tr('Isolated'), ProtonSettings.CompatLocation.ISOLATED)
+        self.compat_combo.addItem(self.tr('Custom'), ProtonSettings.CompatLocation.CUSTOM)
         self.compat_combo.currentIndexChanged.connect(self._on_compat_changed)
 
         self.compat_edit = PathEdit(
             file_mode=QFileDialog.FileMode.Directory,
             edit_func=self._proton_prefix_edit,
             save_func=self._proton_prefix_save,
-            placeholder=self.tr("Please select path for proton prefix"),
+            placeholder=self.tr('Please select path for proton prefix'),
             parent=self,
         )
         self.compat_edit.setReadOnly(True)
@@ -75,18 +75,18 @@ class ProtonSettings(QGroupBox):
         # button_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         layout = QFormLayout(self)
-        layout.addRow(self.tr("Proton tool"), self.tool_combo)
+        layout.addRow(self.tr('Proton tool'), self.tool_combo)
         folder_layout = QHBoxLayout()
         folder_layout.addWidget(self.compat_combo)
         folder_layout.addWidget(self.compat_edit)
-        layout.addRow(self.tr("Compat folder"), folder_layout)
+        layout.addRow(self.tr('Compat folder'), folder_layout)
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignVCenter)
         # layout.addRow(button_layout)
 
     def _get_compat_path(self, compat_location: CompatLocation):
-        folder_name = "default"
+        folder_name = 'default'
         compat_path = proton_compat_dir(folder_name)
         return compat_path
 
@@ -130,7 +130,7 @@ class ProtonSettings(QGroupBox):
         self.tool_combo.blockSignals(False)
 
         enabled = bool(self.tool_combo.currentData(Qt.ItemDataRole.UserRole))
-        compat_path = lgd_config.get_compat_data_path(self.app_name, fallback="")
+        compat_path = lgd_config.get_compat_data_path(self.app_name, fallback='')
 
         self.compat_combo.blockSignals(True)
         compat_location = self._update_compat_folder(compat_path)
@@ -151,15 +151,15 @@ class ProtonSettings(QGroupBox):
         )
 
         steam_environ = steam.get_steam_environment(steam_tool, self.compat_edit.text())
-        library_paths = steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] if "STEAM_COMPAT_LIBRARY_PATHS" in steam_environ else ""
-        if self.app_name != "default":
+        library_paths = steam_environ['STEAM_COMPAT_LIBRARY_PATHS'] if 'STEAM_COMPAT_LIBRARY_PATHS' in steam_environ else ''
+        if self.app_name != 'default':
             install_path = self.rcore.get_game(self.app_name).install_path
             library_paths = (
-                ":".join([library_paths, os.path.dirname(install_path)]) if library_paths else os.path.dirname(install_path)
+                ':'.join([library_paths, os.path.dirname(install_path)]) if library_paths else os.path.dirname(install_path)
             )
             # https://gitlab.steamos.cloud/steamrt/steam-runtime-tools/-/blob/main/docs/steam-compat-tool-interface.md#non-steam-games
-            steam_environ["STEAM_COMPAT_INSTALL_PATH"] = install_path
-        steam_environ["STEAM_COMPAT_LIBRARY_PATHS"] = library_paths
+            steam_environ['STEAM_COMPAT_INSTALL_PATH'] = install_path
+        steam_environ['STEAM_COMPAT_LIBRARY_PATHS'] = library_paths
         for key, value in steam_environ.items():
             lgd_config.adjust_envvar(self.app_name, key, value)
             self.environ_changed.emit(key)
@@ -181,9 +181,9 @@ class ProtonSettings(QGroupBox):
 
         self.compat_combo.setEnabled(steam_tool is not None)
         self.compat_edit.setEnabled(steam_tool is not None)
-        compat_path = ""
+        compat_path = ''
         if steam_tool:
-            compat_path = lgd_config.get_compat_data_path(self.app_name, fallback="")
+            compat_path = lgd_config.get_compat_data_path(self.app_name, fallback='')
             if not compat_path:
                 compat_path = str(self._get_compat_path(ProtonSettings.CompatLocation.NONE))
             self._update_compat_folder(compat_path)
@@ -213,7 +213,7 @@ class ProtonSettings(QGroupBox):
             if not dir_list:
                 return True, text, IndicatorReasonsCommon.VALID
             if any(
-                (x in dir_list) for x in ("pfx", "shadercache", "dosdevices", "drive_c", "system.reg", "user.reg", "userdef.reg")
+                (x in dir_list) for x in ('pfx', 'shadercache', 'dosdevices', 'drive_c', 'system.reg', 'user.reg', 'userdef.reg')
             ):
                 return True, text, IndicatorReasonsCommon.VALID
             return False, text, IndicatorReasonsCommon.DIR_NOT_EMPTY
@@ -222,5 +222,5 @@ class ProtonSettings(QGroupBox):
 
     def _proton_prefix_save(self, text: str):
         lgd_config.adjust_compat_data_path(self.app_name, text)
-        self.environ_changed.emit("STEAM_COMPAT_DATA_PATH")
+        self.environ_changed.emit('STEAM_COMPAT_DATA_PATH')
         self.compat_path_changed.emit(text)

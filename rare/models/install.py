@@ -13,11 +13,11 @@ from rare.lgndr.downloader.mp.manager import DLManager
 @dataclass
 class InstallOptionsModel:
     app_name: str
-    base_path: str = ""
+    base_path: str = ''
     shared_memory: int = 1024
     max_workers: int = os.cpu_count() * 2
     force: bool = False
-    platform: str = "Windows"
+    platform: str = 'Windows'
     install_tag: Optional[List[str]] = None
     read_files: bool = False
     order_opt: bool = False
@@ -41,7 +41,7 @@ class InstallOptionsModel:
         return {
             k: getattr(self, k)
             for k in vars(self)
-            if k not in ["update", "silent", "create_shortcut", "overlay", "install_prereqs"]
+            if k not in ['update', 'silent', 'create_shortcut', 'overlay', 'install_prereqs']
         }
 
 
@@ -180,7 +180,7 @@ class MoveGameModel:
     @property
     def target_name(self) -> str:
         if self._rename_path:
-            return ""
+            return ''
         if self._reset_name:
             return self.default_name
         return self._target_name

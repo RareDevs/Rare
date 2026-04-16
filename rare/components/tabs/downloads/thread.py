@@ -27,13 +27,13 @@ class DlResultCode(IntEnum):
 class DlResultModel:
     options: InstallOptionsModel
     code: DlResultCode = DlResultCode.ERROR
-    message: str = ""
+    message: str = ''
     dlcs: Optional[List[Dict]] = None
     sync_saves: bool = False
-    tip_url: str = ""
+    tip_url: str = ''
     shortcut: bool = False
-    folder_name: str = ""
-    app_title: str = ""
+    folder_name: str = ''
+    app_title: str = ''
 
 
 class DlThread(QThread):
@@ -98,18 +98,18 @@ class DlThread(QThread):
             self.kill()
             self.item.download.dlm.join()
             end_t = time.time()
-            self.logger.error(f"Installation failed after {end_t - start_t:.02f} seconds.")
-            self.logger.warning(f"The following exception occurred while waiting for the downloader to finish: {e!r}.")
+            self.logger.error(f'Installation failed after {end_t - start_t:.02f} seconds.')
+            self.logger.warning(f'The following exception occurred while waiting for the downloader to finish: {e!r}.')
             result.code = DlResultCode.ERROR
-            result.message = f"{e!r}"
+            result.message = f'{e!r}'
             return
         else:
             end_t = time.time()
             if self.dlm_signals.kill:
-                self.logger.info(f"Download stopped after {end_t - start_t:.02f} seconds.")
+                self.logger.info(f'Download stopped after {end_t - start_t:.02f} seconds.')
                 result.code = DlResultCode.STOPPED
                 return
-            self.logger.info(f"Download finished in {end_t - start_t:.02f} seconds.")
+            self.logger.info(f'Download finished in {end_t - start_t:.02f} seconds.')
 
             result.code = DlResultCode.FINISHED
 
@@ -133,9 +133,9 @@ class DlThread(QThread):
                     result.dlcs = []
                     result.dlcs.extend(
                         {
-                            "app_name": dlc.app_name,
-                            "app_title": dlc.app_title,
-                            "app_version": dlc.app_version(self.item.options.platform),
+                            'app_name': dlc.app_name,
+                            'app_title': dlc.app_title,
+                            'app_version': dlc.app_version(self.item.options.platform),
                         }
                         for dlc in dlcs
                     )
@@ -163,27 +163,27 @@ class DlThread(QThread):
             self._finish(result)
 
     def _handle_postinstall(self, postinstall, igame):
-        self.logger.info("This game lists the following prerequisites to be installed:")
-        self.logger.info(f"- {postinstall['name']}: {' '.join((postinstall['path'], postinstall['args']))}")
-        if platform.system() == "Windows":
+        self.logger.info('This game lists the following prerequisites to be installed:')
+        self.logger.info(f'- {postinstall["name"]}: {" ".join((postinstall["path"], postinstall["args"]))}')
+        if platform.system() == 'Windows':
             if self.item.options.install_prereqs:
-                self.logger.info("Launching prerequisite executable..")
+                self.logger.info('Launching prerequisite executable..')
                 self.core.prereq_installed(igame.app_name)
-                req_path, req_exec = os.path.split(postinstall["path"])
+                req_path, req_exec = os.path.split(postinstall['path'])
                 work_dir = os.path.join(igame.install_path, req_path)
                 fullpath = os.path.join(work_dir, req_exec)
                 proc = QProcess(self)
                 proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
                 proc.readyReadStandardOutput.connect(
-                    (lambda obj: obj.logger.debug(str(proc.readAllStandardOutput().data(), "utf-8", "ignore"))).__get__(self)
+                    (lambda obj: obj.logger.debug(str(proc.readAllStandardOutput().data(), 'utf-8', 'ignore'))).__get__(self)
                 )
                 proc.setProgram(fullpath)
-                proc.setArguments(postinstall.get("args", "").split(" "))
+                proc.setArguments(postinstall.get('args', '').split(' '))
                 proc.setWorkingDirectory(work_dir)
                 proc.start()
                 proc.waitForFinished()  # wait, because it is inside the thread
         else:
-            self.logger.info("Automatic installation not available on Linux.")
+            self.logger.info('Automatic installation not available on Linux.')
 
     def kill(self):
         self.dlm_signals.kill = True

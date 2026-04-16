@@ -32,32 +32,32 @@ class GameDetailsTabs(SideTabWidget):
 
         self.details_tab = GameDetails(self.rcore, self)
         self.details_tab.import_clicked.connect(self.import_clicked)
-        self.details_index = self.addTab(self.details_tab, self.tr("Information"))
+        self.details_index = self.addTab(self.details_tab, self.tr('Information'))
 
         self.game_settings_tab = LocalGameSettings(settings, rcore, self)
-        self.game_settings_index = self.addTab(self.game_settings_tab, self.tr("Settings"))
+        self.game_settings_index = self.addTab(self.game_settings_tab, self.tr('Settings'))
 
-        if pf.system() != "Windows":
+        if pf.system() != 'Windows':
             self.compat_settings_tab = LocalCompatSettings(settings, rcore, self)
-            self.compat_settings_index = self.addTab(self.compat_settings_tab, self.tr("Compatibility"))
+            self.compat_settings_index = self.addTab(self.compat_settings_tab, self.tr('Compatibility'))
 
         self.environ_tab = LocalEnvironSettings(rcore, self)
-        self.environ_index = self.addTab(self.environ_tab, self.tr("Environment"))
+        self.environ_index = self.addTab(self.environ_tab, self.tr('Environment'))
 
         self.cloud_saves_tab = CloudSaves(settings, rcore, self)
-        self.cloud_saves_index = self.addTab(self.cloud_saves_tab, self.tr("Cloud Saves"))
+        self.cloud_saves_index = self.addTab(self.cloud_saves_tab, self.tr('Cloud Saves'))
 
         self.dlcs_tab = GameDlcs(rcore, self)
-        self.dlcs_index = self.addTab(self.dlcs_tab, self.tr("Downloadable Content"))
+        self.dlcs_index = self.addTab(self.dlcs_tab, self.tr('Downloadable Content'))
 
         # FIXME: Hiding didn't work, so don't add these tabs in normal mode. Fix this properly later
         if self.args.debug:
             self.game_meta_view = GameMetadataView(self)
-            self.game_meta_index = self.addTab(self.game_meta_view, self.tr("Game Metadata"))
+            self.game_meta_index = self.addTab(self.game_meta_view, self.tr('Game Metadata'))
             self.igame_meta_view = GameMetadataView(self)
-            self.igame_meta_index = self.addTab(self.igame_meta_view, self.tr("InstalledGame Metadata"))
+            self.igame_meta_index = self.addTab(self.igame_meta_view, self.tr('InstalledGame Metadata'))
             self.rgame_meta_view = GameMetadataView(self)
-            self.rgame_meta_index = self.addTab(self.rgame_meta_view, self.tr("RareGame Metadata"))
+            self.rgame_meta_index = self.addTab(self.rgame_meta_view, self.tr('RareGame Metadata'))
 
         self.setCurrentIndex(self.details_index)
 
@@ -67,7 +67,7 @@ class GameDetailsTabs(SideTabWidget):
         self.game_settings_tab.load_settings(rgame)
         self.game_settings_tab.launch.setEnabled(rgame.is_installed or rgame.is_origin)
 
-        if pf.system() != "Windows":
+        if pf.system() != 'Windows':
             self.compat_settings_tab.load_settings(rgame)
             self.compat_settings_tab.setEnabled(rgame.is_installed or rgame.is_origin)
 

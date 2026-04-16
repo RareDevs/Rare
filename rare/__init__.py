@@ -1,13 +1,13 @@
 from rare._version import __version__, __version_tuple__
 
-__codename__ = "Cobia Cormorant"
+__codename__ = 'Cobia Cormorant'
 
 # For PyCharm profiler
-if __name__ == "__main__":
+if __name__ == '__main__':
     import sys
 
     from rare.main import main
 
     sys.exit(main())
 
-__all__ = ["__version__", "__version_tuple__", "__codename__"]
+__all__ = ['__version__', '__version_tuple__', '__codename__']

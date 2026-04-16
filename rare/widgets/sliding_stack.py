@@ -100,7 +100,7 @@ class SlidingStackedWidget(QStackedWidget):
         for index, start, end in zip((_now, _next), (pnow, pnext - offset), (pnow + offset, pnext)):
             animation = QPropertyAnimation(
                 self.widget(index),
-                b"pos",
+                b'pos',
                 duration=self.m_speed,
                 easingCurve=self.m_animationtype,
                 startValue=start,

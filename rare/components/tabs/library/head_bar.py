@@ -35,23 +35,23 @@ class LibraryHeadBar(QWidget):
 
         self.filter = QComboBox(self)
         filters = {
-            LibraryFilter.ALL: self.tr("All games"),
-            LibraryFilter.INSTALLED: self.tr("Installed"),
-            LibraryFilter.OFFLINE: self.tr("Offline"),
-            LibraryFilter.HIDDEN: self.tr("Hidden"),
-            LibraryFilter.FAVORITES: self.tr("Favorites"),
+            LibraryFilter.ALL: self.tr('All games'),
+            LibraryFilter.INSTALLED: self.tr('Installed'),
+            LibraryFilter.OFFLINE: self.tr('Offline'),
+            LibraryFilter.HIDDEN: self.tr('Hidden'),
+            LibraryFilter.FAVORITES: self.tr('Favorites'),
         }
         for data, text in filters.items():
             self.filter.addItem(text, data)
 
         if self.rcore.bit32_games:
-            self.filter.addItem(self.tr("Only 32bit"), LibraryFilter.WIN32)
+            self.filter.addItem(self.tr('Only 32bit'), LibraryFilter.WIN32)
         if self.rcore.mac_games:
-            self.filter.addItem(self.tr("Only macOS"), LibraryFilter.MAC)
+            self.filter.addItem(self.tr('Only macOS'), LibraryFilter.MAC)
         if self.rcore.non_asset_games:
-            self.filter.addItem(self.tr("Exclude non-asset"), LibraryFilter.INSTALLABLE)
-        self.filter.addItem(self.tr("Include Unreal"), LibraryFilter.INCLUDE_UE)
-        self.filter.addItem(self.tr("Android"), LibraryFilter.ANDROID)
+            self.filter.addItem(self.tr('Exclude non-asset'), LibraryFilter.INSTALLABLE)
+        self.filter.addItem(self.tr('Include Unreal'), LibraryFilter.INCLUDE_UE)
+        self.filter.addItem(self.tr('Android'), LibraryFilter.ANDROID)
 
         try:
             _filter = LibraryFilter(self.settings.get_value(app_settings.library_filter))
@@ -60,7 +60,7 @@ class LibraryHeadBar(QWidget):
             else:
                 self.filter.setCurrentIndex(index)
         except (TypeError, ValueError) as e:
-            self.logger.error("Error while loading library: %s", e)
+            self.logger.error('Error while loading library: %s', e)
             self.settings.set_value(app_settings.library_filter, app_settings.library_filter.default)
             _filter = LibraryFilter(app_settings.library_filter.default)
             self.filter.setCurrentIndex(self.filter.findData(_filter, Qt.ItemDataRole.UserRole))
@@ -68,10 +68,10 @@ class LibraryHeadBar(QWidget):
 
         self.order = QComboBox(parent=self)
         sortings = {
-            LibraryOrder.TITLE: self.tr("Title"),
-            LibraryOrder.RECENT: self.tr("Recently played"),
-            LibraryOrder.NEWEST: self.tr("Newest"),
-            LibraryOrder.OLDEST: self.tr("Oldest"),
+            LibraryOrder.TITLE: self.tr('Title'),
+            LibraryOrder.RECENT: self.tr('Recently played'),
+            LibraryOrder.NEWEST: self.tr('Newest'),
+            LibraryOrder.OLDEST: self.tr('Oldest'),
         }
         for data, text in sortings.items():
             self.order.addItem(text, data)
@@ -83,35 +83,35 @@ class LibraryHeadBar(QWidget):
             else:
                 self.order.setCurrentIndex(index)
         except (TypeError, ValueError) as e:
-            self.logger.error("Error while loading library: %s", e)
+            self.logger.error('Error while loading library: %s', e)
             self.settings.set_value(app_settings.library_order, app_settings.library_order.default)
             _order = LibraryOrder(app_settings.library_order.default)
             self.order.setCurrentIndex(self.order.findData(_order, Qt.ItemDataRole.UserRole))
         self.order.currentIndexChanged.connect(self.__order_changed)
 
-        self.search_bar = ButtonLineEdit("fa5s.search", placeholder_text=self.tr("Search (use :: to filter by tag)"))
+        self.search_bar = ButtonLineEdit('fa5s.search', placeholder_text=self.tr('Search (use :: to filter by tag)'))
         self.search_bar.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
-        self.search_bar.setObjectName("SearchBar")
+        self.search_bar.setObjectName('SearchBar')
         self.search_bar.setMinimumWidth(250)
 
-        installed_tooltip = self.tr("Installed games")
+        installed_tooltip = self.tr('Installed games')
         self.installed_icon = QLabel(parent=self)
-        self.installed_icon.setPixmap(qta_icon("ph.floppy-disk-back-fill").pixmap(QSize(16, 16)))
+        self.installed_icon.setPixmap(qta_icon('ph.floppy-disk-back-fill').pixmap(QSize(16, 16)))
         self.installed_icon.setToolTip(installed_tooltip)
         self.installed_label = QLabel(parent=self)
         font = self.installed_label.font()
         font.setBold(True)
         self.installed_label.setFont(font)
         self.installed_label.setToolTip(installed_tooltip)
-        available_tooltip = self.tr("Available games")
+        available_tooltip = self.tr('Available games')
         self.available_icon = QLabel(parent=self)
-        self.available_icon.setPixmap(qta_icon("ph.floppy-disk-back-light").pixmap(QSize(16, 16)))
+        self.available_icon.setPixmap(qta_icon('ph.floppy-disk-back-light').pixmap(QSize(16, 16)))
         self.available_icon.setToolTip(available_tooltip)
         self.available_label = QLabel(parent=self)
         self.available_label.setToolTip(available_tooltip)
 
         self.refresh_list = QPushButton(parent=self)
-        self.refresh_list.setIcon(qta_icon("fa.refresh", "fa5s.sync"))  # Reload icon
+        self.refresh_list.setIcon(qta_icon('fa.refresh', 'fa5s.sync'))  # Reload icon
         self.refresh_list.clicked.connect(self.__refresh_clicked)
 
         left_layout = QHBoxLayout()
@@ -141,7 +141,7 @@ class LibraryHeadBar(QWidget):
     def __game_tags_updated(self):
         if self.search_bar.completer():
             self.search_bar.completer().deleteLater()
-        wordlist = tuple(map(lambda x: "::" + x, self.rcore.game_tags))
+        wordlist = tuple(map(lambda x: '::' + x, self.rcore.game_tags))
         completer = QCompleter(wordlist, self.search_bar)
         completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.search_bar.setCompleter(completer)
@@ -179,16 +179,16 @@ class SelectViewWidget(QWidget):
     def __init__(self, icon_view: bool, parent=None):
         super(SelectViewWidget, self).__init__(parent=parent)
         self.icon_button = QPushButton(self)
-        self.icon_button.setObjectName(f"{type(self).__name__}Button")
+        self.icon_button.setObjectName(f'{type(self).__name__}Button')
         self.list_button = QPushButton(self)
-        self.list_button.setObjectName(f"{type(self).__name__}Button")
+        self.list_button.setObjectName(f'{type(self).__name__}Button')
 
         if icon_view:
-            self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
-            self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="#eee"))
+            self.icon_button.setIcon(qta_icon('mdi.view-grid-outline', 'ei.th-large', color='orange'))
+            self.list_button.setIcon(qta_icon('fa5s.list', 'ei.th-list', color='#eee'))
         else:
-            self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="#eee"))
-            self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
+            self.icon_button.setIcon(qta_icon('mdi.view-grid-outline', 'ei.th-large', color='#eee'))
+            self.list_button.setIcon(qta_icon('fa5s.list', 'ei.th-list', color='orange'))
 
         self.icon_button.clicked.connect(self.icon)
         self.list_button.clicked.connect(self.list)
@@ -201,11 +201,11 @@ class SelectViewWidget(QWidget):
         self.setLayout(layout)
 
     def icon(self):
-        self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="orange"))
-        self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="#eee"))
+        self.icon_button.setIcon(qta_icon('mdi.view-grid-outline', 'ei.th-large', color='orange'))
+        self.list_button.setIcon(qta_icon('fa5s.list', 'ei.th-list', color='#eee'))
         self.toggled.emit(True)
 
     def list(self):
-        self.icon_button.setIcon(qta_icon("mdi.view-grid-outline", "ei.th-large", color="#eee"))
-        self.list_button.setIcon(qta_icon("fa5s.list", "ei.th-list", color="orange"))
+        self.icon_button.setIcon(qta_icon('mdi.view-grid-outline', 'ei.th-large', color='#eee'))
+        self.list_button.setIcon(qta_icon('fa5s.list', 'ei.th-list', color='orange'))
         self.toggled.emit(False)

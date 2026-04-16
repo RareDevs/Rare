@@ -54,10 +54,10 @@ class InstalledGameDlcWidget(GameDlcWidget):
     def __init__(self, rgame: RareGame, rdlc: RareGame, parent=None):
         super(InstalledGameDlcWidget, self).__init__(rgame=rgame, rdlc=rdlc, parent=parent)
         # lk: set object names for CSS properties
-        self.ui.action_button.setObjectName("UninstallButton")
+        self.ui.action_button.setObjectName('UninstallButton')
         self.ui.action_button.clicked.connect(self.uninstall_dlc)
-        self.ui.action_button.setText(self.tr("Uninstall DLC"))
-        self.ui.action_button.setIcon(qta_icon("ri.uninstall-line"))
+        self.ui.action_button.setText(self.tr('Uninstall DLC'))
+        self.ui.action_button.setIcon(qta_icon('ri.uninstall-line'))
         # lk: don't reference `self.rdlc` here because the object has been deleted
         rdlc.signals.game.uninstalled.connect(self.__uninstalled)
 
@@ -75,10 +75,10 @@ class AvailableGameDlcWidget(GameDlcWidget):
     def __init__(self, rgame: RareGame, rdlc: RareGame, parent=None):
         super(AvailableGameDlcWidget, self).__init__(rgame=rgame, rdlc=rdlc, parent=parent)
         # lk: set object names for CSS properties
-        self.ui.action_button.setObjectName("InstallButton")
+        self.ui.action_button.setObjectName('InstallButton')
         self.ui.action_button.clicked.connect(self.install_dlc)
-        self.ui.action_button.setText(self.tr("Install DLC"))
-        self.ui.action_button.setIcon(qta_icon("ri.install-line"))
+        self.ui.action_button.setText(self.tr('Install DLC'))
+        self.ui.action_button.setIcon(qta_icon('ri.install-line'))
 
         # lk: don't reference `self.rdlc` here because the object has been deleted
         rdlc.signals.game.installed.connect(self.__installed)
@@ -91,8 +91,8 @@ class AvailableGameDlcWidget(GameDlcWidget):
         if not self.rgame.is_installed:
             QMessageBox.warning(
                 self,
-                self.tr("Error"),
-                self.tr("Base Game is not installed. Please install {} first").format(self.rgame.app_title),
+                self.tr('Error'),
+                self.tr('Base Game is not installed. Please install {} first').format(self.rgame.app_title),
             )
             return
         self.rdlc.install()

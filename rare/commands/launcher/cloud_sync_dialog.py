@@ -12,7 +12,7 @@ from rare.ui.components.tabs.library.details.cloud_sync_widget import Ui_CloudSy
 from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title
 
-logger = getLogger("CloudSyncDialog")
+logger = getLogger('CloudSyncDialog')
 
 
 class CloudSyncDialogResult(IntEnum):
@@ -27,10 +27,10 @@ class CloudSyncDialog(ButtonDialog):
 
     def __init__(self, igame: InstalledGame, dt_local: datetime, dt_remote: datetime, parent=None):
         super(CloudSyncDialog, self).__init__(parent=parent)
-        header = self.tr("Cloud saves for")
+        header = self.tr('Cloud saves for')
         self.setWindowTitle(game_title(header, igame.title))
 
-        title_label = QLabel(f"<h4>{game_title(header, igame.title)}</h4>", self)
+        title_label = QLabel(f'<h4>{game_title(header, igame.title)}</h4>', self)
 
         sync_widget = QWidget(self)
         self.sync_ui = Ui_CloudSyncWidget()
@@ -40,17 +40,17 @@ class CloudSyncDialog(ButtonDialog):
         layout.addWidget(title_label)
         layout.addWidget(sync_widget)
 
-        self.accept_button.setText(self.tr("Skip"))
-        self.accept_button.setIcon(qta_icon("fa.chevron-right", "fa5s.chevron-right"))
+        self.accept_button.setText(self.tr('Skip'))
+        self.accept_button.setIcon(qta_icon('fa.chevron-right', 'fa5s.chevron-right'))
 
         self.setCentralLayout(layout)
 
         self.status = CloudSyncDialogResult.CANCEL
 
-        newer = self.tr("Newer")
+        newer = self.tr('Newer')
         if dt_remote and dt_local:
-            self.sync_ui.age_label_local.setText(f"<b>{newer}</b>" if dt_remote < dt_local else " ")
-            self.sync_ui.age_label_remote.setText(f"<b>{newer}</b>" if dt_remote > dt_local else " ")
+            self.sync_ui.age_label_local.setText(f'<b>{newer}</b>' if dt_remote < dt_local else ' ')
+            self.sync_ui.age_label_remote.setText(f'<b>{newer}</b>' if dt_remote > dt_local else ' ')
         # Set status, if one of them is None
         elif dt_remote and not dt_local:
             self.status = CloudSyncDialogResult.DOWNLOAD
@@ -60,11 +60,11 @@ class CloudSyncDialog(ButtonDialog):
             self.status = CloudSyncDialogResult.SKIP
 
         local_tz = datetime.now().astimezone().tzinfo
-        self.sync_ui.date_info_local.setText(dt_local.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_local else "None")
-        self.sync_ui.date_info_remote.setText(dt_remote.astimezone(local_tz).strftime("%A, %d %B %Y %X") if dt_remote else "None")
+        self.sync_ui.date_info_local.setText(dt_local.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_local else 'None')
+        self.sync_ui.date_info_remote.setText(dt_remote.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_remote else 'None')
 
-        self.sync_ui.icon_local.setPixmap(qta_icon("mdi.harddisk", "fa5s.desktop").pixmap(128, 128))
-        self.sync_ui.icon_remote.setPixmap(qta_icon("mdi.cloud-outline", "fa5s.cloud").pixmap(128, 128))
+        self.sync_ui.icon_local.setPixmap(qta_icon('mdi.harddisk', 'fa5s.desktop').pixmap(128, 128))
+        self.sync_ui.icon_remote.setPixmap(qta_icon('mdi.cloud-outline', 'fa5s.cloud').pixmap(128, 128))
 
         self.sync_ui.upload_button.clicked.connect(self.__on_upload)
         self.sync_ui.download_button.clicked.connect(self.__on_download)
@@ -90,7 +90,7 @@ class CloudSyncDialog(ButtonDialog):
         self.status = CloudSyncDialogResult.CANCEL
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = QApplication(sys.argv)
     core = LegendaryCore()
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     def __callback(status: int):
         print(repr(CloudSyncDialogResult(status)))
 
-    dlg = CloudSyncDialog(core.get_installed_list()[0], datetime.now(), datetime.strptime("2021,1", "%Y,%M"))
+    dlg = CloudSyncDialog(core.get_installed_list()[0], datetime.now(), datetime.strptime('2021,1', '%Y,%M'))
     dlg.result_ready.connect(__callback)
     dlg.open()
     app.exec()

@@ -14,14 +14,14 @@ class SelectiveDialog(ButtonDialog):
 
     def __init__(self, rgame: RareGame, parent=None):
         super(SelectiveDialog, self).__init__(parent=parent)
-        header = self.tr("Optional downloads for")
+        header = self.tr('Optional downloads for')
         self.setWindowTitle(game_title(header, rgame.app_title))
         self.setSubtitle(game_title(header, rgame.app_title))
 
         self.rgame = rgame
         self.selective_widget = SelectiveWidget(rgame, rgame.igame.platform, self)
 
-        container = QGroupBox(self.tr("Optional downloads"), self)
+        container = QGroupBox(self.tr('Optional downloads'), self)
         container_layout = QVBoxLayout(container)
         container_layout.setContentsMargins(0, 0, 0, 0)
         container_layout.addWidget(self.selective_widget)
@@ -31,8 +31,8 @@ class SelectiveDialog(ButtonDialog):
 
         self.setCentralLayout(layout)
 
-        self.accept_button.setText(self.tr("Verify"))
-        self.accept_button.setIcon(qta_icon("fa.check", "fa5s.check"))
+        self.accept_button.setText(self.tr('Verify'))
+        self.accept_button.setIcon(qta_icon('fa.check', 'fa5s.check'))
 
         self.options: SelectiveDownloadsModel = SelectiveDownloadsModel(rgame.app_name)
 

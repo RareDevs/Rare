@@ -44,8 +44,8 @@ class CollapsibleBase(object):
 
         # let the entire widget grow and shrink with its content
         self.toggle_animation = QParallelAnimationGroup(self)
-        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"minimumHeight"))
-        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"maximumHeight"))
+        self.toggle_animation.addAnimation(QPropertyAnimation(self, b'minimumHeight'))
+        self.toggle_animation.addAnimation(QPropertyAnimation(self, b'maximumHeight'))
 
     @abstractmethod
     def isChecked(self) -> bool:
@@ -89,7 +89,7 @@ class CollapsibleBase(object):
             self.content_area.setMaximumHeight(0)
             self.content_area.setMinimumHeight(0)
 
-        self.content_toggle_animation = QPropertyAnimation(self.content_area, b"maximumHeight")
+        self.content_toggle_animation = QPropertyAnimation(self.content_area, b'maximumHeight')
         self.toggle_animation.addAnimation(self.content_toggle_animation)
         self.addToLayout(self.content_area)
         collapsed_height = self.sizeHint().height()
@@ -115,7 +115,7 @@ class CollapsibleFrame(QFrame, CollapsibleBase):
 
         self.toggle_button = QToolButton(self)
         self.toggle_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.toggle_button.setIcon(qta_icon("fa.arrow-right", "fa5s.arrow-right"))
+        self.toggle_button.setIcon(qta_icon('fa.arrow-right', 'fa5s.arrow-right'))
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(False)
 
@@ -157,7 +157,7 @@ class CollapsibleFrame(QFrame, CollapsibleBase):
         return super(CollapsibleFrame, self).sizeHint()
 
     def animationStart(self, checked):
-        arrow_type = qta_icon("fa.arrow-down", "fa5s.arrow-down") if checked else qta_icon("fa.arrow-right", "fa5s.arrow-right")
+        arrow_type = qta_icon('fa.arrow-down', 'fa5s.arrow-down') if checked else qta_icon('fa.arrow-right', 'fa5s.arrow-right')
         self.toggle_button.setIcon(arrow_type)
         super(CollapsibleFrame, self).animationStart(checked)
 

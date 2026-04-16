@@ -125,7 +125,7 @@ class MoveWorker(QueueWorker):
             app_name=self.rgame.app_name,
             app_title=self.rgame.app_title,
             type=type(self).__name__,
-            prefix="Moving",
+            prefix='Moving',
             state=self.state,
         )
 
@@ -176,8 +176,8 @@ class MoveWorker(QueueWorker):
                 manifest.file_manifest_list.elements,
                 key=lambda a: a.filename.lower(),
             )
-            if config_tags := self.core.lgd.config.get(self.rgame.app_name, "install_tags", fallback=None):
-                install_tags = set(i.strip() for i in config_tags.split(","))
+            if config_tags := self.core.lgd.config.get(self.rgame.app_name, 'install_tags', fallback=None):
+                install_tags = set(i.strip() for i in config_tags.split(','))
                 file_list = [
                     (f.filename, f.sha_hash.hex())
                     for f in files
@@ -223,10 +223,10 @@ class MoveWorker(QueueWorker):
                             self.signals.error.emit(self.rgame, str(e))
                             return
                     else:
-                        self.logger.warning(f"Copying file {src_path} to {dst_path} failed")
+                        self.logger.warning(f'Copying file {src_path} to {dst_path} failed')
                     self.progress(total_size, dst_size)
                 else:
-                    self.logger.warning(f"Source dir does not have file {src_path}. File will be missing in the destination dir.")
+                    self.logger.warning(f'Source dir does not have file {src_path}. File will be missing in the destination dir.')
                     self.rgame.needs_verification = True
             shutil.rmtree(self.rgame.install_path)
 

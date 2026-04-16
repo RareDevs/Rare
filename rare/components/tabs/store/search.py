@@ -23,7 +23,7 @@ from .store_api import StoreAPI
 from .widgets.details import StoreDetailsWidget
 from .widgets.items import SearchItemWidget
 
-logger = getLogger("Shop")
+logger = getLogger('Shop')
 
 
 class SearchPage(SlidingStackedWidget, SideTabContents):
@@ -70,16 +70,16 @@ class SearchWidget(QWidget, SideTabContents):
         self.ui.filter_scrollarea.viewport().setAutoFillBackground(False)
 
         self.store_api = store_api
-        self.price = ""
+        self.price = ''
         self.tags = []
         self.types = []
         self.update_games_allowed = True
 
         self.active_search_request = False
-        self.next_search = ""
+        self.next_search = ''
         self.wishlist: List = []
 
-        self.search_bar = ButtonLineEdit("fa5s.search", placeholder_text=self.tr("Search"))
+        self.search_bar = ButtonLineEdit('fa5s.search', placeholder_text=self.tr('Search'))
         self.results_scrollarea = ResultsWidget(self.store_api, self)
         self.results_scrollarea.show_details.connect(self.show_details)
 
@@ -103,27 +103,27 @@ class SearchWidget(QWidget, SideTabContents):
     def init_filter(self):
         # self.ui.none_price.toggled.connect(lambda: self.prepare_request("") if self.ui.none_price.isChecked() else None)
         self.ui.none_price.toggled.connect(
-            (lambda obj: obj.prepare_request("") if self.ui.none_price.isChecked() else None).__get__(self)
+            (lambda obj: obj.prepare_request('') if self.ui.none_price.isChecked() else None).__get__(self)
         )
         # self.ui.free_button.toggled.connect(lambda: self.prepare_request("free") if self.ui.free_button.isChecked() else None)
         self.ui.free_button.toggled.connect(
-            (lambda obj: obj.prepare_request("free") if self.ui.free_button.isChecked() else None).__get__(self)
+            (lambda obj: obj.prepare_request('free') if self.ui.free_button.isChecked() else None).__get__(self)
         )
         # self.ui.under10.toggled.connect(lambda: self.prepare_request("<price>[0, 1000)") if self.ui.under10.isChecked() else None)
         self.ui.under10.toggled.connect(
-            (lambda obj: obj.prepare_request("<price>[0, 1000)") if self.ui.under10.isChecked() else None).__get__(self)
+            (lambda obj: obj.prepare_request('<price>[0, 1000)') if self.ui.under10.isChecked() else None).__get__(self)
         )
         # self.ui.under20.toggled.connect(lambda: self.prepare_request("<price>[0, 2000)") if self.ui.under20.isChecked() else None)
         self.ui.under20.toggled.connect(
-            (lambda obj: obj.prepare_request("<price>[0, 2000)") if self.ui.under20.isChecked() else None).__get__(self)
+            (lambda obj: obj.prepare_request('<price>[0, 2000)') if self.ui.under20.isChecked() else None).__get__(self)
         )
         # self.ui.under30.toggled.connect(lambda: self.prepare_request("<price>[0, 3000)") if self.ui.under30.isChecked() else None)
         self.ui.under30.toggled.connect(
-            (lambda obj: obj.prepare_request("<price>[0, 3000)") if self.ui.under30.isChecked() else None).__get__(self)
+            (lambda obj: obj.prepare_request('<price>[0, 3000)') if self.ui.under30.isChecked() else None).__get__(self)
         )
         # self.ui.above.toggled.connect(lambda: self.prepare_request("<price>[1499,]") if self.ui.above.isChecked() else None)
         self.ui.above.toggled.connect(
-            (lambda obj: obj.prepare_request("<price>[1499,]") if self.ui.above.isChecked() else None).__get__(self)
+            (lambda obj: obj.prepare_request('<price>[1499,]') if self.ui.above.isChecked() else None).__get__(self)
         )
         # self.on_discount.toggled.connect(
         #     lambda: self.prepare_request("sale") if self.on_discount.isChecked() else None
@@ -173,8 +173,8 @@ class SearchWidget(QWidget, SideTabContents):
         price: str = None,
         added_tag: int = 0,
         removed_tag: int = 0,
-        added_type: str = "",
-        removed_type: str = "",
+        added_type: str = '',
+        removed_type: str = '',
     ):
         if not self.update_games_allowed:
             return
@@ -207,10 +207,10 @@ class SearchWidget(QWidget, SideTabContents):
             price_range=self.price,
             on_sale=self.ui.on_discount.isChecked(),
         )
-        browse_model.tag = "|".join(self.tags)
+        browse_model.tag = '|'.join(self.tags)
 
         if self.types:
-            browse_model.category = "|".join(self.types)
+            browse_model.category = '|'.join(self.types)
         self.store_api.browse_games(browse_model, self.show_games)
 
 
@@ -252,7 +252,7 @@ class ResultsWidget(QScrollArea):
 
     def load_results(self, text: str):
         self.setEnabled(False)
-        if text != "":
+        if text != '':
             self.store_api.search_game(text, self.show_results)
 
     def show_results(self, results: dict):
@@ -266,7 +266,7 @@ class ResultsWidget(QScrollArea):
             w.deleteLater()
 
         if not results:
-            self.results_layout.addWidget(QLabel(self.tr("No results found")))
+            self.results_layout.addWidget(QLabel(self.tr('No results found')))
         else:
             for res in results:
                 w = SearchItemWidget(self.store_api.cached_manager, res, parent=self.results_container)

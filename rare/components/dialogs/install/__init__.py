@@ -1,3 +1,3 @@
 from .dialog import InstallDialog
 
-__all__ = ["InstallDialog"]
+__all__ = ['InstallDialog']

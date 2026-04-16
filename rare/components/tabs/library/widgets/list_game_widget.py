@@ -18,7 +18,7 @@ from rare.utils.misc import format_size
 from .game_widget import GameWidget
 from .list_widget import ListWidget
 
-logger = getLogger("ListGameWidget")
+logger = getLogger('ListGameWidget')
 
 
 class ListGameWidget(GameWidget):
@@ -26,7 +26,7 @@ class ListGameWidget(GameWidget):
         super().__init__(rgame, parent)
         self.progressPixmap = self.verticalProgressPixmap
 
-        self.setObjectName(f"{rgame.app_name}")
+        self.setObjectName(f'{rgame.app_name}')
         self.ui = ListWidget()
         self.ui.setupUi(self)
 
@@ -38,12 +38,12 @@ class ListGameWidget(GameWidget):
 
         self.ui.launch_btn.setEnabled(self.rgame.can_launch)
 
-        self.ui.launch_btn.setText(self.tr("Launch") if not self.rgame.is_origin else self.tr("Link/Play"))
+        self.ui.launch_btn.setText(self.tr('Launch') if not self.rgame.is_origin else self.tr('Link/Play'))
         self.ui.developer_label.setText(self.rgame.developer)
         # self.version_label.setVisible(self.is_installed)
         if self.rgame.igame:
             self.ui.version_label.setText(self.rgame.version)
-        self.ui.size_label.setText(format_size(self.rgame.install_size) if self.rgame.install_size else "")
+        self.ui.size_label.setText(format_size(self.rgame.install_size) if self.rgame.install_size else '')
 
         self.update_state()
 

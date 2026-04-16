@@ -15,10 +15,10 @@ from PySide6.QtWidgets import (
 from rare.lgndr.core import LegendaryCore
 from rare.utils.misc import qta_icon
 
-if platform.system() != "Windows":
+if platform.system() != 'Windows':
     from rare.utils.compat.wine import get_wine_environment
 
-if platform.system() in {"Linux", "FreeBSD"}:
+if platform.system() in {'Linux', 'FreeBSD'}:
     from rare.utils.compat.steam import get_steam_environment
 
 
@@ -30,26 +30,26 @@ class EnvVarsTableModel(QAbstractTableModel):
         # lk: validator matches anything starting with a letter or underscore
         # lk: and containing letters, numbers or underscores.
         # lk: Empty strings are considered invalid.
-        self.__validator = re.compile(r"(^[A-Za-z_][A-Za-z0-9_]*)")
+        self.__validator = re.compile(r'(^[A-Za-z_][A-Za-z0-9_]*)')
         self.__data_map: ChainMap = ChainMap()
 
         self.__readonly = set()
-        if platform.system() != "Windows":
+        if platform.system() != 'Windows':
             self.__readonly.update(
                 {
-                    "DXVK_HUD",
-                    "DXVK_CONFIG",
-                    "DXVK_NVAPI_DRS_SETTINGS",
-                    "MANGOHUD",
-                    "MANGOHUD_CONFIG",
-                    "LEGENDARY_WRAPPER_EXE",
+                    'DXVK_HUD',
+                    'DXVK_CONFIG',
+                    'DXVK_NVAPI_DRS_SETTINGS',
+                    'MANGOHUD',
+                    'MANGOHUD_CONFIG',
+                    'LEGENDARY_WRAPPER_EXE',
                 }
             )
             self.__readonly.update(get_wine_environment().keys())
-        if platform.system() in {"Linux", "FreeBSD"}:
+        if platform.system() in {'Linux', 'FreeBSD'}:
             self.__readonly.update(get_steam_environment().keys())
-            self.__readonly.add("STEAM_COMPAT_SHADER_PATH")
-        self.__default: str = "default"
+            self.__readonly.add('STEAM_COMPAT_SHADER_PATH')
+        self.__default: str = 'default'
         self.__appname: str = None
 
     @Slot(str)
@@ -61,11 +61,11 @@ class EnvVarsTableModel(QAbstractTableModel):
     def load(self, app_name: str):
         self.__appname = app_name
         self.beginResetModel()
-        if not self.core.lgd.config.has_section(f"{self.__appname}.env"):
-            self.core.lgd.config[f"{self.__appname}.env"] = {}
+        if not self.core.lgd.config.has_section(f'{self.__appname}.env'):
+            self.core.lgd.config[f'{self.__appname}.env'] = {}
         self.__data_map = ChainMap(
-            self.core.lgd.config[f"{self.__appname}.env"],
-            self.core.lgd.config[f"{self.__default}.env"] if self.__appname != self.__default else {},
+            self.core.lgd.config[f'{self.__appname}.env'],
+            self.core.lgd.config[f'{self.__default}.env'] if self.__appname != self.__default else {},
         )
         self.endResetModel()
 
@@ -75,7 +75,7 @@ class EnvVarsTableModel(QAbstractTableModel):
         try:
             return list(self.__data_map)[index]
         except Exception:
-            return ""
+            return ''
 
     def __is_local(self, index: Union[QModelIndex, int]):
         key = self.__key(index)
@@ -96,9 +96,9 @@ class EnvVarsTableModel(QAbstractTableModel):
 
     def __title(self, section: int):
         if section == 0:
-            return self.tr("Key")
+            return self.tr('Key')
         elif section == 1:
-            return self.tr("Value")
+            return self.tr('Value')
 
     def __data_length(self):
         return len(self.__data_map)
@@ -112,7 +112,7 @@ class EnvVarsTableModel(QAbstractTableModel):
     def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
         if role in {Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole}:
             if index.row() == self.__data_length():
-                return ""
+                return ''
             if index.column() == 0:
                 return self.__key(index)
             else:
@@ -125,7 +125,7 @@ class EnvVarsTableModel(QAbstractTableModel):
                 return Qt.AlignmentFlag.AlignVCenter + Qt.AlignmentFlag.AlignLeft
 
         if role == Qt.ItemDataRole.FontRole:
-            font = QFont("Monospace")
+            font = QFont('Monospace')
             font.setStyleHint(QFont.StyleHint.Monospace)
             if index.row() < self.__data_length() and not self.__is_local(index):
                 font.setWeight(QFont.Weight.Bold)
@@ -136,12 +136,12 @@ class EnvVarsTableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.ToolTipRole:
             if index.row() == self.__data_length():
                 if index.column() == 1:
-                    return self.tr("Disabled, please set the variable name first.")
+                    return self.tr('Disabled, please set the variable name first.')
                 return None
             if self.__key(index) in self.__readonly:
                 if index.column() == 1:
-                    return self.tr("Value: {}").format(self.__value(index))
-                return self.tr("Readonly, please edit this via setting the appropriate setting.")
+                    return self.tr('Value: {}').format(self.__value(index))
+                return self.tr('Readonly, please edit this via setting the appropriate setting.')
 
     def headerData(
         self,
@@ -156,12 +156,12 @@ class EnvVarsTableModel(QAbstractTableModel):
             if orientation == Qt.Orientation.Vertical:
                 if section < self.__data_length():
                     if self.__is_readonly(section) or not self.__is_local(section):
-                        return qta_icon("mdi.lock", "ei.lock")
+                        return qta_icon('mdi.lock', 'ei.lock')
                     if self.__is_global(section) and self.__is_local(section):
-                        return qta_icon("mdi.refresh", "ei.refresh")
+                        return qta_icon('mdi.refresh', 'ei.refresh')
                     if self.__is_local(section):
-                        return qta_icon("mdi.delete", "ei.remove-sign")
-                return qta_icon("mdi.plus", "ei.plus-sign")
+                        return qta_icon('mdi.delete', 'ei.remove-sign')
+                return qta_icon('mdi.plus', 'ei.plus-sign')
         if role == Qt.ItemDataRole.TextAlignmentRole:
             return Qt.AlignmentFlag.AlignVCenter + Qt.AlignmentFlag.AlignHCenter
         return None
@@ -204,7 +204,7 @@ class EnvVarsTableModel(QAbstractTableModel):
             if index.row() == self.__data_length():
                 self.beginInsertRows(QModelIndex(), self.rowCount(index), self.rowCount(index))
                 self.endInsertRows()
-                self.__data_map[value] = ""
+                self.__data_map[value] = ''
                 self.core.lgd.save_config()
                 self.dataChanged.emit(index, index, [])
                 self.headerDataChanged.emit(Qt.Orientation.Vertical, index.row(), index.row())
@@ -283,10 +283,10 @@ class EnvVarsTableModel(QAbstractTableModel):
 class EnvVars(QGroupBox):
     def __init__(self, core: LegendaryCore, parent):
         super(EnvVars, self).__init__(parent=parent)
-        self.setTitle(self.tr("Environment"))
+        self.setTitle(self.tr('Environment'))
 
         self.core = core
-        self.app_name: str = "default"
+        self.app_name: str = 'default'
 
         self.table_model = EnvVarsTableModel(self.core)
         self.table_view = QTableView(self)
@@ -326,7 +326,7 @@ class EnvVars(QGroupBox):
                 if idx.column() == 0:
                     self.table_view.model().removeRow(idx.row())
                 elif idx.column() == 1:
-                    self.table_view.model().setData(idx, "", Qt.ItemDataRole.EditRole)
+                    self.table_view.model().setData(idx, '', Qt.ItemDataRole.EditRole)
         elif a0.key() == Qt.Key.Key_Escape:
             a0.ignore()
 
@@ -334,4 +334,4 @@ class EnvVars(QGroupBox):
         self.table_model.reset()
 
 
-__all__ = ["EnvVars"]
+__all__ = ['EnvVars']

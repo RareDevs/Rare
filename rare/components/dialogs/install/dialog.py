@@ -27,22 +27,22 @@ from .selective import InstallDialogSelective
 class InstallDialog(ActionDialog):
     result_ready = Signal(InstallQueueItemModel)
 
-    def __init__(self, settings: RareAppSettings, rgame: "RareGame", options: InstallOptionsModel, parent=None):
+    def __init__(self, settings: RareAppSettings, rgame: 'RareGame', options: InstallOptionsModel, parent=None):
         super(InstallDialog, self).__init__(parent=parent)
         self.settings = settings
 
-        header = self.tr("Install")
-        bicon = qta_icon("ri.install-line")
+        header = self.tr('Install')
+        bicon = qta_icon('ri.install-line')
         if options.repair_mode:
-            header = self.tr("Repair")
-            bicon = qta_icon("fa.wrench", "mdi.progress-wrench")
+            header = self.tr('Repair')
+            bicon = qta_icon('fa.wrench', 'mdi.progress-wrench')
             if options.repair_and_update:
-                header = self.tr("Repair and update")
+                header = self.tr('Repair and update')
         elif options.update:
-            header = self.tr("Update")
+            header = self.tr('Update')
         elif options.reset_sdl:
-            header = self.tr("Modify")
-            bicon = qta_icon("fa.gear", "mdi.content-save-edit-outline")
+            header = self.tr('Modify')
+            bicon = qta_icon('fa.gear', 'mdi.content-save-edit-outline')
         self.setWindowTitle(game_title(header, rgame.app_title))
         self.setSubtitle(game_title(header, rgame.app_title))
 
@@ -122,10 +122,10 @@ class InstallDialog(ActionDialog):
         if options.repair_mode and not options.repair_and_update:
             self.selectable.click()
 
-        self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint("Legendary", "max_workers", fallback=0))
+        self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint('Legendary', 'max_workers', fallback=0))
         self.advanced.ui.max_workers_spin.valueChanged.connect(self._on_option_changed)
 
-        self.advanced.ui.max_memory_spin.setValue(self.core.lgd.config.getint("Legendary", "max_memory", fallback=0))
+        self.advanced.ui.max_memory_spin.setValue(self.core.lgd.config.getint('Legendary', 'max_memory', fallback=0))
         self.advanced.ui.max_memory_spin.valueChanged.connect(self._on_option_changed)
 
         self.advanced.ui.read_files_check.setChecked(options.read_files)
@@ -156,11 +156,11 @@ class InstallDialog(ActionDialog):
             self.ui.shortcut_check.setEnabled(False)
             self.selectable.setEnabled(False)
 
-        if pf.system() == "Darwin":
+        if pf.system() == 'Darwin':
             self.ui.shortcut_label.setDisabled(True)
             self.ui.shortcut_check.setDisabled(True)
             self.ui.shortcut_check.setChecked(False)
-            self.ui.shortcut_check.setToolTip(self.tr("Creating a shortcut is not supported on macOS"))
+            self.ui.shortcut_check.setToolTip(self.tr('Creating a shortcut is not supported on macOS'))
 
         self.advanced.ui.install_prereqs_label.setEnabled(False)
         self.advanced.ui.install_prereqs_check.setEnabled(False)
@@ -170,10 +170,10 @@ class InstallDialog(ActionDialog):
         # lk: set object names for CSS properties
         self.accept_button.setText(header)
         self.accept_button.setIcon(bicon)
-        self.accept_button.setObjectName("InstallButton")
+        self.accept_button.setObjectName('InstallButton')
 
-        self.action_button.setText(self.tr("Validate"))
-        self.action_button.setIcon(qta_icon("fa.check", "fa5s.check"))
+        self.action_button.setText(self.tr('Validate'))
+        self.action_button.setIcon(qta_icon('fa.check', 'fa5s.check'))
 
         self.setCentralWidget(install_widget)
 
@@ -204,19 +204,19 @@ class InstallDialog(ActionDialog):
     @Slot(int)
     def check_incompatible_platform(self, index: int):
         platform = self.ui.platform_combo.itemText(index)
-        if platform == "Mac" and pf.system() != "Darwin":
+        if platform == 'Mac' and pf.system() != 'Darwin':
             self.set_error_labels(
-                self.tr("Warning"),
-                self.tr("You will not be able to run the game if you select <b>{}</b> as platform").format(platform),
+                self.tr('Warning'),
+                self.tr('You will not be able to run the game if you select <b>{}</b> as platform').format(platform),
             )
         else:
             self.set_error_labels()
 
     def get_options(self):
-        base_path = os.path.join(self.install_dir_edit.text(), ".overlay" if self._options.overlay else "")
+        base_path = os.path.join(self.install_dir_edit.text(), '.overlay' if self._options.overlay else '')
         # TODO: investigate if this check is needed
         if self.rgame.is_installed or self.rgame.is_dlc:
-            self._options.base_path = ""
+            self._options.base_path = ''
         else:
             self._options.base_path = base_path
         self._options.platform = self.ui.platform_combo.currentText()
@@ -241,7 +241,7 @@ class InstallDialog(ActionDialog):
 
     def action_handler(self):
         self.set_error_labels()
-        message = self.tr("Updating...")
+        message = self.tr('Updating...')
         self.set_size_labels(message, message)
         self.setActive(True)
         self.options_changed = False
@@ -269,8 +269,8 @@ class InstallDialog(ActionDialog):
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:
-            perms_path = os.path.join(path, ".rare_perms")
-            open(perms_path, "w").close()
+            perms_path = os.path.join(path, '.rare_perms')
+            open(perms_path, 'w').close()
             os.unlink(perms_path)
         except PermissionError:
             return False, path, IndicatorReasonsCommon.PERM_NO_WRITE
@@ -289,17 +289,17 @@ class InstallDialog(ActionDialog):
         self.accept_button.setEnabled(False)
         self.action_button.setEnabled(is_valid and not self.active())
         if not is_valid:
-            self.set_error_labels(self.tr("Error"), reason)
+            self.set_error_labels(self.tr('Error'), reason)
         else:
             self.set_error_labels()
 
     @staticmethod
     def same_platform(download: InstallDownloadModel) -> bool:
         platform = download.igame.platform
-        if pf.system() == "Windows":
-            return platform in {"Windows", "Win32"}
-        elif pf.system() == "Darwin":
-            return platform == "Mac"
+        if pf.system() == 'Windows':
+            return platform in {'Windows', 'Win32'}
+        elif pf.system() == 'Darwin':
+            return platform == 'Mac'
         else:
             return False
 
@@ -314,14 +314,14 @@ class InstallDialog(ActionDialog):
         if download_size or (not download_size and (download.game.is_dlc or download.repair)):
             self.accept_button.setEnabled(not self.options_changed)
         self.action_button.setEnabled(self.options_changed)
-        has_prereqs = bool(download.igame.prereq_info) and not download.igame.prereq_info.get("installed", False)
+        has_prereqs = bool(download.igame.prereq_info) and not download.igame.prereq_info.get('installed', False)
         if has_prereqs:
-            prereq_name = download.igame.prereq_info.get("name", "")
-            prereq_path = os.path.split(download.igame.prereq_info.get("path", ""))[-1]
+            prereq_name = download.igame.prereq_info.get('name', '')
+            prereq_path = os.path.split(download.igame.prereq_info.get('path', ''))[-1]
             prereq_desc = prereq_name if prereq_name else prereq_path
-            self.advanced.ui.install_prereqs_check.setText(self.tr("Also install: {}").format(prereq_desc))
+            self.advanced.ui.install_prereqs_check.setText(self.tr('Also install: {}').format(prereq_desc))
         else:
-            self.advanced.ui.install_prereqs_check.setText("")
+            self.advanced.ui.install_prereqs_check.setText('')
         # Offer to install prerequisites only on same platforms
         self.advanced.ui.install_prereqs_label.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setEnabled(has_prereqs)
@@ -341,7 +341,7 @@ class InstallDialog(ActionDialog):
     @Slot(str)
     def _on_worker_failed(self, message: str):
         self.setActive(False)
-        error_text = self.tr("Error")
+        error_text = self.tr('Error')
         self.set_size_labels(error_text, error_text)
         self.set_error_labels(error_text, message)
         self.action_button.setEnabled(self.options_changed)
@@ -363,7 +363,7 @@ class InstallDialog(ActionDialog):
         self._set_size_label(self.ui.download_size_text, download)
         self._set_size_label(self.ui.install_size_text, install)
 
-    def set_error_labels(self, label: str = "", message: str = ""):
+    def set_error_labels(self, label: str = '', message: str = ''):
         self.ui.warning_label.setVisible(bool(label))
         self.ui.warning_label.setText(label)
         self.ui.warning_text.setVisible(bool(message))

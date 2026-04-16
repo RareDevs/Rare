@@ -8,7 +8,7 @@ class LoadingWidget(QLabel):
         super(LoadingWidget, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         self.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
-        self.movie = QMovie(":/images/loader.webp", parent=self)
+        self.movie = QMovie(':/images/loader.webp', parent=self)
         # The animation's exact size is 94x94
         self.setFixedSize(96, 96)
         self.setMovie(self.movie)
