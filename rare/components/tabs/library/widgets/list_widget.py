@@ -13,7 +13,7 @@ from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 
 
-class ListWidget(object):
+class ListWidget:
     def __init__(self):
         self.title_label = None
         self.status_label = None

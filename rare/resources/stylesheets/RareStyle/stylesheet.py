@@ -1,5 +1,4 @@
 import os
-from typing import Type, Union
 
 import qstylizer.parser
 import qstylizer.style
@@ -17,12 +16,12 @@ compressAlgo = 'zlib'
 compressThreshold = 0
 
 
-def css_name(widget: Union[wrappertype, QObject, Type], subwidget: str = ''):
+def css_name(widget: wrappertype | QObject | type, subwidget: str = ''):
     return f'#{widget_object_name(widget, "")}{subwidget}'
 
 
 # style = qstylizer.style.StyleSheet()
-with open(os.path.join(os.path.dirname(__file__), 'template.qss'), 'r', encoding='utf-8') as template:
+with open(os.path.join(os.path.dirname(__file__), 'template.qss'), encoding='utf-8') as template:
     style = qstylizer.parser.parse(template.read())
 
 background_color_base = QColor(32, 34, 37)

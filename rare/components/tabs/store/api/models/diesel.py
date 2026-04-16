@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
 from logging import getLogger
-from typing import Any, Dict, List, Tuple, Type
+from typing import Any
 
 logger = getLogger('DieselModels')
 
 # lk: Typing overloads for unimplemented types
-DieselSocialLinks = Dict
+DieselSocialLinks = dict
 
 
 @dataclass
@@ -14,10 +14,10 @@ class DieselSystemDetailItem:
     minimum: str = None
     recommended: str = None
     title: str = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type['DieselSystemDetailItem'], src: Dict[str, Any]) -> 'DieselSystemDetailItem':
+    def from_dict(cls: type['DieselSystemDetailItem'], src: dict[str, Any]) -> 'DieselSystemDetailItem':
         d = src.copy()
         return cls(
             _type=d.pop('_type', ''),
@@ -31,12 +31,12 @@ class DieselSystemDetailItem:
 @dataclass
 class DieselSystemDetail:
     _type: str = None
-    details: Tuple[DieselSystemDetailItem, ...] = None
+    details: tuple[DieselSystemDetailItem, ...] = None
     systemType: str = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type['DieselSystemDetail'], src: Dict[str, Any]) -> 'DieselSystemDetail':
+    def from_dict(cls: type['DieselSystemDetail'], src: dict[str, Any]) -> 'DieselSystemDetail':
         d = src.copy()
         details = tuple(map(DieselSystemDetailItem.from_dict, d.pop('details', [])))
         return cls(
@@ -50,13 +50,13 @@ class DieselSystemDetail:
 @dataclass
 class DieselSystemDetails:
     _type: str = None
-    languages: List[str] = None
-    rating: Dict = None
-    systems: Tuple[DieselSystemDetail, ...] = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    languages: list[str] = None
+    rating: dict = None
+    systems: tuple[DieselSystemDetail, ...] = None
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type['DieselSystemDetails'], src: Dict[str, Any]) -> 'DieselSystemDetails':
+    def from_dict(cls: type['DieselSystemDetails'], src: dict[str, Any]) -> 'DieselSystemDetails':
         d = src.copy()
         systems = tuple(map(DieselSystemDetail.from_dict, d.pop('systems', [])))
         return cls(
@@ -75,10 +75,10 @@ class DieselProductAbout:
     developerAttribution: str = None
     publisherAttribution: str = None
     shortDescription: str = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type['DieselProductAbout'], src: Dict[str, Any]) -> 'DieselProductAbout':
+    def from_dict(cls: type['DieselProductAbout'], src: dict[str, Any]) -> 'DieselProductAbout':
         d = src.copy()
         return cls(
             _type=d.pop('_type', ''),
@@ -96,10 +96,10 @@ class DieselProductDetail:
     about: DieselProductAbout = None
     requirements: DieselSystemDetails = None
     socialLinks: DieselSocialLinks = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type['DieselProductDetail'], src: Dict[str, Any]) -> 'DieselProductDetail':
+    def from_dict(cls: type['DieselProductDetail'], src: dict[str, Any]) -> 'DieselProductDetail':
         d = src.copy()
         about = DieselProductAbout.from_dict(x) if (x := d.pop('about'), {}) else None
         requirements = DieselSystemDetails.from_dict(x) if (x := d.pop('requirements', {})) else None
@@ -115,19 +115,19 @@ class DieselProductDetail:
 @dataclass
 class DieselProduct:
     _id: str = None
-    _images_: List[str] = None
+    _images_: list[str] = None
     _locale: str = None
     _slug: str = None
     _title: str = None
     _urlPattern: str = None
     namespace: str = None
-    pages: Tuple['DieselProduct', ...] = None
+    pages: tuple['DieselProduct', ...] = None
     data: DieselProductDetail = None
     productName: str = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type['DieselProduct'], src: Dict[str, Any]) -> 'DieselProduct':
+    def from_dict(cls: type['DieselProduct'], src: dict[str, Any]) -> 'DieselProduct':
         d = src.copy()
         pages = tuple(map(DieselProduct.from_dict, d.pop('pages', [])))
         data = DieselProductDetail.from_dict(x) if (x := d.pop('data', {})) else None

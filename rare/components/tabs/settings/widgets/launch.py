@@ -1,7 +1,7 @@
 import os
 import shlex
 import shutil
-from typing import Tuple, Type, TypeVar
+from typing import TypeVar
 
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtGui import QShowEvent
@@ -22,7 +22,7 @@ from .wrappers import WrapperSettings
 
 
 class LaunchSettingsBase(QGroupBox):
-    def __init__(self, rcore: RareCore, wrapper_widget: Type[WrapperSettings], parent=None):
+    def __init__(self, rcore: RareCore, wrapper_widget: type[WrapperSettings], parent=None):
         super(LaunchSettingsBase, self).__init__(parent=parent)
         self.setTitle(self.tr('Launch'))
 
@@ -84,7 +84,7 @@ class LaunchSettingsBase(QGroupBox):
         self.wrappers_widget.update_state()
 
     @staticmethod
-    def __prelaunch_cmd_edit_callback(text: str) -> Tuple[bool, str, int]:
+    def __prelaunch_cmd_edit_callback(text: str) -> tuple[bool, str, int]:
         if not text.strip():
             return True, text, IndicatorReasonsCommon.UNDEFINED
         if not os.path.isfile(text) and not shutil.which(text):

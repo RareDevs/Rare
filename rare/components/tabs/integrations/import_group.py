@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from enum import IntEnum
 from logging import getLogger
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
 
 from PySide6.QtCore import QObject, QRunnable, Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -35,7 +34,7 @@ from rare.widgets.indicator_edit import (
 logger = getLogger('Import')
 
 
-def find_app_name(core, path: str) -> Optional[str]:
+def find_app_name(core, path: str) -> str | None:
     if os.path.exists(os.path.join(path, '.egstore')):
         for i in os.listdir(os.path.join(path, '.egstore')):
             if i.endswith('.mancpn'):
@@ -61,10 +60,10 @@ class ImportResult(IntEnum):
 @dataclass
 class ImportedGame:
     result: ImportResult
-    path: Optional[str] = None
-    app_name: Optional[str] = None
-    app_title: Optional[str] = None
-    message: Optional[str] = None
+    path: str | None = None
+    app_name: str | None = None
+    app_title: str | None = None
+    message: str | None = None
 
 
 class ImportWorkerSignals(QObject):
@@ -78,7 +77,7 @@ class ImportWorker(QRunnable):
         core: LegendaryCore,
         path: str,
         app_name: str = None,
-        platform: Optional[str] = None,
+        platform: str | None = None,
         import_folder: bool = False,
         import_dlcs: bool = False,
         import_force: bool = False,
@@ -96,7 +95,7 @@ class ImportWorker(QRunnable):
         self.import_force = import_force
 
     def run(self) -> None:
-        result_list: List = []
+        result_list: list = []
         if self.import_folder:
             folders = [i for i in self.path.iterdir() if i.is_dir()]
             number_of_folders = len(folders)
@@ -158,12 +157,12 @@ class ImportGroup(QGroupBox):
         self.ui = Ui_ImportGroup()
         self.ui.setupUi(self)
 
-        self.worker: Optional[ImportWorker] = None
+        self.worker: ImportWorker | None = None
         self.threadpool = QThreadPool.globalInstance()
 
-        self._app_names: Dict[str, str] = {}
-        self._app_titles: Dict[str, str] = {}
-        self._install_dirs: Set[str] = set()
+        self._app_names: dict[str, str] = {}
+        self._app_titles: dict[str, str] = {}
+        self._install_dirs: set[str] = set()
 
         self.import_path_edit = PathEdit(
             path=self.core.get_default_install_dir(self.core.default_platform),
@@ -234,12 +233,10 @@ class ImportGroup(QGroupBox):
             )
             self.app_name_edit.setText(app_name)
 
-    def _path_edit_callback(self, path) -> Tuple[bool, str, int]:
+    def _path_edit_callback(self, path) -> tuple[bool, str, int]:
         if not os.path.exists(path):
             return False, path, IndicatorReasonsCommon.DIR_NOT_EXISTS
-        if os.path.exists(os.path.join(path, '.egstore')):
-            return True, path, IndicatorReasonsCommon.VALID
-        elif os.path.basename(path) in self._install_dirs:
+        if os.path.exists(os.path.join(path, '.egstore')) or os.path.basename(path) in self._install_dirs:
             return True, path, IndicatorReasonsCommon.VALID
         return False, path, IndicatorReasonsCommon.INVALID
 
@@ -253,7 +250,7 @@ class ImportGroup(QGroupBox):
         else:
             self.app_name_edit.setText('')
 
-    def _app_name_edit_callback(self, text) -> Tuple[bool, str, int]:
+    def _app_name_edit_callback(self, text) -> tuple[bool, str, int]:
         self.app_name_edit.setInfo('')
         if not text:
             return False, text, IndicatorReasonsCommon.UNDEFINED
@@ -316,7 +313,7 @@ class ImportGroup(QGroupBox):
         self._import(self.import_path_edit.text())
 
     @Slot(str)
-    def _import(self, path: Optional[str] = None):
+    def _import(self, path: str | None = None):
         self.ui.import_button.setDisabled(True)
         self.info_label.setText(self.tr('Status: Importing games'))
         self.info_progress.setValue(0)
@@ -346,7 +343,7 @@ class ImportGroup(QGroupBox):
         logger.info(f'Import {status}: {imported.app_title}: {imported.path} ({imported.message})')
 
     @Slot(list)
-    def _on_import_result(self, result: List[ImportedGame]):
+    def _on_import_result(self, result: list[ImportedGame]):
         self.worker = None
         self.button_info_stack.setCurrentWidget(self.info_label)
         if len(result) == 1:
@@ -378,7 +375,7 @@ class ImportGroup(QGroupBox):
                 parent=self,
             )
             messagebox.setWindowModality(Qt.WindowModality.NonModal)
-            details: List = []
+            details: list = []
             for res in success:
                 details.append(self.tr('Success: {} imported').format(res.app_title))
             for res in failure:

@@ -64,7 +64,7 @@ class IntegrationsTab(SideTabWidget):
 
 
 class IntegrationsWidget(QWidget):
-    def __init__(self, widget: Optional[QWidget], info: str, parent=None):
+    def __init__(self, widget: QWidget | None, info: str, parent=None):
         super(IntegrationsWidget, self).__init__(parent=parent)
         self.info = QLabel(f'<b>{info}</b>')
 

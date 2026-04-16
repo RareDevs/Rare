@@ -5,7 +5,6 @@ import time
 from dataclasses import dataclass
 from enum import IntEnum
 from logging import getLogger
-from typing import Dict, List, Optional
 
 from PySide6.QtCore import QProcess, QThread, Signal
 
@@ -28,7 +27,7 @@ class DlResultModel:
     options: InstallOptionsModel
     code: DlResultCode = DlResultCode.ERROR
     message: str = ''
-    dlcs: Optional[List[Dict]] = None
+    dlcs: list[dict] | None = None
     sync_saves: bool = False
     tip_url: str = ''
     shortcut: bool = False

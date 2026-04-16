@@ -8,11 +8,12 @@ import signal
 import subprocess
 import sys
 from argparse import Namespace
+from collections.abc import Generator
 from ctypes import CDLL, c_int, c_void_p
 from ctypes.util import find_library
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Generator, List
+from typing import Any
 
 # Constants defined in sys/procctl.h
 P_PID = 0
@@ -63,7 +64,7 @@ def get_pstree_from_pid(root_pid: int) -> set[int]:
     return descendants
 
 
-def subreaper(args: Namespace, other: List[str]) -> int:
+def subreaper(args: Namespace, other: list[str]) -> int:
     logger = getLogger('subreaper')
     logging.basicConfig(
         format='[%(name)s] %(levelname)s: %(message)s',
@@ -83,7 +84,7 @@ def subreaper(args: Namespace, other: List[str]) -> int:
             except ProcessLookupError:
                 continue
 
-    command: List[str] = [args.command, *other]
+    command: list[str] = [args.command, *other]
     workdir: str = args.workdir
     child_status: int = 0
 

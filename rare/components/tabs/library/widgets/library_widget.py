@@ -1,5 +1,3 @@
-from typing import List, Optional, Tuple
-
 from PySide6.QtCore import QEvent, QObject, Qt, Slot
 from PySide6.QtGui import (
     QBrush,
@@ -52,8 +50,8 @@ class ProgressLabel(QLabel):
         return False
 
     @staticmethod
-    def calculateColors(image: QImage) -> Tuple[QColor, QColor]:
-        color: List[int] = [0, 0, 0]
+    def calculateColors(image: QImage) -> tuple[QColor, QColor]:
+        color: list[int] = [0, 0, 0]
         # take the two diagonals of the center square section
         min_d = min(image.width(), image.height())
         origin_w = (image.width() - min_d) // 2
@@ -84,8 +82,8 @@ class LibraryWidget(ImageWidget):
         self.progress_label.setVisible(False)
 
         self.progressPixmap = self.horizontalProgressPixmap
-        self._color_pixmap: Optional[QPixmap] = None
-        self._gray_pixmap: Optional[QPixmap] = None
+        self._color_pixmap: QPixmap | None = None
+        self._gray_pixmap: QPixmap | None = None
         # lk: keep percentage to not over-generate the image
         self._progress: int = -1
 

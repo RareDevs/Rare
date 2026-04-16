@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from logging import getLogger
-from typing import Callable, Tuple
 
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication
@@ -83,7 +83,7 @@ class StoreAPI(QObject):
             },
         )
 
-    def __handle_wishlist(self, data, callback: Callable[[Tuple], None]):
+    def __handle_wishlist(self, data, callback: Callable[[tuple], None]):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
@@ -117,7 +117,7 @@ class StoreAPI(QObject):
 
         self.manager.post(graphql_url, lambda data: self.__handle_search(data, callback), payload)
 
-    def __handle_search(self, data, callback: Callable[[Tuple], None]):
+    def __handle_search(self, data, callback: Callable[[tuple], None]):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:

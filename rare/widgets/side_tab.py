@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Protocol, Union
+from typing import Protocol
 
 from PySide6.QtCore import (
     QSize,
@@ -56,7 +56,7 @@ class SideTabBar(QTabBar):
             painter.restore()
 
 
-class SideTabContents(object):
+class SideTabContents:
     # str: title
     set_title = Signal(str)
     implements_scrollarea: bool = False
@@ -78,7 +78,7 @@ class SideTabContentsProtocol(Protocol):
 class SideTabContainer(QWidget):
     def __init__(
         self,
-        widget: Union[QWidget, SideTabContentsProtocol],
+        widget: QWidget | SideTabContentsProtocol,
         title: str = '',
         parent: QWidget = None,
     ):
@@ -138,6 +138,6 @@ class SideTabWidget(QTabWidget):
         if not tab:
             self.back_clicked.emit()
 
-    def addTab(self, widget: Union[QWidget, SideTabContentsProtocol], a1: str, title: str = '') -> int:
+    def addTab(self, widget: QWidget | SideTabContentsProtocol, a1: str, title: str = '') -> int:
         container = SideTabContainer(widget, title, parent=self)
         return super(SideTabWidget, self).addTab(container, a1)

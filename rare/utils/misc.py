@@ -1,9 +1,9 @@
 import functools
 import os
+from collections.abc import Iterable
 from datetime import UTC, datetime
 from enum import IntEnum
 from logging import getLogger
-from typing import Dict, Iterable, Tuple, Type, Union
 
 import qtawesome
 from PySide6.QtCore import (
@@ -28,7 +28,7 @@ class ExitCodes(IntEnum):
     LOGOUT = -133742
 
 
-color_role_map: Dict[int, str] = {
+color_role_map: dict[int, str] = {
     0: 'WindowText',
     1: 'Button',
     2: 'Light',
@@ -53,7 +53,7 @@ color_role_map: Dict[int, str] = {
     # 21: "NColorRoles",
 }
 
-color_group_map: Dict[int, str] = {
+color_group_map: dict[int, str] = {
     0: 'Active',
     1: 'Disabled',
     2: 'Inactive',
@@ -145,7 +145,7 @@ def get_style_sheets() -> Iterable[str]:
         yield it.fileName()
 
 
-def get_translations() -> Tuple[Tuple[str, str], ...]:
+def get_translations() -> tuple[tuple[str, str], ...]:
     langs = []
     for i in os.listdir(os.path.join(resources_path, 'languages')):
         if i.endswith('.qm') and i.startswith('rare_'):
@@ -159,7 +159,7 @@ def get_translations() -> Tuple[Tuple[str, str], ...]:
     return tuple(langs)
 
 
-def path_size(path: Union[str, os.PathLike]) -> int:
+def path_size(path: str | os.PathLike) -> int:
     return sum(
         os.stat(os.path.join(dp, f)).st_size
         for dp, dn, filenames in os.walk(path)
@@ -168,7 +168,7 @@ def path_size(path: Union[str, os.PathLike]) -> int:
     )
 
 
-def format_size(b: Union[int, float]) -> str:
+def format_size(b: int | float) -> str:
     for s in ('', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei'):
         if b < 1024:
             return f'{b:.2f} {s}B'
@@ -184,19 +184,19 @@ def relative_date(date):
     elif diff.days == 1:
         return '1 day ago'
     elif diff.days > 1:
-        return '{} days ago'.format(diff.days)
+        return f'{diff.days} days ago'
     elif s <= 1:
         return 'just now'
     elif s < 60:
-        return '{} seconds ago'.format(s)
+        return f'{s} seconds ago'
     elif s < 120:
         return '1 minute ago'
     elif s < 3600:
-        return '{} minutes ago'.format(s // 60)
+        return f'{s // 60} minutes ago'
     elif s < 7200:
         return '1 hour ago'
     else:
-        return '{} hours ago'.format(s // 3600)
+        return f'{s // 3600} hours ago'
 
 
 def qta_icon(icn_str: str, fallback: str = None, **kwargs):
@@ -226,7 +226,7 @@ def partial_bound_method(bound_method, *args, **kwargs):
     return (lambda *args: f(*args)).__get__(bound_method.__self__)
 
 
-def widget_object_name(widget: Union[QObject, ShibokenObject, Type], suffix: str) -> str:
+def widget_object_name(widget: QObject | ShibokenObject | type, suffix: str) -> str:
     suffix = f'_{suffix}' if suffix else ''
     if isinstance(widget, QObject):
         return f'{type(widget).__name__}{suffix}'
@@ -242,4 +242,4 @@ def elide_text(label: QLabel, text: str) -> str:
 
 
 def style_hyperlink(link: str, title: str) -> str:
-    return "<a href='{}' style='color: #2980b9; text-decoration:none'>{}</a>".format(link, title)
+    return f"<a href='{link}' style='color: #2980b9; text-decoration:none'>{title}</a>"

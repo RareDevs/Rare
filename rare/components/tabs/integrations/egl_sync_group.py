@@ -1,8 +1,8 @@
 import os
 import platform
 from abc import abstractmethod
+from collections.abc import Iterable
 from logging import getLogger
-from typing import Iterable, List, Tuple, Union
 
 from legendary.models.egl import EGLManifest
 from legendary.models.game import InstalledGame
@@ -119,7 +119,7 @@ class EGLSyncGroup(QGroupBox):
             self.egl_path_edit.setText(path)
 
     @staticmethod
-    def egl_path_edit_edit_cb(path) -> Tuple[bool, str, int]:
+    def egl_path_edit_edit_cb(path) -> tuple[bool, str, int]:
         if not path:
             return True, path, IndicatorReasonsCommon.VALID
         if os.path.exists(os.path.join(path, 'system.reg')) and os.path.exists(os.path.join(path, 'dosdevices/c:')):
@@ -194,7 +194,7 @@ class EGLSyncGroup(QGroupBox):
 
 
 class EGLSyncListItem(QListWidgetItem):
-    def __init__(self, core: LegendaryCore, game: Union[EGLManifest, InstalledGame]):
+    def __init__(self, core: LegendaryCore, game: EGLManifest | InstalledGame):
         super(EGLSyncListItem, self).__init__()
         self.core = core
         self.game = game
@@ -207,7 +207,7 @@ class EGLSyncListItem(QListWidgetItem):
         return self.checkState() == Qt.CheckState.Checked
 
     @abstractmethod
-    def action(self) -> Union[str, bool]:
+    def action(self) -> str | bool:
         pass
 
     @property
@@ -224,7 +224,7 @@ class EGLSyncExportItem(EGLSyncListItem):
     def __init__(self, core: LegendaryCore, game: InstalledGame):
         super(EGLSyncExportItem, self).__init__(core, game=game)
 
-    def action(self) -> Union[str, bool]:
+    def action(self) -> str | bool:
         error = False
         try:
             self.core.egl_export(self.game.app_name)
@@ -241,7 +241,7 @@ class EGLSyncImportItem(EGLSyncListItem):
     def __init__(self, core: LegendaryCore, game: EGLManifest):
         super(EGLSyncImportItem, self).__init__(core, game=game)
 
-    def action(self) -> Union[str, bool]:
+    def action(self) -> str | bool:
         error = False
         try:
             self.core.egl_import(self.game.app_name)
@@ -313,7 +313,7 @@ class EGLSyncListGroup(QGroupBox):
 
     @Slot(list)
     @abstractmethod
-    def show_errors(self, errors: List):
+    def show_errors(self, errors: list):
         pass
 
     @property
@@ -349,7 +349,7 @@ class EGLSyncExportGroup(EGLSyncListGroup):
         super(EGLSyncExportGroup, self).populate(enabled)
 
     @Slot(list)
-    def show_errors(self, errors: List):
+    def show_errors(self, errors: list):
         QMessageBox.warning(
             self.parent(),
             self.tr('The following errors occurred while exporting.'),
@@ -357,7 +357,7 @@ class EGLSyncExportGroup(EGLSyncListGroup):
         )
 
     def action(self):
-        errors: List = []
+        errors: list = []
         for item in self.items:
             if item.is_checked():
                 if e := item.action():
@@ -392,7 +392,7 @@ class EGLSyncImportGroup(EGLSyncListGroup):
         super(EGLSyncImportGroup, self).populate(enabled)
 
     @Slot(list)
-    def show_errors(self, errors: List):
+    def show_errors(self, errors: list):
         QMessageBox.warning(
             self.parent(),
             self.tr('The following errors occurred while importing.'),
@@ -400,7 +400,7 @@ class EGLSyncImportGroup(EGLSyncListGroup):
         )
 
     def action(self):
-        errors: List = []
+        errors: list = []
         for item in self.items:
             if item.is_checked():
                 if e := item.action():

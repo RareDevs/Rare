@@ -2,7 +2,6 @@ import os
 import shlex
 from enum import IntEnum
 from hashlib import md5
-from typing import Dict, List, Union
 
 
 class WrapperType(IntEnum):
@@ -15,12 +14,12 @@ class WrapperType(IntEnum):
 class Wrapper:
     def __init__(
         self,
-        command: Union[str, List[str]],
+        command: str | list[str],
         name: str = None,
         wtype: WrapperType = None,
         enabled: bool = True,
     ):
-        self.__command: List[str] = shlex.split(command) if isinstance(command, str) else command
+        self.__command: list[str] = shlex.split(command) if isinstance(command, str) else command
         self.__name: str = name if name is not None else os.path.basename(self.__command[0])
         self.__wtype: WrapperType = wtype if wtype is not None else WrapperType.USER_DEFINED
         self.__enabled: bool = enabled or self.__wtype == WrapperType.COMPAT_TOOL
@@ -50,7 +49,7 @@ class Wrapper:
         return shlex.quote(self.__command[0])
 
     @property
-    def command(self) -> List[str]:
+    def command(self) -> list[str]:
         return self.__command
 
     @property
@@ -76,7 +75,7 @@ class Wrapper:
         return True if not self.is_editable else bool(self.as_str.strip())
 
     @classmethod
-    def from_dict(cls, data: Dict):
+    def from_dict(cls, data: dict):
         return cls(
             command=data.get('command'),
             name=data.get('name'),

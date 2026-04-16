@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import List
 
 
 @dataclass
@@ -29,7 +28,7 @@ class SearchStoreQuery:
     sort_by: str = 'releaseDate'
     sort_dir: str = 'DESC'
     start: int = 0
-    tag: List[str] = ''
+    tag: list[str] = ''
     release_date: SearchDateRange = field(default_factory=SearchDateRange)
     with_price: bool = True
     with_promotions: bool = True

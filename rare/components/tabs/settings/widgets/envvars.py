@@ -1,7 +1,7 @@
 import platform
 import re
 from collections import ChainMap
-from typing import Any, Union
+from typing import Any
 
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt, Slot
 from PySide6.QtGui import QFont, QShowEvent
@@ -50,7 +50,7 @@ class EnvVarsTableModel(QAbstractTableModel):
             self.__readonly.update(get_steam_environment().keys())
             self.__readonly.add('STEAM_COMPAT_SHADER_PATH')
         self.__default: str = 'default'
-        self.__appname: str = None
+        self.__appname: str | None = None
 
     @Slot(str)
     def reset(self):
@@ -69,7 +69,7 @@ class EnvVarsTableModel(QAbstractTableModel):
         )
         self.endResetModel()
 
-    def __key(self, index: Union[QModelIndex, int]):
+    def __key(self, index: QModelIndex | int):
         if isinstance(index, QModelIndex):
             index = index.row()
         try:
@@ -77,19 +77,19 @@ class EnvVarsTableModel(QAbstractTableModel):
         except Exception:
             return ''
 
-    def __is_local(self, index: Union[QModelIndex, int]):
+    def __is_local(self, index: QModelIndex | int):
         key = self.__key(index)
-        return key in self.__data_map.maps[0].keys()
+        return key in self.__data_map.maps[0]
 
-    def __is_global(self, index: Union[QModelIndex, int]):
+    def __is_global(self, index: QModelIndex | int):
         key = self.__key(index)
-        return key in self.__data_map.maps[1].keys()
+        return key in self.__data_map.maps[1]
 
-    def __is_readonly(self, index: Union[QModelIndex, int]):
+    def __is_readonly(self, index: QModelIndex | int):
         key = self.__key(index)
         return key in self.__readonly
 
-    def __value(self, index: Union[QModelIndex, int]):
+    def __value(self, index: QModelIndex | int):
         if isinstance(index, QModelIndex):
             index = index.row()
         return self.__data_map[self.__key(index)]
@@ -198,7 +198,7 @@ class EnvVarsTableModel(QAbstractTableModel):
             if (not self.__is_key_valid(value)) or value in self.__readonly:
                 return False
             # Do not accept existing variable names (this also protects against unchanged contents)
-            if value in self.__data_map.keys():
+            if value in self.__data_map:
                 return False
 
             if index.row() == self.__data_length():
@@ -222,11 +222,11 @@ class EnvVarsTableModel(QAbstractTableModel):
                 #   old key remains, new key added -> insert row for new key, update from index to end
                 # new key masking global key:
                 #   can't happen because we do not accept existing keys
-                if old_key in self.__data_map.maps[0].keys():
+                if old_key in self.__data_map.maps[0]:
                     # delete the old key if it is a local one, replacing a local key
                     del self.__data_map[old_key]
                     self.core.lgd.save_config()
-                if old_key in self.__data_map.maps[1].keys():
+                if old_key in self.__data_map.maps[1]:
                     self.beginInsertRows(QModelIndex(), self.__data_length(), self.__data_length())
                     self.endInsertRows()
                 self.dataChanged.emit(index, self.index(index.row(), 1), [])

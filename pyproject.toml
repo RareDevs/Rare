@@ -145,7 +145,8 @@ line-length = 130
 indent-width = 4
 
 [tool.ruff.lint]
-extend-select = ["I"]
+extend-select = ["E",  "F",  "UP",  "B",  "SIM", "I"]
+extend-ignore = [ "UP008", "SIM102", "SIM108" ]
 
 [tool.ruff.format]
 quote-style = "single"

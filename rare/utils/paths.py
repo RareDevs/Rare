@@ -5,7 +5,6 @@ import shutil
 import sys
 from logging import getLogger
 from pathlib import Path
-from typing import Dict, List
 
 from PySide6.QtCore import QStandardPaths
 
@@ -143,7 +142,7 @@ def compat_logs_dir(name: str) -> Path:
     return logs_dir
 
 
-def setup_compat_shaders_dir(path: str) -> Dict:
+def setup_compat_shaders_dir(path: str) -> dict:
     """Setup per-game shader cache if shader pre-caching is disabled"""
     environ = {}
     shader_cache_name = 'steamapp_shader_cache'
@@ -226,7 +225,7 @@ __link_type = {
 }
 
 
-def desktop_link_types() -> List:
+def desktop_link_types() -> list:
     return list(__link_type.keys())
 
 
@@ -247,7 +246,7 @@ def desktop_link_path(link_name: str, link_type: str) -> Path:
     return __link_type[link_type].joinpath(f'{link_name}.{__link_suffix[platform.system()]["link"]}')
 
 
-def get_rare_executable(*, external: bool = False) -> List[str]:
+def get_rare_executable(*, external: bool = False) -> list[str]:
     """
     Returns the command list to invoke Rare for different platforms and packaging solutions
     When used with container based packaging, such as Flatpak or Snap, returns the command

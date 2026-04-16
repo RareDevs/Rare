@@ -4,7 +4,6 @@ import shutil
 from dataclasses import asdict
 from logging import getLogger
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import vdf
 
@@ -26,7 +25,7 @@ logger = getLogger('SteamShortcuts')
 steam_client_install_paths = [os.path.expanduser('~/.local/share/Steam')]
 
 
-def find_steam() -> Optional[str]:
+def find_steam() -> str | None:
     if platform.system() == 'Windows':
         # Find the Steam install directory or raise an error
         try:  # 32-bit
@@ -45,19 +44,19 @@ def find_steam() -> Optional[str]:
     return None
 
 
-def find_steam_users(steam_path: str) -> List[SteamUser]:
+def find_steam_users(steam_path: str) -> list[SteamUser]:
     _users = []
     vdf_path = os.path.join(steam_path, 'config', 'loginusers.vdf')
     if not os.path.exists(vdf_path):
         return _users
-    with open(vdf_path, 'r', encoding='utf-8') as f:
+    with open(vdf_path, encoding='utf-8') as f:
         users = vdf.load(f).get('users', {})
     for long_id, user in users.items():
         _users.append(SteamUser(long_id, user))
     return _users
 
 
-def _load_shortcuts(steam_path: str, user: SteamUser) -> Dict[str, SteamShortcut]:
+def _load_shortcuts(steam_path: str, user: SteamUser) -> dict[str, SteamShortcut]:
     _shortcuts = {}
     vdf_path = os.path.join(steam_path, 'userdata', str(user.short_id), 'config', 'shortcuts.vdf')
     if not os.path.exists(vdf_path):
@@ -69,16 +68,16 @@ def _load_shortcuts(steam_path: str, user: SteamUser) -> Dict[str, SteamShortcut
     return _shortcuts
 
 
-def _save_shortcuts(steam_path: str, user: SteamUser, shortcuts: Dict[str, SteamShortcut]) -> None:
+def _save_shortcuts(steam_path: str, user: SteamUser, shortcuts: dict[str, SteamShortcut]) -> None:
     _shortcuts = {k: asdict(v) for k, v in shortcuts.items()}
     vdf_path = os.path.join(steam_path, 'userdata', str(user.short_id), 'config', 'shortcuts.vdf')
     with open(vdf_path, 'wb') as f:
         vdf.binary_dump({'shortcuts': _shortcuts}, f)
 
 
-__steam_dir: Optional[str] = None
-__steam_user: Optional[SteamUser] = None
-__steam_shortcuts: Optional[Dict] = None
+__steam_dir: str | None = None
+__steam_user: SteamUser | None = None
+__steam_shortcuts: dict | None = None
 
 
 def steam_shortcuts_supported() -> bool:
@@ -133,7 +132,7 @@ def steam_shortcut_exists(app_name: str) -> bool:
     return SteamShortcut.calculate_appid(app_name) in {s.appid for s in __steam_shortcuts.values()}
 
 
-def remove_steam_shortcut(app_name: str) -> Optional[SteamShortcut]:
+def remove_steam_shortcut(app_name: str) -> SteamShortcut | None:
     global __steam_shortcuts
 
     if not steam_shortcut_exists(app_name):

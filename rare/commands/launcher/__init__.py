@@ -80,7 +80,7 @@ class PreLaunch(QRunnable):
         self.signals.disconnect(self.signals)
         self.signals.deleteLater()
 
-    def prepare_launch(self, args: InitParams) -> Optional[LaunchParams]:
+    def prepare_launch(self, args: InitParams) -> LaunchParams | None:
         try:
             launch = get_launch_params(self.rgame, args)
         except Exception as e:
@@ -155,8 +155,8 @@ class RareLauncher(RareApp):
 
     def __init__(self, args: InitParams):
         super(RareLauncher, self).__init__(args, f'{type(self).__name__}_{args.app_name}_{{0}}.log')
-        self.socket: Optional[QLocalSocket] = None
-        self.console: Optional[ConsoleDialog] = None
+        self.socket: QLocalSocket | None = None
+        self.console: ConsoleDialog | None = None
         self.game_process: QProcess = QProcess(self)
         self.server: QLocalServer = QLocalServer(self)
 
@@ -178,7 +178,7 @@ class RareLauncher(RareApp):
             self.console.show()
             self.game_process.stateChanged.connect(self._on_game_process_changed)
 
-        self.sync_dialog: Optional[CloudSyncDialog] = None
+        self.sync_dialog: CloudSyncDialog | None = None
 
         self.game_process.finished.connect(self.__process_finished)
         self.game_process.errorOccurred.connect(self.__process_errored)

@@ -2,7 +2,6 @@ import os
 import platform
 from hashlib import sha1
 from logging import getLogger
-from typing import Dict, Optional, Tuple
 
 from PySide6.QtCore import (
     QCoreApplication,
@@ -75,7 +74,7 @@ class GameDetails(QWidget, SideTabContents):
         self.args = rcore.args()
         self.net_manager = QRequests(cache=str(cache_dir().joinpath('achievements')), parent=self)
 
-        self.rgame: Optional[RareGame] = None
+        self.rgame: RareGame | None = None
 
         self.image = ImageWidget(self)
         self.image.setFixedSize(ImageSize.DisplayTall)
@@ -482,7 +481,7 @@ class GameDetails(QWidget, SideTabContents):
 
 
 class AchievementWidget(QFrame):
-    def __init__(self, manager: QRequests, achievement: Dict, parent=None):
+    def __init__(self, manager: QRequests, achievement: dict, parent=None):
         super().__init__(parent=parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setFrameShadow(QFrame.Shadow.Sunken)
@@ -537,9 +536,7 @@ class GameTagCheckBox(QCheckBox):
             ((base_color & 0xFF0000) >> 16) * 0.2126 + ((base_color & 0x00FF00) >> 8) * 0.7152 + (base_color & 0x0000FF) * 0.0722
         )
         font_color = 'white' if luminance < 140 else 'black'
-        style = 'QCheckBox#{0}{{color: {1};border-color: #{2:x};background-color: #{3:x};}}'.format(
-            self.objectName(), font_color, border_color, base_color
-        )
+        style = f'QCheckBox#{self.objectName()}{{color: {font_color};border-color: #{border_color:x};background-color: #{base_color:x};}}'
         self.setStyleSheet(style)
         self.checkStateChanged.connect(self._on_state_changed)
 
@@ -561,7 +558,7 @@ class GameTagCheckBox(QCheckBox):
 class GameTagAddDialog(ButtonDialog):
     result_ready = Signal(bool, str)
 
-    def __init__(self, rgame: RareGame, tags: Tuple[str, ...], parent=None):
+    def __init__(self, rgame: RareGame, tags: tuple[str, ...], parent=None):
         super(GameTagAddDialog, self).__init__(parent=parent)
         header = self.tr('Add tag')
         self.setWindowTitle(header)
@@ -580,7 +577,7 @@ class GameTagAddDialog(ButtonDialog):
         self.accept_button.setEnabled(False)
 
         self.tags = tags
-        self.result: Tuple = (False, '')
+        self.result: tuple = (False, '')
 
     @Slot(str)
     def __on_text_changed(self, text: str):

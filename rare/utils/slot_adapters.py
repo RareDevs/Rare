@@ -1,5 +1,5 @@
 import types
-from typing import Callable
+from collections.abc import Callable
 
 from PySide6 import QtCore, QtGui, QtWidgets
 

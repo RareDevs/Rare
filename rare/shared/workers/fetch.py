@@ -69,7 +69,7 @@ class RuntimeAssetsWorker(FetchWorker):
 
 class EntitlementsWorker(FetchWorker):
     def run_real(self):
-        mod_time = datetime.fromtimestamp(os.path.getmtime((os.path.join(self.core.lgd.path, 'entitlements.json'))))
+        mod_time = datetime.fromtimestamp(os.path.getmtime(os.path.join(self.core.lgd.path, 'entitlements.json')))
         elapsed_days = abs(datetime.now() - mod_time).days
 
         want_entitlements = not self.settings.get_value(app_settings.exclude_entitlements) and elapsed_days > 1

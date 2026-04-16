@@ -35,7 +35,7 @@ from .groups import QueueGroup, UpdateGroup
 from .thread import DlResultCode, DlResultModel, DlThread
 
 
-def get_time(seconds: Union[int, float]) -> str:
+def get_time(seconds: int | float) -> str:
     return str(datetime.timedelta(seconds=seconds))
 
 
@@ -53,7 +53,7 @@ class DownloadsTab(QWidget):
         self.signals = rcore.signals()
         self.args = rcore.args()
 
-        self.__thread: Optional[DlThread] = None
+        self.__thread: DlThread | None = None
 
         layout = QVBoxLayout(self)
 
@@ -95,7 +95,7 @@ class DownloadsTab(QWidget):
         self.signals.download.enqueue.connect(self.__add_update)
         self.signals.download.dequeue.connect(self.__remove_update)
 
-        self.__forced_item: Optional[InstallQueueItemModel] = None
+        self.__forced_item: InstallQueueItemModel | None = None
         self.__omit_requeue = False
 
     @Slot()
@@ -115,7 +115,7 @@ class DownloadsTab(QWidget):
     @Slot(str)
     @Slot(RareGame)
     @Slot(RareEosOverlay)
-    def __add_update(self, update: Union[str, RareGame, RareEosOverlay]):
+    def __add_update(self, update: str | RareGame | RareEosOverlay):
         if isinstance(update, str):
             update = self.rcore.get_game(update)
 

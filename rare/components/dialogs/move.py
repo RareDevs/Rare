@@ -1,5 +1,4 @@
 import os
-from typing import Optional, Tuple, Union
 
 from PySide6.QtCore import QSignalBlocker, QThreadPool, Signal, Slot
 from PySide6.QtGui import QFont, QShowEvent, Qt
@@ -34,7 +33,7 @@ class MoveDialog(ActionDialog):
 
         self.rcore = rcore
         self.core = rcore.core()
-        self.rgame: Optional[RareGame] = rgame
+        self.rgame: RareGame | None = rgame
         self.options: MoveGameModel = MoveGameModel(rgame.app_name, rgame.install_path, rgame.folder_name)
 
         self.target_path_edit = PathEdit(
@@ -128,7 +127,7 @@ class MoveDialog(ActionDialog):
         self.action_button.setEnabled(True)
 
     @staticmethod
-    def __target_path_edit_callback(path: str) -> Tuple[bool, str, int]:
+    def __target_path_edit_callback(path: str) -> tuple[bool, str, int]:
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:
@@ -142,9 +141,7 @@ class MoveDialog(ActionDialog):
         return True, path, IndicatorReasonsCommon.VALID
 
     @Slot(bool, object, object, MovePathEditReasons)
-    def __on_worker_result(
-        self, is_valid: bool, src_size: Union[int, float], dst_size: Union[int, float], reason: MovePathEditReasons
-    ):
+    def __on_worker_result(self, is_valid: bool, src_size: int | float, dst_size: int | float, reason: MovePathEditReasons):
         self.setActive(False, disable=False)
         self.set_size_labels(src_size, dst_size)
         self.action_button.setEnabled(False)
@@ -162,7 +159,7 @@ class MoveDialog(ActionDialog):
         self.set_error_labels(error, reason)
 
     @staticmethod
-    def __set_size_label(label: QLabel, value: Union[int, float, str]):
+    def __set_size_label(label: QLabel, value: int | float | str):
         is_numeric = isinstance(value, (int, float))
         font = label.font()
         font.setBold(is_numeric)
@@ -171,7 +168,7 @@ class MoveDialog(ActionDialog):
         text = format_size(value) if is_numeric else value
         label.setText(text)
 
-    def set_size_labels(self, required: Union[int, float, str], available: Union[int, float, str]):
+    def set_size_labels(self, required: int | float | str, available: int | float | str):
         self.__set_size_label(self.ui.required_space_text, required)
         self.__set_size_label(self.ui.available_space_text, available)
 

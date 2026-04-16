@@ -1,7 +1,6 @@
 from collections import deque
 from enum import IntEnum
 from logging import getLogger
-from typing import Deque, Optional
 
 from legendary.models.game import Game, InstalledGame
 from PySide6.QtCore import Qt, Signal, Slot
@@ -45,7 +44,7 @@ class UpdateGroup(QGroupBox):
 
         self.imgmgr = imgmgr
 
-    def __find_widget(self, app_name: str) -> Optional[UpdateWidget]:
+    def __find_widget(self, app_name: str) -> UpdateWidget | None:
         return self.__container.findChild(UpdateWidget, name=widget_object_name(UpdateWidget, app_name))
 
     def count(self) -> int:
@@ -112,9 +111,9 @@ class QueueGroup(QGroupBox):
 
         self.core = core
         self.imgmgr = imgmgr
-        self.__queue: Deque[str] = deque()
+        self.__queue: deque[str] = deque()
 
-    def __find_widget(self, app_name: str) -> Optional[QueueWidget]:
+    def __find_widget(self, app_name: str) -> QueueWidget | None:
         return self.__container.findChild(QueueWidget, name=widget_object_name(QueueWidget, app_name))
 
     def count(self) -> int:

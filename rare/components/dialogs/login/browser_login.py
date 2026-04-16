@@ -1,5 +1,4 @@
 import json
-from typing import Tuple
 
 from legendary.utils import webview_login
 from PySide6.QtCore import QProcess, QUrl, Slot
@@ -49,7 +48,7 @@ class BrowserLogin(LoginFrame):
         return self.auth_edit.is_valid
 
     @staticmethod
-    def sid_edit_callback(text) -> Tuple[bool, str, int]:
+    def sid_edit_callback(text) -> tuple[bool, str, int]:
         if text:
             text = text.strip()
             if text.startswith('{') and text.endswith('}'):

@@ -203,7 +203,7 @@ class RareWindow(QMainWindow):
     def timer_finished(self):
         file_path = lock_file()
         if os.path.exists(file_path):
-            with open(file_path, 'r') as file:
+            with open(file_path) as file:
                 action = file.read()
             if action.startswith('show'):
                 self.show()

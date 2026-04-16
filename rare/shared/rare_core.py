@@ -2,9 +2,10 @@ import configparser
 import os
 import time
 from argparse import Namespace
+from collections.abc import Callable, Iterable, Iterator
 from itertools import chain
 from logging import getLogger
-from typing import Callable, Dict, Iterable, Iterator, List, Optional, Set, Tuple, Union
+from typing import Optional
 
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile
@@ -53,11 +54,11 @@ class RareCore(QObject):
         super(RareCore, self).__init__()
         self.logger = getLogger(type(self).__name__)
         self.__settings = settings
-        self.__args: Optional[Namespace] = None
-        self.__signals: Optional[GlobalSignals] = None
-        self.__core: Optional[LegendaryCore] = None
-        self.__image_manager: Optional[ImageManager] = None
-        self.__wrappers: Optional[Wrappers] = None
+        self.__args: Namespace | None = None
+        self.__signals: GlobalSignals | None = None
+        self.__core: LegendaryCore | None = None
+        self.__image_manager: ImageManager | None = None
+        self.__wrappers: Wrappers | None = None
 
         self.__start_time = time.perf_counter()
 
@@ -68,14 +69,14 @@ class RareCore(QObject):
         self.image_manager(init=True)
         self.__wrappers = Wrappers()
 
-        self.workers_disk: List[QueueWorker] = []
+        self.workers_disk: list[QueueWorker] = []
         self.threadpool_disk = QThreadPool()
         self.threadpool_disk.setMaxThreadCount(2)
-        self.workers_net: List[QueueWorker] = []
+        self.workers_net: list[QueueWorker] = []
         self.threadpool_net = QThreadPool()
         self.threadpool_net.setMaxThreadCount(2)
 
-        self.__library: Dict[str, RareGame] = {}
+        self.__library: dict[str, RareGame] = {}
         self.__eos_overlay = RareEosOverlay(self.__settings, self.__core, self.__image_manager, EOSOverlayApp)
         self.__eos_overlay.signals.game.install.connect(self.__signals.game.install)
         self.__eos_overlay.signals.game.uninstall.connect(self.__signals.game.uninstall)
@@ -147,7 +148,7 @@ class RareCore(QObject):
             self.__signals = GlobalSignals()
         return self.__signals
 
-    def args(self, args: Namespace = None) -> Optional[Namespace]:
+    def args(self, args: Namespace = None) -> Namespace | None:
         if self.__args is None and args is None:
             raise RuntimeError('Uninitialized use of ArgumentsSingleton')
         if self.__args is not None and args is not None:
@@ -185,7 +186,7 @@ class RareCore(QObject):
                     self.__core.lgd.config.add_section(section)
 
             # Set some platform defaults if unset
-            def check_config(option: str, accepted: Set = None) -> bool:
+            def check_config(option: str, accepted: set = None) -> bool:
                 _exists = self.__core.lgd.config.has_option('Legendary', option)
                 _value = self.__core.lgd.config.get('Legendary', option, fallback='')
                 _accepted = _value in accepted if accepted is not None else True
@@ -289,7 +290,7 @@ class RareCore(QObject):
             rgame.update_igame()
             self.logger.info(f'{rgame.app_title} needs verification')
 
-    def get_game(self, app_name: str) -> Union[RareEosOverlay, RareGame]:
+    def get_game(self, app_name: str) -> RareEosOverlay | RareGame:
         if app_name == EOSOverlayApp.app_name:
             return self.__eos_overlay
         return self.__library[app_name]
@@ -328,7 +329,7 @@ class RareCore(QObject):
             self.__add_game(rgame)
         return rgame
 
-    def __add_games_and_dlcs(self, games: List[Game], dlcs_dict: Dict[str, List]) -> None:
+    def __add_games_and_dlcs(self, games: list[Game], dlcs_dict: dict[str, list]) -> None:
         length = len(games)
         for idx, game in enumerate(games):
             rgame = self.__create_or_update_rgame(game)
@@ -356,7 +357,7 @@ class RareCore(QObject):
         self.progress.emit(self.__fetch_progress, message)
 
     @Slot(object, int)
-    def __on_fetch_result(self, result: Tuple, result_type: int):
+    def __on_fetch_result(self, result: tuple, result_type: int):
         if result_type == FetchWorker.Result.GAMESDLCS:
             self.__add_games_and_dlcs(*result)
             self.__fetched_games_dlcs = True
@@ -410,12 +411,12 @@ class RareCore(QObject):
         QThreadPool.globalInstance().start(runtime_assets_worker)
 
     def __fetch_saves(self) -> None:
-        saves_dict: Dict[str, List[SaveGameFile]] = {}
+        saves_dict: dict[str, list[SaveGameFile]] = {}
         try:
             with timelogger(self.logger, 'Request saves'):
                 saves_list = self.__core.get_save_games()
             for s in saves_list:
-                if s.app_name not in saves_dict.keys():
+                if s.app_name not in saves_dict:
                     saves_dict[s.app_name] = [s]
                 else:
                     saves_dict[s.app_name].append(s)
@@ -443,7 +444,7 @@ class RareCore(QObject):
         self.resolve_origin()
 
     @property
-    def game_tags(self) -> Tuple[str, ...]:
+    def game_tags(self) -> tuple[str, ...]:
         default_tags = ('favorite', 'backlog', 'completed', 'hidden')
         custom_tags = set()
         for rgame in self.games:
@@ -478,7 +479,7 @@ class RareCore(QObject):
             yield game.game
 
     @property
-    def dlcs(self) -> Dict[str, set[RareGame]]:
+    def dlcs(self) -> dict[str, set[RareGame]]:
         """!
         RareGames that ARE DLCs themselves
         """

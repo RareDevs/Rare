@@ -1,5 +1,4 @@
 import os
-from typing import Type, Union
 
 import qstylizer.style
 from PySide6.QtCore import QObject
@@ -15,7 +14,7 @@ compressAlgo = 'zlib'
 compressThreshold = 0
 
 
-def css_name(widget: Union[wrappertype, QObject, Type], subwidget: str = ''):
+def css_name(widget: wrappertype | QObject | type, subwidget: str = ''):
     return f'#{widget_object_name(widget, "")}{subwidget}'
 
 

@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from enum import IntEnum
 from logging import getLogger
-from typing import Dict, List, Optional, Tuple, Union
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QDoubleValidator, QIntValidator, QShowEvent
@@ -24,10 +23,10 @@ class OverlayLineEdit(QLineEdit):
     def setDefault(self):
         self.setText('')
 
-    def getValue(self) -> Optional[str]:
+    def getValue(self) -> str | None:
         return f'{self.option}={text}' if (text := self.text()) else None
 
-    def setValue(self, options: Dict[str, str]):
+    def setValue(self, options: dict[str, str]):
         if (value := options.get(self.option, None)) is not None:
             self.setText(value)
             options.pop(self.option)
@@ -44,10 +43,10 @@ class OverlayComboBox(QComboBox):
     def setDefault(self):
         self.setCurrentIndex(0)
 
-    def getValue(self) -> Optional[str]:
+    def getValue(self) -> str | None:
         return f'{self.option}={self.currentData(Qt.ItemDataRole.UserRole)}' if self.currentIndex() > 0 else None
 
-    def setValue(self, options: Dict[str, str]):
+    def setValue(self, options: dict[str, str]):
         if (value := options.get(self.option, None)) is not None:
             self.setCurrentIndex(self.findData(value, Qt.ItemDataRole.UserRole))
             options.pop(self.option)
@@ -62,7 +61,7 @@ class OverlayCheckBox(QCheckBox):
         title: str,
         desc: str = '',
         default_enabled: bool = False,
-        values: Tuple = None,
+        values: tuple = None,
         parent=None,
     ):
         self.option = option
@@ -75,7 +74,7 @@ class OverlayCheckBox(QCheckBox):
     def setDefault(self):
         self.setChecked(self.default_enabled)
 
-    def getValue(self) -> Optional[str]:
+    def getValue(self) -> str | None:
         # lk: return the check state in case of non-default, otherwise None
         checked = self.isChecked()
         value = (
@@ -85,7 +84,7 @@ class OverlayCheckBox(QCheckBox):
         )
         return value if checked ^ self.default_enabled else None
 
-    def setValue(self, options: Dict[str, str]):
+    def setValue(self, options: dict[str, str]):
         if options.get(self.option, None) is not None:
             if self.values:
                 self.setChecked(bool(self.values.index(options[self.option])))
@@ -102,14 +101,14 @@ class OverlayStringInput(OverlayLineEdit):
 
 
 class OverlayNumberInput(OverlayLineEdit):
-    def __init__(self, option: str, placeholder: Union[int, float], parent=None):
+    def __init__(self, option: str, placeholder: int | float, parent=None):
         super().__init__(option, str(placeholder), parent=parent)
         validator = QDoubleValidator(self) if isinstance(placeholder, float) else QIntValidator(self)
         self.setValidator(validator)
 
 
 class OverlaySelectInput(OverlayComboBox):
-    def __init__(self, option: str, values: Tuple, parent=None):
+    def __init__(self, option: str, values: tuple, parent=None):
         super().__init__(option, parent=parent)
         for item in values:
             text, data = item
@@ -139,15 +138,15 @@ class OverlaySettings(QGroupBox):
         self.ui.overlay_state_combo.addItem(self.tr('Enabled (defaults)'), ActivationStates.DEFAULTS)
         self.ui.overlay_state_combo.addItem(self.tr('Enabled (custom)'), ActivationStates.CUSTOM)
 
-        self.control_key: Union[str, None] = None
-        self.config_key: Union[str, None] = None
-        self.force_disabled: Union[str, None] = None
-        self.force_defaults: Union[str, None] = None
-        self.separator: Union[str, None] = None
-        self.grid_row_items: Union[int, None] = None
+        self.control_key: str | None = None
+        self.config_key: str | None = None
+        self.force_disabled: str | None = None
+        self.force_defaults: str | None = None
+        self.separator: str | None = None
+        self.grid_row_items: int | None = None
         self.app_name: str = 'default'
 
-        self.option_widgets: List[Union[OverlayCheckBox, OverlayLineEdit, OverlayComboBox]] = []
+        self.option_widgets: list[OverlayCheckBox | OverlayLineEdit | OverlayComboBox] = []
         # self.checkboxes: Dict[str, OverlayCheckBox] = {}
         # self.values: Dict[str, Union[OverlayLineEdit, OverlayComboBox]] = {}
 
@@ -158,9 +157,9 @@ class OverlaySettings(QGroupBox):
 
     def setupWidget(
         self,
-        grid_map: List[OverlayCheckBox],
-        left_form_map: List[Tuple[Union[OverlayLineEdit, OverlayComboBox], str]],
-        right_form_map: List[Tuple[Union[OverlayLineEdit, OverlayComboBox], str]],
+        grid_map: list[OverlayCheckBox],
+        left_form_map: list[tuple[OverlayLineEdit | OverlayComboBox, str]],
+        right_form_map: list[tuple[OverlayLineEdit | OverlayComboBox, str]],
         label: str,
         control_key: str,
         config_key: str,
@@ -368,7 +367,7 @@ class DxvkNvapiDrsSettings(OverlaySettings):
         super(DxvkNvapiDrsSettings, self).__init__(parent=parent)
         self.setTitle(self.tr('DXVK NVAPI Driver Settings'))
 
-        def preset_range(start: str, end: str) -> Tuple[Tuple, ...]:
+        def preset_range(start: str, end: str) -> tuple[tuple, ...]:
             return tuple(tuple(f'{p}preset_{chr(c)}' for p in ('', 'render_')) for c in range(ord(start), ord(end) + 1))
 
         ngx_rr_presets = (
@@ -511,9 +510,7 @@ class MangoHudSettings(OverlaySettings):
             config.remove_envvar(self.app_name, self.control_key)
         elif state == ActivationStates.DISABLED:
             config.set_envvar(self.app_name, self.control_key, '0')
-        elif state == ActivationStates.DEFAULTS:
-            config.set_envvar(self.app_name, self.control_key, '1')
-        elif state == ActivationStates.CUSTOM:
+        elif state == ActivationStates.DEFAULTS or state == ActivationStates.CUSTOM:
             config.set_envvar(self.app_name, self.control_key, '1')
         self.environ_changed.emit(self.control_key)
 

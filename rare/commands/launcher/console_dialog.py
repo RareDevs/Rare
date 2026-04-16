@@ -1,5 +1,3 @@
-from typing import Dict, Union
-
 from PySide6.QtCore import QProcessEnvironment, QSize, Qt, Signal
 from PySide6.QtGui import QCloseEvent, QCursor, QFont, QTextCursor
 from PySide6.QtWidgets import (
@@ -104,7 +102,7 @@ class ConsoleDialog(QDialog):
                 f.close()
                 self.save_button.setText(self.tr('Saved'))
 
-    def set_env(self, env: Dict):
+    def set_env(self, env: dict):
         self.env_variables = dict_to_qprocenv(env)
 
     def show_env(self):
@@ -123,7 +121,7 @@ class ConsoleDialog(QDialog):
     def log_stderr(self, text: str):
         self.console_edit.error(text)
 
-    def on_process_exit(self, app_title: str, status: Union[int, str]):
+    def on_process_exit(self, app_title: str, status: int | str):
         self.error(self.tr('Application finished with exit code "{}"').format(status))
         self.accept_close = True
 

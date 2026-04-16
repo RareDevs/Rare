@@ -1,6 +1,5 @@
 import os
 from logging import getLogger
-from typing import Tuple
 
 from legendary.models.game import Game, InstalledGame
 from PySide6.QtCore import Qt, Slot
@@ -43,7 +42,7 @@ class LocalLaunchSettings(LaunchSettingsBase):
         self.offline_combo.addItem(self.tr('Yes'), 'true')
         self.offline_combo.currentIndexChanged.connect(self.__offline_changed)
 
-        self.override_exe_name_filters: Tuple[str, ...] = (
+        self.override_exe_name_filters: tuple[str, ...] = (
             '*.exe',
             '*.app',
             '*.bat',
@@ -99,7 +98,7 @@ class LocalLaunchSettings(LaunchSettingsBase):
         data = self.skip_update_combo.itemData(index, Qt.ItemDataRole.UserRole)
         config.adjust_option(self.app_name, 'skip_update_check', data)
 
-    def __override_exe_edit_callback(self, path: str) -> Tuple[bool, str, int]:
+    def __override_exe_edit_callback(self, path: str) -> tuple[bool, str, int]:
         if not path or self.igame is None:
             return True, path, IndicatorReasonsCommon.VALID
         if not os.path.isabs(path):

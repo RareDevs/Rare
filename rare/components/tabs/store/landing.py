@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 from logging import getLogger
-from typing import List
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QHideEvent, QShowEvent
@@ -112,7 +111,7 @@ class LandingWidget(QWidget, SideTabContents):
         # TODO: Implement tab unloading
         return super().hideEvent(a0)
 
-    def _update_wishlist_discounts(self, wishlist: List[WishlistItemModel]):
+    def _update_wishlist_discounts(self, wishlist: list[WishlistItemModel]):
         for w in self.discounts_group.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.discounts_group.layout().removeWidget(w)
             w.disconnect(w)
@@ -126,7 +125,7 @@ class LandingWidget(QWidget, SideTabContents):
         self.discounts_group.setVisible(have_discounts)
         self.discounts_group.loading(False)
 
-    def _update_free_games(self, free_games: List[CatalogOfferModel]):
+    def _update_free_games(self, free_games: list[CatalogOfferModel]):
         for w in self.free_games_now.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.free_games_now.layout().removeWidget(w)
             w.disconnect(w)

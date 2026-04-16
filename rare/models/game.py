@@ -6,7 +6,7 @@ from argparse import Namespace
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from threading import Lock
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Optional
 
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame
@@ -30,15 +30,15 @@ from rare.utils.workarounds import apply_workarounds
 @dataclass
 class RareGameMetadata:
     queued: bool = False
-    queue_pos: Optional[int] = None
+    queue_pos: int | None = None
     last_played: datetime = datetime.min.replace(tzinfo=timezone.utc)
     achievements_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
     grant_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
-    steam_appid: Optional[str] = None
-    steam_grade: Optional[str] = None
+    steam_appid: str | None = None
+    steam_grade: str | None = None
     steam_date: datetime = datetime.min.replace(tzinfo=timezone.utc)
-    steam_shortcut: Optional[int] = None
-    tags: Tuple[str, ...] = field(default_factory=tuple)
+    steam_shortcut: int | None = None
+    tags: tuple[str, ...] = field(default_factory=tuple)
 
     # For compatibility with previously created game metadata
     @staticmethod
@@ -47,17 +47,17 @@ class RareGameMetadata:
         return dt.replace(tzinfo=timezone.utc)
 
     @classmethod
-    def from_dict(cls, data: Dict):
+    def from_dict(cls, data: dict):
         return cls(
             queued=data.get('queued', False),
-            queue_pos=data.get('queue_pos', None),
+            queue_pos=data.get('queue_pos'),
             last_played=RareGameMetadata.parse_date(data.get('last_played', '')),
             achievements_date=RareGameMetadata.parse_date(data.get('achievements_date', '')),
             grant_date=RareGameMetadata.parse_date(data.get('grant_date', '')),
             steam_appid=str(appid) if (appid := data.get('steam_appid', '')) else None,
-            steam_grade=data.get('steam_grade', None),
+            steam_grade=data.get('steam_grade'),
             steam_date=RareGameMetadata.parse_date(data.get('steam_date', '')),
-            steam_shortcut=data.get('steam_shortcut', None),
+            steam_shortcut=data.get('steam_shortcut'),
             tags=data.get('tags', ()),
         )
 
@@ -91,8 +91,8 @@ class RareGame(RareGameSlim):
         game: Game,
     ):
         super(RareGame, self).__init__(settings, legendary_core, game)
-        self.__origin_install_path: Optional[str] = None
-        self.__origin_install_size: Optional[int] = None
+        self.__origin_install_path: str | None = None
+        self.__origin_install_size: int | None = None
 
         self.image_manager = image_manager
 
@@ -105,13 +105,13 @@ class RareGame(RareGameSlim):
         self.__load_metadata()
         self.grant_date()
 
-        self.owned_dlcs: Set[RareGame] = set()
-        self.__parent_rgame: Optional[RareGame] = None
+        self.owned_dlcs: set[RareGame] = set()
+        self.__parent_rgame: RareGame | None = None
 
         if self.has_update:
             self.logger.info(f'Update available for game: {self.app_name} ({self.app_title})')
 
-        self.__worker: Optional[QRunnable] = None
+        self.__worker: QRunnable | None = None
         self.progress: int = 0
         self.signals.progress.start.connect(self.__on_progress_update)
         self.signals.progress.refresh.connect(self.__on_progress_update)
@@ -148,7 +148,7 @@ class RareGame(RareGameSlim):
     def __on_progress_update(self, progress: int = 0):
         self.progress = progress
 
-    def get_worker(self) -> Optional[QRunnable]:
+    def get_worker(self) -> QRunnable | None:
         return self.__worker
 
     @Slot(object)
@@ -183,15 +183,15 @@ class RareGame(RareGameSlim):
         self.state = RareGame.State.IDLE
         self.signals.game.finished.emit(self.app_name)
 
-    __metadata_json: Optional[Dict] = None
+    __metadata_json: dict | None = None
     __metadata_lock: Lock = Lock()
 
-    def __load_metadata_json(self) -> Optional[Dict]:
+    def __load_metadata_json(self) -> dict | None:
         if RareGame.__metadata_json is None:
             metadata = {}
             file = os.path.join(data_dir(), 'game_meta.json')
             try:
-                with open(file, 'r', encoding='utf-8') as f:
+                with open(file, encoding='utf-8') as f:
                     metadata = json.load(f)
             except FileNotFoundError:
                 self.logger.info('%s does not exist', file)
@@ -203,7 +203,7 @@ class RareGame(RareGameSlim):
 
     def __load_metadata(self):
         with RareGame.__metadata_lock:
-            metadata: Dict = self.__load_metadata_json()
+            metadata: dict = self.__load_metadata_json()
             # pylint: disable=unsupported-membership-test
             if self.app_name in metadata:
                 # pylint: disable=unsubscriptable-object
@@ -211,7 +211,7 @@ class RareGame(RareGameSlim):
 
     def __save_metadata(self):
         with RareGame.__metadata_lock:
-            metadata: Dict = self.__load_metadata_json()
+            metadata: dict = self.__load_metadata_json()
             # pylint: disable=unsupported-assignment-operation
             metadata[self.app_name] = vars(self.metadata)
             with open(os.path.join(data_dir(), 'game_meta.json'), 'w+', encoding='utf-8') as file:
@@ -256,7 +256,7 @@ class RareGame(RareGameSlim):
         return self.igame.install_size if self.igame is not None else 0
 
     @property
-    def install_path(self) -> Optional[str]:
+    def install_path(self) -> str | None:
         if self.is_origin:
             # TODO Linux is also C:\\...
             return self.__origin_install_path
@@ -471,7 +471,7 @@ class RareGame(RareGameSlim):
         )
 
     @property
-    def save_path(self) -> Optional[str]:
+    def save_path(self) -> str | None:
         return super(RareGame, self).save_path
 
     @save_path.setter
@@ -482,7 +482,7 @@ class RareGame(RareGameSlim):
             self.signals.widget.refresh.emit()
 
     @property
-    def achievements(self) -> Optional[Namespace]:
+    def achievements(self) -> Namespace | None:
         if not self.game.achievements or not self.game.achievements.achievements:
             self.logger.info('No achievements found for %s (%s)', self.app_name, self.app_title)
             return None
@@ -506,7 +506,7 @@ class RareGame(RareGameSlim):
         return ret
 
     @property
-    def eulas(self) -> List:
+    def eulas(self) -> list:
         eulas = self.game.metadata.get('eulaIds') or ['$']
 
         pattern = r'\w+'
@@ -525,7 +525,7 @@ class RareGame(RareGameSlim):
 
         return not_accepted_eulas
 
-    def sdl_data(self, platform: str) -> Optional[Dict[str, Dict]]:
+    def sdl_data(self, platform: str) -> dict[str, dict] | None:
         sdl_data = {}
 
         sdl_name = get_sdl_appname(self.app_name)
@@ -571,7 +571,7 @@ class RareGame(RareGameSlim):
         self.signals.widget.refresh.emit()
 
     @property
-    def steam_appid(self) -> Optional[str]:
+    def steam_appid(self) -> str | None:
         return self.metadata.steam_appid
 
     @steam_appid.setter
@@ -623,11 +623,11 @@ class RareGame(RareGameSlim):
         return self.metadata.grant_date
 
     @property
-    def tags(self) -> Tuple[str, ...]:
+    def tags(self) -> tuple[str, ...]:
         return tuple(tag for tag in map(lambda x: x.lower().strip(), self.metadata.tags) if bool(tag))
 
     @tags.setter
-    def tags(self, tags: Tuple[str, ...]) -> None:
+    def tags(self, tags: tuple[str, ...]) -> None:
         self.metadata.tags = tuple(tag for tag in map(lambda x: x.lower().strip(), tags) if bool(tag))
         self.logger.debug(f'Saving tags for {self.game.app_title}: {self.metadata.tags}')
         self.__save_metadata()
@@ -738,8 +738,8 @@ class RareGame(RareGameSlim):
         debug: bool = False,
         offline: bool = False,
         skip_update_check: bool = False,
-        wine_bin: Optional[str] = None,
-        wine_pfx: Optional[str] = None,
+        wine_bin: str | None = None,
+        wine_pfx: str | None = None,
     ) -> bool:
         if not self.can_launch:
             return False
@@ -800,7 +800,7 @@ class RareEosOverlay(RareGameBase):
         self.settings = settings
         self.image_manager = image_manager
 
-        self.igame: Optional[InstalledGame] = self.core.lgd.get_overlay_install_info()
+        self.igame: InstalledGame | None = self.core.lgd.get_overlay_install_info()
         self.image_manager.download_image(game, self._update_pixmap, 0, False)
 
     @Slot()
@@ -828,7 +828,7 @@ class RareEosOverlay(RareGameBase):
         # and legendary does it too during login
         return self.core.overlay_update_available
 
-    def is_enabled(self, prefix: Optional[str] = None) -> bool:
+    def is_enabled(self, prefix: str | None = None) -> bool:
         try:
             reg_paths = eos.query_registry_entries(prefix)
         except ValueError as e:
@@ -836,7 +836,7 @@ class RareEosOverlay(RareGameBase):
             return False
         return reg_paths['overlay_path'] and self.core.is_overlay_install(reg_paths['overlay_path'])
 
-    def active_path(self, prefix: Optional[str] = None) -> str:
+    def active_path(self, prefix: str | None = None) -> str:
         try:
             path = eos.query_registry_entries(prefix)['overlay_path']
         except ValueError as e:
@@ -844,7 +844,7 @@ class RareEosOverlay(RareGameBase):
             return ''
         return path if path and self.core.is_overlay_install(path) else ''
 
-    def available_paths(self, prefix: Optional[str] = None) -> List[str]:
+    def available_paths(self, prefix: str | None = None) -> list[str]:
         try:
             installs = self.core.search_overlay_installs(prefix)
         except ValueError as e:
@@ -852,7 +852,7 @@ class RareEosOverlay(RareGameBase):
             return []
         return installs
 
-    def enable(self, prefix: Optional[str] = None, path: Optional[str] = None) -> bool:
+    def enable(self, prefix: str | None = None, path: str | None = None) -> bool:
         if self.is_enabled(prefix):
             return False
         if not path:
@@ -877,7 +877,7 @@ class RareEosOverlay(RareGameBase):
         self.logger.info(f'Enabled overlay at: {path} for prefix: {prefix}')
         return True
 
-    def disable(self, prefix: Optional[str] = None) -> bool:
+    def disable(self, prefix: str | None = None) -> bool:
         if not self.is_enabled(prefix):
             return False
         self.logger.info(f'Disabling overlay (removing registry keys) for prefix: {prefix}')

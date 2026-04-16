@@ -1,7 +1,6 @@
 import os
 import platform
 from logging import getLogger
-from typing import Optional
 
 from PySide6.QtCore import (
     QObject,
@@ -56,7 +55,7 @@ class CheckForUpdateWorker(QRunnable):
 
 
 class EosPrefixWidget(QFrame):
-    def __init__(self, overlay: RareEosOverlay, prefix: Optional[str], parent=None):
+    def __init__(self, overlay: RareEosOverlay, prefix: str | None, parent=None):
         super(EosPrefixWidget, self).__init__(parent=parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -211,7 +210,7 @@ class EosGroup(QGroupBox):
         self.ui.uninstall_button.clicked.connect(self.uninstall_overlay)
 
         self.threadpool = QThreadPool.globalInstance()
-        self.worker: Optional[CheckForUpdateWorker] = None
+        self.worker: CheckForUpdateWorker | None = None
 
     def showEvent(self, e: QShowEvent) -> None:
         if e.spontaneous():

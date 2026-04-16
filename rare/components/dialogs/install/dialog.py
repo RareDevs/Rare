@@ -1,7 +1,6 @@
 import os
 import platform as pf
 import shutil
-from typing import Optional, Tuple, Union
 
 from PySide6.QtCore import Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -53,8 +52,8 @@ class InstallDialog(ActionDialog):
         self.core = rgame.core
         self.rgame = rgame
         self._options: InstallOptionsModel = options
-        self._download: Optional[InstallDownloadModel] = None
-        self._queue_item: Optional[InstallQueueItemModel] = None
+        self._download: InstallDownloadModel | None = None
+        self._queue_item: InstallQueueItemModel | None = None
 
         self.selectable = InstallDialogSelective(rgame, parent=self)
         self.selectable.stateChanged.connect(self._on_option_changed)
@@ -265,7 +264,7 @@ class InstallDialog(ActionDialog):
             self._options.install_prereqs = state != Qt.CheckState.Unchecked
 
     @staticmethod
-    def _install_dir_edit_callback(path: str) -> Tuple[bool, str, int]:
+    def _install_dir_edit_callback(path: str) -> tuple[bool, str, int]:
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:
@@ -350,7 +349,7 @@ class InstallDialog(ActionDialog):
             self.open()
 
     @staticmethod
-    def _set_size_label(label: QLabel, value: Union[int, float, str]):
+    def _set_size_label(label: QLabel, value: int | float | str):
         is_numeric = isinstance(value, (int, float))
         font = label.font()
         font.setBold(is_numeric)
@@ -359,7 +358,7 @@ class InstallDialog(ActionDialog):
         text = format_size(value) if is_numeric else value
         label.setText(text)
 
-    def set_size_labels(self, download: Union[int, float, str], install: Union[int, float, str]):
+    def set_size_labels(self, download: int | float | str, install: int | float | str):
         self._set_size_label(self.ui.download_size_text, download)
         self._set_size_label(self.ui.install_size_text, install)
 

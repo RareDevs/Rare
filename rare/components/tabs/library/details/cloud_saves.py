@@ -2,7 +2,6 @@ import os
 import platform
 from datetime import datetime
 from logging import getLogger
-from typing import Tuple
 
 from legendary.models.game import SaveGameStatus
 from PySide6.QtCore import Qt, QThreadPool, Slot
@@ -94,7 +93,7 @@ class CloudSaves(QWidget, SideTabContents):
         layout.addWidget(self.info_label)
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding))
 
-    def edit_save_path(self, text: str) -> Tuple[bool, str, int]:
+    def edit_save_path(self, text: str) -> tuple[bool, str, int]:
         # Validate against raw_save_path (usefull when the user types the path manually)
         # path = os.path.normpath(text.lower()).split("/")
         # spec = os.path.normpath(self.save_path_spec.lower()).split("/")

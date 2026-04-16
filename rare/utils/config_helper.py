@@ -1,13 +1,14 @@
 import os
+from collections.abc import Callable
 from configparser import SectionProxy
-from typing import Any, Callable, Optional, Set, Tuple
+from typing import Any
 
 from legendary.models.config import LGDConf
 
 from rare.lgndr.core import LegendaryCore
 
-_config: Optional[LGDConf] = None
-_save_config: Optional[Callable[[], None]] = None
+_config: LGDConf | None = None
+_save_config: Callable[[], None] | None = None
 
 
 def init_config_handler(core: LegendaryCore):
@@ -117,13 +118,13 @@ def adjust_compat_data_path(app_name: str, value: str) -> None:
     adjust_envvar(app_name, 'STEAM_COMPAT_DATA_PATH', value)
 
 
-def get_compat_data_path(app_name: Optional[str] = None, fallback: Any = None) -> str:
+def get_compat_data_path(app_name: str | None = None, fallback: Any = None) -> str:
     _compat = get_envvar(app_name, 'STEAM_COMPAT_DATA_PATH', fallback=fallback)
     # return os.path.join(_compat, "pfx") if _compat else fallback
     return _compat
 
 
-def get_compat_data_path_with_global(app_name: Optional[str] = None, fallback: Any = None) -> str:
+def get_compat_data_path_with_global(app_name: str | None = None, fallback: Any = None) -> str:
     _compat = get_envvar_with_global(app_name, 'STEAM_COMPAT_DATA_PATH', fallback=fallback)
     # return os.path.join(_compat, "pfx") if _compat else fallback
     return _compat
@@ -133,8 +134,8 @@ def prefix_exists(pfx: str) -> bool:
     return os.path.isdir(pfx) and os.path.isfile(os.path.join(pfx, 'user.reg'))
 
 
-def _get_prefixes(lookup_fn: Callable[[SectionProxy], str]) -> Set[Tuple[str, str]]:
-    _prefixes: Set[Tuple[str, str]] = set()
+def _get_prefixes(lookup_fn: Callable[[SectionProxy], str]) -> set[tuple[str, str]]:
+    _prefixes: set[tuple[str, str]] = set()
     for name, section in _config.items():
         pfx = lookup_fn(section)
         if pfx:
@@ -143,19 +144,19 @@ def _get_prefixes(lookup_fn: Callable[[SectionProxy], str]) -> Set[Tuple[str, st
     return {(p, n) for p, n in _prefixes if prefix_exists(p)}
 
 
-def get_wine_prefixes() -> Set[Tuple[str, str]]:
+def get_wine_prefixes() -> set[tuple[str, str]]:
     return _get_prefixes(lambda s: s.get('WINEPREFIX') or s.get('wine_prefix'))
 
 
-def get_proton_prefixes() -> Set[Tuple[str, str]]:
+def get_proton_prefixes() -> set[tuple[str, str]]:
     return _get_prefixes(lambda s: os.path.join(compat_path, 'pfx') if (compat_path := s.get('STEAM_COMPAT_DATA_PATH')) else '')
 
 
-def get_prefixes() -> Set[Tuple[str, str]]:
+def get_prefixes() -> set[tuple[str, str]]:
     return get_wine_prefixes().union(get_proton_prefixes())
 
 
-def get_prefix(app_name: str = 'default') -> Optional[str]:
+def get_prefix(app_name: str = 'default') -> str | None:
     _compat_path = _config.get(f'{app_name}.env', 'STEAM_COMPAT_DATA_PATH', fallback=None)
     if _compat_path and prefix_exists(_compat_prefix := os.path.join(_compat_path, 'pfx')):
         return _compat_prefix

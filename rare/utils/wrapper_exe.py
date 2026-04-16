@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Tuple
 
 import requests
 from orjson import orjson
@@ -8,7 +7,7 @@ from rare.utils import config_helper as config
 from rare.utils.paths import data_dir, runtime_assets_json
 
 
-def version_tuple(version: str) -> Tuple:
+def version_tuple(version: str) -> tuple:
     return tuple(version.lstrip('v').split('.'))
 
 

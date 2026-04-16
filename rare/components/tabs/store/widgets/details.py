@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import List
 
 from PySide6.QtCore import Qt, QUrl, Signal, Slot
 from PySide6.QtGui import QDesktopServices, QKeyEvent
@@ -32,7 +31,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
     back_clicked: Signal = Signal()
 
     # TODO Design
-    def __init__(self, installed: List, store_api: StoreAPI, parent=None):
+    def __init__(self, installed: list, store_api: StoreAPI, parent=None):
         super(StoreDetailsWidget, self).__init__(parent=parent)
         self.implements_scrollarea = True
 
@@ -65,7 +64,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
 
         self.setDisabled(False)
 
-    def handle_wishlist_update(self, wishlist: List[CatalogOfferModel]):
+    def handle_wishlist_update(self, wishlist: list[CatalogOfferModel]):
         if wishlist and wishlist[0] == 'error':
             return
         self.wishlist = [game.id for game in wishlist]

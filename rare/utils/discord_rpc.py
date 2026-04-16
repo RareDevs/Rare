@@ -1,7 +1,6 @@
 import platform
 import time
 from logging import getLogger
-from typing import List
 
 from pypresence import Presence, exceptions
 from PySide6.QtCore import QObject, Slot
@@ -40,7 +39,7 @@ class DiscordRPC(QObject):
 
     @Slot()
     @Slot(list)
-    def update_settings(self, game_running: List = None):
+    def update_settings(self, game_running: list = None):
         rpc_mode = DiscordRPCMode(self.settings.get_value(app_settings.discord_rpc_mode))
         if rpc_mode == DiscordRPCMode.NEVER:
             self.remove_rpc()

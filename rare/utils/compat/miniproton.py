@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 def log(msg: Any):
@@ -12,7 +12,7 @@ def log(msg: Any):
     sys.stderr.flush()
 
 
-def run_proc(args: List, env: Dict):
+def run_proc(args: list, env: dict):
     return subprocess.call(args, env=env, stderr=sys.stderr, stdout=sys.stdout)
 
 

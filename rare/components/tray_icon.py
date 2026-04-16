@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import List
 
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QAction, QIcon
@@ -46,7 +45,7 @@ class TrayIcon(QSystemTrayIcon):
         self.exit_action.triggered.connect(self._on_exit_triggered)
         self.menu.addAction(self.exit_action)
 
-        self.game_actions: List[QAction] = []
+        self.game_actions: list[QAction] = []
         self.update_actions()
 
         self.setContextMenu(self.menu)
@@ -55,7 +54,7 @@ class TrayIcon(QSystemTrayIcon):
         self.signals.application.notify.connect(self.notify)
         self.signals.application.update_tray.connect(self.update_actions)
 
-    def last_played(self) -> List:
+    def last_played(self) -> list:
         last_played = [game for game in self.rcore.games if (game.metadata and game.is_installed)]
         last_played.sort(key=lambda g: g.metadata.last_played, reverse=True)
         return last_played[:5]

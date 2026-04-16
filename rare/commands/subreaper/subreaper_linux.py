@@ -5,11 +5,12 @@ import os
 import signal
 import sys
 from argparse import Namespace
+from collections.abc import Generator
 from ctypes import CDLL, byref, c_int, create_string_buffer
 from ctypes.util import find_library
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Generator, List
+from typing import Any
 
 from .util import find_mangohud_bin, find_mangohud_shim
 
@@ -55,7 +56,7 @@ def get_pstree_from_pid(root_pid: int) -> set[int]:
     return descendants
 
 
-def subreaper(args: Namespace, other: List[str]) -> int:
+def subreaper(args: Namespace, other: list[str]) -> int:
     logger = getLogger('subreaper')
     logging.basicConfig(
         format='[%(name)s] %(levelname)s: %(message)s',
@@ -72,7 +73,7 @@ def subreaper(args: Namespace, other: List[str]) -> int:
         for p in pstree:
             os.kill(p, sig)
 
-    command: List[str] = [args.command, *other]
+    command: list[str] = [args.command, *other]
     workdir: str = args.workdir
     child_status: int = 0
 

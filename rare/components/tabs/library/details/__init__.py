@@ -101,7 +101,7 @@ class GameMetadataView(QTreeView, SideTabContents):
         self.setEditTriggers(QTreeView.EditTrigger.NoEditTriggers)
         self.model = QJsonModel()
         self.setModel(self.model)
-        self.rgame: Optional[RareGame] = None
+        self.rgame: RareGame | None = None
 
     def showEvent(self, event: QShowEvent):
         if event.spontaneous():

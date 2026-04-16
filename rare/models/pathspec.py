@@ -1,5 +1,4 @@
 import os
-from typing import List, Union
 
 from legendary.models.game import InstalledGame
 
@@ -29,7 +28,7 @@ class PathSpec:
         return os.path.join(prefix, 'dosdevices/c:', PathSpec.wine_egl_programdata())
 
     @staticmethod
-    def wine_egl_prefixes(results: int = 0) -> Union[List[str], str]:
+    def wine_egl_prefixes(results: int = 0) -> list[str] | str:
         possible_prefixes = get_prefixes()
         prefixes = [
             prefix for prefix, _ in possible_prefixes if os.path.exists(os.path.join(prefix, PathSpec.wine_egl_programdata()))
@@ -57,6 +56,6 @@ class PathSpec:
         if igame is not None:
             self.__egl_path_vars['{installdir}'] = igame.install_path
 
-    def resolve_egl_path_vars(self, path: str) -> Union[str, bytes]:
+    def resolve_egl_path_vars(self, path: str) -> str | bytes:
         cooked_path = (self.__egl_path_vars.get(p.lower(), p) for p in path.split('/'))
         return os.path.join(*cooked_path)

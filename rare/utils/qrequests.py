@@ -1,7 +1,8 @@
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from email.message import Message
 from logging import getLogger
-from typing import Callable, Dict, List, Tuple, TypeVar, Union
+from typing import TypeVar
 
 import orjson
 from PySide6.QtCore import QObject, QUrl, QUrlQuery, Signal, Slot
@@ -14,16 +15,16 @@ from PySide6.QtNetwork import (
 
 user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
 # user_agent = f'UELauncher/{version} Windows/10.0.19041.1.256.64bit'
-RequestHandler = TypeVar('RequestHandler', bound=Callable[[Union[Dict, bytes]], None])
+RequestHandler = TypeVar('RequestHandler', bound=Callable[[dict | bytes], None])
 
 
 @dataclass
 class RequestQueueItem:
     method: str = None
     url: QUrl = None
-    payload: Dict = field(default_factory=dict)
-    params: Dict = field(default_factory=dict)
-    handlers: List[RequestHandler] = field(default_factory=list)
+    payload: dict = field(default_factory=dict)
+    params: dict = field(default_factory=dict)
+    handlers: list[RequestHandler] = field(default_factory=list)
 
     def __eq__(self, other):
         return self.method == other.method and self.url == other.url
@@ -47,7 +48,7 @@ class QRequests(QObject):
             self.logger.debug('Manager is authorized')
         self._token = token
 
-        self.__active_requests: Dict[QNetworkReply, RequestQueueItem] = {}
+        self.__active_requests: dict[QNetworkReply, RequestQueueItem] = {}
 
     @staticmethod
     def __prepare_query(url, params) -> QUrl:
@@ -99,8 +100,8 @@ class QRequests(QObject):
         self,
         url: str,
         handler: RequestHandler,
-        payload: Dict = None,
-        params: Dict = None,
+        payload: dict = None,
+        params: dict = None,
     ):
         url = self.__prepare_query(url, params) if params is not None else QUrl(url)
         item = RequestQueueItem(method='get', url=url, payload=payload, handlers=[handler])
@@ -110,7 +111,7 @@ class QRequests(QObject):
         self.logger.error(error)
 
     @staticmethod
-    def __parse_content_type(header) -> Tuple[str, str]:
+    def __parse_content_type(header) -> tuple[str, str]:
         # lk: this looks weird but `cgi` is deprecated, PEP 594 suggests this way of parsing MIME
         m = Message()
         m['content-type'] = header

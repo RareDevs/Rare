@@ -1,5 +1,3 @@
-from typing import List, Union
-
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QCheckBox, QVBoxLayout, QWidget
@@ -9,14 +7,14 @@ from rare.widgets.collapsible_widget import CollapsibleFrame
 
 
 class InstallTagCheckBox(QCheckBox):
-    def __init__(self, text, desc, tags: List[str], parent=None):
+    def __init__(self, text, desc, tags: list[str], parent=None):
         super(InstallTagCheckBox, self).__init__(parent)
         self.setFont(QFont('monospace'))
         self.setText(text)
         self.setToolTip(desc)
         self.tags = tags
 
-    def isChecked(self) -> Union[bool, List[str]]:
+    def isChecked(self) -> bool | list[str]:
         return self.tags if super(InstallTagCheckBox, self).isChecked() else False
 
 
@@ -51,7 +49,7 @@ class SelectiveWidget(QWidget):
         else:
             self._has_tags = False
 
-    def enabled_tags(self) -> List[str]:
+    def enabled_tags(self) -> list[str]:
         install_tags = set()
         for cb in self.findChildren(InstallTagCheckBox, options=Qt.FindChildOption.FindDirectChildrenOnly):
             if data := cb.isChecked():
@@ -85,7 +83,7 @@ class InstallDialogSelective(CollapsibleFrame):
         self.widget.stateChanged.connect(self.stateChanged)
         self.setWidget(self.widget)
 
-    def enabled_tags(self) -> List[str]:
+    def enabled_tags(self) -> list[str]:
         return self.widget.enabled_tags()
 
 

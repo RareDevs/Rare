@@ -1,7 +1,6 @@
 import os
 from dataclasses import dataclass
 from logging import getLogger
-from typing import Dict, List, Optional, Tuple
 
 logger = getLogger('Wine')
 
@@ -11,7 +10,7 @@ __lutris_runtime: str = None
 __lutris_wine: str = None
 
 
-def find_lutris() -> Tuple[str, str]:
+def find_lutris() -> tuple[str, str]:
     global __lutris_runtime, __lutris_wine
     for path in lutris_runtime_paths:
         runtime_path = os.path.join(path, 'runtime')
@@ -26,18 +25,18 @@ def find_lutris() -> Tuple[str, str]:
 class WineRuntime:
     name: str
     path: str
-    environ: Dict
+    environ: dict
 
 
 @dataclass
 class WineRunner:
     name: str
     path: str
-    environ: Dict
-    runtime: Optional[WineRuntime] = None
+    environ: dict
+    runtime: WineRuntime | None = None
 
 
-def find_lutris_wines(runtime_path: str = None, wine_path: str = None) -> List[WineRunner]:
+def find_lutris_wines(runtime_path: str = None, wine_path: str = None) -> list[WineRunner]:
     runners = []
     if not runtime_path and not wine_path:
         return runners
@@ -58,7 +57,7 @@ def __get_lib_path(executable: str, basename: str = '') -> str:
     return ldpath
 
 
-def get_wine_environment(executable: str = None, prefix: str = None) -> Dict:
+def get_wine_environment(executable: str = None, prefix: str = None) -> dict:
     # If the tool is unset, return all affected env variable names
     # IMPORTANT: keep this in sync with the code below
     environ = {'WINEPREFIX': prefix if prefix is not None else ''}

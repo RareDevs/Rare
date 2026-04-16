@@ -1,10 +1,10 @@
 import os
 import platform as pf
 import subprocess
+from collections.abc import Mapping
 from configparser import ConfigParser
 from getpass import getuser
 from logging import getLogger
-from typing import Dict, List, Mapping, Tuple
 
 from PySide6.QtCore import QProcess, QProcessEnvironment
 
@@ -26,7 +26,7 @@ def read_registry(registry: str, prefix: str) -> ConfigParser:
     return reg
 
 
-def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[str], Dict]:
+def prepare_process(command: list[str], environment: dict) -> tuple[str, list[str], dict]:
     logger.debug('Preparing process: %s', command)
     _env = os.environ.copy()
     _command = command.copy()
@@ -39,14 +39,14 @@ def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[st
     return _command[0], _command[1:] if len(_command) > 1 else [], _env
 
 
-def dict_to_qprocenv(env: Dict) -> QProcessEnvironment:
+def dict_to_qprocenv(env: dict) -> QProcessEnvironment:
     _env = QProcessEnvironment()
     for name, value in env.items():
         _env.insert(name, value)
     return _env
 
 
-def get_configured_qprocess(command: List[str], environment: Dict) -> QProcess:
+def get_configured_qprocess(command: list[str], environment: dict) -> QProcess:
     cmd, args, env = prepare_process(command, environment)
     proc = QProcess()
     proc.setProcessChannelMode(QProcess.ProcessChannelMode.SeparateChannels)
@@ -56,7 +56,7 @@ def get_configured_qprocess(command: List[str], environment: Dict) -> QProcess:
     return proc
 
 
-def get_configured_subprocess(command: List[str], environment: Dict) -> subprocess.Popen:
+def get_configured_subprocess(command: list[str], environment: dict) -> subprocess.Popen:
     cmd, args, env = prepare_process(command, environment)
     return subprocess.Popen(
         (cmd, *args),
@@ -69,7 +69,7 @@ def get_configured_subprocess(command: List[str], environment: Dict) -> subproce
     )
 
 
-def execute_subprocess(command: List[str], arguments: List[str], environment: Mapping) -> Tuple[str, str]:
+def execute_subprocess(command: list[str], arguments: list[str], environment: Mapping) -> tuple[str, str]:
     proc = get_configured_subprocess(command + arguments, environment)
     out, err = proc.communicate()
     out, err = (
@@ -83,7 +83,7 @@ def execute_subprocess(command: List[str], arguments: List[str], environment: Ma
     return out, err
 
 
-def execute_qprocess(command: List[str], arguments: List[str], environment: Mapping) -> Tuple[str, str]:
+def execute_qprocess(command: list[str], arguments: list[str], environment: Mapping) -> tuple[str, str]:
     logger.debug('WINEPREFIX: %s', environment.get('WINEPREFIX', None))
     logger.debug('STEAM_COMPAT_DATA_PATH: %s', environment.get('STEAM_COMPAT_DATA_PATH', None))
     proc = get_configured_qprocess(command + arguments, environment)
@@ -104,7 +104,7 @@ def execute_qprocess(command: List[str], arguments: List[str], environment: Mapp
     return out, err
 
 
-def execute(command: List[str], arguments: List[str], environment: Mapping) -> Tuple[str, str]:
+def execute(command: list[str], arguments: list[str], environment: Mapping) -> tuple[str, str]:
     try:
         out, err = execute_qprocess(command, arguments, environment)
     except Exception as e:
@@ -113,7 +113,7 @@ def execute(command: List[str], arguments: List[str], environment: Mapping) -> T
     return out, err
 
 
-def resolve_path(command: List[str], environment: Mapping, path: str) -> str:
+def resolve_path(command: list[str], environment: Mapping, path: str) -> str:
     path = path.strip().replace('/', '\\')
     # lk: if path does not exist form
     arguments = ['c:\\windows\\system32\\cmd.exe', '/c', 'echo', path]
@@ -131,7 +131,7 @@ def query_reg_path(wine_exec: str, wine_env: Mapping, reg_path: str):
     raise NotImplementedError
 
 
-def query_reg_key(command: List[str], environment: Mapping, reg_path: str, reg_key) -> str:
+def query_reg_key(command: list[str], environment: Mapping, reg_path: str, reg_key) -> str:
     arguments = ['c:\\windows\\system32\\reg.exe', 'query', reg_path, '/v', reg_key]
     out, err = execute(command, arguments, environment)
     out, err = out.strip(), err.strip()
@@ -139,7 +139,7 @@ def query_reg_key(command: List[str], environment: Mapping, reg_path: str, reg_k
         logger.error('Failed to query registry key due to "%s"', err)
         return out
     lines = out.split('\n')
-    keys: Dict = {}
+    keys: dict = {}
     for line in lines:
         if line.startswith(' ' * 4):
             key = [x for x in line.split(' ' * 4, 3) if bool(x)]
@@ -151,7 +151,7 @@ def convert_to_windows_path(wine_exec: str, wine_env: Mapping, path: str) -> str
     raise NotImplementedError
 
 
-def convert_to_unix_path(command: List[str], environment: Mapping, path: str) -> str:
+def convert_to_unix_path(command: list[str], environment: Mapping, path: str) -> str:
     path = path.strip().strip('"')
     arguments = ['c:\\windows\\system32\\winepath.exe', '-u', path]
     out, err = execute(command, arguments, environment)
@@ -161,7 +161,7 @@ def convert_to_unix_path(command: List[str], environment: Mapping, path: str) ->
     return os.path.realpath(out) if (out := out.strip()) else out
 
 
-def get_host_environment(app_environment: Dict, silent: bool = False) -> Dict:
+def get_host_environment(app_environment: dict, silent: bool = False) -> dict:
     # Get a clean environment if we are in flatpak, this environment will be passed
     # to `flatpak-spawn`, otherwise use the system's.
     _environ = app_environment.copy()

@@ -1,7 +1,7 @@
 import os
 import shutil
+from collections.abc import Iterator
 from enum import auto
-from typing import Iterator
 
 from legendary.lfs.utils import validate_files
 from legendary.models.game import VerifyResult
@@ -218,7 +218,7 @@ class MoveWorker(QueueWorker):
                         try:
                             shutil.copy2(src_path, dst_path)
                             dst_size += os.stat(dst_path).st_size
-                        except (IOError, OSError) as e:
+                        except OSError as e:
                             self.rgame.signals.progress.finish.emit(True)
                             self.signals.error.emit(self.rgame, str(e))
                             return

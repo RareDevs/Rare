@@ -1,5 +1,3 @@
-from typing import Union
-
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -15,7 +13,7 @@ from rare.widgets.dialogs import ButtonDialog, game_title
 class UninstallDialog(ButtonDialog):
     result_ready = Signal(UninstallOptionsModel)
 
-    def __init__(self, rgame: Union[RareGame, RareEosOverlay], options: UninstallOptionsModel, parent=None):
+    def __init__(self, rgame: RareGame | RareEosOverlay, options: UninstallOptionsModel, parent=None):
         super(UninstallDialog, self).__init__(parent=parent)
         header = self.tr('Uninstall')
         self.setWindowTitle(game_title(header, rgame.app_title))

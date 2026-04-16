@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import List
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
@@ -77,7 +76,7 @@ class SearchWidget(QWidget, SideTabContents):
 
         self.active_search_request = False
         self.next_search = ''
-        self.wishlist: List = []
+        self.wishlist: list = []
 
         self.search_bar = ButtonLineEdit('fa5s.search', placeholder_text=self.tr('Search'))
         self.results_scrollarea = ResultsWidget(self.store_api, self)

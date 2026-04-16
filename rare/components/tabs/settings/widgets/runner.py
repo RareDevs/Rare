@@ -1,7 +1,7 @@
 import os.path
 import platform as pf
 from getpass import getuser
-from typing import Type, TypeVar
+from typing import TypeVar
 
 from PySide6.QtCore import Qt, QUrl, Signal, Slot
 from PySide6.QtGui import QDesktopServices
@@ -27,8 +27,8 @@ class RunnerSettingsBase(QGroupBox):
         self,
         settings: RareAppSettings,
         rcore: RareCore,
-        wine_widget: Type['WineSettings'],
-        proton_widget: Type['ProtonSettings'] = None,
+        wine_widget: type['WineSettings'],
+        proton_widget: type['ProtonSettings'] = None,
         parent=None,
     ):
         super().__init__(parent=parent)

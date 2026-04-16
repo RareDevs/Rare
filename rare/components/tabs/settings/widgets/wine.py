@@ -1,6 +1,5 @@
 import os
 from logging import getLogger
-from typing import Optional, Tuple
 
 from PySide6.QtCore import QSignalBlocker, Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -23,7 +22,7 @@ class WineSettings(QGroupBox):
         self.settings = settings
         self.signals = rcore.signals()
         self.lgd_core = rcore.core()
-        self.app_name: Optional[str] = 'default'
+        self.app_name: str | None = 'default'
 
         self.setTitle(self.tr('Wine'))
 
@@ -103,7 +102,7 @@ class WineSettings(QGroupBox):
         return lgd_config.get_wine_prefix(self.app_name, '')
 
     @staticmethod
-    def _wine_prefix_edit(text: str) -> Tuple[bool, str, int]:
+    def _wine_prefix_edit(text: str) -> tuple[bool, str, int]:
         if not text:
             return True, text, IndicatorReasonsCommon.VALID
         if os.path.isdir(text):

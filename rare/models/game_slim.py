@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
-from typing import List, Optional, Tuple
 
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame, SaveGameFile, SaveGameStatus
@@ -17,11 +16,11 @@ from rare.models.settings import RareAppSettings, app_settings
 
 @dataclass
 class RareSaveGame:
-    file: Optional[SaveGameFile]
+    file: SaveGameFile | None
     status: SaveGameStatus = SaveGameStatus.NO_SAVE
-    dt_local: Optional[datetime] = None
-    dt_remote: Optional[datetime] = None
-    description: Optional[str] = ''
+    dt_local: datetime | None = None
+    dt_remote: datetime | None = None
+    description: str | None = ''
 
 
 class RareGameSignalsProgress(QObject):
@@ -129,7 +128,7 @@ class RareGameBase(QObject):
         pass
 
     @property
-    def platforms(self) -> Tuple:
+    def platforms(self) -> tuple:
         """!
         @brief Property that holds the platforms a game is available for
 
@@ -215,7 +214,7 @@ class RareGameBase(QObject):
         return self.igame.version if self.igame is not None else self.game.app_version(self.default_platform)
 
     @property
-    def install_path(self) -> Optional[str]:
+    def install_path(self) -> str | None:
         if self.igame:
             return self.igame.install_path
         return None
@@ -227,7 +226,7 @@ class RareGameSlim(RareGameBase):
         self.settings = settings
         # None if origin or not installed
         self.igame: InstalledGame = self.core.get_installed_game(game.app_name)
-        self.saves: List[RareSaveGame] = []
+        self.saves: list[RareSaveGame] = []
 
     @property
     def is_installed(self) -> bool:
@@ -244,7 +243,7 @@ class RareGameSlim(RareGameBase):
         return self.supports_cloud_saves and auto_sync_cloud
 
     @property
-    def save_path(self) -> Optional[str]:
+    def save_path(self) -> str | None:
         if self.igame is not None:
             return self.igame.save_path
         return None
@@ -259,7 +258,7 @@ class RareGameSlim(RareGameBase):
     @property
     def save_game_state(
         self,
-    ) -> Tuple[SaveGameStatus, Tuple[Optional[datetime], Optional[datetime]]]:
+    ) -> tuple[SaveGameStatus, tuple[datetime | None, datetime | None]]:
         if self.save_path:
             latest = self.latest_save
             # lk: if the save path wasn't known at startup, dt_local will be None
@@ -318,7 +317,7 @@ class RareGameSlim(RareGameBase):
         _download()
         self.state = RareGameSlim.State.IDLE
 
-    def load_saves(self, saves: List[SaveGameFile]):
+    def load_saves(self, saves: list[SaveGameFile]):
         """Use only in a thread"""
         self.saves.clear()
         for save in saves:

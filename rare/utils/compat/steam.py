@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from enum import Enum
 from hashlib import md5
 from logging import getLogger
-from typing import Dict, List, Optional, Set, Union
 
 import vdf
 
@@ -16,7 +15,7 @@ steam_client_install_paths = [os.path.expanduser('~/.local/share/Steam')]
 umu_install_paths = [os.path.expanduser('~/.local/share/umu')]
 
 
-def find_steam() -> Optional[str]:
+def find_steam() -> str | None:
     # return the first valid path
     for path in steam_client_install_paths:
         if os.path.isdir(path) and os.path.isfile(os.path.join(path, 'steam.sh')):
@@ -24,11 +23,11 @@ def find_steam() -> Optional[str]:
     return None
 
 
-def find_libraries(steam_path: str) -> Set[str]:
+def find_libraries(steam_path: str) -> set[str]:
     vdf_path = os.path.join(steam_path, 'config', 'libraryfolders.vdf')
     if not os.path.isfile(vdf_path):
         return set()
-    with open(vdf_path, 'r', encoding='utf-8') as f:
+    with open(vdf_path, encoding='utf-8') as f:
         libraryfolders = vdf.load(f)['libraryfolders']
     # libraries = [os.path.join(folder["path"], "steamapps") for key, folder in libraryfolders.items()]
     libraries = {os.path.join(folder['path'], 'steamapps') for key, folder in libraryfolders.items()}
@@ -45,7 +44,7 @@ UMU_RUNTIMES = {
 }
 
 
-def find_umu() -> Optional[str]:
+def find_umu() -> str | None:
     for path in umu_install_paths:
         if os.path.isdir(path) and any(rt in os.listdir(path) for rt in UMU_RUNTIMES.values()):
             return path
@@ -77,7 +76,7 @@ class SteamVerb(Enum):
 class SteamBase:
     steam_path: str
     tool_path: str
-    toolmanifest: Dict
+    toolmanifest: dict
 
     def __eq__(self, other):
         return self.tool_path == other.tool_path
@@ -86,14 +85,14 @@ class SteamBase:
         return hash(self.tool_path)
 
     @property
-    def required_tool(self) -> Optional[str]:
+    def required_tool(self) -> str | None:
         return self.toolmanifest.get('require_tool_appid', None)
 
     @property
-    def layer(self) -> Optional[str]:
+    def layer(self) -> str | None:
         return self.toolmanifest.get('compatmanager_layer_name', None)
 
-    def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> List[str]:
+    def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> list[str]:
         tool_path = os.path.normpath(self.tool_path)
         cmd = ''.join([shlex.quote(tool_path), self.toolmanifest['commandline']])
         # NOTE: "waitforexitandrun" seems to be the verb used in by steam to execute stuff
@@ -112,7 +111,7 @@ class SteamBase:
 @dataclass
 class SteamRuntime(SteamBase):
     steam_library: str
-    appmanifest: Dict
+    appmanifest: dict
 
     @property
     def name(self) -> str:
@@ -134,7 +133,7 @@ class SteamAntiCheat:
     steam_path: str
     tool_path: str
     steam_library: str
-    appmanifest: Dict
+    appmanifest: dict
 
     def __eq__(self, other):
         return self.tool_path == other.tool_path
@@ -153,15 +152,15 @@ class SteamAntiCheat:
 
 @dataclass
 class ProtonTool(SteamRuntime):
-    runtime: Union[SteamRuntime, UmuRuntime] = None
-    anticheat: Dict[str, SteamAntiCheat] = None
+    runtime: SteamRuntime | UmuRuntime = None
+    anticheat: dict[str, SteamAntiCheat] = None
 
     def __bool__(self) -> bool:
         if appid := self.required_tool:
             return self.runtime is not None and self.runtime.appid == appid
         return True
 
-    def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> List[str]:
+    def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> list[str]:
         cmd = self.runtime.command(verb)
         cmd.extend(super().command(verb))
         return cmd
@@ -169,9 +168,9 @@ class ProtonTool(SteamRuntime):
 
 @dataclass
 class CompatibilityTool(SteamBase):
-    compatibilitytool: Dict
-    runtime: Union[SteamRuntime, UmuRuntime] = None
-    anticheat: Dict[str, SteamAntiCheat] = None
+    compatibilitytool: dict
+    runtime: SteamRuntime | UmuRuntime = None
+    anticheat: dict[str, SteamAntiCheat] = None
 
     def __bool__(self) -> bool:
         if appid := self.required_tool:
@@ -182,17 +181,17 @@ class CompatibilityTool(SteamBase):
     def name(self) -> str:
         return self.compatibilitytool['display_name']
 
-    def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> List[str]:
+    def command(self, verb: SteamVerb = SteamVerb.DEFAULT) -> list[str]:
         cmd = self.runtime.command(verb) if self.runtime is not None else []
         cmd.extend(super().command(verb))
         return cmd
 
 
-def find_appmanifests(library: str) -> List[dict]:
+def find_appmanifests(library: str) -> list[dict]:
     appmanifests = []
     for entry in os.scandir(library):
         if entry.is_file() and entry.name.endswith('.acf'):
-            with open(os.path.join(library, entry.name), 'r', encoding='utf-8') as f:
+            with open(os.path.join(library, entry.name), encoding='utf-8') as f:
                 appmanifest = vdf.load(f)
             appmanifests.append(appmanifest)
     return appmanifests
@@ -225,7 +224,7 @@ def find_anticheat(steam_path: str, library: str):
     return runtimes
 
 
-def find_steam_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime]:
+def find_steam_runtimes(steam_path: str, library: str) -> dict[str, SteamRuntime]:
     runtimes = {}
     appmanifests = find_appmanifests(library)
     common = os.path.join(library, 'common')
@@ -233,7 +232,7 @@ def find_steam_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime
         folder = appmanifest['AppState']['installdir']
         tool_path = os.path.join(common, folder)
         if os.path.isfile(vdf_file := os.path.join(tool_path, 'toolmanifest.vdf')):
-            with open(vdf_file, 'r', encoding='utf-8') as f:
+            with open(vdf_file, encoding='utf-8') as f:
                 toolmanifest = vdf.load(f)
             if toolmanifest['manifest'].get('version') != '2':
                 continue
@@ -252,12 +251,12 @@ def find_steam_runtimes(steam_path: str, library: str) -> Dict[str, SteamRuntime
     return runtimes
 
 
-def find_umu_runtimes(umu_path: str) -> Dict[str, UmuRuntime]:
+def find_umu_runtimes(umu_path: str) -> dict[str, UmuRuntime]:
     runtimes = {}
     for appid, folder in UMU_RUNTIMES.items():
         tool_path = os.path.join(umu_path, folder)
         if os.path.isdir(tool_path) and os.path.isfile(vdf_file := os.path.join(tool_path, 'toolmanifest.vdf')):
-            with open(vdf_file, 'r', encoding='utf-8') as f:
+            with open(vdf_file, encoding='utf-8') as f:
                 toolmanifest = vdf.load(f)
             if toolmanifest['manifest'].get('version') != '2':
                 continue
@@ -277,7 +276,7 @@ def find_umu_runtimes(umu_path: str) -> Dict[str, UmuRuntime]:
     return runtimes
 
 
-def find_steam_tools(steam_path: str, library: str) -> List[ProtonTool]:
+def find_steam_tools(steam_path: str, library: str) -> list[ProtonTool]:
     tools = []
     appmanifests = find_appmanifests(library)
     common = os.path.join(library, 'common')
@@ -285,7 +284,7 @@ def find_steam_tools(steam_path: str, library: str) -> List[ProtonTool]:
         folder = appmanifest['AppState']['installdir']
         tool_path = os.path.join(common, folder)
         if os.path.isfile(vdf_file := os.path.join(tool_path, 'toolmanifest.vdf')):
-            with open(vdf_file, 'r', encoding='utf-8') as f:
+            with open(vdf_file, encoding='utf-8') as f:
                 toolmanifest = vdf.load(f)
             if toolmanifest['manifest'].get('version') != '2':
                 continue
@@ -302,7 +301,7 @@ def find_steam_tools(steam_path: str, library: str) -> List[ProtonTool]:
     return tools
 
 
-def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
+def find_compatibility_tools(steam_path: str) -> list[CompatibilityTool]:
     compatibilitytools_paths = {
         data_dir().joinpath('tools').as_posix(),
         os.path.expanduser('~/.local/share/umu/compatibilitytools'),
@@ -329,7 +328,7 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
             if not os.path.isfile(tool_vdf):
                 continue
 
-            with open(tool_vdf, 'r', encoding='utf-8') as f:
+            with open(tool_vdf, encoding='utf-8') as f:
                 compatibilitytool = vdf.load(f)
 
             entry_tools = compatibilitytool['compatibilitytools']['compat_tools']
@@ -346,7 +345,7 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
                 if not os.path.isfile(manifest_vdf):
                     continue
 
-                with open(manifest_vdf, 'r', encoding='utf-8') as f:
+                with open(manifest_vdf, encoding='utf-8') as f:
                     manifest = vdf.load(f)
 
                 tools.append(
@@ -361,15 +360,15 @@ def find_compatibility_tools(steam_path: str) -> List[CompatibilityTool]:
 
 
 def get_runtime(
-    tool: Union[ProtonTool, CompatibilityTool], runtimes: Dict[str, Union[SteamRuntime, UmuRuntime]]
-) -> Union[SteamRuntime, UmuRuntime, None]:
+    tool: ProtonTool | CompatibilityTool, runtimes: dict[str, SteamRuntime | UmuRuntime]
+) -> SteamRuntime | UmuRuntime | None:
     required_tool = tool.required_tool
     if required_tool is None:
         return None
-    return runtimes.get(required_tool, None)
+    return runtimes.get(required_tool)
 
 
-def get_umu_environment(tool: Optional[ProtonTool] = None, compat_path: Optional[str] = None) -> Dict:
+def get_umu_environment(tool: ProtonTool | None = None, compat_path: str | None = None) -> dict:
     # If the tool is unset, return all affected env variable names
     # IMPORTANT: keep this in sync with the code below
     environ = {'WINEPREFIX': compat_path if compat_path else ''}
@@ -386,9 +385,9 @@ def get_umu_environment(tool: Optional[ProtonTool] = None, compat_path: Optional
 
 
 def get_steam_environment(
-    tool: Optional[Union[ProtonTool, CompatibilityTool]] = None,
-    compat_path: Optional[str] = None,
-) -> Dict:
+    tool: ProtonTool | CompatibilityTool | None = None,
+    compat_path: str | None = None,
+) -> dict:
     # If the tool is unset, return all affected env variable names
     # IMPORTANT: keep this in sync with the code below
     environ = {'STEAM_COMPAT_DATA_PATH': compat_path if compat_path else ''}
@@ -427,7 +426,7 @@ def get_steam_environment(
     return environ
 
 
-def _find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
+def _find_tools() -> list[ProtonTool | CompatibilityTool]:
     steam_path = find_steam()
     if steam_path is None:
         logger.info('Steam folder could not be found')
@@ -474,17 +473,17 @@ def _find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
     return tools
 
 
-_tools: Optional[List[Union[ProtonTool, CompatibilityTool]]] = None
+_tools: list[ProtonTool | CompatibilityTool] | None = None
 
 
-def find_tools() -> List[Union[ProtonTool, CompatibilityTool]]:
+def find_tools() -> list[ProtonTool | CompatibilityTool]:
     global _tools
     if _tools is None:
         _tools = _find_tools()
     return list(filter(lambda t: t.layer != 'umu-launcher', _tools))
 
 
-def find_umu_launcher() -> Optional[CompatibilityTool]:
+def find_umu_launcher() -> CompatibilityTool | None:
     global _tools
     if _tools is None:
         _tools = _find_tools()

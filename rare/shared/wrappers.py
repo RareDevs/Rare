@@ -1,8 +1,8 @@
 import json
 import os
 import shlex
+from collections.abc import Iterable
 from logging import getLogger
-from typing import Dict, Iterable, List, Set
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.settings import RareAppSettings
@@ -27,7 +27,7 @@ class WrapperEntry:
         return self.__enabled
 
     @classmethod
-    def from_dict(cls, data: Dict):
+    def from_dict(cls, data: dict):
         return cls(checksum=data.get('checksum'), enabled=data.get('enabled', True))
 
     @property
@@ -43,7 +43,7 @@ class Wrappers:
         self._file = os.path.join(config_dir(), 'wrappers.json')
         self._wrappers_dict = {}
         try:
-            with open(self._file, 'r', encoding='utf-8') as f:
+            with open(self._file, encoding='utf-8') as f:
                 self._wrappers_dict = json.load(f)
         except FileNotFoundError:
             logger.info('%s does not exist', self._file)
@@ -52,11 +52,11 @@ class Wrappers:
 
         self._version = self._wrappers_dict.get('version', 1)
 
-        self._wrappers: Dict[str, Wrapper] = {}
+        self._wrappers: dict[str, Wrapper] = {}
         for wrap_id, wrapper in self._wrappers_dict.get('wrappers', {}).items():
             self._wrappers.update({wrap_id: Wrapper.from_dict(wrapper)})
 
-        self._applists: Dict[str, List[WrapperEntry]] = {}
+        self._applists: dict[str, list[WrapperEntry]] = {}
         for app_name, wrapper_list in self._wrappers_dict.get('applists', {}).items():
             if all(isinstance(x, str) for x in wrapper_list):
                 wlist = [WrapperEntry(y) for y in wrapper_list]
@@ -69,7 +69,7 @@ class Wrappers:
         # set current file version
         self._version = 2
 
-    def import_wrappers(self, settings: RareAppSettings, core: LegendaryCore, app_names: List):
+    def import_wrappers(self, settings: RareAppSettings, core: LegendaryCore, app_names: list):
         for app_name in app_names:
             wrappers = self.get_wrappers(app_name)
             if not wrappers and (commands := settings.value(f'{app_name}/wrapper', [], type=list)):
@@ -113,10 +113,10 @@ class Wrappers:
         commands = [wrapper.as_str for wrapper in self.get_wrappers(app_name) if wrapper.is_enabled]
         return ' '.join(commands)
 
-    def get_checksums(self, app_name: str) -> Set[str]:
+    def get_checksums(self, app_name: str) -> set[str]:
         return {entry.checksum for entry in self._applists.get(app_name, [])}
 
-    def get_wrappers(self, app_name: str) -> List[Wrapper]:
+    def get_wrappers(self, app_name: str) -> list[Wrapper]:
         wrappers = []
         for entry in self._applists.get(app_name, []):
             if wrap := self._wrappers.get(entry.checksum, None):
@@ -124,7 +124,7 @@ class Wrappers:
                 wrappers.append(wrap)
         return wrappers
 
-    def set_wrappers(self, app_name: str, wrappers: List[Wrapper]) -> None:
+    def set_wrappers(self, app_name: str, wrappers: list[Wrapper]) -> None:
         _wrappers = sorted(wrappers, key=lambda w: w.is_compat_tool)
         for w in _wrappers:
             if (md5sum := w.checksum) in self._wrappers.keys():

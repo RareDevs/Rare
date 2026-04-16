@@ -1,7 +1,7 @@
 import os
+from collections.abc import Callable
 from enum import Enum, IntEnum
 from logging import getLogger
-from typing import Callable, Dict, Optional, Tuple
 
 from PySide6.QtCore import (
     QDir,
@@ -92,9 +92,9 @@ class IndicatorReasonsStrings(QObject):
     def __setitem__(self, key: int, value: str):
         self.__text[key] = value
 
-    def extend(self, reasons: Dict):
-        for k in self.__text.keys():
-            if k in reasons.keys():
+    def extend(self, reasons: dict):
+        for k in self.__text:
+            if k in reasons:
                 raise RuntimeError(f'{reasons} contains existing values')
         self.__text.update(reasons)
 
@@ -104,7 +104,7 @@ class EditFuncRunnableSignals(QObject):
 
 
 class EditFuncRunnable(QRunnable):
-    def __init__(self, func: Callable[[str], Tuple[bool, str, int]], args: str):
+    def __init__(self, func: Callable[[str], tuple[bool, str, int]], args: str):
         super(EditFuncRunnable, self).__init__()
         self.setAutoDelete(True)
         self.signals = EditFuncRunnableSignals()
@@ -118,7 +118,7 @@ class EditFuncRunnable(QRunnable):
         self.signals.deleteLater()
 
     @staticmethod
-    def __wrap_edit_function(func: Callable[[str], Tuple[bool, str, int]]):
+    def __wrap_edit_function(func: Callable[[str], tuple[bool, str, int]]):
         if func:
             return lambda text: func(os.path.expanduser(text) if text.startswith('~') else text)
         else:
@@ -134,7 +134,7 @@ class IndicatorLineEdit(QWidget):
         text: str = '',
         placeholder: str = '',
         completer: QCompleter = None,
-        edit_func: Callable[[str], Tuple[bool, str, int]] = None,
+        edit_func: Callable[[str], tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
         horiz_policy: QSizePolicy.Policy = QSizePolicy.Policy.Expanding,
         parent=None,
@@ -174,7 +174,7 @@ class IndicatorLineEdit(QWidget):
 
         self.__threadpool = QThreadPool(self)
         self.__threadpool.setMaxThreadCount(1)
-        self.__thread: Optional[EditFuncRunnable] = None
+        self.__thread: EditFuncRunnable | None = None
 
         self.is_valid = False
         self.edit_func = edit_func
@@ -210,7 +210,7 @@ class IndicatorLineEdit(QWidget):
         self.info_label.setVisible(bool(text))
         self.info_label.setText(text)
 
-    def setCompleter(self, completer: Optional[QCompleter]):
+    def setCompleter(self, completer: QCompleter | None):
         if old := self.line_edit.completer():
             old.deleteLater()
         if not completer:
@@ -228,7 +228,7 @@ class IndicatorLineEdit(QWidget):
         return self.__reasons
 
     @reasons.setter
-    def reasons(self, reasons: Dict):
+    def reasons(self, reasons: dict):
         self.__reasons.extend(reasons)
 
     def refresh(self):
@@ -332,9 +332,9 @@ class PathEdit(IndicatorLineEdit):
         path: str = '',
         file_mode: QFileDialog.FileMode = QFileDialog.FileMode.AnyFile,
         file_filter: QDir.Filter = 0,
-        name_filters: Tuple[str, ...] = None,
+        name_filters: tuple[str, ...] = None,
         placeholder: str = '',
-        edit_func: Callable[[str], Tuple[bool, str, int]] = None,
+        edit_func: Callable[[str], tuple[bool, str, int]] = None,
         save_func: Callable[[str], None] = None,
         horiz_policy: QSizePolicy.Policy = QSizePolicy.Policy.Expanding,
         parent=None,
@@ -410,7 +410,7 @@ class PathEdit(IndicatorLineEdit):
 
 
 class ColumnCompleter(QCompleter):
-    def __init__(self, items: Optional[Dict[str, str]], parent=None):
+    def __init__(self, items: dict[str, str] | None, parent=None):
         super(ColumnCompleter, self).__init__(parent)
 
         self._treeview = QTreeView()
@@ -427,7 +427,7 @@ class ColumnCompleter(QCompleter):
         self.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         # self.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
 
-    def setModel(self, items: Dict[str, str]):
+    def setModel(self, items: dict[str, str]):
         model = QStandardItemModel(len(items), 2, self)
         for idx, item in enumerate(items.items()):
             app_title, app_name = item

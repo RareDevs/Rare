@@ -1,8 +1,8 @@
 import os
 import platform
 import time
+from collections.abc import Iterable
 from configparser import ConfigParser
-from typing import Dict, Iterable, List, Tuple, Union
 
 from PySide6.QtCore import QObject, Signal
 
@@ -38,7 +38,7 @@ class WinePathResolver(Worker):
         self.path = path
 
     @staticmethod
-    def _configure_process(core: LegendaryCore, app_name: str) -> Tuple[List, Dict]:
+    def _configure_process(core: LegendaryCore, app_name: str) -> tuple[list, dict]:
         tool: steam.CompatibilityTool = None
 
         if config.get_boolean(app_name, 'no_wine'):
@@ -119,7 +119,7 @@ class WineSavePathResolver(WinePathResolver):
 
 
 class OriginWineWorker(WinePathResolver):
-    def __init__(self, core: LegendaryCore, games: Union[Iterable[RareGame], RareGame]):
+    def __init__(self, core: LegendaryCore, games: Iterable[RareGame] | RareGame):
         super(OriginWineWorker, self).__init__(core, '', '')
         self.__cache: dict[str, ConfigParser] = {}
         self.core = core

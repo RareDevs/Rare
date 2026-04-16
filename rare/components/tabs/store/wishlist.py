@@ -1,5 +1,4 @@
 from enum import IntEnum
-from typing import List
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -155,7 +154,7 @@ class WishlistWidget(QWidget, SideTabContents):
         self.order_wishlist(self.ui.order_combo.currentIndex())
 
     @Slot(object)
-    def set_wishlist(self, wishlist: List[WishlistItemModel] = None):
+    def set_wishlist(self, wishlist: list[WishlistItemModel] = None):
         if wishlist and wishlist[0] == 'error':
             return
 

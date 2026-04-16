@@ -3,7 +3,6 @@ import lzma
 from datetime import datetime
 from enum import Enum
 from logging import getLogger
-from typing import Dict, Tuple
 
 import orjson
 import requests
@@ -45,7 +44,7 @@ class SteamGrades:
 
     def __init__(self):
         self.logger = getLogger(type(self).__name__)
-        self._steam_appids: Dict[str, str] = {}
+        self._steam_appids: dict[str, str] = {}
         self._active_download: bool = False
 
     def _download_steam_appids(self) -> bytes:
@@ -56,7 +55,7 @@ class SteamGrades:
         self._active_download = False
         return resp.content
 
-    def load_steam_appids(self) -> Dict:
+    def load_steam_appids(self) -> dict:
         if self._steam_appids:
             return self._steam_appids
 
@@ -84,13 +83,13 @@ class SteamGrades:
         return self._steam_appids
 
     @property
-    def steam_appids(self) -> Dict[str, str]:
+    def steam_appids(self) -> dict[str, str]:
         if not self._steam_appids:
             self.load_steam_appids()
         return self._steam_appids
 
     @property
-    def steam_titles(self) -> Dict:
+    def steam_titles(self) -> dict:
         return {v: k for k, v in self.steam_appids.items()}
 
     def _get_steam_appid(self, title: str) -> str:
@@ -100,7 +99,7 @@ class SteamGrades:
         # title = title.split(":")[0]
         # title = title.split("-")[0]
 
-        if title in self.steam_titles.keys():
+        if title in self.steam_titles:
             steam_name = [title]
         else:
             steam_name = difflib.get_close_matches(title, self.steam_appids.keys(), n=1, cutoff=0.5)
@@ -124,7 +123,7 @@ class SteamGrades:
 
         return app.get('tier', 'fail')
 
-    def get_rating(self, core: LegendaryCore, app_name: str, steam_appid: str = None) -> Tuple[str, str]:
+    def get_rating(self, core: LegendaryCore, app_name: str, steam_appid: str = None) -> tuple[str, str]:
         game = core.get_game(app_name)
         try:
             if steam_appid is None:

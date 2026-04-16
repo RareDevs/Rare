@@ -1,6 +1,5 @@
 import webbrowser
 from logging import getLogger
-from typing import Tuple
 
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -13,7 +12,7 @@ from rare.utils.qrequests import QRequests
 logger = getLogger('About')
 
 
-def versiontuple(v) -> Tuple[int, ...]:
+def versiontuple(v) -> tuple[int, ...]:
     try:
         return tuple(map(int, (v.split('.'))))
     except Exception as e:

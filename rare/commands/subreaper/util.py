@@ -1,9 +1,8 @@
 import os
 import shutil
-from typing import List
 
 
-def find_all(name, path) -> List:
+def find_all(name, path) -> list:
     result = []
     for root, dirs, files in os.walk(path):
         if name in files:

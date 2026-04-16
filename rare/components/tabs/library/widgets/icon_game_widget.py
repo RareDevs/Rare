@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import Optional
 
 from PySide6.QtCore import QEvent, Slot
 
@@ -46,12 +45,12 @@ class IconGameWidget(GameWidget):
             self.rgame.get_pixmap(ImageSize.LibraryTall, False),
         )
 
-    def enterEvent(self, a0: Optional[QEvent] = None) -> None:
+    def enterEvent(self, a0: QEvent | None = None) -> None:
         if a0 is not None:
             a0.accept()
         self.ui.enterAnimation(self)
 
-    def leaveEvent(self, a0: Optional[QEvent] = None) -> None:
+    def leaveEvent(self, a0: QEvent | None = None) -> None:
         if a0 is not None:
             a0.accept()
         self.ui.leaveAnimation(self)

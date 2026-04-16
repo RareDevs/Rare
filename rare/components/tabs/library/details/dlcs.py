@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFrame, QMessageBox, QToolBox
@@ -107,26 +105,26 @@ class GameDlcs(QToolBox, SideTabContents):
         self.core = rcore.core()
         self.signals = rcore.signals()
 
-        self.rgame: Optional[RareGame] = None
+        self.rgame: RareGame | None = None
 
-    def list_installed(self) -> List[InstalledGameDlcWidget]:
+    def list_installed(self) -> list[InstalledGameDlcWidget]:
         return self.ui.installed_dlc_container.findChildren(
             InstalledGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly
         )
 
-    def list_available(self) -> List[AvailableGameDlcWidget]:
+    def list_available(self) -> list[AvailableGameDlcWidget]:
         return self.ui.available_dlc_container.findChildren(
             AvailableGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly
         )
 
-    def get_installed(self, app_name: str) -> Optional[InstalledGameDlcWidget]:
+    def get_installed(self, app_name: str) -> InstalledGameDlcWidget | None:
         return self.ui.installed_dlc_container.findChild(
             InstalledGameDlcWidget,
             name=widget_object_name(InstalledGameDlcWidget, app_name),
             options=Qt.FindChildOption.FindDirectChildrenOnly,
         )
 
-    def get_available(self, app_name: str) -> Optional[AvailableGameDlcWidget]:
+    def get_available(self, app_name: str) -> AvailableGameDlcWidget | None:
         return self.ui.available_dlc_container.findChild(
             AvailableGameDlcWidget,
             name=widget_object_name(AvailableGameDlcWidget, app_name),

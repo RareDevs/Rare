@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import Optional
 
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
@@ -26,10 +25,10 @@ class QueueInfoWidget(QWidget):
     def __init__(
         self,
         imgmgr: ImageManager,
-        game: Optional[Game],
-        igame: Optional[InstalledGame],
-        analysis: Optional[AnalysisResult] = None,
-        old_igame: Optional[InstalledGame] = None,
+        game: Game | None,
+        igame: InstalledGame | None,
+        analysis: AnalysisResult | None = None,
+        old_igame: InstalledGame | None = None,
         parent=None,
     ):
         super(QueueInfoWidget, self).__init__(parent=parent)

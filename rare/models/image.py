@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Tuple
 
 from PySide6.QtCore import QSize
 
@@ -66,7 +65,7 @@ class ImageSize:
             return self.__orientation
 
         @property
-        def aspect_ratio(self) -> Tuple[int, int]:
+        def aspect_ratio(self) -> tuple[int, int]:
             if self.__orientation == ImageType.Tall:
                 return 3, 4
             elif self.__orientation == ImageType.Wide:

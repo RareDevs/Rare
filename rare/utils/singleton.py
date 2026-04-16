@@ -16,17 +16,20 @@ class SingleInstanceException(BaseException):
     pass
 
 
-class SingleInstance(object):
+class SingleInstance:
     """Class that can be instantiated only once per machine.
 
-    If you want to prevent your script from running in parallel just instantiate SingleInstance() class. If is there another instance already running it will throw a `SingleInstanceException`.
+    If you want to prevent your script from running in parallel just instantiate SingleInstance() class. If is there
+    another instance already running it will throw a `SingleInstanceException`.
 
 
     This option is very useful if you have scripts executed by crontab at small amounts of time.
 
     Remember that this works by creating a lock file with a filename based on the full path to the script file.
 
-    Providing a flavor_id will augment the filename with the provided flavor_id, allowing you to create multiple singleton instances from the same file. This is particularly useful if you want specific functions to have their own singleton instances.
+    Providing a flavor_id will augment the filename with the provided flavor_id, allowing you to create multiple
+    singleton instances from the same file. This is particularly useful if you want specific functions to have their
+    own singleton instances.
     """
 
     def __init__(self, flavor_id='', lockfile=''):
@@ -36,7 +39,7 @@ class SingleInstance(object):
         else:
             basename = (
                 os.path.splitext(os.path.abspath(sys.argv[0]))[0].replace('/', '-').replace(':', '').replace('\\', '-')
-                + '-%s' % flavor_id
+                + f'-{flavor_id}'
                 + '.lock'
             )
             self.lockfile = os.path.normpath(f'{tempfile.gettempdir()}/{basename}')
@@ -61,7 +64,7 @@ class SingleInstance(object):
             self.fp.flush()
             try:
                 fcntl.lockf(self.fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except IOError:
+            except OSError:
                 logger.warning('Another instance is already running, quitting.')
                 raise SingleInstanceException()
         self.initialized = True
@@ -83,5 +86,5 @@ class SingleInstance(object):
             if logger:
                 logger.warning(e)
             else:
-                print('Unloggable error: %s' % e)
+                print(f'Unloggable error: {e}', file=sys.stderr)
             sys.exit(-1)

@@ -1,7 +1,7 @@
 import locale
 import platform as pf
 from argparse import Namespace
-from typing import Any, Optional, Type
+from typing import Any, Optional
 
 from PySide6.QtCore import QSettings
 
@@ -11,7 +11,7 @@ from .enumerations import DiscordRPCMode, LibraryFilter, LibraryOrder, LibraryVi
 class Setting(Namespace):
     key: str
     default: Any
-    dtype: Type
+    dtype: type
 
     def __len__(self):
         return len(self.__dict__)

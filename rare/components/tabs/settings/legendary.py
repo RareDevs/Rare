@@ -2,7 +2,6 @@ import os
 import platform as pf
 import re
 from logging import getLogger
-from typing import Set, Tuple
 
 from PySide6.QtCore import QObject, Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QHideEvent, QShowEvent
@@ -26,7 +25,7 @@ class RefreshGameMetaWorkerSignals(QObject):
 
 
 class RefreshGameMetaWorker(Worker):
-    def __init__(self, core: LegendaryCore, platforms: Set[str], include_unreal: bool):
+    def __init__(self, core: LegendaryCore, platforms: set[str], include_unreal: bool):
         super(RefreshGameMetaWorker, self).__init__()
         self.core = core
         self.signals = RefreshGameMetaWorkerSignals()
@@ -154,7 +153,7 @@ class LegendarySettings(QWidget):
         QThreadPool.globalInstance().start(worker)
 
     @staticmethod
-    def __locale_edit_callback(text: str) -> Tuple[bool, str, int]:
+    def __locale_edit_callback(text: str) -> tuple[bool, str, int]:
         if text:
             if re.match('^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$', text):
                 language, country = text.split('-' if '-' in text else '_')
@@ -174,7 +173,7 @@ class LegendarySettings(QWidget):
             self.core.lgd.config.remove_option('Legendary', 'locale')
 
     @staticmethod
-    def __path_edit_callback(path: str) -> Tuple[bool, str, int]:
+    def __path_edit_callback(path: str) -> tuple[bool, str, int]:
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:

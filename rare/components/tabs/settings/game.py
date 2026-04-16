@@ -1,5 +1,3 @@
-from typing import Type
-
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QHideEvent
 from PySide6.QtWidgets import QVBoxLayout, QWidget
@@ -18,7 +16,7 @@ class GameSettingsBase(QWidget, SideTabContents):
         self,
         settings: RareAppSettings,
         rcore: RareCore,
-        launch_widget: Type[LaunchSettingsType],
+        launch_widget: type[LaunchSettingsType],
         parent=None,
     ):
         super(GameSettingsBase, self).__init__(parent=parent)

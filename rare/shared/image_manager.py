@@ -3,10 +3,11 @@ import json
 import pickle
 import threading
 import zlib
+from collections.abc import Callable
 from logging import getLogger
 from multiprocessing import cpu_count
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any
 
 import requests
 from legendary.lfs.eos import EOSOverlayApp
@@ -78,22 +79,22 @@ class ImageManager(QObject):
         # lk: the ordering in _img_types matters for the order of fallbacks
         # {'AndroidIcon', 'DieselGameBox', 'DieselGameBoxLogo', 'DieselGameBoxTall', 'DieselGameBoxWide',
         #  'ESRB', 'Featured', 'OfferImageTall', 'OfferImageWide', 'Screenshot', 'Thumbnail'}
-        self._img_tall_types: Tuple = (
+        self._img_tall_types: tuple = (
             'DieselGameBoxTall',
             'OfferImageTall',
             'Thumbnail',
         )
-        self._img_wide_types: Tuple = (
+        self._img_wide_types: tuple = (
             'DieselGameBoxWide',
             'DieselGameBox',
             'OfferImageWide',
             'Screenshot',
         )
-        self._img_logo_types: Tuple = ('DieselGameBoxLogo',)
-        self._img_types: Tuple = self._img_tall_types + self._img_wide_types + self._img_logo_types
+        self._img_logo_types: tuple = ('DieselGameBoxLogo',)
+        self._img_types: tuple = self._img_tall_types + self._img_wide_types + self._img_logo_types
         self._dl_retries = 1
         self._worker_lock = threading.Lock()
-        self._worker_app_names: Set[str] = set()
+        self._worker_app_names: set[str] = set()
         super(ImageManager, self).__init__()
         self.signals = signals
         self.core = core
@@ -115,7 +116,7 @@ class ImageManager(QObject):
         return image_dir_game(app_name).joinpath('image.cache')
 
     @staticmethod
-    def _img_all(app_name: str) -> Tuple:
+    def _img_all(app_name: str) -> tuple:
         return (
             image_tall_path(app_name),
             image_tall_path(app_name, color=False),
@@ -129,7 +130,7 @@ class ImageManager(QObject):
     def has_pixmaps(self, app_name: str) -> bool:
         return all(file.is_file() for file in self._img_all(app_name))
 
-    def _prepare_download(self, game: Game, force: bool = False) -> Tuple[List, Dict]:
+    def _prepare_download(self, game: Game, force: bool = False) -> tuple[list, dict]:
         if force and image_dir_game(game.app_name).exists():
             for file in self._img_all(game.app_name):
                 file.unlink(missing_ok=True)
@@ -138,13 +139,13 @@ class ImageManager(QObject):
 
         # Load image checksums
         if not self._img_json(game.app_name).is_file():
-            json_data: Dict = dict(zip(self._img_types, [None] * len(self._img_types)))
+            json_data: dict = dict(zip(self._img_types, [None] * len(self._img_types)))
             json_data['version'] = self._cache_version
         else:
-            json_data = json.load(open(self._img_json(game.app_name), 'r'))
+            json_data = json.load(open(self._img_json(game.app_name)))
 
         # Only download the best matching candidate for each image category
-        def best_match(key_images: List, image_types: Tuple) -> Dict:
+        def best_match(key_images: list, image_types: tuple) -> dict:
             matches = sorted(
                 filter(lambda image: image['type'] in image_types, key_images),
                 key=lambda x: image_types.index(x['type']) if x['type'] in image_types else len(image_types),
@@ -175,7 +176,7 @@ class ImageManager(QObject):
             if not candidates:
                 cover = 'epic.png' if game.app_name == EOSOverlayApp.app_name else 'cover.png'
                 # lk: fast path for games without images, convert Rare's logo
-                cache_data: Dict = dict(zip(self._img_types, [None] * len(self._img_types)))
+                cache_data: dict = dict(zip(self._img_types, [None] * len(self._img_types)))
                 with open(resources_path.joinpath('images', cover), 'rb') as fd:
                     cache_data['DieselGameBoxTall'] = fd.read()
                 with open(resources_path.joinpath('images', cover), 'rb') as fd:
@@ -201,10 +202,10 @@ class ImageManager(QObject):
 
         return updates, json_data
 
-    def _download(self, updates: List, json_data: Dict, game: Game) -> bool:
+    def _download(self, updates: list, json_data: dict, game: Game) -> bool:
         # Decompress existing image.cache
         if not self._img_cache(game.app_name).is_file():
-            cache_data: Dict[str, Any] = dict(zip(self._img_types, [None] * len(self._img_types)))
+            cache_data: dict[str, Any] = dict(zip(self._img_types, [None] * len(self._img_types)))
         else:
             cache_data = self._decompress(game)
 
@@ -291,7 +292,7 @@ class ImageManager(QObject):
 
         return bool(updates)
 
-    _icon_overlay: Optional[QPainterPath] = None
+    _icon_overlay: QPainterPath | None = None
 
     def _generate_icon_overlay(self, rect: QRect) -> QPainterPath:
         if self._icon_overlay is not None:
@@ -390,7 +391,7 @@ class ImageManager(QObject):
             if force and file.exists():
                 file.unlink(missing_ok=True)
 
-        def find_image_data(image_types: Tuple):
+        def find_image_data(image_types: tuple):
             data = None
             for image_type in image_types:
                 if images.get(image_type, None) is not None:
@@ -435,13 +436,13 @@ class ImageManager(QObject):
             format=desktop_icon_suffix().upper(),
         )
 
-    def _compress(self, game: Game, data: Dict) -> None:
+    def _compress(self, game: Game, data: dict) -> None:
         archive = open(self._img_cache(game.app_name), 'wb')
         cdata = zlib.compress(pickle.dumps(data), level=-1)
         archive.write(cdata)
         archive.close()
 
-    def _decompress(self, game: Game) -> Dict:
+    def _decompress(self, game: Game) -> dict:
         archive = open(self._img_cache(game.app_name), 'rb')
         try:
             data = zlib.decompress(archive.read())
@@ -499,11 +500,11 @@ class ImageManager(QObject):
 
     @staticmethod
     def _get_cover(
-        container: Union[Type[QPixmap], Type[QImage]],
+        container: type[QPixmap] | type[QImage],
         app_name: str,
         preset: ImageSize.Preset,
         color: bool,
-    ) -> Union[QPixmap, QImage]:
+    ) -> QPixmap | QImage:
         ret = container()
         if preset.orientation == ImageType.Icon:
             if image_icon_path(app_name, color).is_file():

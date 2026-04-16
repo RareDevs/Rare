@@ -1,5 +1,4 @@
 import platform as pf
-from typing import Type
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QHideEvent
@@ -29,11 +28,11 @@ class CompatSettingsBase(QWidget, SideTabContents):
         self,
         settings: RareAppSettings,
         rcore: RareCore,
-        dxvk_hud_widget: Type[DxvkHudSettings],
-        dxvk_config_widget: Type[DxvkConfigSettings],
-        dxvk_nvapi_drs_widget: Type[DxvkNvapiDrsSettings],
-        runner_widget: Type['RunnerSettingsType'],
-        mangohud_widget: Type['MangoHudSettings'] = None,
+        dxvk_hud_widget: type[DxvkHudSettings],
+        dxvk_config_widget: type[DxvkConfigSettings],
+        dxvk_nvapi_drs_widget: type[DxvkNvapiDrsSettings],
+        runner_widget: type['RunnerSettingsType'],
+        mangohud_widget: type['MangoHudSettings'] = None,
         parent=None,
     ):
         super(CompatSettingsBase, self).__init__(parent=parent)

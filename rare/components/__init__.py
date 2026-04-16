@@ -46,9 +46,9 @@ class Rare(RareApp):
         self.core = self.rcore.core()
 
         # set Application name for settings
-        self.main_window: Optional[RareWindow] = None
-        self.launch_dialog: Optional[LaunchDialog] = None
-        self.relogin_timer: Optional[QTimer] = None
+        self.main_window: RareWindow | None = None
+        self.launch_dialog: LaunchDialog | None = None
+        self.relogin_timer: QTimer | None = None
 
         # This launches the application after it has been instantiated.
         # The timer's signal will be serviced once we call `exec()` on the application

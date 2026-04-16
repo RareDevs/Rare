@@ -20,7 +20,7 @@ class ViewContainer(QWidget):
         super().__init__(parent=parent)
         self.rcore: RareCore = rcore
 
-    def _add_widget(self, widget_type: Type[ViewWidget], rgame: RareGame) -> ViewWidget:
+    def _add_widget(self, widget_type: type[ViewWidget], rgame: RareGame) -> ViewWidget:
         widget = widget_type(rgame, self)
         self.layout().addWidget(widget)
         return widget
@@ -38,7 +38,7 @@ class ViewContainer(QWidget):
         LibraryFilter.ALL: lambda x: not x.is_unreal and not x.is_android_only and 'hidden' not in x.metadata.tags,
     }
 
-    def __visibility(self, widget: ViewWidget, library_filter, search_text) -> Tuple[bool, float]:
+    def __visibility(self, widget: ViewWidget, library_filter, search_text) -> tuple[bool, float]:
         name_search = True
         tag_search = False
         if search_text.startswith('::'):
@@ -64,7 +64,7 @@ class ViewContainer(QWidget):
 
     def _filter_view(
         self,
-        widget_type: Type[ViewWidget],
+        widget_type: type[ViewWidget],
         filter_by: LibraryFilter = LibraryFilter.ALL,
         search_text: str = '',
     ):
@@ -74,7 +74,7 @@ class ViewContainer(QWidget):
             iw.setOpacity(opacity)
             iw.setVisible(visibility)
 
-    def _update_view(self, widget_type: Type[ViewWidget]):
+    def _update_view(self, widget_type: type[ViewWidget]):
         widgets = self.findChildren(widget_type)
         app_names = {iw.rgame.app_name for iw in widgets}
         games = list(self.rcore.games)
@@ -85,7 +85,7 @@ class ViewContainer(QWidget):
             w = widget_type(game, self)
             self.layout().addWidget(w)
 
-    def _find_widget(self, widget_type: Type[ViewWidget], app_name: str) -> ViewWidget:
+    def _find_widget(self, widget_type: type[ViewWidget], app_name: str) -> ViewWidget:
         w = self.findChild(widget_type, app_name)
         return w
 
@@ -265,5 +265,5 @@ class LibraryWidgetController(QObject):
         self._container.update_view()
         self.order_game_view(self._current_order)
 
-    def __find_widget(self, app_name: str) -> Union[ViewWidget, None]:
+    def __find_widget(self, app_name: str) -> ViewWidget | None:
         return self._container.find_widget(app_name)

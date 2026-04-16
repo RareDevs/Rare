@@ -1,5 +1,3 @@
-from typing import Union
-
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFontMetrics, QResizeEvent
 from PySide6.QtWidgets import QLabel
@@ -40,7 +38,7 @@ class ElideLabel(QLabel):
         self.__setElideText(self.__text)
         super(ElideLabel, self).resizeEvent(a0)
 
-    def setFixedHeight(self, h: Union[int, bool]) -> None:
+    def setFixedHeight(self, h: int | bool) -> None:
         if isinstance(h, bool):
             # FIXME: figure out 'else' case
             super(ElideLabel, self).setFixedHeight(self.__fm.height() if h else 16777215)

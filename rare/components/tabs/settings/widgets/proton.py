@@ -1,7 +1,6 @@
 import os
 from enum import IntEnum
 from logging import getLogger
-from typing import Optional, Tuple, Union
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -43,7 +42,7 @@ class ProtonSettings(QGroupBox):
         self.rcore = rcore
         self.core = rcore.core()
         self.wrappers: Wrappers = rcore.wrappers()
-        self.tool_wrapper: Optional[Wrapper] = None
+        self.tool_wrapper: Wrapper | None = None
         self.app_name: str = 'default'
 
         self.setTitle(self.tr('Proton'))
@@ -146,9 +145,7 @@ class ProtonSettings(QGroupBox):
 
     @Slot(int)
     def _on_tool_changed(self, index: int):
-        steam_tool: Union[steam.ProtonTool, steam.CompatibilityTool, None] = self.tool_combo.itemData(
-            index, Qt.ItemDataRole.UserRole
-        )
+        steam_tool: steam.ProtonTool | steam.CompatibilityTool | None = self.tool_combo.itemData(index, Qt.ItemDataRole.UserRole)
 
         steam_environ = steam.get_steam_environment(steam_tool, self.compat_edit.text())
         library_paths = steam_environ['STEAM_COMPAT_LIBRARY_PATHS'] if 'STEAM_COMPAT_LIBRARY_PATHS' in steam_environ else ''
@@ -205,7 +202,7 @@ class ProtonSettings(QGroupBox):
         )
 
     @staticmethod
-    def _proton_prefix_edit(text: str) -> Tuple[bool, str, int]:
+    def _proton_prefix_edit(text: str) -> tuple[bool, str, int]:
         if not text:
             return False, text, IndicatorReasonsCommon.IS_EMPTY
         if os.path.isdir(text):

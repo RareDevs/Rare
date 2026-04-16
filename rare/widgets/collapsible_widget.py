@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Optional
 
 from PySide6.QtCore import (
     QAbstractAnimation,
@@ -22,7 +21,7 @@ from PySide6.QtWidgets import (
 from rare.utils.misc import qta_icon
 
 
-class CollapsibleBase(object):
+class CollapsibleBase:
     """
     References:
         # Adapted from c++ version
@@ -39,8 +38,8 @@ class CollapsibleBase(object):
 
     def setup(self, animation_duration: int = 200):
         self.animation_duration = animation_duration
-        self.content_area: Optional[QWidget] = None
-        self.content_toggle_animation: Optional[QPropertyAnimation] = None
+        self.content_area: QWidget | None = None
+        self.content_toggle_animation: QPropertyAnimation | None = None
 
         # let the entire widget grow and shrink with its content
         self.toggle_animation = QParallelAnimationGroup(self)

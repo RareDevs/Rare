@@ -1,7 +1,6 @@
 import logging
 import platform
 import shutil
-from typing import Tuple
 
 from legendary.lfs.eos import remove_registry_entries
 from PySide6.QtCore import QObject, Signal
@@ -31,7 +30,7 @@ def uninstall_game(
     keep_folder=True,
     keep_config=False,
     keep_overlay_keys=False,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     if rgame.is_overlay:
         logger.info('Deleting overlay installation...')
         core.remove_overlay_install()

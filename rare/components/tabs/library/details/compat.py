@@ -1,6 +1,5 @@
 import platform as pf
 from logging import getLogger
-from typing import Tuple
 
 from PySide6.QtCore import QSignalBlocker, Qt, Slot
 from PySide6.QtGui import QHideEvent, QShowEvent
@@ -99,7 +98,7 @@ class LocalRunnerSettings(RunnerSettingsBase):
         self.steam_appid_edit.setCompleter(None)
         return super().hideEvent(e)
 
-    def __steam_appid_edit_callback(self, text: str) -> Tuple[bool, str, int]:
+    def __steam_appid_edit_callback(self, text: str) -> tuple[bool, str, int]:
         self.steam_appid_edit.setInfo('')
         if not text or len(text) < 3:
             return True, text, IndicatorReasonsCommon.UNDEFINED

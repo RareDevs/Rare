@@ -5,7 +5,6 @@ import shutil
 from argparse import Namespace
 from dataclasses import dataclass, field
 from logging import getLogger
-from typing import Dict, List, Tuple
 
 from legendary.models.game import LaunchParameters
 from PySide6.QtCore import QProcess, QProcessEnvironment
@@ -48,9 +47,9 @@ class InitParams(Namespace):
 @dataclass
 class LaunchParams:
     executable: str = ''
-    arguments: List[str] = field(default_factory=list)
+    arguments: list[str] = field(default_factory=list)
     working_directory: str = ''
-    environment: Dict[str, str] = field(default_factory=dict)
+    environment: dict[str, str] = field(default_factory=dict)
     pre_launch_command: str = ''
     pre_launch_wait: bool = False
     is_origin_game: bool = False  # only for windows to launch as url
@@ -155,7 +154,7 @@ def get_launch_params(rgame: RareGameSlim, init: InitParams = None) -> LaunchPar
     return resp
 
 
-def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[str], Dict]:
+def prepare_process(command: list[str], environment: dict) -> tuple[str, list[str], dict]:
     logger.debug('Preparing process: %s', command)
 
     _env = environment.copy()
@@ -192,14 +191,14 @@ def prepare_process(command: List[str], environment: Dict) -> Tuple[str, List[st
     return final_cmd[0], final_cmd[1:] if len(final_cmd) > 1 else [], final_env
 
 
-def dict_to_qprocenv(env: Dict) -> QProcessEnvironment:
+def dict_to_qprocenv(env: dict) -> QProcessEnvironment:
     _env = QProcessEnvironment()
     for name, value in env.items():
         _env.insert(name, value)
     return _env
 
 
-def get_configured_qprocess(command: List[str], environment: Dict) -> QProcess:
+def get_configured_qprocess(command: list[str], environment: dict) -> QProcess:
     cmd, args, env = prepare_process(command, environment)
     proc = QProcess()
     proc.setProcessChannelMode(QProcess.ProcessChannelMode.SeparateChannels)

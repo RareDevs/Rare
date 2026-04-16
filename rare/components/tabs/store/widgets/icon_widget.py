@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 )
 
 
-class IconWidget(object):
+class IconWidget:
     def __init__(self):
         self.mini_widget: QWidget = None
         self.title_label: QLabel = None

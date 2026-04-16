@@ -3,11 +3,11 @@ import platform
 import shlex
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Type
+from typing import Any
 
 
 class SteamUser:
-    def __init__(self, long_id: str, user: Dict):
+    def __init__(self, long_id: str, user: dict):
         super(SteamUser, self).__init__()
         self._long_id: str = long_id
         self._user = user.copy()
@@ -69,10 +69,10 @@ class SteamShortcut:
     DevkitOverrideAppID: int
     LastPlayTime: int
     FlatpakAppID: str
-    tags: Dict = field(default_factory=dict)
+    tags: dict = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type['SteamShortcut'], src: Dict[str, Any]) -> 'SteamShortcut':
+    def from_dict(cls: type['SteamShortcut'], src: dict[str, Any]) -> 'SteamShortcut':
         d = src.copy()
         tmp = cls(
             appid=d.pop('appid', 0),
@@ -97,13 +97,13 @@ class SteamShortcut:
 
     @classmethod
     def create(
-        cls: Type['SteamShortcut'],
+        cls: type['SteamShortcut'],
         app_name: str,
         app_title: str,
         executable: str,
         start_dir: str,
         icon: str,
-        launch_options: List[str],
+        launch_options: list[str],
     ) -> 'SteamShortcut':
         shortcut = cls.from_dict({})
         shortcut.appid = cls.calculate_appid(app_name)

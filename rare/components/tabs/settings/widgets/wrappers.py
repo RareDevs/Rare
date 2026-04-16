@@ -1,8 +1,8 @@
 import platform as pf
 import shlex
 import shutil
+from collections.abc import Iterable
 from logging import getLogger
-from typing import Iterable, Optional, Tuple
 
 from PySide6.QtCore import QEvent, QMimeData, QObject, QSize, Qt, Signal, Slot
 from PySide6.QtGui import (
@@ -61,7 +61,7 @@ class WrapperEditDialog(ButtonDialog):
         self.accept_button.setIcon(qta_icon('fa.edit', 'fa5s.edit'))
         self.accept_button.setEnabled(False)
 
-        self.result: Tuple = (False, '')
+        self.result: tuple = (False, '')
 
     def setup(self, wrapper: Wrapper):
         header = self.tr('Edit wrapper')
@@ -401,7 +401,7 @@ class WrapperContainer(QWidget):
         super(WrapperContainer, self).__init__(parent=parent)
         self.setAcceptDrops(True)
         self.__layout = QHBoxLayout()
-        self.__drag_widget: Optional[QWidget] = None
+        self.__drag_widget: QWidget | None = None
 
         self.main_layout = QHBoxLayout(self)
         self.main_layout.addLayout(self.__layout)

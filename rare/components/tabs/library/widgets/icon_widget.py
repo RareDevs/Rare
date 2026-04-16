@@ -14,7 +14,7 @@ from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 
 
-class IconWidget(object):
+class IconWidget:
     def __init__(self):
         self._effect = None
         self._animation: QPropertyAnimation = None

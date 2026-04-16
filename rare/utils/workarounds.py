@@ -1,6 +1,5 @@
 import platform
 from logging import getLogger
-from typing import Dict, Tuple, Union
 
 import requests
 from orjson import orjson
@@ -16,7 +15,7 @@ class Workarounds:
 
     def __init__(self):
         self.logger = getLogger(type(self).__name__)
-        self._workarounds: Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Tuple]]]]] = {}
+        self._workarounds: dict[str, dict[str, dict[str, dict[str, str | tuple]]]] = {}
         self._active_download: bool = False
 
     def _download_workarounds(self) -> bytes:
@@ -27,7 +26,7 @@ class Workarounds:
         self._active_download = False
         return resp.content
 
-    def load_workarounds(self) -> Dict[str, Dict[str, Dict[str, Dict[str, Union[str, Tuple]]]]]:
+    def load_workarounds(self) -> dict[str, dict[str, dict[str, dict[str, str | tuple]]]]:
         if self._workarounds:
             return self._workarounds
 
@@ -58,7 +57,7 @@ class Workarounds:
 
         return self._workarounds
 
-    def get(self, app_name: str) -> Dict:
+    def get(self, app_name: str) -> dict:
         if not self._workarounds:
             self.load_workarounds()
         return self._workarounds.get(app_name, {})
