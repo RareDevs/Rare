@@ -1,4 +1,3 @@
-import builtins
 from dataclasses import dataclass, field
 from datetime import datetime
 from logging import getLogger
@@ -35,7 +34,7 @@ class ImageUrlModel:
         return tmp
 
     @classmethod
-    def from_dict(cls: builtins.type['ImageUrlModel'], src: dict[str, Any]) -> 'ImageUrlModel':
+    def from_dict(cls: type['ImageUrlModel'], src: dict[str, Any]) -> 'ImageUrlModel':
         d = src.copy()
         return cls(type=d.pop('type', ''), url=d.pop('url', ''))
 
