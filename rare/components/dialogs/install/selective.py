@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QCheckBox, QVBoxLayout, QWidget
@@ -23,6 +25,7 @@ class SelectiveWidget(QWidget):
 
     def __init__(self, rgame: RareGame, platform: str, parent=None):
         super().__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
         self._has_tags = False
 
         main_layout = QVBoxLayout(self)

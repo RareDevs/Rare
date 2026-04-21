@@ -549,7 +549,7 @@ class RareGame(RareGameSlim):
                 manifest_install_tags.add(tag)
 
         extra_install_tags = manifest_install_tags.difference(known_install_tags)
-        for extra_tag in extra_install_tags:
+        for extra_tag in sorted(extra_install_tags):
             sdl_data[extra_tag] = {'name': extra_tag, 'description': '', 'tags': [extra_tag]}
 
         return sdl_data
