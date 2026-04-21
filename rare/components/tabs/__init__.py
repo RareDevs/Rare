@@ -47,7 +47,7 @@ class MainTabWidget(QTabWidget):
 
         if not self.args.offline:
             self.store_tab = StoreTab(self.core, parent=self)
-            self.store_index = self.addTab(self.store_tab, self.tr('Store (Beta)'))
+            self.store_index = self.addTab(self.store_tab, self.tr('Store (Under Construction)'))
             self.setTabEnabled(self.store_index, not self.args.offline)
 
         # Space Tab

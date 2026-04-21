@@ -1,3 +1,4 @@
+from contextlib import suppress
 from enum import Enum
 
 from PySide6.QtCore import QRectF, QSize, Qt
@@ -64,7 +65,10 @@ class ImageWidget(QWidget):
                 )
         else:
             self.paint_image = self.paint_image_empty
-        self.update()
+        # FIXME: this suppresss the RuntimeError raised by Qt if the widget has already
+        # deleted. Temporary until I look into it again.
+        with suppress(RuntimeError):
+            self.update()
 
     def sizeHint(self) -> QSize:
         return self._image_size.size if self._image_size else super(ImageWidget, self).sizeHint()
