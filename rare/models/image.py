@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Tuple
 
 from PySide6.QtCore import QSize
 
@@ -18,7 +17,7 @@ class ImageSize:
             divisor: float,
             pixel_ratio: float,
             orientation: ImageType = ImageType.Tall,
-            base: "ImageSize.Preset" = None,
+            base: 'ImageSize.Preset' = None,
         ):
             self.__divisor = divisor
             self.__pixel_ratio = pixel_ratio
@@ -37,7 +36,7 @@ class ImageSize:
             self.__smooth_transform = divisor <= 2
             self.__base = base if base is not None else self
 
-        def __eq__(self, other: "ImageSize.Preset"):
+        def __eq__(self, other: 'ImageSize.Preset'):
             return (
                 self.__size == other.size
                 and self.__divisor == other.divisor
@@ -66,7 +65,7 @@ class ImageSize:
             return self.__orientation
 
         @property
-        def aspect_ratio(self) -> Tuple[int, int]:
+        def aspect_ratio(self) -> tuple[int, int]:
             if self.__orientation == ImageType.Tall:
                 return 3, 4
             elif self.__orientation == ImageType.Wide:
@@ -75,7 +74,7 @@ class ImageSize:
                 return 0, 0
 
         @property
-        def base(self) -> "ImageSize.Preset":
+        def base(self) -> 'ImageSize.Preset':
             return self.__base
 
     Tall = Preset(1, 1)

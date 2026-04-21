@@ -38,7 +38,7 @@ class VerifyWorker(QueueWorker):
             app_name=self.rgame.app_name,
             app_title=self.rgame.app_title,
             type=type(self).__name__,
-            prefix="Verifying",
+            prefix='Verifying',
             state=self.state,
         )
 
@@ -86,7 +86,7 @@ class VerifyWorker(QueueWorker):
         if success:
             # lk: if verification was successful we delete the repair file and run the clean procedure
             # lk: this could probably be cut down to what is relevant for this use-case and skip the `cli` call
-            repair_file = os.path.join(self.core.lgd.get_tmp_path(), f"{self.rgame.app_name}.repair")
+            repair_file = os.path.join(self.core.lgd.get_tmp_path(), f'{self.rgame.app_name}.repair')
             cli.install_game_cleanup(
                 game=self.rgame.game,
                 igame=self.rgame.igame,

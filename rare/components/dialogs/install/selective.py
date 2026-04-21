@@ -1,4 +1,4 @@
-from typing import List, Union
+from logging import getLogger
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
@@ -9,14 +9,14 @@ from rare.widgets.collapsible_widget import CollapsibleFrame
 
 
 class InstallTagCheckBox(QCheckBox):
-    def __init__(self, text, desc, tags: List[str], parent=None):
+    def __init__(self, text, desc, tags: list[str], parent=None):
         super(InstallTagCheckBox, self).__init__(parent)
-        self.setFont(QFont("monospace"))
+        self.setFont(QFont('monospace'))
         self.setText(text)
         self.setToolTip(desc)
         self.tags = tags
 
-    def isChecked(self) -> Union[bool, List[str]]:
+    def isChecked(self) -> bool | list[str]:
         return self.tags if super(InstallTagCheckBox, self).isChecked() else False
 
 
@@ -25,6 +25,7 @@ class SelectiveWidget(QWidget):
 
     def __init__(self, rgame: RareGame, platform: str, parent=None):
         super().__init__(parent=parent)
+        self.logger = getLogger(type(self).__name__)
         self._has_tags = False
 
         main_layout = QVBoxLayout(self)
@@ -32,18 +33,18 @@ class SelectiveWidget(QWidget):
 
         core = rgame.core
 
-        config_tags = core.lgd.config.get(rgame.app_name, "install_tags", fallback=None)
-        config_disable_sdl = core.lgd.config.getboolean(rgame.app_name, "disable_sdl", fallback=False)
+        config_tags = core.lgd.config.get(rgame.app_name, 'install_tags', fallback=None)
+        config_disable_sdl = core.lgd.config.getboolean(rgame.app_name, 'disable_sdl', fallback=False)
 
         sdl_data = rgame.sdl_data(platform)
         if not config_disable_sdl and sdl_data:
             for group, info in sdl_data.items():
-                cb = InstallTagCheckBox(info["name"].strip(), info["description"].strip(), info["tags"])
-                if group == "__required":
+                cb = InstallTagCheckBox(info['name'].strip(), info['description'].strip(), info['tags'])
+                if group == '__required':
                     cb.setChecked(True)
                     cb.setDisabled(True)
                 if config_tags is not None:
-                    if all(tag in config_tags for tag in info["tags"]):
+                    if all(tag in config_tags for tag in info['tags']):
                         cb.setChecked(True)
                 cb.stateChanged.connect(self.stateChanged)
                 main_layout.addWidget(cb)
@@ -51,13 +52,13 @@ class SelectiveWidget(QWidget):
         else:
             self._has_tags = False
 
-    def enabled_tags(self) -> List[str]:
+    def enabled_tags(self) -> list[str]:
         install_tags = set()
         for cb in self.findChildren(InstallTagCheckBox, options=Qt.FindChildOption.FindDirectChildrenOnly):
             if data := cb.isChecked():
                 # noinspection PyTypeChecker
                 install_tags.update(data)
-        install_tags = ["", *install_tags]
+        install_tags = ['', *install_tags]
         return install_tags
 
     def supports_tags(self) -> bool:
@@ -69,7 +70,7 @@ class InstallDialogSelective(CollapsibleFrame):
 
     def __init__(self, rgame: RareGame, parent=None):
         super(InstallDialogSelective, self).__init__(parent=parent)
-        title = self.tr("Optional downloads")
+        title = self.tr('Optional downloads')
         self.setTitle(title)
         self.setEnabled(False)
 
@@ -85,8 +86,8 @@ class InstallDialogSelective(CollapsibleFrame):
         self.widget.stateChanged.connect(self.stateChanged)
         self.setWidget(self.widget)
 
-    def enabled_tags(self) -> List[str]:
+    def enabled_tags(self) -> list[str]:
         return self.widget.enabled_tags()
 
 
-__all__ = ["InstallDialogSelective", "SelectiveWidget"]
+__all__ = ['InstallDialogSelective', 'SelectiveWidget']

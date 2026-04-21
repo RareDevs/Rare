@@ -7,18 +7,18 @@ from PySide6.QtWidgets import QPushButton
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.models.image import ImageSize
 from rare.utils.misc import qta_icon
-from rare.utils.qt_requests import QtRequests
+from rare.utils.qrequests import QRequests
 from rare.widgets.image_widget import LoadingSpinnerImageWidget
 
 from .icon_widget import IconWidget
 
-logger = getLogger("StoreWidgets")
+logger = getLogger('StoreWidgets')
 
 
 class ItemWidgetSpinner(LoadingSpinnerImageWidget):
     show_details = Signal(CatalogOfferModel)
 
-    def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel = None, parent=None):
+    def __init__(self, manager: QRequests, catalog_game: CatalogOfferModel = None, parent=None):
         super(ItemWidgetSpinner, self).__init__(manager, parent=parent)
         self.ui = IconWidget()
         self.catalog_game = catalog_game
@@ -32,7 +32,7 @@ class ItemWidgetSpinner(LoadingSpinnerImageWidget):
 
 
 class StoreItemWidget(ItemWidgetSpinner):
-    def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel = None, parent=None):
+    def __init__(self, manager: QRequests, catalog_game: CatalogOfferModel = None, parent=None):
         super(StoreItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.DisplayWide)
         self.ui.setupUi(self)
@@ -41,25 +41,25 @@ class StoreItemWidget(ItemWidgetSpinner):
 
     def init_ui(self, game: CatalogOfferModel):
         if not game:
-            self.ui.title_label.setText(self.tr("An error occurred"))
+            self.ui.title_label.setText(self.tr('An error occurred'))
             return
 
         self.ui.title_label.setText(game.title)
         for attr in game.customAttributes:
-            if attr["key"] == "developerName":
-                developer = attr["value"]
+            if attr['key'] == 'developerName':
+                developer = attr['value']
                 break
         else:
-            developer = game.seller["name"]
+            developer = game.seller['name']
         self.ui.developer_label.setText(developer)
-        price = game.price.totalPrice.fmtPrice["originalPrice"]
-        discount_price = game.price.totalPrice.fmtPrice["discountPrice"]
-        self.ui.price_label.setText(f"{price if price != '0' else self.tr('Free')}")
+        price = game.price.totalPrice.fmtPrice['originalPrice']
+        discount_price = game.price.totalPrice.fmtPrice['discountPrice']
+        self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
         if price != discount_price:
             font = self.ui.price_label.font()
             font.setStrikeOut(True)
             self.ui.price_label.setFont(font)
-            self.ui.discount_label.setText(f"{discount_price if discount_price != '0' else self.tr('Free')}")
+            self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
         else:
             self.ui.discount_label.setVisible(False)
 
@@ -77,7 +77,7 @@ class StoreItemWidget(ItemWidgetSpinner):
 
 
 class SearchItemWidget(ItemWidgetSpinner):
-    def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
+    def __init__(self, manager: QRequests, catalog_game: CatalogOfferModel, parent=None):
         super(SearchItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.LibraryTall)
         self.ui.setupUi(self)
@@ -87,14 +87,14 @@ class SearchItemWidget(ItemWidgetSpinner):
 
         self.ui.title_label.setText(catalog_game.title)
 
-        price = catalog_game.price.totalPrice.fmtPrice["originalPrice"]
-        discount_price = catalog_game.price.totalPrice.fmtPrice["discountPrice"]
-        self.ui.price_label.setText(f"{price if price != '0' else self.tr('Free')}")
+        price = catalog_game.price.totalPrice.fmtPrice['originalPrice']
+        discount_price = catalog_game.price.totalPrice.fmtPrice['discountPrice']
+        self.ui.price_label.setText(f'{price if price != "0" else self.tr("Free")}')
         if price != discount_price:
             font = self.ui.price_label.font()
             font.setStrikeOut(True)
             self.ui.price_label.setFont(font)
-            self.ui.discount_label.setText(f"{discount_price if discount_price != '0' else self.tr('Free')}")
+            self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
         else:
             self.ui.discount_label.setVisible(False)
 
@@ -102,35 +102,35 @@ class SearchItemWidget(ItemWidgetSpinner):
 class WishlistItemWidget(ItemWidgetSpinner):
     delete_from_wishlist = Signal(CatalogOfferModel)
 
-    def __init__(self, manager: QtRequests, catalog_game: CatalogOfferModel, parent=None):
+    def __init__(self, manager: QRequests, catalog_game: CatalogOfferModel, parent=None):
         super(WishlistItemWidget, self).__init__(manager, catalog_game, parent=parent)
         self.setFixedSize(ImageSize.DisplayWide)
         self.ui.setupUi(self)
 
         for attr in catalog_game.customAttributes:
-            if attr["key"] == "developerName":
-                developer = attr["value"]
+            if attr['key'] == 'developerName':
+                developer = attr['value']
                 break
         else:
-            developer = catalog_game.seller["name"]
-        original_price = catalog_game.price.totalPrice.fmtPrice["originalPrice"]
-        discount_price = catalog_game.price.totalPrice.fmtPrice["discountPrice"]
+            developer = catalog_game.seller['name']
+        original_price = catalog_game.price.totalPrice.fmtPrice['originalPrice']
+        discount_price = catalog_game.price.totalPrice.fmtPrice['discountPrice']
 
         self.ui.title_label.setText(catalog_game.title)
         self.ui.developer_label.setText(developer)
-        self.ui.price_label.setText(f"{original_price if original_price != '0' else self.tr('Free')}")
+        self.ui.price_label.setText(f'{original_price if original_price != "0" else self.tr("Free")}')
         if original_price != discount_price:
             font = self.ui.price_label.font()
             font.setStrikeOut(True)
             self.ui.price_label.setFont(font)
-            self.ui.discount_label.setText(f"{discount_price if discount_price != '0' else self.tr('Free')}")
+            self.ui.discount_label.setText(f'{discount_price if discount_price != "0" else self.tr("Free")}')
         else:
             self.ui.discount_label.setVisible(False)
         key_images = catalog_game.keyImages
         self.fetchPixmap(key_images.for_dimensions(self.width(), self.height()).url)
 
         self.delete_button = QPushButton(self)
-        self.delete_button.setIcon(qta_icon("mdi.delete", color="white"))
+        self.delete_button.setIcon(qta_icon('mdi.delete', color='white'))
         self.delete_button.clicked.connect(self._on_delete_clicked)
         self.layout().insertWidget(0, self.delete_button, alignment=Qt.AlignmentFlag.AlignRight)
 

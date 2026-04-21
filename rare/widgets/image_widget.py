@@ -1,5 +1,5 @@
+from contextlib import suppress
 from enum import Enum
-from typing import Dict, Optional, Tuple, Union
 
 from PySide6.QtCore import QRectF, QSize, Qt
 from PySide6.QtGui import (
@@ -17,11 +17,11 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 
 from rare.models.image import ImageSize
-from rare.utils.qt_requests import QtRequests
+from rare.utils.qrequests import QRequests
 
 from .loading_widget import LoadingWidget
 
-OverlayPath = Tuple[QPainterPath, Union[QColor, QLinearGradient]]
+OverlayPath = tuple[QPainterPath, QColor | QLinearGradient]
 
 
 class ImageWidget(QWidget):
@@ -29,16 +29,16 @@ class ImageWidget(QWidget):
         Rounded = 0
         Squared = 1
 
-    _rounded_overlay: Optional[OverlayPath] = None
-    _squared_overlay: Optional[OverlayPath] = None
+    _rounded_overlay: OverlayPath | None = None
+    _squared_overlay: OverlayPath | None = None
 
     def __init__(self, parent=None) -> None:
         super(ImageWidget, self).__init__(parent=parent)
-        self._pixmap: Optional[QPixmap] = None
+        self._pixmap: QPixmap | None = None
         self._opacity: float = 1.0
         self._transform: QTransform = None
         self._smooth_transform: bool = False
-        self._image_size: Optional[ImageSize.Preset] = None
+        self._image_size: ImageSize.Preset | None = None
 
         self.setObjectName(type(self).__name__)
         self.setContentsMargins(0, 0, 0, 0)
@@ -65,7 +65,10 @@ class ImageWidget(QWidget):
                 )
         else:
             self.paint_image = self.paint_image_empty
-        self.update()
+        # FIXME: this suppresss the RuntimeError raised by Qt if the widget has already
+        # deleted. Temporary until I look into it again.
+        with suppress(RuntimeError):
+            self.update()
 
     def sizeHint(self) -> QSize:
         return self._image_size.size if self._image_size else super(ImageWidget, self).sizeHint()
@@ -160,11 +163,11 @@ class ImageWidget(QWidget):
 
 
 class LoadingImageWidget(ImageWidget):
-    def __init__(self, manager: QtRequests, parent=None):
+    def __init__(self, manager: QRequests, parent=None):
         super(LoadingImageWidget, self).__init__(parent=parent)
         self.manager = manager
 
-    def fetchPixmap(self, url: str, params: Dict = None):
+    def fetchPixmap(self, url: str, params: dict = None):
         self.setPixmap(QPixmap())
         self.manager.get(url, self._on_image_ready, params=params)
 
@@ -182,22 +185,16 @@ class LoadingImageWidget(ImageWidget):
 
 
 class LoadingSpinnerImageWidget(LoadingImageWidget):
-    def __init__(self, manager: QtRequests, parent=None):
+    def __init__(self, manager: QRequests, parent=None):
         super(LoadingSpinnerImageWidget, self).__init__(manager, parent=parent)
         self.spinner = LoadingWidget(parent=self)
         self.spinner.setVisible(False)
 
-    def fetchPixmap(self, url: str, params: Dict = None):
+    def fetchPixmap(self, url: str, params: dict = None):
         self.spinner.setFixedSize(self._image_size.size)
         self.spinner.start()
         params = (
-            {
-                "resize": 1,
-                "w": self._image_size.base.size.width(),
-                "h": self._image_size.base.size.height(),
-            }
-            if not params
-            else params
+            params if params else {'resize': 1, 'w': self._image_size.base.size.width(), 'h': self._image_size.base.size.height()}
         )
         super().fetchPixmap(url, params=params)
 
@@ -206,4 +203,4 @@ class LoadingSpinnerImageWidget(LoadingImageWidget):
         self.spinner.stop()
 
 
-__all__ = ["ImageSize", "ImageWidget", "LoadingImageWidget", "LoadingSpinnerImageWidget"]
+__all__ = ['ImageSize', 'ImageWidget', 'LoadingImageWidget', 'LoadingSpinnerImageWidget']

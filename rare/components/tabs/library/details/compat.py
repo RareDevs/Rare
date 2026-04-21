@@ -1,6 +1,5 @@
 import platform as pf
 from logging import getLogger
-from typing import Tuple
 
 from PySide6.QtCore import QSignalBlocker, Qt, Slot
 from PySide6.QtGui import QHideEvent, QShowEvent
@@ -18,18 +17,18 @@ from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.utils.paths import compat_shaders_dir, proton_compat_dir, wine_prefix_dir
-from rare.utils.steam_grades import SteamGrades
+from rare.utils.steam_grades import steam_grades
 from rare.widgets.indicator_edit import (
     ColumnCompleter,
     IndicatorLineEdit,
     IndicatorReasonsCommon,
 )
 
-if pf.system() in {"Linux", "FreeBSD"}:
+if pf.system() in {'Linux', 'FreeBSD'}:
     from rare.components.tabs.settings.widgets.overlay import MangoHudSettings
     from rare.components.tabs.settings.widgets.proton import ProtonSettings
 
-logger = getLogger("LocalCompatSettings")
+logger = getLogger('LocalCompatSettings')
 
 
 class LocalWineSettings(WineSettings):
@@ -37,17 +36,17 @@ class LocalWineSettings(WineSettings):
         self.app_name = app_name
 
 
-if pf.system() in {"Linux", "FreeBSD"}:
+if pf.system() in {'Linux', 'FreeBSD'}:
 
     class LocalProtonSettings(ProtonSettings):
         def load_settings(self, app_name: str):
             self.app_name = app_name
 
         def _get_compat_path(self, compat_location: ProtonSettings.CompatLocation):
-            folder_name = "default"
+            folder_name = 'default'
             local_folder_name = self.rcore.get_game(self.app_name).folder_name
             if compat_location == ProtonSettings.CompatLocation.NONE:
-                if wine_prefix_dir(local_folder_name).joinpath("system.reg").is_file():
+                if wine_prefix_dir(local_folder_name).joinpath('system.reg').is_file():
                     compat_location = ProtonSettings.CompatLocation.ISOLATED
             if compat_location == ProtonSettings.CompatLocation.ISOLATED:
                 folder_name = local_folder_name
@@ -61,7 +60,7 @@ if pf.system() in {"Linux", "FreeBSD"}:
 
 class LocalRunnerSettings(RunnerSettingsBase):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
-        if pf.system() in {"Linux", "FreeBSD"}:
+        if pf.system() in {'Linux', 'FreeBSD'}:
             super(LocalRunnerSettings, self).__init__(settings, rcore, LocalWineSettings, LocalProtonSettings, parent=parent)
         else:
             super(LocalRunnerSettings, self).__init__(settings, rcore, LocalWineSettings, parent=parent)
@@ -69,28 +68,28 @@ class LocalRunnerSettings(RunnerSettingsBase):
         self.rgame: RareGame = None
 
         self.steam_appid_edit = IndicatorLineEdit(
-            placeholder=self.tr("Use in case the SteamAppID was not found automatically"),
+            placeholder=self.tr('Use in case the SteamAppID was not found automatically'),
             edit_func=self.__steam_appid_edit_callback,
             save_func=self.__steam_appid_save_callback,
             parent=self,
         )
-        self.form_layout.addRow(self.tr("Steam AppID"), self.steam_appid_edit)
+        self.form_layout.addRow(self.tr('Steam AppID'), self.steam_appid_edit)
 
-        self.__grades = SteamGrades()
+        self.__grades = steam_grades
 
     def showEvent(self, e: QShowEvent):
         if e.spontaneous():
             return super().showEvent(e)
         _ = QSignalBlocker(self.shader_cache_check)
         is_local_cache_enabled = self.settings.get_with_global(app_settings.local_shader_cache, self.rgame.app_name)
-        has_local_cache_path = bool(config.get_envvar(self.app_name, "STEAM_COMPAT_SHADER_PATH", False))
+        has_local_cache_path = bool(config.get_envvar(self.app_name, 'STEAM_COMPAT_SHADER_PATH', False))
         self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
         self.shader_cache_check.setChecked(is_local_cache_enabled or has_local_cache_path)
         _ = QSignalBlocker(self.steam_appid_edit)
         items = {k: v for k, v in self.__grades.steam_appids.items() if self.rgame.app_title.lower()[0:4] in k.lower()[0:4]}
         self.steam_appid_edit.setCompleter(ColumnCompleter(items=items))
-        self.steam_appid_edit.setText(self.rgame.steam_appid if self.rgame.steam_appid else "")
-        self.steam_appid_edit.setInfo(self.__grades.steam_titles.get(self.rgame.steam_appid, ""))
+        self.steam_appid_edit.setText(self.rgame.steam_appid if self.rgame.steam_appid else '')
+        self.steam_appid_edit.setInfo(self.__grades.steam_titles.get(self.rgame.steam_appid, ''))
         return super().showEvent(e)
 
     def hideEvent(self, e: QHideEvent):
@@ -99,19 +98,19 @@ class LocalRunnerSettings(RunnerSettingsBase):
         self.steam_appid_edit.setCompleter(None)
         return super().hideEvent(e)
 
-    def __steam_appid_edit_callback(self, text: str) -> Tuple[bool, str, int]:
-        self.steam_appid_edit.setInfo("")
+    def __steam_appid_edit_callback(self, text: str) -> tuple[bool, str, int]:
+        self.steam_appid_edit.setInfo('')
         if not text or len(text) < 3:
             return True, text, IndicatorReasonsCommon.UNDEFINED
-        if text in self.__grades.steam_appids.keys():
+        if text in self.__grades.steam_appids:
             return True, self.__grades.steam_appids[text], IndicatorReasonsCommon.VALID
-        if text in self.__grades.steam_titles.keys():
+        if text in self.__grades.steam_titles:
             return True, text, IndicatorReasonsCommon.VALID
         else:
             return False, text, IndicatorReasonsCommon.GAME_NOT_EXISTS
 
     def __steam_appid_save_callback(self, text: str) -> None:
-        self.steam_appid_edit.setInfo(self.__grades.steam_titles.get(text, ""))
+        self.steam_appid_edit.setInfo(self.__grades.steam_titles.get(text, ''))
         if text == self.rgame.steam_appid:
             return
         self.rgame.steam_appid = text
@@ -122,13 +121,13 @@ class LocalRunnerSettings(RunnerSettingsBase):
         if checked := (state != Qt.CheckState.Unchecked):
             config.set_envvar(
                 self.rgame.app_name,
-                "STEAM_COMPAT_SHADER_PATH",
+                'STEAM_COMPAT_SHADER_PATH',
                 compat_shaders_dir(self.rgame.folder_name).as_posix(),
             )
         else:
-            config.remove_envvar(self.rgame.app_name, "STEAM_COMPAT_SHADER_PATH")
+            config.remove_envvar(self.rgame.app_name, 'STEAM_COMPAT_SHADER_PATH')
         self.settings.set_with_global(app_settings.local_shader_cache, checked, self.rgame.app_name)
-        self.environ_changed.emit("STEAM_COMPAT_SHADER_PATH")
+        self.environ_changed.emit('STEAM_COMPAT_SHADER_PATH')
 
     def load_settings(self, rgame: RareGame):
         self.rgame = rgame
@@ -155,7 +154,7 @@ class LocalDxvkNvapiDrsSettings(DxvkNvapiDrsSettings):
 
 class LocalCompatSettings(CompatSettingsBase):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
-        if pf.system() in {"Linux", "FreeBSD"}:
+        if pf.system() in {'Linux', 'FreeBSD'}:
             super(LocalCompatSettings, self).__init__(
                 settings,
                 rcore,

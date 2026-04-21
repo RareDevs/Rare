@@ -9,6 +9,7 @@ from rare.widgets.side_tab import SideTabWidget
 from .about import About
 from .compat import GlobalCompatSettings
 from .debug import DebugSettings
+from .environ import GlobalEnvironSettings
 from .game import GlobalGameSettings
 from .legendary import LegendarySettings
 from .rare import RareSettings
@@ -21,30 +22,33 @@ class SettingsTab(SideTabWidget):
         super(SettingsTab, self).__init__(parent=parent)
 
         rare_settings = RareSettings(settings, rcore, self)
-        self.rare_index = self.addTab(rare_settings, "Rare")
+        self.rare_index = self.addTab(rare_settings, 'Rare')
 
         legendary_settings = LegendarySettings(settings, rcore, self)
-        self.legendary_index = self.addTab(legendary_settings, "Legendary")
+        self.legendary_index = self.addTab(legendary_settings, 'Legendary')
 
         game_settings = GlobalGameSettings(settings, rcore, self)
-        self.game_index = self.addTab(game_settings, self.tr("Defaults"))
+        self.game_index = self.addTab(game_settings, self.tr('Defaults'))
 
-        if pf.system() != "Windows":
+        if pf.system() != 'Windows':
             compat_settings = GlobalCompatSettings(settings, rcore, self)
-            self.compat_index = self.addTab(compat_settings, self.tr("Compatibility"))
+            self.compat_index = self.addTab(compat_settings, self.tr('Compatibility'))
+
+        environ_settings = GlobalEnvironSettings(rcore, self)
+        self.environ_index = self.addTab(environ_settings, self.tr('Environment'))
 
         self.about = About(self)
-        title = self.tr("About")
+        title = self.tr('About')
         self.about_index = self.addTab(self.about, title, title)
         self.about.update_available.connect(self._on_update_available)
         self.about.update_available.connect(self.update_available)
 
         if rcore.args().debug:
-            title = self.tr("Debug")
+            title = self.tr('Debug')
             self.debug_index = self.addTab(DebugSettings(rcore.signals(), self), title, title)
 
         self.setCurrentIndex(self.rare_index)
 
     @Slot()
     def _on_update_available(self):
-        self.tabBar().setTabText(self.about_index, "About (!)")
+        self.tabBar().setTabText(self.about_index, 'About (!)')

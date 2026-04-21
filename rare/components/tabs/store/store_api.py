@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from logging import getLogger
-from typing import Callable, Tuple
 
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication
@@ -11,7 +11,7 @@ from rare.components.tabs.store.constants import (
     wishlist_remove_query,
 )
 from rare.utils.paths import cache_dir
-from rare.utils.qt_requests import QtRequests
+from rare.utils.qrequests import QRequests
 
 from .api.models.diesel import DieselProduct
 from .api.models.query import SearchStoreQuery
@@ -19,12 +19,12 @@ from .api.models.response import (
     ResponseModel,
 )
 
-graphql_url = "https://store.epicgames.com/graphql"
+graphql_url = 'https://store.epicgames.com/graphql'
 # graphql_url = "https://launcher.store.epicgames.com/graphql"
 
 
 def DEBUG() -> bool:
-    return "--debug" in QApplication.arguments()
+    return '--debug' in QApplication.arguments()
 
 
 class StoreAPI(QObject):
@@ -36,10 +36,10 @@ class StoreAPI(QObject):
         self.token = token
         self.language_code: str = language
         self.country_code: str = country
-        self.locale = f"{self.language_code}-{self.country_code}"
-        self.manager = QtRequests(parent=self)
-        self.authed_manager = QtRequests(token=token, parent=self)
-        self.cached_manager = QtRequests(cache=str(cache_dir().joinpath("store")), parent=self)
+        self.locale = f'{self.language_code}-{self.country_code}'
+        self.manager = QRequests(parent=self)
+        self.authed_manager = QRequests(token=token, parent=self)
+        self.cached_manager = QRequests(cache=str(cache_dir().joinpath('store')), parent=self)
 
         self.installed = installed
 
@@ -47,11 +47,11 @@ class StoreAPI(QObject):
         self.next_browse_request = tuple(())
 
     def get_free(self, callback: Callable):
-        url = "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions"
+        url = 'https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions'
         params = {
-            "locale": self.locale,
-            "country": self.country_code,
-            "allowCountries": self.country_code,
+            'locale': self.locale,
+            'country': self.country_code,
+            'allowCountries': self.country_code,
         }
         self.manager.get(url, lambda data: self.__handle_free_games(data, callback), params=params)
 
@@ -66,7 +66,7 @@ class StoreAPI(QObject):
             if DEBUG():
                 raise e
             elements = False
-            self.logger.error("Free games request failed with: %s", e)
+            self.logger.error('Free games request failed with: %s', e)
         callback(elements)
 
     def get_wishlist(self, callback: Callable):
@@ -74,16 +74,16 @@ class StoreAPI(QObject):
             graphql_url,
             lambda data: self.__handle_wishlist(data, callback),
             {
-                "query": wishlist_query,
-                "variables": {
-                    "country": self.country_code,
-                    "locale": self.locale,
-                    "withPrice": True,
+                'query': wishlist_query,
+                'variables': {
+                    'country': self.country_code,
+                    'locale': self.locale,
+                    'withPrice': True,
                 },
             },
         )
 
-    def __handle_wishlist(self, data, callback: Callable[[Tuple], None]):
+    def __handle_wishlist(self, data, callback: Callable[[tuple], None]):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
@@ -94,30 +94,30 @@ class StoreAPI(QObject):
             if DEBUG():
                 raise e
             elements = False
-            self.logger.error("Wishlist request failed with: %s", e)
+            self.logger.error('Wishlist request failed with: %s', e)
         callback(elements)
 
     def search_game(self, name, callback: Callable):
         payload = {
-            "query": search_query,
-            "variables": {
-                "category": "games/edition/base|bundles/games|editors|software/edition/base",
-                "count": 20,
-                "country": self.country_code,
-                "keywords": name,
-                "locale": self.locale,
-                "sortDir": "DESC",
-                "allowCountries": self.country_code,
-                "start": 0,
-                "tag": "",
-                "withMapping": False,
-                "withPrice": True,
+            'query': search_query,
+            'variables': {
+                'category': 'games/edition/base|bundles/games|editors|software/edition/base',
+                'count': 20,
+                'country': self.country_code,
+                'keywords': name,
+                'locale': self.locale,
+                'sortDir': 'DESC',
+                'allowCountries': self.country_code,
+                'start': 0,
+                'tag': '',
+                'withMapping': False,
+                'withPrice': True,
             },
         }
 
         self.manager.post(graphql_url, lambda data: self.__handle_search(data, callback), payload)
 
-    def __handle_search(self, data, callback: Callable[[Tuple], None]):
+    def __handle_search(self, data, callback: Callable[[tuple], None]):
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
@@ -128,7 +128,7 @@ class StoreAPI(QObject):
             if DEBUG():
                 raise e
             elements = False
-            self.logger.error("Search request failed with: %s", e)
+            self.logger.error('Search request failed with: %s', e)
         callback(elements)
 
     def browse_games(self, browse_model: SearchStoreQuery, callback):
@@ -136,7 +136,7 @@ class StoreAPI(QObject):
             self.next_browse_request = (browse_model, callback)
             return
         self.browse_active = True
-        payload = {"query": search_query, "variables": browse_model.to_dict()}
+        payload = {'query': search_query, 'variables': browse_model.to_dict()}
         self.manager.post(
             graphql_url,
             lambda data: self.__handle_browse_games(data, callback),
@@ -158,7 +158,7 @@ class StoreAPI(QObject):
                 if DEBUG():
                     raise e
                 elements = False
-                self.logger.error("Browse request failed with: %s", e)
+                self.logger.error('Browse request failed with: %s', e)
             callback(elements)
         else:
             self.browse_games(*self.next_browse_request)  # pylint: disable=E1120
@@ -179,9 +179,9 @@ class StoreAPI(QObject):
         pass
 
     def get_game_config_cms(self, slug: str, is_bundle: bool, callback: Callable):
-        url = "https://store-content.ak.epicgames.com/api"
-        url += f"/{self.locale}/content/{'products' if not is_bundle else 'bundles'}/{slug}"
-        self.logger.debug("Quering game config: %s", url)
+        url = 'https://store-content.ak.epicgames.com/api'
+        url += f'/{self.locale}/content/{"products" if not is_bundle else "bundles"}/{slug}'
+        self.logger.debug('Quering game config: %s', url)
         self.manager.get(url, lambda data: self.__handle_get_game(data, callback))
 
     def __handle_get_game(self, data, callback):
@@ -197,12 +197,12 @@ class StoreAPI(QObject):
     # needs a captcha
     def add_to_wishlist(self, namespace, offer_id, callback: Callable):
         payload = {
-            "query": wishlist_add_query,
-            "variables": {
-                "offerId": offer_id,
-                "namespace": namespace,
-                "country": self.country_code,
-                "locale": self.locale,
+            'query': wishlist_add_query,
+            'variables': {
+                'offerId': offer_id,
+                'namespace': namespace,
+                'country': self.country_code,
+                'locale': self.locale,
             },
         }
         self.authed_manager.post(
@@ -221,18 +221,18 @@ class StoreAPI(QObject):
         except Exception as e:
             if DEBUG():
                 raise e
-            self.logger.error("Add to wishlist request failed with: %s", e)
+            self.logger.error('Add to wishlist request failed with: %s', e)
             success = False
         callback(success)
         self.update_wishlist.emit()
 
     def remove_from_wishlist(self, namespace, offer_id, callback: Callable):
         payload = {
-            "query": wishlist_remove_query,
-            "variables": {
-                "offerId": offer_id,
-                "namespace": namespace,
-                "operation": "REMOVE",
+            'query': wishlist_remove_query,
+            'variables': {
+                'offerId': offer_id,
+                'namespace': namespace,
+                'operation': 'REMOVE',
             },
         }
         self.authed_manager.post(
@@ -251,7 +251,7 @@ class StoreAPI(QObject):
         except Exception as e:
             if DEBUG():
                 raise e
-            self.logger.error("Remove from wishlist request failed with: %s", e)
+            self.logger.error('Remove from wishlist request failed with: %s', e)
             success = False
         callback(success)
         self.update_wishlist.emit()

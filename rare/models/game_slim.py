@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from logging import getLogger
-from typing import List, Optional, Tuple
 
 from legendary.lfs import eos
 from legendary.models.game import Game, InstalledGame, SaveGameFile, SaveGameStatus
@@ -17,11 +16,11 @@ from rare.models.settings import RareAppSettings, app_settings
 
 @dataclass
 class RareSaveGame:
-    file: Optional[SaveGameFile]
+    file: SaveGameFile | None
     status: SaveGameStatus = SaveGameStatus.NO_SAVE
-    dt_local: Optional[datetime] = None
-    dt_remote: Optional[datetime] = None
-    description: Optional[str] = ""
+    dt_local: datetime | None = None
+    dt_remote: datetime | None = None
+    description: str | None = ''
 
 
 class RareGameSignalsProgress(QObject):
@@ -98,11 +97,11 @@ class RareGameBase(QObject):
         super(RareGameBase, self).deleteLater()
 
     @property
-    def state(self) -> "RareGameBase.State":
+    def state(self) -> 'RareGameBase.State':
         return self._state
 
     @state.setter
-    def state(self, state: "RareGameBase.State"):
+    def state(self, state: 'RareGameBase.State'):
         if state != self._state:
             self._state = state
             self.signals.widget.refresh.emit()
@@ -129,7 +128,7 @@ class RareGameBase(QObject):
         pass
 
     @property
-    def platforms(self) -> Tuple:
+    def platforms(self) -> tuple:
         """!
         @brief Property that holds the platforms a game is available for
 
@@ -139,7 +138,7 @@ class RareGameBase(QObject):
 
     @property
     def default_platform(self) -> str:
-        return self.core.default_platform if self.core.default_platform in self.platforms else "Windows"
+        return self.core.default_platform if self.core.default_platform in self.platforms else 'Windows'
 
     @property
     def is_mac(self) -> bool:
@@ -148,7 +147,7 @@ class RareGameBase(QObject):
 
         @return bool
         """
-        return "Mac" in self.game.asset_infos.keys()
+        return 'Mac' in self.game.asset_infos
 
     @property
     def is_win32(self) -> bool:
@@ -157,7 +156,7 @@ class RareGameBase(QObject):
 
         @return bool
         """
-        return "Win32" in self.game.asset_infos.keys()
+        return 'Win32' in self.game.asset_infos
 
     @property
     def is_origin(self) -> bool:
@@ -170,14 +169,14 @@ class RareGameBase(QObject):
 
         @return bool If the game is an Origin game
         """
-        return self.game.third_party_store in {"Origin", "the EA app"}
+        return self.game.third_party_store in {'Origin', 'the EA app'}
 
     @property
     def is_android(self) -> bool:
-        release_info = self.game.metadata.get("releaseInfo")
+        release_info = self.game.metadata.get('releaseInfo')
         if not release_info:
             return False
-        return "Android" in release_info[0]["platform"]
+        return 'Android' in release_info[0]['platform']
 
     @property
     def is_overlay(self):
@@ -215,7 +214,7 @@ class RareGameBase(QObject):
         return self.igame.version if self.igame is not None else self.game.app_version(self.default_platform)
 
     @property
-    def install_path(self) -> Optional[str]:
+    def install_path(self) -> str | None:
         if self.igame:
             return self.igame.install_path
         return None
@@ -226,8 +225,8 @@ class RareGameSlim(RareGameBase):
         super(RareGameSlim, self).__init__(legendary_core, game)
         self.settings = settings
         # None if origin or not installed
-        self.igame: Optional[InstalledGame] = self.core.get_installed_game(game.app_name)
-        self.saves: List[RareSaveGame] = []
+        self.igame: InstalledGame = self.core.get_installed_game(game.app_name)
+        self.saves: list[RareSaveGame] = []
 
     @property
     def is_installed(self) -> bool:
@@ -244,7 +243,7 @@ class RareGameSlim(RareGameBase):
         return self.supports_cloud_saves and auto_sync_cloud
 
     @property
-    def save_path(self) -> Optional[str]:
+    def save_path(self) -> str | None:
         if self.igame is not None:
             return self.igame.save_path
         return None
@@ -259,7 +258,7 @@ class RareGameSlim(RareGameBase):
     @property
     def save_game_state(
         self,
-    ) -> Tuple[SaveGameStatus, Tuple[Optional[datetime], Optional[datetime]]]:
+    ) -> tuple[SaveGameStatus, tuple[datetime | None, datetime | None]]:
         if self.save_path:
             latest = self.latest_save
             # lk: if the save path wasn't known at startup, dt_local will be None
@@ -318,7 +317,7 @@ class RareGameSlim(RareGameBase):
         _download()
         self.state = RareGameSlim.State.IDLE
 
-    def load_saves(self, saves: List[SaveGameFile]):
+    def load_saves(self, saves: list[SaveGameFile]):
         """Use only in a thread"""
         self.saves.clear()
         for save in saves:
@@ -350,14 +349,14 @@ class RareGameSlim(RareGameBase):
     @property
     def raw_save_path(self) -> str:
         if self.game.supports_cloud_saves:
-            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder", {}).get("value")
-        return ""
+            return self.game.metadata.get('customAttributes', {}).get('CloudSaveFolder', {}).get('value')
+        return ''
 
     @property
     def raw_save_path_mac(self) -> str:
         if self.game.supports_mac_cloud_saves:
-            return self.game.metadata.get("customAttributes", {}).get("CloudSaveFolder_MAC", {}).get("value")
-        return ""
+            return self.game.metadata.get('customAttributes', {}).get('CloudSaveFolder_MAC', {}).get('value')
+        return ''
 
     @property
     def supports_cloud_saves(self):

@@ -2,7 +2,6 @@ import os
 import shutil
 from argparse import Namespace
 from datetime import datetime, timezone
-from typing import Optional
 
 import requests.exceptions
 from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot
@@ -37,7 +36,7 @@ class RareException(RareAppException):
 
 class Rare(RareApp):
     def __init__(self, args: Namespace):
-        super(Rare, self).__init__(args, f"{type(self).__name__}_{{0}}.log")
+        super(Rare, self).__init__(args, f'{type(self).__name__}_{{0}}.log')
         self._hook.deleteLater()
         self._hook = RareException(self)
         self.rcore = RareCore(self.settings, args=args)
@@ -46,23 +45,23 @@ class Rare(RareApp):
         self.core = self.rcore.core()
 
         # set Application name for settings
-        self.main_window: Optional[RareWindow] = None
-        self.launch_dialog: Optional[LaunchDialog] = None
-        self.relogin_timer: Optional[QTimer] = None
+        self.main_window: RareWindow | None = None
+        self.launch_dialog: LaunchDialog | None = None
+        self.relogin_timer: QTimer | None = None
 
         # This launches the application after it has been instantiated.
         # The timer's signal will be serviced once we call `exec()` on the application
         QTimer.singleShot(0, self.launch_app)
 
     def poke_timer(self):
-        dt_exp = datetime.fromisoformat(self.core.lgd.userdata["expires_at"][:-1]).replace(tzinfo=timezone.utc)
+        dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1]).replace(tzinfo=timezone.utc)
         dt_now = datetime.now(timezone.utc)
         td = abs(dt_exp - dt_now)
         self.relogin_timer.start(int(td.total_seconds() - 60) * 1000)
-        self.logger.info(f"Renewed session expires at {self.core.lgd.userdata['expires_at']}")
+        self.logger.info(f'Renewed session expires at {self.core.lgd.userdata["expires_at"]}')
 
     def relogin(self):
-        self.logger.info("Session expires shortly. Renew session")
+        self.logger.info('Session expires shortly. Renew session')
         try:
             self.core.login(force_refresh=True)
         except requests.exceptions.ConnectionError:

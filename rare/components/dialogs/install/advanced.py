@@ -8,7 +8,7 @@ class InstallDialogAdvanced(CollapsibleFrame):
     def __init__(self, parent=None):
         super(InstallDialogAdvanced, self).__init__(parent=parent)
 
-        title = self.tr("Advanced options")
+        title = self.tr('Advanced options')
         self.setTitle(title)
 
         self.widget = QWidget(parent=self)
@@ -17,4 +17,4 @@ class InstallDialogAdvanced(CollapsibleFrame):
         self.setWidget(self.widget)
 
 
-__all__ = ["InstallDialogAdvanced"]
+__all__ = ['InstallDialogAdvanced']

@@ -7,7 +7,7 @@ class MainTabBar(QTabBar):
     def __init__(self, parent=None):
         super(MainTabBar, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
-        self.setProperty("drawBase", False)
+        self.setProperty('drawBase', False)
 
         font = self.font()
         font.setPointSize(font.pointSize() + 1)

@@ -1,19 +1,24 @@
 import platform
 import re
-import sys
 from collections import ChainMap
-from typing import Any, Union
+from typing import Any
 
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt, Slot
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QShowEvent
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QHeaderView,
+    QTableView,
+    QVBoxLayout,
+)
 
 from rare.lgndr.core import LegendaryCore
 from rare.utils.misc import qta_icon
 
-if platform.system() != "Windows":
+if platform.system() != 'Windows':
     from rare.utils.compat.wine import get_wine_environment
 
-if platform.system() in {"Linux", "FreeBSD"}:
+if platform.system() in {'Linux', 'FreeBSD'}:
     from rare.utils.compat.steam import get_steam_environment
 
 
@@ -25,26 +30,27 @@ class EnvVarsTableModel(QAbstractTableModel):
         # lk: validator matches anything starting with a letter or underscore
         # lk: and containing letters, numbers or underscores.
         # lk: Empty strings are considered invalid.
-        self.__validator = re.compile(r"(^[A-Za-z_][A-Za-z0-9_]*)")
+        self.__validator = re.compile(r'(^[A-Za-z_][A-Za-z0-9_]*)')
         self.__data_map: ChainMap = ChainMap()
 
         self.__readonly = set()
-        if platform.system() != "Windows":
+        if platform.system() != 'Windows':
             self.__readonly.update(
                 {
-                    "DXVK_HUD",
-                    "DXVK_CONFIG",
-                    "DXVK_NVAPI_DRS_SETTINGS",
-                    "MANGOHUD",
-                    "MANGOHUD_CONFIG",
+                    'DXVK_HUD',
+                    'DXVK_CONFIG',
+                    'DXVK_NVAPI_DRS_SETTINGS',
+                    'MANGOHUD',
+                    'MANGOHUD_CONFIG',
+                    'LEGENDARY_WRAPPER_EXE',
                 }
             )
             self.__readonly.update(get_wine_environment().keys())
-        if platform.system() in {"Linux", "FreeBSD"}:
+        if platform.system() in {'Linux', 'FreeBSD'}:
             self.__readonly.update(get_steam_environment().keys())
-            self.__readonly.add("STEAM_COMPAT_SHADER_PATH")
-        self.__default: str = "default"
-        self.__appname: str = None
+            self.__readonly.add('STEAM_COMPAT_SHADER_PATH')
+        self.__default: str = 'default'
+        self.__appname: str | None = None
 
     @Slot(str)
     def reset(self):
@@ -55,44 +61,44 @@ class EnvVarsTableModel(QAbstractTableModel):
     def load(self, app_name: str):
         self.__appname = app_name
         self.beginResetModel()
-        if not self.core.lgd.config.has_section(f"{self.__appname}.env"):
-            self.core.lgd.config[f"{self.__appname}.env"] = {}
+        if not self.core.lgd.config.has_section(f'{self.__appname}.env'):
+            self.core.lgd.config[f'{self.__appname}.env'] = {}
         self.__data_map = ChainMap(
-            self.core.lgd.config[f"{self.__appname}.env"],
-            self.core.lgd.config[f"{self.__default}.env"] if self.__appname != self.__default else {},
+            self.core.lgd.config[f'{self.__appname}.env'],
+            self.core.lgd.config[f'{self.__default}.env'] if self.__appname != self.__default else {},
         )
         self.endResetModel()
 
-    def __key(self, index: Union[QModelIndex, int]):
+    def __key(self, index: QModelIndex | int):
         if isinstance(index, QModelIndex):
             index = index.row()
         try:
             return list(self.__data_map)[index]
         except Exception:
-            return ""
+            return ''
 
-    def __is_local(self, index: Union[QModelIndex, int]):
+    def __is_local(self, index: QModelIndex | int):
         key = self.__key(index)
-        return key in self.__data_map.maps[0].keys()
+        return key in self.__data_map.maps[0]
 
-    def __is_global(self, index: Union[QModelIndex, int]):
+    def __is_global(self, index: QModelIndex | int):
         key = self.__key(index)
-        return key in self.__data_map.maps[1].keys()
+        return key in self.__data_map.maps[1]
 
-    def __is_readonly(self, index: Union[QModelIndex, int]):
+    def __is_readonly(self, index: QModelIndex | int):
         key = self.__key(index)
         return key in self.__readonly
 
-    def __value(self, index: Union[QModelIndex, int]):
+    def __value(self, index: QModelIndex | int):
         if isinstance(index, QModelIndex):
             index = index.row()
         return self.__data_map[self.__key(index)]
 
     def __title(self, section: int):
         if section == 0:
-            return self.tr("Key")
+            return self.tr('Key')
         elif section == 1:
-            return self.tr("Value")
+            return self.tr('Value')
 
     def __data_length(self):
         return len(self.__data_map)
@@ -106,7 +112,7 @@ class EnvVarsTableModel(QAbstractTableModel):
     def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
         if role in {Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole}:
             if index.row() == self.__data_length():
-                return ""
+                return ''
             if index.column() == 0:
                 return self.__key(index)
             else:
@@ -119,7 +125,7 @@ class EnvVarsTableModel(QAbstractTableModel):
                 return Qt.AlignmentFlag.AlignVCenter + Qt.AlignmentFlag.AlignLeft
 
         if role == Qt.ItemDataRole.FontRole:
-            font = QFont("Monospace")
+            font = QFont('Monospace')
             font.setStyleHint(QFont.StyleHint.Monospace)
             if index.row() < self.__data_length() and not self.__is_local(index):
                 font.setWeight(QFont.Weight.Bold)
@@ -130,12 +136,12 @@ class EnvVarsTableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.ToolTipRole:
             if index.row() == self.__data_length():
                 if index.column() == 1:
-                    return self.tr("Disabled, please set the variable name first.")
+                    return self.tr('Disabled, please set the variable name first.')
                 return None
             if self.__key(index) in self.__readonly:
                 if index.column() == 1:
-                    return self.tr("Value: {}").format(self.__value(index))
-                return self.tr("Readonly, please edit this via setting the appropriate setting.")
+                    return self.tr('Value: {}').format(self.__value(index))
+                return self.tr('Readonly, please edit this via setting the appropriate setting.')
 
     def headerData(
         self,
@@ -150,12 +156,12 @@ class EnvVarsTableModel(QAbstractTableModel):
             if orientation == Qt.Orientation.Vertical:
                 if section < self.__data_length():
                     if self.__is_readonly(section) or not self.__is_local(section):
-                        return qta_icon("mdi.lock", "ei.lock")
+                        return qta_icon('mdi.lock', 'ei.lock')
                     if self.__is_global(section) and self.__is_local(section):
-                        return qta_icon("mdi.refresh", "ei.refresh")
+                        return qta_icon('mdi.refresh', 'ei.refresh')
                     if self.__is_local(section):
-                        return qta_icon("mdi.delete", "ei.remove-sign")
-                return qta_icon("mdi.plus", "ei.plus-sign")
+                        return qta_icon('mdi.delete', 'ei.remove-sign')
+                return qta_icon('mdi.plus', 'ei.plus-sign')
         if role == Qt.ItemDataRole.TextAlignmentRole:
             return Qt.AlignmentFlag.AlignVCenter + Qt.AlignmentFlag.AlignHCenter
         return None
@@ -192,13 +198,13 @@ class EnvVarsTableModel(QAbstractTableModel):
             if (not self.__is_key_valid(value)) or value in self.__readonly:
                 return False
             # Do not accept existing variable names (this also protects against unchanged contents)
-            if value in self.__data_map.keys():
+            if value in self.__data_map:
                 return False
 
             if index.row() == self.__data_length():
                 self.beginInsertRows(QModelIndex(), self.rowCount(index), self.rowCount(index))
                 self.endInsertRows()
-                self.__data_map[value] = ""
+                self.__data_map[value] = ''
                 self.core.lgd.save_config()
                 self.dataChanged.emit(index, index, [])
                 self.headerDataChanged.emit(Qt.Orientation.Vertical, index.row(), index.row())
@@ -216,11 +222,11 @@ class EnvVarsTableModel(QAbstractTableModel):
                 #   old key remains, new key added -> insert row for new key, update from index to end
                 # new key masking global key:
                 #   can't happen because we do not accept existing keys
-                if old_key in self.__data_map.maps[0].keys():
+                if old_key in self.__data_map.maps[0]:
                     # delete the old key if it is a local one, replacing a local key
                     del self.__data_map[old_key]
                     self.core.lgd.save_config()
-                if old_key in self.__data_map.maps[1].keys():
+                if old_key in self.__data_map.maps[1]:
                     self.beginInsertRows(QModelIndex(), self.__data_length(), self.__data_length())
                     self.endInsertRows()
                 self.dataChanged.emit(index, self.index(index.row(), 1), [])
@@ -274,42 +280,58 @@ class EnvVarsTableModel(QAbstractTableModel):
         return True
 
 
-if __name__ == "__main__":
-    from PySide6.QtWidgets import (
-        QApplication,
-        QDialog,
-        QHeaderView,
-        QTableView,
-        QVBoxLayout,
-    )
+class EnvVars(QGroupBox):
+    def __init__(self, core: LegendaryCore, parent):
+        super(EnvVars, self).__init__(parent=parent)
+        self.setTitle(self.tr('Environment'))
 
-    from rare.lgndr.core import LegendaryCore
-    from rare.utils.misc import set_style_sheet
+        self.core = core
+        self.app_name: str = 'default'
 
-    class MainDialog(QDialog):
-        def __init__(self):
-            super().__init__()
+        self.table_model = EnvVarsTableModel(self.core)
+        self.table_view = QTableView(self)
+        self.table_view.setModel(self.table_model)
+        self.table_view.verticalHeader().sectionPressed.disconnect()
+        self.table_view.horizontalHeader().sectionPressed.disconnect()
+        self.table_view.verticalHeader().sectionClicked.connect(self.table_model.removeRow)
+        self.table_view.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.table_view.horizontalHeader().setStretchLastSection(True)
+        self.table_view.setCornerButtonEnabled(False)
 
-            self.table = QTableView()
-            self.model = EnvVarsTableModel(LegendaryCore())
-            self.model.load("Tamarind")
+        # FIXME: investigate signaling between widgets
+        # We use this function to keep an eye on the config.
+        # When the user uses for example the wineprefix settings, we need to update the table.
+        # With this function, when the config file changes, we update the table.
+        # self.config_file_watcher = QFileSystemWatcher([str(self.core.lgd.config_path)], self)
+        # self.config_file_watcher.fileChanged.connect(self.table_model.reset)
 
-            self.table.setModel(self.model)
-            self.table.verticalHeader().sectionPressed.disconnect()
-            self.table.horizontalHeader().sectionPressed.disconnect()
-            self.table.verticalHeader().sectionClicked.connect(self.model.removeRow)
-            self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-            self.table.horizontalHeader().setStretchLastSection(True)
-            self.table.setCornerButtonEnabled(False)
+        row_height = self.table_view.rowHeight(0)
+        self.table_view.setMinimumHeight(row_height * 7)
 
-            self.setLayout(QVBoxLayout(self))
-            self.layout().addWidget(self.table)
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.table_view)
 
-    app = QApplication(sys.argv)
+    def showEvent(self, a0: QShowEvent):
+        if a0.spontaneous():
+            return super().showEvent(a0)
+        self.table_model.load(self.app_name)
+        return super().showEvent(a0)
 
-    set_style_sheet("RareStyle")
+    def keyPressEvent(self, a0):
+        if a0.key() in {Qt.Key.Key_Delete, Qt.Key.Key_Backspace}:
+            indexes = self.table_view.selectedIndexes()
+            if not len(indexes):
+                return
+            for idx in indexes:
+                if idx.column() == 0:
+                    self.table_view.model().removeRow(idx.row())
+                elif idx.column() == 1:
+                    self.table_view.model().setData(idx, '', Qt.ItemDataRole.EditRole)
+        elif a0.key() == Qt.Key.Key_Escape:
+            a0.ignore()
 
-    window = MainDialog()
-    window.setFixedSize(800, 600)
-    window.show()
-    app.exec()
+    def reset_model(self):
+        self.table_model.reset()
+
+
+__all__ = ['EnvVars']

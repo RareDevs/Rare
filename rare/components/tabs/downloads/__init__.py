@@ -2,7 +2,6 @@ import datetime
 import platform
 from copy import deepcopy
 from logging import getLogger
-from typing import Optional, Union
 
 from PySide6.QtCore import Qt, QThreadPool, Signal, Slot
 from PySide6.QtGui import QPixmap
@@ -35,7 +34,7 @@ from .groups import QueueGroup, UpdateGroup
 from .thread import DlResultCode, DlResultModel, DlThread
 
 
-def get_time(seconds: Union[int, float]) -> str:
+def get_time(seconds: int | float) -> str:
     return str(datetime.timedelta(seconds=seconds))
 
 
@@ -53,7 +52,7 @@ class DownloadsTab(QWidget):
         self.signals = rcore.signals()
         self.args = rcore.args()
 
-        self.__thread: Optional[DlThread] = None
+        self.__thread: DlThread | None = None
 
         layout = QVBoxLayout(self)
 
@@ -95,7 +94,7 @@ class DownloadsTab(QWidget):
         self.signals.download.enqueue.connect(self.__add_update)
         self.signals.download.dequeue.connect(self.__remove_update)
 
-        self.__forced_item: Optional[InstallQueueItemModel] = None
+        self.__forced_item: InstallQueueItemModel | None = None
         self.__omit_requeue = False
 
     @Slot()
@@ -115,7 +114,7 @@ class DownloadsTab(QWidget):
     @Slot(str)
     @Slot(RareGame)
     @Slot(RareEosOverlay)
-    def __add_update(self, update: Union[str, RareGame, RareEosOverlay]):
+    def __add_update(self, update: str | RareGame | RareEosOverlay):
         if isinstance(update, str):
             update = self.rcore.get_game(update)
 
@@ -186,19 +185,19 @@ class DownloadsTab(QWidget):
             (lambda obj, d: obj.start_download(InstallQueueItemModel(options=item.options, download=d))).__get__(self)
         )
         worker.signals.failed.connect(
-            (lambda obj, m: obj.logger.error(f"Failed to refresh download for {item.options.app_name} with error: {m}")).__get__(
+            (lambda obj, m: obj.logger.error(f'Failed to refresh download for {item.options.app_name} with error: {m}')).__get__(
                 self
             )
         )
         worker.signals.finished.connect(
-            (lambda obj: obj.logger.info(f"Download refresh worker finished for {item.options.app_name}")).__get__(self)
+            (lambda obj: obj.logger.info(f'Download refresh worker finished for {item.options.app_name}')).__get__(self)
         )
 
         QThreadPool.globalInstance().start(worker)
 
     def start_download(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
-        if not rgame.state == RareGame.State.DOWNLOADING:
+        if rgame.state != RareGame.State.DOWNLOADING:
             self.logger.error(
                 f"Can't start download {item.options.app_name} due to incompatible state {RareGame.State(rgame.state).name}"
             )
@@ -218,25 +217,25 @@ class DownloadsTab(QWidget):
         self.download_widget.setPixmap(self.rcore.image_manager().get_pixmap(rgame.app_name, ImageSize.Wide, True))
 
         self.signals.application.notify.emit(
-            self.tr("Downloads"),
+            self.tr('Downloads'),
             self.tr('Starting: "{}" is now downloading.').format(rgame.app_title),
         )
 
     @Slot(UIUpdate, object)
     def __on_download_progress(self, ui_update: UIUpdate, dl_size: int):
         self.download_widget.ui.progress_bar.setValue(int(ui_update.progress))
-        self.download_widget.ui.dl_speed.setText(f"{format_size(ui_update.download_compressed_speed)}/s")
+        self.download_widget.ui.dl_speed.setText(f'{format_size(ui_update.download_compressed_speed)}/s')
         self.download_widget.ui.cache_used.setText(
-            f"{format_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else '0KB'}"
+            f'{format_size(ui_update.cache_usage) if ui_update.cache_usage > 1023 else "0KB"}'
         )
-        self.download_widget.ui.downloaded.setText(f"{format_size(ui_update.total_downloaded)} / {format_size(dl_size)}")
+        self.download_widget.ui.downloaded.setText(f'{format_size(ui_update.total_downloaded)} / {format_size(dl_size)}')
         self.download_widget.ui.time_left.setText(get_time(ui_update.estimated_time_left))
 
     def __requeue_download(self, item: InstallQueueItemModel):
         rgame = self.rcore.get_game(item.options.app_name)
         rgame.state = RareGame.State.DOWNLOADING
         self.queue_group.push_front(item, rgame.igame)
-        self.logger.info(f"Re-queued download for {rgame.app_name} ({rgame.app_title})")
+        self.logger.info(f'Re-queued download for {rgame.app_name} ({rgame.app_title})')
 
     @Slot(DlResultModel)
     def __on_download_result(self, result: DlResultModel):
@@ -245,21 +244,21 @@ class DownloadsTab(QWidget):
         self.__thread.deleteLater()
 
         if result.code == DlResultCode.FINISHED:
-            self.logger.info(f"Download finished: {result.options.app_name}")
+            self.logger.info(f'Download finished: {result.options.app_name}')
             if result.shortcut and desktop_links_supported():
                 if not create_desktop_link(
                     app_name=result.options.app_name,
                     app_title=result.app_title,
                     link_name=result.folder_name,
-                    link_type="desktop",
+                    link_type='desktop',
                 ):
                     # maybe add it to download summary, to show in finished downloads
-                    self.logger.error(f"Failed to create desktop link on {platform.system()}")
+                    self.logger.error(f'Failed to create desktop link on {platform.system()}')
                 else:
-                    self.logger.info(f"Created desktop link {result.folder_name} for {result.app_title}")
+                    self.logger.info(f'Created desktop link {result.folder_name} for {result.app_title}')
 
             self.signals.application.notify.emit(
-                self.tr("Downloads"),
+                self.tr('Downloads'),
                 self.tr('Finished: "{}" is now playable.').format(result.app_title),
             )
 
@@ -267,16 +266,16 @@ class DownloadsTab(QWidget):
                 self.updates_group.set_widget_enabled(result.options.app_name, True)
 
         elif result.code == DlResultCode.ERROR:
-            self.logger.error(f"Download error: {result.options.app_name} ({result.message})")
+            self.logger.error(f'Download error: {result.options.app_name} ({result.message})')
             QMessageBox.warning(
                 self,
-                self.tr("Error - {}").format(result.app_title),
-                self.tr("Download error: {}").format(result.message),
+                self.tr('Error - {}').format(result.app_title),
+                self.tr('Download error: {}').format(result.message),
                 QMessageBox.StandardButton.Close,
             )
 
         elif result.code == DlResultCode.STOPPED:
-            self.logger.info(f"Download stopped: {result.options.app_name}")
+            self.logger.info(f'Download stopped: {result.options.app_name}')
             if not self.__omit_requeue:
                 self.__requeue_download(InstallQueueItemModel(options=result.options))
             else:
@@ -298,12 +297,12 @@ class DownloadsTab(QWidget):
         self.__thread = None
         self.download_widget.setPixmap(QPixmap())
         self.download_widget.ui.kill_button.setDisabled(True)
-        self.download_widget.ui.dl_name.setText(self.tr("No active download"))
+        self.download_widget.ui.dl_name.setText(self.tr('No active download'))
         self.download_widget.ui.progress_bar.setValue(0)
-        self.download_widget.ui.dl_speed.setText("...")
-        self.download_widget.ui.time_left.setText("...")
-        self.download_widget.ui.cache_used.setText("...")
-        self.download_widget.ui.downloaded.setText("...")
+        self.download_widget.ui.dl_speed.setText('...')
+        self.download_widget.ui.time_left.setText('...')
+        self.download_widget.ui.cache_used.setText('...')
+        self.download_widget.ui.downloaded.setText('...')
         self.update_queues_count()
 
     @Slot(InstallOptionsModel)
@@ -377,7 +376,7 @@ class DownloadsTab(QWidget):
         else:
             QMessageBox.warning(
                 None,
-                self.tr("Uninstall - {}").format(rgame.app_title),
+                self.tr('Uninstall - {}').format(rgame.app_title),
                 message,
                 QMessageBox.StandardButton.Close,
             )

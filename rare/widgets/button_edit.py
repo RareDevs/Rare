@@ -12,7 +12,7 @@ class ButtonLineEdit(QLineEdit):
         self.setObjectName(type(self).__name__)
 
         self.button = QPushButton(self)
-        self.button.setObjectName(f"{type(self).__name__}Button")
+        self.button.setObjectName(f'{type(self).__name__}Button')
         self.button.setIcon(qta_icon(icon_name))
         self.button.setCursor(Qt.CursorShape.ArrowCursor)
         self.button.clicked.connect(self.buttonClicked)

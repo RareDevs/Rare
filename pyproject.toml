@@ -24,7 +24,7 @@ dependencies = [
     "requests < 3.0",
     "PySide6-Essentials >= 6.8.1",
     "QtAwesome",
-    "legendary-gl @ git+https://github.com/RareDevs/legendary@5b3453c",
+    "legendary-gl @ git+https://github.com/RareDevs/legendary@rare-next",
     "orjson",
     "vdf @ https://github.com/solsticegamestudios/vdf/archive/be1f7220238022f8b29fe747f0b643f280bfdb6e.zip",
     "pywin32 ; platform_system == 'Windows'",
@@ -134,15 +134,22 @@ force-exclude = '''
 
 [tool.ruff]
 include = ["pyproject.toml", "rare/*.py"]
-exclude = ["rare/ui", "rare/lgndr"]
+exclude = [
+    "rare/ui",
+    "rare/lgndr",
+    "rare/resources/static_css/__init__.py",
+    "rare/resources/stylesheets/*/__init__.py"
+]
+
 line-length = 130
 indent-width = 4
 
 [tool.ruff.lint]
-extend-select = ["I"]
+extend-select = ["E",  "F",  "UP",  "B",  "SIM", "I"]
+extend-ignore = [ "UP008", "SIM102", "SIM108" ]
 
 [tool.ruff.format]
-quote-style = "double"
+quote-style = "single"
 indent-style = "space"
 
 [tool.poetry]

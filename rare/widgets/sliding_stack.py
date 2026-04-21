@@ -75,7 +75,7 @@ class SlidingStackedWidget(QStackedWidget):
         offsetx, offsety = self.frameRect().width(), self.frameRect().height()
         self.widget(_next).setGeometry(self.frameRect())
 
-        if not self.m_direction == Qt.Orientation.Horizontal:
+        if self.m_direction != Qt.Orientation.Horizontal:
             if _now < _next:
                 offsetx, offsety = 0, -offsety
             else:
@@ -97,10 +97,10 @@ class SlidingStackedWidget(QStackedWidget):
 
         animgroup = QParallelAnimationGroup(self, finished=self.animationDoneSlot)
 
-        for index, start, end in zip((_now, _next), (pnow, pnext - offset), (pnow + offset, pnext)):
+        for index, start, end in zip((_now, _next), (pnow, pnext - offset), (pnow + offset, pnext), strict=False):
             animation = QPropertyAnimation(
                 self.widget(index),
-                b"pos",
+                b'pos',
                 duration=self.m_speed,
                 easingCurve=self.m_animationtype,
                 startValue=start,

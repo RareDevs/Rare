@@ -1,6 +1,5 @@
 import os
 from logging import getLogger
-from typing import Optional, Tuple
 
 from PySide6.QtCore import QSignalBlocker, Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -11,7 +10,7 @@ from rare.shared import RareCore
 from rare.utils import config_helper as lgd_config
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
-logger = getLogger("WineSettings")
+logger = getLogger('WineSettings')
 
 
 class WineSettings(QGroupBox):
@@ -23,13 +22,13 @@ class WineSettings(QGroupBox):
         self.settings = settings
         self.signals = rcore.signals()
         self.lgd_core = rcore.core()
-        self.app_name: Optional[str] = "default"
+        self.app_name: str | None = 'default'
 
-        self.setTitle(self.tr("Wine"))
+        self.setTitle(self.tr('Wine'))
 
         # Wine prefix
         self.wine_prefix_edit = PathEdit(
-            path="",
+            path='',
             file_mode=QFileDialog.FileMode.Directory,
             edit_func=self._wine_prefix_edit,
             save_func=self.save_prefix,
@@ -37,9 +36,9 @@ class WineSettings(QGroupBox):
 
         # Wine executable
         self.wine_execut_edit = PathEdit(
-            path="",
+            path='',
             file_mode=QFileDialog.FileMode.ExistingFile,
-            name_filters=("wine", "wine64"),
+            name_filters=('wine', 'wine64'),
             edit_func=lambda text: (
                 os.path.isfile(text) or not text,
                 text,
@@ -49,8 +48,8 @@ class WineSettings(QGroupBox):
         )
 
         layout = QFormLayout(self)
-        layout.addRow(self.tr("Executable"), self.wine_execut_edit)
-        layout.addRow(self.tr("Prefix folder"), self.wine_prefix_edit)
+        layout.addRow(self.tr('Executable'), self.wine_execut_edit)
+        layout.addRow(self.tr('Prefix folder'), self.wine_prefix_edit)
         layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.setFormAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignVCenter)
@@ -60,7 +59,7 @@ class WineSettings(QGroupBox):
         self.wine_prefix_edit.setText(self.load_prefix())
         _ = QSignalBlocker(self.wine_execut_edit)
         self.wine_execut_edit.setText(self.load_execut())
-        self.setDisabled(lgd_config.get_boolean(self.app_name, "no_wine", fallback=False))
+        self.setDisabled(lgd_config.get_boolean(self.app_name, 'no_wine', fallback=False))
 
     def showEvent(self, a0: QShowEvent):
         if a0.spontaneous():
@@ -70,47 +69,47 @@ class WineSettings(QGroupBox):
 
     @Slot(str)
     def compat_path_changed(self, text: str):
-        path = os.path.join(text, "pfx") if text else text
+        path = os.path.join(text, 'pfx') if text else text
         self.wine_prefix_edit.setText(path)
 
     @Slot(bool)
     def compat_tool_enabled(self, enabled: bool, path: str):
-        old_wine_execut = self.settings.value(f"{self.app_name}/wine_execut", defaultValue=None)
-        old_wine_prefix = self.settings.value(f"{self.app_name}/wine_prefix", defaultValue=None)
+        old_wine_execut = self.settings.value(f'{self.app_name}/wine_execut', defaultValue=None)
+        old_wine_prefix = self.settings.value(f'{self.app_name}/wine_prefix', defaultValue=None)
         if enabled:
-            wine_execut = lgd_config.get_option(self.app_name, "wine_executable", "")
-            wine_prefix = lgd_config.get_wine_prefix(self.app_name, "")
+            wine_execut = lgd_config.get_option(self.app_name, 'wine_executable', '')
+            wine_prefix = lgd_config.get_wine_prefix(self.app_name, '')
             if old_wine_execut is None:
-                self.settings.setValue(f"{self.app_name}/wine_execut", wine_execut)
+                self.settings.setValue(f'{self.app_name}/wine_execut', wine_execut)
             if old_wine_prefix is None:
-                self.settings.setValue(f"{self.app_name}/wine_prefix", wine_prefix)
-            self.wine_execut_edit.setText("")
-            self.wine_prefix_edit.setText(os.path.join(path, "pfx"))
-            lgd_config.set_boolean(self.app_name, "no_wine", True)
+                self.settings.setValue(f'{self.app_name}/wine_prefix', wine_prefix)
+            self.wine_execut_edit.setText('')
+            self.wine_prefix_edit.setText(os.path.join(path, 'pfx'))
+            lgd_config.set_boolean(self.app_name, 'no_wine', True)
         else:
-            self.settings.remove(f"{self.app_name}/wine_execut")
-            self.settings.remove(f"{self.app_name}/wine_prefix")
+            self.settings.remove(f'{self.app_name}/wine_execut')
+            self.settings.remove(f'{self.app_name}/wine_prefix')
             if old_wine_execut is not None:
                 self.wine_execut_edit.setText(old_wine_execut)
             if old_wine_prefix is not None:
                 self.wine_prefix_edit.setText(old_wine_prefix)
-            lgd_config.remove_option(self.app_name, "no_wine")
+            lgd_config.remove_option(self.app_name, 'no_wine')
         self.setDisabled(enabled)
 
     def load_prefix(self) -> str:
         if self.app_name is None:
             raise RuntimeError
-        return lgd_config.get_wine_prefix(self.app_name, "")
+        return lgd_config.get_wine_prefix(self.app_name, '')
 
     @staticmethod
-    def _wine_prefix_edit(text: str) -> Tuple[bool, str, int]:
+    def _wine_prefix_edit(text: str) -> tuple[bool, str, int]:
         if not text:
             return True, text, IndicatorReasonsCommon.VALID
         if os.path.isdir(text):
             dir_list = os.listdir(text)
             if not dir_list:
                 return True, text, IndicatorReasonsCommon.VALID
-            if any((x in dir_list) for x in ("dosdevices", "drive_c", "system.reg", "user.reg", "userdef.reg")):
+            if any((x in dir_list) for x in ('dosdevices', 'drive_c', 'system.reg', 'user.reg', 'userdef.reg')):
                 return True, text, IndicatorReasonsCommon.VALID
             return False, text, IndicatorReasonsCommon.DIR_NOT_EMPTY
         else:
@@ -120,14 +119,14 @@ class WineSettings(QGroupBox):
         if self.app_name is None:
             raise RuntimeError
         lgd_config.adjust_wine_prefix(self.app_name, path)
-        self.environ_changed.emit("WINEPREFIX")
+        self.environ_changed.emit('WINEPREFIX')
 
     def load_execut(self) -> str:
         if self.app_name is None:
             raise RuntimeError
-        return lgd_config.get_option(self.app_name, "wine_executable", "")
+        return lgd_config.get_option(self.app_name, 'wine_executable', '')
 
     def save_execut(self, text: str) -> None:
         if self.app_name is None:
             raise RuntimeError
-        lgd_config.adjust_option(self.app_name, "wine_executable", text)
+        lgd_config.adjust_option(self.app_name, 'wine_executable', text)

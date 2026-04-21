@@ -7,4 +7,4 @@ from logging import Logger
 def timelogger(logger: Logger, title: str):
     start = time.perf_counter()
     yield
-    logger.debug("%s: %s seconds", title, time.perf_counter() - start)
+    logger.debug('%s: %s seconds', title, time.perf_counter() - start)

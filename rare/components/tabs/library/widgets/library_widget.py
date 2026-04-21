@@ -1,5 +1,3 @@
-from typing import List, Optional, Tuple
-
 from PySide6.QtCore import QEvent, QObject, Qt, Slot
 from PySide6.QtGui import (
     QBrush,
@@ -26,7 +24,7 @@ class ProgressLabel(QLabel):
 
     def __center_on_parent(self):
         fm = QFontMetrics(self.font())
-        rect = fm.boundingRect("  100%  ")
+        rect = fm.boundingRect('  100%  ')
         rect.moveCenter(self.parent().contentsRect().center())
         self.setGeometry(rect)
 
@@ -52,15 +50,15 @@ class ProgressLabel(QLabel):
         return False
 
     @staticmethod
-    def calculateColors(image: QImage) -> Tuple[QColor, QColor]:
-        color: List[int] = [0, 0, 0]
+    def calculateColors(image: QImage) -> tuple[QColor, QColor]:
+        color: list[int] = [0, 0, 0]
         # take the two diagonals of the center square section
         min_d = min(image.width(), image.height())
         origin_w = (image.width() - min_d) // 2
         origin_h = (image.height() - min_d) // 2
-        for x, y in zip(range(origin_w, min_d), range(origin_h, min_d)):
+        for x, y in zip(range(origin_w, min_d), range(origin_h, min_d), strict=False):
             pixel = image.pixelColor(x, y).getRgb()
-            color = list(map(lambda t: sum(t) // 2, zip(pixel[:3], color)))
+            color = list(map(lambda t: sum(t) // 2, zip(pixel[:3], color, strict=False)))
         # take the V component of the HSV color
         fg_color = QColor(0, 0, 0) if QColor(*color).value() < 127 else QColor(255, 255, 255)
         bg_color = QColor(*map(lambda c: 255 - c, color))
@@ -68,11 +66,11 @@ class ProgressLabel(QLabel):
 
     def setStyleSheetColors(self, bg: QColor, fg: QColor, brd: QColor):
         sheet = (
-            f"QLabel#{type(self).__name__} {{"
-            f"background-color: rgba({bg.red()}, {bg.green()}, {bg.blue()}, 65%);"
-            f"color: rgb({fg.red()}, {fg.green()}, {fg.blue()});"
-            f"border-color: rgb({brd.red()}, {brd.green()}, {brd.blue()});"
-            f"}}"
+            f'QLabel#{type(self).__name__} {{'
+            f'background-color: rgba({bg.red()}, {bg.green()}, {bg.blue()}, 65%);'
+            f'color: rgb({fg.red()}, {fg.green()}, {fg.blue()});'
+            f'border-color: rgb({brd.red()}, {brd.green()}, {brd.blue()});'
+            f'}}'
         )
         self.setStyleSheet(sheet)
 
@@ -84,8 +82,8 @@ class LibraryWidget(ImageWidget):
         self.progress_label.setVisible(False)
 
         self.progressPixmap = self.horizontalProgressPixmap
-        self._color_pixmap: Optional[QPixmap] = None
-        self._gray_pixmap: Optional[QPixmap] = None
+        self._color_pixmap: QPixmap | None = None
+        self._gray_pixmap: QPixmap | None = None
         # lk: keep percentage to not over-generate the image
         self._progress: int = -1
 
@@ -151,7 +149,7 @@ class LibraryWidget(ImageWidget):
 
     @Slot(int)
     def updateProgress(self, progress: int):
-        self.progress_label.setText(f"{progress:02}%")
+        self.progress_label.setText(f'{progress:02}%')
         if progress > self._progress:
             self._progress = progress
             self.setPixmap(self.progressPixmap(self._color_pixmap, self._gray_pixmap, progress))

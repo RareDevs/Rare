@@ -1,5 +1,4 @@
 import json
-from typing import Tuple
 
 from legendary.utils import webview_login
 from PySide6.QtCore import QProcess, QUrl, Slot
@@ -26,11 +25,11 @@ class BrowserLogin(LoginFrame):
         self.login_url = self.core.egs.get_auth_url()
 
         self.auth_edit = IndicatorLineEdit(
-            placeholder=self.tr("Insert authorizationCode here"), edit_func=self.sid_edit_callback, parent=self
+            placeholder=self.tr('Insert authorizationCode here'), edit_func=self.sid_edit_callback, parent=self
         )
         self.auth_edit.line_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.ui.link_text.setText(self.login_url)
-        self.ui.copy_button.setIcon(qta_icon("mdi.content-copy", "fa5.copy"))
+        self.ui.copy_button.setIcon(qta_icon('mdi.content-copy', 'fa5.copy'))
         self.ui.copy_button.clicked.connect(self._on_copy_link)
         self.ui.form_layout.setWidget(
             self.ui.form_layout.getWidgetPosition(self.ui.sid_label)[0], QFormLayout.ItemRole.FieldRole, self.auth_edit
@@ -43,18 +42,18 @@ class BrowserLogin(LoginFrame):
     def _on_copy_link(self):
         clipboard = QApplication.instance().clipboard()
         clipboard.setText(self.login_url)
-        self.ui.status_field.setText(self.tr("Copied to clipboard"))
+        self.ui.status_field.setText(self.tr('Copied to clipboard'))
 
     def is_valid(self) -> bool:
         return self.auth_edit.is_valid
 
     @staticmethod
-    def sid_edit_callback(text) -> Tuple[bool, str, int]:
+    def sid_edit_callback(text) -> tuple[bool, str, int]:
         if text:
             text = text.strip()
-            if text.startswith("{") and text.endswith("}"):
+            if text.startswith('{') and text.endswith('}'):
                 try:
-                    text = json.loads(text).get("authorizationCode")
+                    text = json.loads(text).get('authorizationCode')
                 except json.JSONDecodeError:
                     return False, text, IndicatorReasonsCommon.WRONG_FORMAT
             elif '"' in text:
@@ -64,16 +63,16 @@ class BrowserLogin(LoginFrame):
             return False, text, IndicatorReasonsCommon.VALID
 
     def do_login(self) -> None:
-        self.ui.status_field.setText(self.tr("Logging in..."))
+        self.ui.status_field.setText(self.tr('Logging in...'))
         auth_code = self.auth_edit.text()
         try:
             if self.core.auth_code(auth_code):
-                self.logger.info("Successfully logged in as %s", self.core.lgd.userdata["displayName"])
+                self.logger.info('Successfully logged in as %s', self.core.lgd.userdata['displayName'])
                 self.success.emit()
         except Exception as e:
             msg = e.message if isinstance(e, LgndrException) else str(e)
-            self.ui.status_field.setText(self.tr("Login failed: {}").format(msg))
-            self.logger.error("Failed to login through browser")
+            self.ui.status_field.setText(self.tr('Login failed: {}').format(msg))
+            self.logger.error('Failed to login through browser')
             self.logger.error(e)
 
     @Slot()
@@ -82,25 +81,25 @@ class BrowserLogin(LoginFrame):
             self.logger.warning("You don't have webengine installed, you will need to manually copy the authorizationCode.")
             QDesktopServices.openUrl(QUrl(self.login_url))
         else:
-            cmd = get_rare_executable() + ["login", self.core.get_egl_version()]
+            cmd = get_rare_executable() + ['login', self.core.get_egl_version()]
             proc = QProcess(self)
             proc.start(cmd[0], cmd[1:])
             proc.waitForFinished(-1)
             out, _ = (
-                proc.readAllStandardOutput().data().decode("utf-8", "ignore"),
-                proc.readAllStandardError().data().decode("utf-8", "ignore"),
+                proc.readAllStandardOutput().data().decode('utf-8', 'ignore'),
+                proc.readAllStandardError().data().decode('utf-8', 'ignore'),
             )
             proc.deleteLater()
 
             if out:
                 try:
                     self.core.auth_ex_token(out)
-                    self.logger.info("Successfully logged in as %s", {self.core.lgd.userdata["displayName"]})
+                    self.logger.info('Successfully logged in as %s', {self.core.lgd.userdata['displayName']})
                     self.success.emit()
                 except Exception as e:
                     msg = e.message if isinstance(e, LgndrException) else str(e)
-                    self.ui.status_field.setText(self.tr("Login failed: {}").format(msg))
-                    self.logger.error("Failed to login through browser")
+                    self.ui.status_field.setText(self.tr('Login failed: {}').format(msg))
+                    self.logger.error('Failed to login through browser')
                     self.logger.error(e)
             else:
-                self.logger.error("Failed to login through browser")
+                self.logger.error('Failed to login through browser')

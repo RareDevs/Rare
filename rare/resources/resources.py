@@ -35633,7 +35633,7 @@ L\xe1\x9c-\xcc\xc7\xf8\x0c\x9cd&\x97'\x9fL{\
 \xab\xe0\xa3\
 "
 
-qt_resource_name = b"\
+qt_resource_name = b'\
 \x00\x07\
 \x09\x9e\xc3#\
 \x00s\
@@ -35682,9 +35682,9 @@ qt_resource_name = b"\
 \x04\xa8\x91\xc2\
 \x00D\
 \x00a\x00r\x00k\x00e\x00r\
-"
+'
 
-qt_resource_struct = b"\
+qt_resource_struct = b'\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x02\x00\x00\x00\x01\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00\x14\x00\x02\x00\x00\x00\x02\x00\x00\x00\x0b\
@@ -35711,12 +35711,15 @@ qt_resource_struct = b"\
 \x00\x00\x01\x9c\xc3\x1e\xdd\x86\
 \x00\x00\x00&\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00\
 \x00\x00\x01\x905 \x19\x03\
-"
+'
+
 
 def qInitResources():
     QtCore.qRegisterResourceData(0x03, qt_resource_struct, qt_resource_name, qt_resource_data)
 
+
 def qCleanupResources():
     QtCore.qUnregisterResourceData(0x03, qt_resource_struct, qt_resource_name, qt_resource_data)
+
 
 qInitResources()

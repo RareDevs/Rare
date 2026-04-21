@@ -18,23 +18,23 @@ class AccountWidget(QWidget):
         self.signals = signals
         self.core = core
 
-        username = self.core.lgd.userdata.get("displayName")
+        username = self.core.lgd.userdata.get('displayName')
         if not username:
-            username = "Offline"
+            username = 'Offline'
 
         self.open_browser = QPushButton(
-            qta_icon("fa.external-link", "fa5s.external-link-alt"),
-            self.tr("Account settings"),
+            qta_icon('fa.external-link', 'fa5s.external-link-alt'),
+            self.tr('Account settings'),
         )
         self.open_browser.clicked.connect(self._on_browser_clicked)
 
-        self.logout_button = QPushButton(self.tr("Logout"), parent=self)
+        self.logout_button = QPushButton(self.tr('Logout'), parent=self)
         self.logout_button.clicked.connect(self._on_logout)
-        self.quit_button = QPushButton(self.tr("Quit"), parent=self)
+        self.quit_button = QPushButton(self.tr('Quit'), parent=self)
         self.quit_button.clicked.connect(self._on_quit)
 
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel(self.tr("Logged in as <b>{}</b>").format(username)))
+        layout.addWidget(QLabel(self.tr('Logged in as <b>{}</b>').format(username)))
         vspacer = QSpacerItem(10, 10, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         layout.addSpacerItem(vspacer)
         layout.addWidget(self.open_browser)
@@ -43,7 +43,7 @@ class AccountWidget(QWidget):
 
     @Slot()
     def _on_browser_clicked(self):
-        webbrowser.open("https://www.epicgames.com/account/personal?productName=epicgames")
+        webbrowser.open('https://www.epicgames.com/account/personal?productName=epicgames')
 
     @Slot()
     def _on_quit(self):

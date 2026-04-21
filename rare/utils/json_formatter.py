@@ -42,12 +42,12 @@ import json
 from PySide6 import QtCore, QtWidgets
 
 
-class QJsonTreeItem(object):
+class QJsonTreeItem:
     def __init__(self, parent=None):
         self._parent = parent
 
-        self._key = ""
-        self._value = ""
+        self._key = ''
+        self._value = ''
         self._type = None
         self._children = list()
 
@@ -93,22 +93,22 @@ class QJsonTreeItem(object):
     @classmethod
     def load(self, value, parent=None, sort=True):
         rootItem = QJsonTreeItem(parent)
-        rootItem.key = "root"
+        rootItem.key = 'root'
 
         if isinstance(value, dict):
             items = sorted(value.items()) if sort else value.items()
 
-            for key, value in items:
-                child = self.load(value, rootItem)
+            for key, val in items:
+                child = self.load(val, rootItem)
                 child.key = key
-                child.type = type(value)
+                child.type = type(val)
                 rootItem.appendChild(child)
 
         elif isinstance(value, list):
-            for index, value in enumerate(value):
-                child = self.load(value, rootItem)
-                child.key = index
-                child.type = type(value)
+            for idx, val in enumerate(value):
+                child = self.load(val, rootItem)
+                child.key = idx
+                child.type = type(val)
                 rootItem.appendChild(child)
 
         else:
@@ -123,7 +123,7 @@ class QJsonModel(QtCore.QAbstractItemModel):
         super(QJsonModel, self).__init__(parent)
 
         self._rootItem = QJsonTreeItem()
-        self._headers = ("key", "value")
+        self._headers = ('key', 'value')
 
     def clear(self):
         self.load({})
@@ -136,7 +136,7 @@ class QJsonModel(QtCore.QAbstractItemModel):
 
         """
 
-        assert isinstance(document, (dict, list, tuple)), "`document` must be of dict, list or tuple, not %s" % type(document)
+        assert isinstance(document, (dict, list, tuple)), f'`document` must be of dict, list or tuple, not {type(document)}'
 
         self.beginResetModel()
 
@@ -179,6 +179,8 @@ class QJsonModel(QtCore.QAbstractItemModel):
             if index.column() == 1:
                 return item.value
 
+        return None
+
     def setData(self, index, value, role):
         if role == QtCore.Qt.ItemDataRole.EditRole:
             if index.column() == 1:
@@ -198,7 +200,12 @@ class QJsonModel(QtCore.QAbstractItemModel):
         if orientation == QtCore.Qt.Orientation.Horizontal:
             return self._headers[section]
 
-    def index(self, row, column, parent=QtCore.QModelIndex()):
+        return None
+
+    def index(self, row, column, parent=None):
+        if parent is None:
+            parent = QtCore.QModelIndex()
+
         if not self.hasIndex(row, column, parent):
             return QtCore.QModelIndex()
 
@@ -225,7 +232,9 @@ class QJsonModel(QtCore.QAbstractItemModel):
 
         return self.createIndex(parentItem.row(), 0, parentItem)
 
-    def rowCount(self, parent=QtCore.QModelIndex()):
+    def rowCount(self, parent=None):
+        if parent is None:
+            parent = QtCore.QModelIndex()
         if parent.column() > 0:
             return 0
 
@@ -236,7 +245,9 @@ class QJsonModel(QtCore.QAbstractItemModel):
 
         return parentItem.childCount()
 
-    def columnCount(self, parent=QtCore.QModelIndex()):
+    def columnCount(self, parent=None):
+        if parent is None:
+            parent = QtCore.QModelIndex()
         return 2
 
     def flags(self, index):
@@ -251,24 +262,24 @@ class QJsonModel(QtCore.QAbstractItemModel):
         nchild = item.childCount()
 
         if item.type is dict:
-            document = {}
+            _document = {}
             for i in range(nchild):
                 ch = item.child(i)
-                document[ch.key] = self.genJson(ch)
-            return document
+                _document[ch.key] = self.genJson(ch)
+            return _document
 
         elif item.type is list:
-            document = []
+            _document = []
             for i in range(nchild):
                 ch = item.child(i)
-                document.append(self.genJson(ch))
-            return document
+                _document.append(self.genJson(ch))
+            return _document
 
         else:
             return item.value
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import sys
 
     app = QtWidgets.QApplication(sys.argv)

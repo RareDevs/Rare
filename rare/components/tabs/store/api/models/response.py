@@ -1,22 +1,22 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from logging import getLogger
-from typing import Any, Dict, List, Tuple, Type
+from typing import Any
 
 from .utils import parse_date
 
-logger = getLogger("StoreApiModels")
+logger = getLogger('StoreApiModels')
 
 # lk: Typing overloads for unimplemented types
-DieselSocialLinks = Dict
+DieselSocialLinks = dict
 
-CatalogNamespaceModel = Dict
-CategoryModel = Dict
-CustomAttributeModel = Dict
-ItemModel = Dict
-SellerModel = Dict
-PageSandboxModel = Dict
-TagModel = Dict
+CatalogNamespaceModel = dict
+CategoryModel = dict
+CustomAttributeModel = dict
+ItemModel = dict
+SellerModel = dict
+PageSandboxModel = dict
+TagModel = dict
 
 
 @dataclass
@@ -24,39 +24,39 @@ class ImageUrlModel:
     type: str = None
     url: str = None
 
-    def as_dict(self) -> Dict[str, Any]:
-        tmp: Dict[str, Any] = {}
+    def as_dict(self) -> dict[str, Any]:
+        tmp: dict[str, Any] = {}
         tmp.update({})
         if self.type is not None:
-            tmp["type"] = self.type
+            tmp['type'] = self.type
         if self.url is not None:
-            tmp["url"] = self.url
+            tmp['url'] = self.url
         return tmp
 
     @classmethod
-    def from_dict(cls: Type["ImageUrlModel"], src: Dict[str, Any]) -> "ImageUrlModel":
+    def from_dict(cls: type['ImageUrlModel'], src: dict[str, Any]) -> 'ImageUrlModel':
         d = src.copy()
-        return cls(type=d.pop("type", ""), url=d.pop("url", ""))
+        return cls(type=d.pop('type', ''), url=d.pop('url', ''))
 
 
 @dataclass
 class KeyImagesModel:
-    key_images: Tuple[ImageUrlModel, ...] = None
+    key_images: tuple[ImageUrlModel, ...] = None
     tall_types = (
-        "DieselGameBoxTall",
-        "DieselStoreFrontTall",
-        "OfferImageTall",
-        "DieselGameBoxLogo",
-        "Thumbnail",
-        "ProductLogo",
+        'DieselGameBoxTall',
+        'DieselStoreFrontTall',
+        'OfferImageTall',
+        'DieselGameBoxLogo',
+        'Thumbnail',
+        'ProductLogo',
     )
     wide_types = (
-        "DieselGameBoxwide",
-        "DieselStoreFrontWide",
-        "OfferImageWide",
-        "DieselGameBox",
-        "VaultClosed",
-        "ProductLogo",
+        'DieselGameBoxwide',
+        'DieselStoreFrontWide',
+        'OfferImageWide',
+        'DieselGameBox',
+        'VaultClosed',
+        'ProductLogo',
     )
 
     def __getitem__(self, item):
@@ -66,17 +66,17 @@ class KeyImagesModel:
         return bool(self.key_images)
 
     @classmethod
-    def from_list(cls: Type["KeyImagesModel"], src: List[Dict]):
+    def from_list(cls: type['KeyImagesModel'], src: list[dict]):
         d = src.copy()
         key_images = tuple(map(ImageUrlModel.from_dict, d))
         return cls(key_images=key_images)
 
-    def available_tall(self) -> List[ImageUrlModel]:
+    def available_tall(self) -> list[ImageUrlModel]:
         tall_images = filter(lambda img: img.type in KeyImagesModel.tall_types, self.key_images)
         tall_images = sorted(tall_images, key=lambda x: KeyImagesModel.tall_types.index(x.type))
         return tall_images
 
-    def available_wide(self) -> List[ImageUrlModel]:
+    def available_wide(self) -> list[ImageUrlModel]:
         wide_images = filter(lambda img: img.type in KeyImagesModel.wide_types, self.key_images)
         wide_images = sorted(wide_images, key=lambda x: KeyImagesModel.wide_types.index(x.type))
         return wide_images
@@ -95,9 +95,9 @@ class KeyImagesModel:
             return model
 
 
-CurrencyModel = Dict
-FormattedPriceModel = Dict
-LineOffersModel = Dict
+CurrencyModel = dict
+FormattedPriceModel = dict
+LineOffersModel = dict
 
 
 @dataclass
@@ -109,19 +109,19 @@ class TotalPriceModel:
     currencyCode: str = None
     currencyInfo: CurrencyModel = None
     fmtPrice: FormattedPriceModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["TotalPriceModel"], src: Dict[str, Any]) -> "TotalPriceModel":
+    def from_dict(cls: type['TotalPriceModel'], src: dict[str, Any]) -> 'TotalPriceModel':
         d = src.copy()
         return cls(
-            discountPrice=d.pop("discountPrice", 0),
-            originalPrice=d.pop("originalPrice", 0),
-            voucherDiscount=d.pop("voucherDiscount", 0),
-            discount=d.pop("discount", 0),
-            currencyCode=d.pop("currencyCode", ""),
-            currencyInfo=d.pop("currrencyInfo", {}),
-            fmtPrice=d.pop("fmtPrice", {}),
+            discountPrice=d.pop('discountPrice', 0),
+            originalPrice=d.pop('originalPrice', 0),
+            voucherDiscount=d.pop('voucherDiscount', 0),
+            discount=d.pop('discount', 0),
+            currencyCode=d.pop('currencyCode', ''),
+            currencyInfo=d.pop('currrencyInfo', {}),
+            fmtPrice=d.pop('fmtPrice', {}),
             unmapped=d,
         )
 
@@ -130,16 +130,16 @@ class TotalPriceModel:
 class GetPriceResModel:
     totalPrice: TotalPriceModel = None
     lineOffers: LineOffersModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["GetPriceResModel"], src: Dict[str, Any]) -> "GetPriceResModel":
+    def from_dict(cls: type['GetPriceResModel'], src: dict[str, Any]) -> 'GetPriceResModel':
         d = src.copy()
-        total_price = TotalPriceModel.from_dict(x) if (x := d.pop("totalPrice", {})) else None
-        return cls(totalPrice=total_price, lineOffers=d.pop("lineOffers", {}), unmapped=d)
+        total_price = TotalPriceModel.from_dict(x) if (x := d.pop('totalPrice', {})) else None
+        return cls(totalPrice=total_price, lineOffers=d.pop('lineOffers', {}), unmapped=d)
 
 
-DiscountSettingModel = Dict
+DiscountSettingModel = dict
 
 
 @dataclass
@@ -147,44 +147,44 @@ class PromotionalOfferModel:
     startDate: datetime = None
     endDate: datetime = None
     discountSetting: DiscountSettingModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["PromotionalOfferModel"], src: Dict[str, Any]) -> "PromotionalOfferModel":
+    def from_dict(cls: type['PromotionalOfferModel'], src: dict[str, Any]) -> 'PromotionalOfferModel':
         d = src.copy()
-        start_date = parse_date(x) if (x := d.pop("startDate", "")) else None
-        end_date = parse_date(x) if (x := d.pop("endDate", "")) else None
+        start_date = parse_date(x) if (x := d.pop('startDate', '')) else None
+        end_date = parse_date(x) if (x := d.pop('endDate', '')) else None
         return cls(
             startDate=start_date,
             endDate=end_date,
-            discountSetting=d.pop("discountSetting", {}),
+            discountSetting=d.pop('discountSetting', {}),
             unmapped=d,
         )
 
 
 @dataclass
 class PromotionalOffersModel:
-    promotionalOffers: Tuple[PromotionalOfferModel, ...] = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    promotionalOffers: tuple[PromotionalOfferModel, ...] = None
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_list(cls: Type["PromotionalOffersModel"], src: Dict[str, List]) -> "PromotionalOffersModel":
+    def from_list(cls: type['PromotionalOffersModel'], src: dict[str, list]) -> 'PromotionalOffersModel':
         d = src.copy()
-        promotional_offers = tuple(map(PromotionalOfferModel.from_dict, d.pop("promotionalOffers", [])))
+        promotional_offers = tuple(map(PromotionalOfferModel.from_dict, d.pop('promotionalOffers', [])))
         return cls(promotionalOffers=promotional_offers, unmapped=d)
 
 
 @dataclass
 class PromotionsModel:
-    promotionalOffers: Tuple[PromotionalOffersModel, ...] = None
-    upcomingPromotionalOffers: Tuple[PromotionalOffersModel, ...] = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    promotionalOffers: tuple[PromotionalOffersModel, ...] = None
+    upcomingPromotionalOffers: tuple[PromotionalOffersModel, ...] = None
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["PromotionsModel"], src: Dict[str, Any]) -> "PromotionsModel":
+    def from_dict(cls: type['PromotionsModel'], src: dict[str, Any]) -> 'PromotionsModel':
         d = src.copy()
-        promotional_offers = tuple(map(PromotionalOffersModel.from_list, d.pop("promotionalOffers", [])))
-        upcoming_promotional_offers = tuple(map(PromotionalOffersModel.from_list, d.pop("upcomingPromotionalOffers", [])))
+        promotional_offers = tuple(map(PromotionalOffersModel.from_list, d.pop('promotionalOffers', [])))
+        upcoming_promotional_offers = tuple(map(PromotionalOffersModel.from_list, d.pop('upcomingPromotionalOffers', [])))
         return cls(
             promotionalOffers=promotional_offers,
             upcomingPromotionalOffers=upcoming_promotional_offers,
@@ -195,62 +195,62 @@ class PromotionsModel:
 @dataclass
 class CatalogOfferModel:
     catalogNs: CatalogNamespaceModel = None
-    categories: List[CategoryModel] = None
-    customAttributes: List[CustomAttributeModel] = None
+    categories: list[CategoryModel] = None
+    customAttributes: list[CustomAttributeModel] = None
     description: str = None
     effectiveDate: datetime = None
     expiryDate: datetime = None
     id: str = None
     isCodeRedemptionOnly: bool = None
-    items: List[ItemModel] = None
+    items: list[ItemModel] = None
     keyImages: KeyImagesModel = None
     namespace: str = None
-    offerMappings: List[PageSandboxModel] = None
+    offerMappings: list[PageSandboxModel] = None
     offerType: str = None
     price: GetPriceResModel = None
     productSlug: str = None
     promotions: PromotionsModel = None
     seller: SellerModel = None
     status: str = None
-    tags: List[TagModel] = None
+    tags: list[TagModel] = None
     title: str = None
     url: str = None
     urlSlug: str = None
     viewableDate: datetime = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["CatalogOfferModel"], src: Dict[str, Any]) -> "CatalogOfferModel":
+    def from_dict(cls: type['CatalogOfferModel'], src: dict[str, Any]) -> 'CatalogOfferModel':
         d = src.copy()
-        effective_date = parse_date(x) if (x := d.pop("effectiveDate", "")) else None
-        expiry_date = parse_date(x) if (x := d.pop("expiryDate", "")) else None
-        key_images = KeyImagesModel.from_list(d.pop("keyImages", []))
-        price = GetPriceResModel.from_dict(x) if (x := d.pop("price", {})) else None
-        promotions = PromotionsModel.from_dict(x) if (x := d.pop("promotions", {})) else None
-        viewable_date = parse_date(x) if (x := d.pop("viewableDate", "")) else None
+        effective_date = parse_date(x) if (x := d.pop('effectiveDate', '')) else None
+        expiry_date = parse_date(x) if (x := d.pop('expiryDate', '')) else None
+        key_images = KeyImagesModel.from_list(d.pop('keyImages', []))
+        price = GetPriceResModel.from_dict(x) if (x := d.pop('price', {})) else None
+        promotions = PromotionsModel.from_dict(x) if (x := d.pop('promotions', {})) else None
+        viewable_date = parse_date(x) if (x := d.pop('viewableDate', '')) else None
         return cls(
-            catalogNs=d.pop("catalogNs", {}),
-            categories=d.pop("categories", []),
-            customAttributes=d.pop("customAttributes", []),
-            description=d.pop("description", ""),
+            catalogNs=d.pop('catalogNs', {}),
+            categories=d.pop('categories', []),
+            customAttributes=d.pop('customAttributes', []),
+            description=d.pop('description', ''),
             effectiveDate=effective_date,
             expiryDate=expiry_date,
-            id=d.pop("id", ""),
-            isCodeRedemptionOnly=d.pop("isCodeRedemptionOnly", False),
-            items=d.pop("items", []),
+            id=d.pop('id', ''),
+            isCodeRedemptionOnly=d.pop('isCodeRedemptionOnly', False),
+            items=d.pop('items', []),
             keyImages=key_images,
-            namespace=d.pop("namespace", ""),
-            offerMappings=d.pop("offerMappings", []),
-            offerType=d.pop("offerType", ""),
+            namespace=d.pop('namespace', ''),
+            offerMappings=d.pop('offerMappings', []),
+            offerType=d.pop('offerType', ''),
             price=price,
-            productSlug=d.pop("productSlug", ""),
+            productSlug=d.pop('productSlug', ''),
             promotions=promotions,
-            seller=d.pop("seller", {}),
-            status=d.pop("status", ""),
-            tags=d.pop("tags", []),
-            title=d.pop("title", ""),
-            url=d.pop("url", ""),
-            urlSlug=d.pop("urlSlug", ""),
+            seller=d.pop('seller', {}),
+            status=d.pop('status', ''),
+            tags=d.pop('tags', []),
+            title=d.pop('title', ''),
+            url=d.pop('url', ''),
+            urlSlug=d.pop('urlSlug', ''),
             viewableDate=viewable_date,
             unmapped=d,
         )
@@ -266,21 +266,21 @@ class WishlistItemModel:
     order: Any = None
     updated: datetime = None
     offer: CatalogOfferModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["WishlistItemModel"], src: Dict[str, Any]) -> "WishlistItemModel":
+    def from_dict(cls: type['WishlistItemModel'], src: dict[str, Any]) -> 'WishlistItemModel':
         d = src.copy()
-        created = parse_date(x) if (x := d.pop("created", "")) else None
-        offer = CatalogOfferModel.from_dict(x) if (x := d.pop("offer", {})) else None
-        updated = parse_date(x) if (x := d.pop("updated", "")) else None
+        created = parse_date(x) if (x := d.pop('created', '')) else None
+        offer = CatalogOfferModel.from_dict(x) if (x := d.pop('offer', {})) else None
+        updated = parse_date(x) if (x := d.pop('updated', '')) else None
         return cls(
             created=created,
-            id=d.pop("id", ""),
-            namespace=d.pop("namespace", ""),
-            isFirstTime=d.pop("isFirstTime", False),
-            offerId=d.pop("offerId", ""),
-            order=d.pop("order", ""),
+            id=d.pop('id', ''),
+            namespace=d.pop('namespace', ''),
+            isFirstTime=d.pop('isFirstTime', False),
+            offerId=d.pop('offerId', ''),
+            order=d.pop('order', ''),
             updated=updated,
             offer=offer,
             unmapped=d,
@@ -291,80 +291,80 @@ class WishlistItemModel:
 class PagingModel:
     count: int = None
     total: int = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["PagingModel"], src: Dict[str, Any]) -> "PagingModel":
+    def from_dict(cls: type['PagingModel'], src: dict[str, Any]) -> 'PagingModel':
         d = src.copy()
-        count = d.pop("count", 0)
-        total = d.pop("total", 0)
+        count = d.pop('count', 0)
+        total = d.pop('total', 0)
         return cls(count=count, total=total, unmapped=d)
 
 
 @dataclass
 class SearchStoreModel:
-    elements: Tuple[CatalogOfferModel, ...] = None
+    elements: tuple[CatalogOfferModel, ...] = None
     paging: PagingModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["SearchStoreModel"], src: Dict[str, Any]) -> "SearchStoreModel":
+    def from_dict(cls: type['SearchStoreModel'], src: dict[str, Any]) -> 'SearchStoreModel':
         d = src.copy()
-        _elements = d.pop("elements", [])
+        _elements = d.pop('elements', [])
         elements = tuple(map(CatalogOfferModel.from_dict, _elements))
-        paging = PagingModel.from_dict(x) if (x := d.pop("paging", {})) else None
+        paging = PagingModel.from_dict(x) if (x := d.pop('paging', {})) else None
         return cls(elements=elements, paging=paging, unmapped=d)
 
 
 @dataclass
 class CatalogModel:
     searchStore: SearchStoreModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["CatalogModel"], src: Dict[str, Any]) -> "CatalogModel":
+    def from_dict(cls: type['CatalogModel'], src: dict[str, Any]) -> 'CatalogModel':
         d = src.copy()
-        search_store = SearchStoreModel.from_dict(x) if (x := d.pop("searchStore", {})) else None
+        search_store = SearchStoreModel.from_dict(x) if (x := d.pop('searchStore', {})) else None
         return cls(searchStore=search_store, unmapped=d)
 
 
 @dataclass
 class WishlistItemsModel:
-    elements: Tuple[WishlistItemModel, ...] = None
+    elements: tuple[WishlistItemModel, ...] = None
     paging: PagingModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["WishlistItemsModel"], src: Dict[str, Any]) -> "WishlistItemsModel":
+    def from_dict(cls: type['WishlistItemsModel'], src: dict[str, Any]) -> 'WishlistItemsModel':
         d = src.copy()
-        _elements = d.pop("elements", [])
+        _elements = d.pop('elements', [])
         elements = tuple(map(WishlistItemModel.from_dict, _elements))
-        paging = PagingModel.from_dict(x) if (x := d.pop("paging", {})) else None
+        paging = PagingModel.from_dict(x) if (x := d.pop('paging', {})) else None
         return cls(elements=elements, paging=paging, unmapped=d)
 
 
 @dataclass
 class RemoveFromWishlistModel:
     success: bool = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["RemoveFromWishlistModel"], src: Dict[str, Any]) -> "RemoveFromWishlistModel":
+    def from_dict(cls: type['RemoveFromWishlistModel'], src: dict[str, Any]) -> 'RemoveFromWishlistModel':
         d = src.copy()
-        return cls(success=d.pop("success", False), unmapped=d)
+        return cls(success=d.pop('success', False), unmapped=d)
 
 
 @dataclass
 class AddToWishlistModel:
     wishlistItem: WishlistItemModel = None
     success: bool = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["AddToWishlistModel"], src: Dict[str, Any]) -> "AddToWishlistModel":
+    def from_dict(cls: type['AddToWishlistModel'], src: dict[str, Any]) -> 'AddToWishlistModel':
         d = src.copy()
-        wishlist_item = WishlistItemModel.from_dict(x) if (x := d.pop("wishlistItem", {})) else None
-        return cls(wishlistItem=wishlist_item, success=d.pop("success", False), unmapped=d)
+        wishlist_item = WishlistItemModel.from_dict(x) if (x := d.pop('wishlistItem', {})) else None
+        return cls(wishlistItem=wishlist_item, success=d.pop('success', False), unmapped=d)
 
 
 @dataclass
@@ -372,14 +372,14 @@ class WishlistModel:
     wishlistItems: WishlistItemsModel = None
     removeFromWishlist: RemoveFromWishlistModel = None
     addToWishlist: AddToWishlistModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["WishlistModel"], src: Dict[str, Any]) -> "WishlistModel":
+    def from_dict(cls: type['WishlistModel'], src: dict[str, Any]) -> 'WishlistModel':
         d = src.copy()
-        wishlist_items = WishlistItemsModel.from_dict(x) if (x := d.pop("wishlistItems", {})) else None
-        remove_from_wishlist = RemoveFromWishlistModel.from_dict(x) if (x := d.pop("removeFromWishlist", {})) else None
-        add_to_wishlist = AddToWishlistModel.from_dict(x) if (x := d.pop("addToWishlist", {})) else None
+        wishlist_items = WishlistItemsModel.from_dict(x) if (x := d.pop('wishlistItems', {})) else None
+        remove_from_wishlist = RemoveFromWishlistModel.from_dict(x) if (x := d.pop('removeFromWishlist', {})) else None
+        add_to_wishlist = AddToWishlistModel.from_dict(x) if (x := d.pop('addToWishlist', {})) else None
         return cls(
             wishlistItems=wishlist_items,
             removeFromWishlist=remove_from_wishlist,
@@ -388,7 +388,7 @@ class WishlistModel:
         )
 
 
-ProductModel = Dict
+ProductModel = dict
 
 
 @dataclass
@@ -396,14 +396,14 @@ class DataModel:
     product: ProductModel = None
     catalog: CatalogModel = None
     wishlist: WishlistModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["DataModel"], src: Dict[str, Any]) -> "DataModel":
+    def from_dict(cls: type['DataModel'], src: dict[str, Any]) -> 'DataModel':
         d = src.copy()
-        catalog = CatalogModel.from_dict(x) if (x := d.pop("Catalog", {})) else None
-        wishlist = WishlistModel.from_dict(x) if (x := d.pop("Wishlist", {})) else None
-        return cls(product=d.pop("Product", {}), catalog=catalog, wishlist=wishlist, unmapped=d)
+        catalog = CatalogModel.from_dict(x) if (x := d.pop('Catalog', {})) else None
+        wishlist = WishlistModel.from_dict(x) if (x := d.pop('Wishlist', {})) else None
+        return cls(product=d.pop('Product', {}), catalog=catalog, wishlist=wishlist, unmapped=d)
 
 
 @dataclass
@@ -411,28 +411,28 @@ class ErrorModel:
     message: str = None
     correlationId: str = None
     serviceResponse: str = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     def __str__(self):
-        return f"{self.correlationId} - {self.message}"
+        return f'{self.correlationId} - {self.message}'
 
     @classmethod
-    def from_dict(cls: Type["ErrorModel"], src: Dict[str, Any]) -> "ErrorModel":
+    def from_dict(cls: type['ErrorModel'], src: dict[str, Any]) -> 'ErrorModel':
         d = src.copy()
         return cls(
-            message=d.pop("message", ""),
-            correlationId=d.pop("correlationId", ""),
-            serviceResponse=d.pop("serviceResponse", ""),
+            message=d.pop('message', ''),
+            correlationId=d.pop('correlationId', ''),
+            serviceResponse=d.pop('serviceResponse', ''),
             unmapped=d,
         )
 
 
 @dataclass
 class ExtensionsModel:
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["ExtensionsModel"], src: Dict[str, Any]) -> "ExtensionsModel":
+    def from_dict(cls: type['ExtensionsModel'], src: dict[str, Any]) -> 'ExtensionsModel':
         d = src.copy()
         return cls(unmapped=d)
 
@@ -440,15 +440,15 @@ class ExtensionsModel:
 @dataclass
 class ResponseModel:
     data: DataModel = None
-    errors: Tuple[ErrorModel, ...] = None
+    errors: tuple[ErrorModel, ...] = None
     extensions: ExtensionsModel = None
-    unmapped: Dict[str, Any] = field(default_factory=dict)
+    unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["ResponseModel"], src: Dict[str, Any]) -> "ResponseModel":
+    def from_dict(cls: type['ResponseModel'], src: dict[str, Any]) -> 'ResponseModel':
         d = src.copy()
-        data = DataModel.from_dict(x) if (x := d.pop("data", {})) else None
-        _errors = d.pop("errors", [])
+        data = DataModel.from_dict(x) if (x := d.pop('data', {})) else None
+        _errors = d.pop('errors', [])
         errors = tuple(map(ErrorModel.from_dict, _errors))
-        extensions = ExtensionsModel.from_dict(x) if (x := d.pop("extensions", {})) else None
+        extensions = ExtensionsModel.from_dict(x) if (x := d.pop('extensions', {})) else None
         return cls(data=data, errors=errors, extensions=extensions, unmapped=d)

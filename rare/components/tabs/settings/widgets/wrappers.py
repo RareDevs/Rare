@@ -1,8 +1,8 @@
 import platform as pf
 import shlex
 import shutil
+from collections.abc import Iterable
 from logging import getLogger
-from typing import Iterable, Optional, Tuple
 
 from PySide6.QtCore import QEvent, QMimeData, QObject, QSize, Qt, Signal, Slot
 from PySide6.QtGui import (
@@ -37,10 +37,10 @@ from rare.shared import RareCore
 from rare.utils.misc import qta_icon
 from rare.widgets.dialogs import ButtonDialog, game_title
 
-if pf.system() in {"Linux", "FreeBSD"}:
+if pf.system() in {'Linux', 'FreeBSD'}:
     from rare.utils.compat import steam
 
-logger = getLogger("WrapperSettings")
+logger = getLogger('WrapperSettings')
 
 
 class WrapperEditDialog(ButtonDialog):
@@ -57,14 +57,14 @@ class WrapperEditDialog(ButtonDialog):
 
         self.setCentralLayout(self.widget_layout)
 
-        self.accept_button.setText(self.tr("Save"))
-        self.accept_button.setIcon(qta_icon("fa.edit", "fa5s.edit"))
+        self.accept_button.setText(self.tr('Save'))
+        self.accept_button.setIcon(qta_icon('fa.edit', 'fa5s.edit'))
         self.accept_button.setEnabled(False)
 
-        self.result: Tuple = (False, "")
+        self.result: tuple = (False, '')
 
     def setup(self, wrapper: Wrapper):
-        header = self.tr("Edit wrapper")
+        header = self.tr('Edit wrapper')
         self.setWindowTitle(header)
         self.setSubtitle(game_title(header, wrapper.name))
         self.line_edit.setText(wrapper.as_str)
@@ -87,16 +87,16 @@ class WrapperAddDialog(WrapperEditDialog):
     def __init__(self, parent=None):
         super(WrapperAddDialog, self).__init__(parent=parent)
         self.combo_box = QComboBox(self)
-        self.combo_box.addItem("None", "")
+        self.combo_box.addItem('None', '')
         self.combo_box.currentIndexChanged.connect(self.__on_index_changed)
         self.widget_layout.insertWidget(0, self.combo_box)
 
     def setup(self, wrappers: Iterable[Wrapper]):
-        header = self.tr("Add wrapper")
+        header = self.tr('Add wrapper')
         self.setWindowTitle(header)
         self.setSubtitle(header)
         for wrapper in wrappers:
-            self.combo_box.addItem(f"{wrapper.name} ({wrapper.as_str})", wrapper.as_str)
+            self.combo_box.addItem(f'{wrapper.name} ({wrapper.as_str})', wrapper.as_str)
 
     @Slot(int)
     def __on_index_changed(self, index: int):
@@ -120,29 +120,29 @@ class WrapperWidget(QFrame):
 
         self.text_lbl = QCheckBox(wrapper.name, parent=self)
         self.text_lbl.setChecked(wrapper.is_enabled)
-        self.text_lbl.setFont(QFont("monospace"))
+        self.text_lbl.setFont(QFont('monospace'))
         self.text_lbl.setEnabled(wrapper.is_editable)
         self.text_lbl.checkStateChanged.connect(self.__on_state_changed)
 
         image_lbl = QLabel(parent=self)
-        image_lbl.setPixmap(qta_icon("mdi.drag-vertical").pixmap(QSize(20, 20)))
+        image_lbl.setPixmap(qta_icon('mdi.drag-vertical').pixmap(QSize(20, 20)))
 
-        edit_action = QAction("Edit", parent=self)
+        edit_action = QAction('Edit', parent=self)
         edit_action.triggered.connect(self.__on_edit)
-        delete_action = QAction("Delete", parent=self)
+        delete_action = QAction('Delete', parent=self)
         delete_action.triggered.connect(self.__on_delete)
 
         manage_menu = QMenu(parent=self)
         manage_menu.addActions([edit_action, delete_action])
 
         manage_button = QPushButton(parent=self)
-        manage_button.setIcon(qta_icon("mdi.menu", "fa5s.align-justify"))
+        manage_button.setIcon(qta_icon('mdi.menu', 'fa5s.align-justify'))
         manage_button.setMenu(manage_menu)
         manage_button.setEnabled(wrapper.is_editable)
         if not wrapper.is_editable:
-            manage_button.setToolTip(self.tr("Manage through settings"))
+            manage_button.setToolTip(self.tr('Manage through settings'))
         else:
-            manage_button.setToolTip(self.tr("Manage"))
+            manage_button.setToolTip(self.tr('Manage'))
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -155,7 +155,7 @@ class WrapperWidget(QFrame):
 
         # lk: set object names for the stylesheet
         self.setObjectName(type(self).__name__)
-        manage_button.setObjectName(f"{self.objectName()}Button")
+        manage_button.setObjectName(f'{self.objectName()}Button')
 
     def data(self) -> Wrapper:
         return self.wrapper
@@ -207,11 +207,11 @@ class WrapperSettingsScroll(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         self.setWidgetResizable(True)
-        self.setProperty("no_kinetic_scroll", True)
+        self.setProperty('no_kinetic_scroll', True)
 
         self.setObjectName(type(self).__name__)
-        self.horizontalScrollBar().setObjectName(f"{self.objectName()}Bar")
-        self.verticalScrollBar().setObjectName(f"{self.objectName()}Bar")
+        self.horizontalScrollBar().setObjectName(f'{self.objectName()}Bar')
+        self.verticalScrollBar().setObjectName(f'{self.objectName()}Bar')
 
     def setWidget(self, w):
         super().setWidget(w)
@@ -245,9 +245,9 @@ class WrapperSettings(QWidget):
         super(WrapperSettings, self).__init__(parent=parent)
         self.core = rcore.core()
         self.wrappers = rcore.wrappers()
-        self.app_name: str = "default"
+        self.app_name: str = 'default'
 
-        self.add_button = QPushButton(self.tr("Add wrapper"), self)
+        self.add_button = QPushButton(self.tr('Add wrapper'), self)
         self.add_button.clicked.connect(self.__on_add)
 
         self.wrapper_scroll = WrapperSettingsScroll(self)
@@ -257,14 +257,14 @@ class WrapperSettings(QWidget):
         self.wrapper_container.orderChanged.connect(self.__on_order_changed)
         self.wrapper_scroll.setWidget(self.wrapper_container)
 
-        self.wrapper_label = QLabel(self.tr("No wrappers defined"), self)
+        self.wrapper_label = QLabel(self.tr('No wrappers defined'), self)
         self.wrapper_label.setFrameStyle(QLabel.Shape.StyledPanel | QLabel.Shadow.Plain)
         self.wrapper_label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.wrapper_container.main_layout.addWidget(self.wrapper_label)
 
         # lk: set object names for the stylesheet
-        self.setObjectName("WrapperSettings")
-        self.wrapper_label.setObjectName(f"{self.objectName()}Label")
+        self.setObjectName('WrapperSettings')
+        self.wrapper_label.setObjectName(f'{self.objectName()}Label')
 
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -324,29 +324,29 @@ class WrapperSettings(QWidget):
         if not wrapper:
             return
 
-        if pf.system() in {"Linux", "FreeBSD"}:
+        if pf.system() in {'Linux', 'FreeBSD'}:
             compat_cmds = [tool.command() for tool in steam.find_tools()]
             if wrapper.as_str in compat_cmds:
                 QMessageBox.warning(
                     self,
-                    self.tr("Warning"),
-                    self.tr("Do not insert compatibility tools manually. Add them through Proton settings"),
+                    self.tr('Warning'),
+                    self.tr('Do not insert compatibility tools manually. Add them through Proton settings'),
                 )
                 return
 
         if wrapper.checksum in self.wrappers.get_checksums(self.app_name):
             QMessageBox.warning(
                 self,
-                self.tr("Warning"),
-                self.tr("Wrapper <b>{0}</b> is already in the list").format(wrapper.as_str),
+                self.tr('Warning'),
+                self.tr('Wrapper <b>{0}</b> is already in the list').format(wrapper.as_str),
             )
             return
 
         if not shutil.which(wrapper.executable):
             ans = QMessageBox.question(
                 self,
-                self.tr("Warning"),
-                self.tr("Wrapper <b>{0}</b> is not in $PATH. Add it anyway?").format(wrapper.executable),
+                self.tr('Warning'),
+                self.tr('Wrapper <b>{0}</b> is not in $PATH. Add it anyway?').format(wrapper.executable),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 QMessageBox.StandardButton.No,
             )
@@ -401,7 +401,7 @@ class WrapperContainer(QWidget):
         super(WrapperContainer, self).__init__(parent=parent)
         self.setAcceptDrops(True)
         self.__layout = QHBoxLayout()
-        self.__drag_widget: Optional[QWidget] = None
+        self.__drag_widget: QWidget | None = None
 
         self.main_layout = QHBoxLayout(self)
         self.main_layout.addLayout(self.__layout)

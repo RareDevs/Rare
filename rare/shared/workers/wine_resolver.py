@@ -1,8 +1,8 @@
 import os
 import platform
 import time
+from collections.abc import Iterable
 from configparser import ConfigParser
-from typing import Dict, Iterable, List, Tuple, Union
 
 from PySide6.QtCore import QObject, Signal
 
@@ -15,7 +15,7 @@ from rare.utils.misc import format_size, path_size
 
 from .worker import Worker
 
-if platform.system() == "Windows":
+if platform.system() == 'Windows':
     # noinspection PyUnresolvedReferences
     import winreg  # pylint: disable=E0401
 
@@ -38,10 +38,10 @@ class WinePathResolver(Worker):
         self.path = path
 
     @staticmethod
-    def _configure_process(core: LegendaryCore, app_name: str) -> Tuple[List, Dict]:
+    def _configure_process(core: LegendaryCore, app_name: str) -> tuple[list, dict]:
         tool: steam.CompatibilityTool = None
 
-        if config.get_boolean(app_name, "no_wine"):
+        if config.get_boolean(app_name, 'no_wine'):
             wrappers = Wrappers()
             for w in wrappers.get_wrappers(app_name):
                 if w.is_compat_tool:
@@ -53,17 +53,17 @@ class WinePathResolver(Worker):
         cmd = core.get_app_launch_command(
             app_name,
             wrapper=tool.as_str(steam.SteamVerb.RUN_IN_PREFIX) if tool is not None else None,
-            disable_wine=config.get_boolean(app_name, "no_wine"),
+            disable_wine=config.get_boolean(app_name, 'no_wine'),
         )
-        env = core.get_app_environment(app_name, disable_wine=config.get_boolean(app_name, "no_wine"))
+        env = core.get_app_environment(app_name, disable_wine=config.get_boolean(app_name, 'no_wine'))
         # pylint: disable=E0606
         env = compat_utils.get_host_environment(env, silent=True)
         env.update(
             {
-                "SteamAppId": config.get_envvar_with_global(app_name, "SteamAppId", "default"),
-                "SteamGameId": config.get_envvar_with_global(app_name, "SteamGameId", "default"),
-                "STEAM_COMPAT_APP_ID": config.get_envvar_with_global(app_name, "STEAM_COMPAT_APP_ID", "default"),
-                "UMU_ID": config.get_envvar_with_global(app_name, "UMU_ID", "default"),
+                'SteamAppId': config.get_envvar_with_global(app_name, 'SteamAppId', 'default'),
+                'SteamGameId': config.get_envvar_with_global(app_name, 'SteamGameId', 'default'),
+                'STEAM_COMPAT_APP_ID': config.get_envvar_with_global(app_name, 'STEAM_COMPAT_APP_ID', 'default'),
+                'UMU_ID': config.get_envvar_with_global(app_name, 'UMU_ID', 'default'),
             }
         )
 
@@ -71,9 +71,9 @@ class WinePathResolver(Worker):
             _cmd = core.get_app_launch_command(
                 app_name,
                 wrapper=tool.as_str(steam.SteamVerb.WAIT_FOR_EXIT_AND_RUN) if tool is not None else None,
-                disable_wine=config.get_boolean(app_name, "no_wine"),
+                disable_wine=config.get_boolean(app_name, 'no_wine'),
             )
-            compat_utils.execute(_cmd, ["c:\\windows\\system32\\wineboot.exe", "-u"], env)
+            compat_utils.execute(_cmd, ['c:\\windows\\system32\\wineboot.exe', '-u'], env)
 
         return cmd, env
 
@@ -88,8 +88,8 @@ class WinePathResolver(Worker):
     def run_real(self):
         command, environ = self._configure_process(self.core, self.app_name)
         if not (command and environ):
-            self.logger.error("Cannot setup %s, missing infomation", {type(self).__name__})
-            self.signals.result_ready.emit("", self.app_name)
+            self.logger.error('Cannot setup %s, missing infomation', {type(self).__name__})
+            self.signals.result_ready.emit('', self.app_name)
 
         path = self._resolve_unix_path(command, environ, self.path)
         self.signals.result_ready.emit(path, self.app_name)
@@ -103,11 +103,11 @@ class WineSavePathResolver(WinePathResolver):
         self.rgame = rgame
 
     def run_real(self):
-        self.logger.info("Resolving save path for %s (%s)", self.rgame.app_title, self.rgame.app_name)
+        self.logger.info('Resolving save path for %s (%s)', self.rgame.app_title, self.rgame.app_name)
         command, environ = self._configure_process(self.core, self.rgame.app_name)
         if not (command and environ):
-            self.logger.error("Cannot setup %s, missing infomation", {type(self).__name__})
-            self.signals.result_ready.emit("", self.rgame.app_name)
+            self.logger.error('Cannot setup %s, missing infomation', {type(self).__name__})
+            self.signals.result_ready.emit('', self.rgame.app_name)
 
         path = self._resolve_unix_path(command, environ, self.path)
         # Clean wine output
@@ -119,8 +119,8 @@ class WineSavePathResolver(WinePathResolver):
 
 
 class OriginWineWorker(WinePathResolver):
-    def __init__(self, core: LegendaryCore, games: Union[Iterable[RareGame], RareGame]):
-        super(OriginWineWorker, self).__init__(core, "", "")
+    def __init__(self, core: LegendaryCore, games: Iterable[RareGame] | RareGame):
+        super(OriginWineWorker, self).__init__(core, '', '')
         self.__cache: dict[str, ConfigParser] = {}
         self.core = core
         self.games = [games] if isinstance(games, RareGame) else games
@@ -129,15 +129,15 @@ class OriginWineWorker(WinePathResolver):
         t = time.time()
 
         for rgame in self.games:
-            reg_path: str = rgame.game.metadata.get("customAttributes", {}).get("RegistryPath", {}).get("value", "")
+            reg_path: str = rgame.game.metadata.get('customAttributes', {}).get('RegistryPath', {}).get('value', '')
             if not reg_path:
                 continue
 
-            reg_key: str = rgame.game.metadata.get("customAttributes", {}).get("RegistryKey", {}).get("value", "")
+            reg_key: str = rgame.game.metadata.get('customAttributes', {}).get('RegistryKey', {}).get('value', '')
             if not reg_key:
                 continue
 
-            if platform.system() == "Windows":
+            if platform.system() == 'Windows':
                 install_dir = windows_helpers.query_registry_value(winreg.HKEY_LOCAL_MACHINE, reg_path, reg_key)
             else:
                 command, environ = self._configure_process(self.core, rgame.app_name)
@@ -149,23 +149,23 @@ class OriginWineWorker(WinePathResolver):
                 use_wine = True
                 if not use_wine:
                     # lk: this is the original way of getting the path by parsing "system.reg"
-                    reg = self.__cache.get(prefix, None) or compat_utils.read_registry("system.reg", prefix)
+                    reg = self.__cache.get(prefix, None) or compat_utils.read_registry('system.reg', prefix)
                     self.__cache[prefix] = reg
 
-                    reg_path = reg_path.replace("SOFTWARE", "Software").replace("WOW6432Node", "Wow6432Node")
+                    reg_path = reg_path.replace('SOFTWARE', 'Software').replace('WOW6432Node', 'Wow6432Node')
                     # lk: split and rejoin the registry path to avoid slash expansion
-                    reg_path = "\\\\".join([x for x in reg_path.split("\\") if bool(x)])
+                    reg_path = '\\\\'.join([x for x in reg_path.split('\\') if bool(x)])
 
                     install_dir = reg.get(reg_path, f'"{reg_key}"', fallback=None)
                 else:
                     # lk: this is the alternative way of getting the path by using wine itself
-                    install_dir = compat_utils.query_reg_key(command, environ, f"HKLM\\{reg_path}", reg_key)
+                    install_dir = compat_utils.query_reg_key(command, environ, f'HKLM\\{reg_path}', reg_key)
 
                 if install_dir:
-                    self.logger.debug("Found Wine install directory %s", install_dir)
+                    self.logger.debug('Found Wine install directory %s', install_dir)
                     install_dir = compat_utils.convert_to_unix_path(command, environ, install_dir)
                     if install_dir:
-                        self.logger.debug("Found Unix install directory %s", install_dir)
+                        self.logger.debug('Found Unix install directory %s', install_dir)
                     else:
                         self.logger.info(
                             "Could not find Unix install directory for '%s'",
@@ -195,4 +195,4 @@ class OriginWineWorker(WinePathResolver):
                     )
             else:
                 self.logger.info("Origin game '%s' is not installed", rgame.app_title)
-        self.logger.info("Origin worker finished in %ss", time.time() - t)
+        self.logger.info('Origin worker finished in %ss', time.time() - t)

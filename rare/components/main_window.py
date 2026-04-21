@@ -26,7 +26,7 @@ from rare.widgets.elide_label import ElideLabel
 from .tabs import MainTabWidget
 from .tray_icon import TrayIcon
 
-logger = getLogger("MainWindow")
+logger = getLogger('MainWindow')
 
 
 class RareWindow(QMainWindow):
@@ -55,7 +55,7 @@ class RareWindow(QMainWindow):
         self.status_bar = QStatusBar(self)
         self.setStatusBar(self.status_bar)
 
-        self.active_label = QLabel(self.tr("Active:"), self.status_bar)
+        self.active_label = QLabel(self.tr('Active:'), self.status_bar)
         # lk: set top and botton margins to accommodate border for scroll area labels
         self.active_label.setContentsMargins(5, 1, 0, 1)
         self.status_bar.addWidget(self.active_label)
@@ -66,7 +66,7 @@ class RareWindow(QMainWindow):
         active_layout.setSizeConstraint(QHBoxLayout.SizeConstraint.SetFixedSize)
         self.status_bar.addWidget(self.active_container, stretch=0)
 
-        self.queued_label = QLabel(self.tr("Queued:"), self.status_bar)
+        self.queued_label = QLabel(self.tr('Queued:'), self.status_bar)
         # lk: set top and botton margins to accommodate border for scroll area labels
         self.queued_label.setContentsMargins(5, 1, 0, 1)
         self.status_bar.addPermanentWidget(self.queued_label)
@@ -108,7 +108,7 @@ class RareWindow(QMainWindow):
 
                 self.discord_rpc = DiscordRPC(settings, rcore, parent=self)
             except ModuleNotFoundError:
-                logger.warning("Discord RPC module not found")
+                logger.warning('Discord RPC module not found')
 
         self.singleton_timer = QTimer(self)
         self.singleton_timer.setInterval(1000)
@@ -122,7 +122,7 @@ class RareWindow(QMainWindow):
 
         # enable kinetic scrolling
         for scroll_area in self.findChildren(QScrollArea):
-            if not scroll_area.property("no_kinetic_scroll"):
+            if not scroll_area.property('no_kinetic_scroll'):
                 QScroller.grabGesture(
                     scroll_area.viewport(),
                     QScroller.ScrollerGestureType.LeftMouseButtonGesture,
@@ -185,10 +185,10 @@ class RareWindow(QMainWindow):
             self.queued_container.layout().removeWidget(label)
             label.deleteLater()
         for info in self.rcore.queue_info():
-            label = ElideLabel(f"{info.prefix}: {info.app_title}")
-            label.setObjectName("QueueWorkerLabel")
-            label.setToolTip(f"<b>{info.prefix}</b>: {info.app_title}")
-            label.setProperty("workertype", info.type)
+            label = ElideLabel(f'{info.prefix}: {info.app_title}')
+            label.setObjectName('QueueWorkerLabel')
+            label.setToolTip(f'<b>{info.prefix}</b>: {info.app_title}')
+            label.setProperty('workertype', info.type)
             label.setFixedWidth(160)
             label.setContentsMargins(3, 0, 3, 0)
             if info.state == QueueWorkerState.ACTIVE:
@@ -203,9 +203,9 @@ class RareWindow(QMainWindow):
     def timer_finished(self):
         file_path = lock_file()
         if os.path.exists(file_path):
-            with open(file_path, "r") as file:
+            with open(file_path) as file:
                 action = file.read()
-            if action.startswith("show"):
+            if action.startswith('show'):
                 self.show()
             os.remove(file_path)
         self.singleton_timer.start()
@@ -233,9 +233,10 @@ class RareWindow(QMainWindow):
         if self.rcore.threadpool_disk.activeThreadCount() or self.rcore.threadpool_net.activeThreadCount():
             reply = QMessageBox.question(
                 self,
-                self.tr("Quit {}?").format(QApplication.applicationName()),
+                self.tr('Quit {}?').format(QApplication.applicationName()),
                 self.tr(
-                    "There are currently running operations. Rare cannot exit until they are completed.\n\nDo you want to clear the queue?"
+                    'There are currently running operations. Rare cannot exit until they are completed.\n\n'
+                    'Do you want to clear the queue?'
                 ),
                 buttons=(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No),
                 defaultButton=QMessageBox.StandardButton.No,
@@ -251,9 +252,9 @@ class RareWindow(QMainWindow):
         elif self.tab_widget.downloads_tab.is_download_active:
             reply = QMessageBox.question(
                 self,
-                self.tr("Quit {}?").format(QApplication.applicationName()),
+                self.tr('Quit {}?').format(QApplication.applicationName()),
                 self.tr(
-                    "There is an active download. Quitting Rare now will stop the download.\n\nAre you sure you want to quit?"
+                    'There is an active download. Quitting Rare now will stop the download.\n\nAre you sure you want to quit?'
                 ),
                 buttons=(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No),
                 defaultButton=QMessageBox.StandardButton.No,

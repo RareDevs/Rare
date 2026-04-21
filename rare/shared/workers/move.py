@@ -1,7 +1,7 @@
 import os
 import shutil
+from collections.abc import Iterator
 from enum import auto
-from typing import Iterator
 
 from legendary.lfs.utils import validate_files
 from legendary.models.game import VerifyResult
@@ -125,7 +125,7 @@ class MoveWorker(QueueWorker):
             app_name=self.rgame.app_name,
             app_title=self.rgame.app_title,
             type=type(self).__name__,
-            prefix="Moving",
+            prefix='Moving',
             state=self.state,
         )
 
@@ -176,8 +176,8 @@ class MoveWorker(QueueWorker):
                 manifest.file_manifest_list.elements,
                 key=lambda a: a.filename.lower(),
             )
-            if config_tags := self.core.lgd.config.get(self.rgame.app_name, "install_tags", fallback=None):
-                install_tags = set(i.strip() for i in config_tags.split(","))
+            if config_tags := self.core.lgd.config.get(self.rgame.app_name, 'install_tags', fallback=None):
+                install_tags = set(i.strip() for i in config_tags.split(','))
                 file_list = [
                     (f.filename, f.sha_hash.hex())
                     for f in files
@@ -207,7 +207,8 @@ class MoveWorker(QueueWorker):
                 dirs_exist_ok=True,
             )
 
-            for result, path, _, _ in validate_files(self.dst_path, file_list):
+            is_win = self.rgame.igame.platform.startswith('Win')
+            for result, path, _, _ in validate_files(self.dst_path, file_list, case_insensitive=is_win):
                 dst_path = os.path.join(self.dst_path, path)
                 src_path = os.path.join(self.rgame.install_path, path)
                 if os.path.isfile(src_path):
@@ -217,15 +218,15 @@ class MoveWorker(QueueWorker):
                         try:
                             shutil.copy2(src_path, dst_path)
                             dst_size += os.stat(dst_path).st_size
-                        except (IOError, OSError) as e:
+                        except OSError as e:
                             self.rgame.signals.progress.finish.emit(True)
                             self.signals.error.emit(self.rgame, str(e))
                             return
                     else:
-                        self.logger.warning(f"Copying file {src_path} to {dst_path} failed")
+                        self.logger.warning(f'Copying file {src_path} to {dst_path} failed')
                     self.progress(total_size, dst_size)
                 else:
-                    self.logger.warning(f"Source dir does not have file {src_path}. File will be missing in the destination dir.")
+                    self.logger.warning(f'Source dir does not have file {src_path}. File will be missing in the destination dir.')
                     self.rgame.needs_verification = True
             shutil.rmtree(self.rgame.install_path)
 

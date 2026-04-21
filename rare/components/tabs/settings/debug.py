@@ -10,11 +10,11 @@ class DebugSettings(QWidget):
         super(DebugSettings, self).__init__(parent=parent)
         self.signals = signals
 
-        self.raise_runtime_exception_button = QPushButton("Raise Exception", self)
+        self.raise_runtime_exception_button = QPushButton('Raise Exception', self)
         self.raise_runtime_exception_button.clicked.connect(self.raise_exception)
-        self.restart_button = QPushButton("Restart", self)
+        self.restart_button = QPushButton('Restart', self)
         self.restart_button.clicked.connect(self._on_restart_clicked)
-        self.send_notification_button = QPushButton("Notify", self)
+        self.send_notification_button = QPushButton('Notify', self)
         self.send_notification_button.clicked.connect(self.send_notification)
 
         layout = QVBoxLayout(self)
@@ -28,7 +28,7 @@ class DebugSettings(QWidget):
         self.signals.application.quit.emit(ExitCodes.LOGOUT)
 
     def raise_exception(self):
-        raise RuntimeError("Debug Crash")
+        raise RuntimeError('Debug Crash')
 
     def send_notification(self):
-        self.signals.application.notify.emit("Debug", "Test notification")
+        self.signals.application.notify.emit('Debug', 'Test notification')

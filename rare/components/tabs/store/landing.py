@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 from logging import getLogger
-from typing import List
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QHideEvent, QShowEvent
@@ -26,7 +25,7 @@ from .widgets.details import StoreDetailsWidget
 from .widgets.groups import StoreGroup
 from .widgets.items import StoreItemWidget
 
-logger = getLogger("StoreLanding")
+logger = getLogger('StoreLanding')
 
 
 class LandingPage(SlidingStackedWidget, SideTabContents):
@@ -77,18 +76,18 @@ class LandingWidget(QWidget, SideTabContents):
         self.setLayout(layout)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
-        self.free_games_now = StoreGroup(self.tr("Free now"), layout=FlowLayout, parent=self)
+        self.free_games_now = StoreGroup(self.tr('Free now'), layout=FlowLayout, parent=self)
         self.free_games_now.main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         self.free_games_now.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        self.free_games_next = StoreGroup(self.tr("Free next week"), layout=FlowLayout, parent=self)
+        self.free_games_next = StoreGroup(self.tr('Free next week'), layout=FlowLayout, parent=self)
         self.free_games_next.main_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         self.free_games_next.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        self.discounts_group = StoreGroup(self.tr("Wishlist discounts"), layout=FlowLayout, parent=self)
+        self.discounts_group = StoreGroup(self.tr('Wishlist discounts'), layout=FlowLayout, parent=self)
         self.discounts_group.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        self.games_group = StoreGroup(self.tr("Free to play"), FlowLayout, self)
+        self.games_group = StoreGroup(self.tr('Free to play'), FlowLayout, self)
         self.games_group.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.games_group.loading(False)
         self.games_group.setVisible(False)
@@ -112,7 +111,7 @@ class LandingWidget(QWidget, SideTabContents):
         # TODO: Implement tab unloading
         return super().hideEvent(a0)
 
-    def _update_wishlist_discounts(self, wishlist: List[WishlistItemModel]):
+    def _update_wishlist_discounts(self, wishlist: list[WishlistItemModel]):
         for w in self.discounts_group.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.discounts_group.layout().removeWidget(w)
             w.disconnect(w)
@@ -126,7 +125,7 @@ class LandingWidget(QWidget, SideTabContents):
         self.discounts_group.setVisible(have_discounts)
         self.discounts_group.loading(False)
 
-    def _update_free_games(self, free_games: List[CatalogOfferModel]):
+    def _update_free_games(self, free_games: list[CatalogOfferModel]):
         for w in self.free_games_now.findChildren(StoreItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             self.free_games_now.layout().removeWidget(w)
             w.disconnect(w)
@@ -145,7 +144,7 @@ class LandingWidget(QWidget, SideTabContents):
                 if item.price.totalPrice.discountPrice == 0:
                     free_now.append(item)
                     continue
-                if item.title == "Mystery Game":
+                if item.title == 'Mystery Game':
                     free_next.append(item)
                     continue
             except KeyError as e:
@@ -174,7 +173,7 @@ class LandingWidget(QWidget, SideTabContents):
         self.free_games_next.setVisible(bool(free_next))
         for item in free_next:
             w = StoreItemWidget(self.api.cached_manager, item)
-            if item.title != "Mystery Game":
+            if item.title != 'Mystery Game':
                 w.show_details.connect(self.show_details)
             self.free_games_next.layout().addWidget(w)
         self.free_games_next.loading(False)

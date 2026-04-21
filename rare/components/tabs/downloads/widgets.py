@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import Optional
 
 from legendary.models.downloading import AnalysisResult
 from legendary.models.game import Game, InstalledGame
@@ -19,17 +18,17 @@ from rare.ui.components.tabs.downloads.queue_info_widget import Ui_QueueInfoWidg
 from rare.utils.misc import elide_text, format_size, qta_icon, widget_object_name
 from rare.widgets.image_widget import ImageSize, ImageWidget
 
-logger = getLogger("DownloadWidgets")
+logger = getLogger('DownloadWidgets')
 
 
 class QueueInfoWidget(QWidget):
     def __init__(
         self,
         imgmgr: ImageManager,
-        game: Optional[Game],
-        igame: Optional[InstalledGame],
-        analysis: Optional[AnalysisResult] = None,
-        old_igame: Optional[InstalledGame] = None,
+        game: Game | None,
+        igame: InstalledGame | None,
+        analysis: AnalysisResult | None = None,
+        old_igame: InstalledGame | None = None,
         parent=None,
     ):
         super(QueueInfoWidget, self).__init__(parent=parent)
@@ -47,11 +46,11 @@ class QueueInfoWidget(QWidget):
         if game and igame:
             self.update_information(game, igame, analysis, old_igame)
         else:
-            self.ui.title.setText("...")
-            self.ui.remote_version.setText("...")
-            self.ui.local_version.setText("...")
-            self.ui.dl_size.setText("...")
-            self.ui.install_size.setText("...")
+            self.ui.title.setText('...')
+            self.ui.remote_version.setText('...')
+            self.ui.local_version.setText('...')
+            self.ui.dl_size.setText('...')
+            self.ui.install_size.setText('...')
 
         if old_igame:
             self.ui.title.setText(old_igame.title)
@@ -66,8 +65,8 @@ class QueueInfoWidget(QWidget):
             )
         )
         self.ui.local_version.setText(elide_text(self.ui.local_version, igame.version))
-        self.ui.dl_size.setText(format_size(analysis.dl_size) if analysis else "")
-        self.ui.install_size.setText(format_size(analysis.install_size) if analysis else "")
+        self.ui.dl_size.setText(format_size(analysis.dl_size) if analysis else '')
+        self.ui.install_size.setText(format_size(analysis.install_size) if analysis else '')
         self.image.setPixmap(self.image_manager.get_pixmap(game.app_name, ImageSize.LibraryIcon))
 
 
@@ -148,12 +147,12 @@ class QueueWidget(QFrame):
             worker.signals.result.connect(self.__update_info)
             worker.signals.failed.connect(
                 (
-                    lambda obj, m: obj.logger.error(f"Failed to requeue download for {item.options.app_name} with error: {m}")
+                    lambda obj, m: obj.logger.error(f'Failed to requeue download for {item.options.app_name} with error: {m}')
                 ).__get__(self)
             )
             worker.signals.failed.connect((lambda obj, m: obj.remove.emit(item.options.app_name)).__get__(self))
             worker.signals.finished.connect(
-                (lambda obj: obj.logger.error(f"Download requeue worker finished for {item.options.app_name}")).__get__(self)
+                (lambda obj: obj.logger.error(f'Download requeue worker finished for {item.options.app_name}')).__get__(self)
             )
             QThreadPool.globalInstance().start(worker)
             self.info_widget = QueueInfoWidget(imgmgr, None, None, None, old_igame, parent=self)
@@ -172,10 +171,10 @@ class QueueWidget(QFrame):
         self.old_igame = old_igame
         self.item = item
 
-        self.ui.move_up_button.setIcon(qta_icon("fa.arrow-up", "fa5s.arrow-up"))
+        self.ui.move_up_button.setIcon(qta_icon('fa.arrow-up', 'fa5s.arrow-up'))
         self.ui.move_up_button.clicked.connect(self._on_move_up)
 
-        self.ui.move_down_button.setIcon(qta_icon("fa.arrow-down", "fa5s.arrow-down"))
+        self.ui.move_down_button.setIcon(qta_icon('fa.arrow-down', 'fa5s.arrow-down'))
         self.ui.move_down_button.clicked.connect(self._on_move_down)
 
         self.ui.remove_button.clicked.connect(self._on_remove)

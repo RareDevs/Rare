@@ -1,9 +1,9 @@
 import functools
 import os
+from collections.abc import Iterable
 from datetime import UTC, datetime
 from enum import IntEnum
 from logging import getLogger
-from typing import Dict, Iterable, Tuple, Type, Union
 
 import qtawesome
 from PySide6.QtCore import (
@@ -20,7 +20,7 @@ from shiboken6.Shiboken import Object as ShibokenObject
 
 from rare.utils.paths import resources_path
 
-logger = getLogger("Utils")
+logger = getLogger('Utils')
 
 
 class ExitCodes(IntEnum):
@@ -28,35 +28,35 @@ class ExitCodes(IntEnum):
     LOGOUT = -133742
 
 
-color_role_map: Dict[int, str] = {
-    0: "WindowText",
-    1: "Button",
-    2: "Light",
-    3: "Midlight",
-    4: "Dark",
-    5: "Mid",
-    6: "Text",
-    7: "BrightText",
-    8: "ButtonText",
-    9: "Base",
-    10: "Window",
-    11: "Shadow",
-    12: "Highlight",
-    13: "HighlightedText",
-    14: "Link",
-    15: "LinkVisited",
-    16: "AlternateBase",
+color_role_map: dict[int, str] = {
+    0: 'WindowText',
+    1: 'Button',
+    2: 'Light',
+    3: 'Midlight',
+    4: 'Dark',
+    5: 'Mid',
+    6: 'Text',
+    7: 'BrightText',
+    8: 'ButtonText',
+    9: 'Base',
+    10: 'Window',
+    11: 'Shadow',
+    12: 'Highlight',
+    13: 'HighlightedText',
+    14: 'Link',
+    15: 'LinkVisited',
+    16: 'AlternateBase',
     # 17: "NoRole",
-    18: "ToolTipBase",
-    19: "ToolTipText",
-    20: "PlaceholderText",
+    18: 'ToolTipBase',
+    19: 'ToolTipText',
+    20: 'PlaceholderText',
     # 21: "NColorRoles",
 }
 
-color_group_map: Dict[int, str] = {
-    0: "Active",
-    1: "Disabled",
-    2: "Inactive",
+color_group_map: dict[int, str] = {
+    0: 'Active',
+    1: 'Disabled',
+    2: 'Inactive',
 }
 
 
@@ -64,7 +64,7 @@ def load_color_scheme(path: str) -> QPalette:
     palette = QPalette()
     scheme = QSettings(path, QSettings.Format.IniFormat)
     try:
-        scheme.beginGroup("ColorScheme")
+        scheme.beginGroup('ColorScheme')
         for g in color_group_map:
             scheme.beginGroup(color_group_map[g])
             group = QPalette.ColorGroup(g)
@@ -83,9 +83,9 @@ def load_color_scheme(path: str) -> QPalette:
 
 
 def get_static_style() -> str:
-    file = QFile(":/static_css/stylesheet.qss")
+    file = QFile(':/static_css/stylesheet.qss')
     file.open(QFile.OpenModeFlag.ReadOnly)
-    static = file.readAll().data().decode("utf-8")
+    static = file.readAll().data().decode('utf-8')
     file.close()
     return static
 
@@ -95,13 +95,13 @@ def set_color_pallete(color_scheme: str) -> None:
     qApp: QApplication = QApplication.instance()
 
     if not color_scheme:
-        qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
+        qApp.setStyle(QStyleFactory.create(qApp.property('rareDefaultQtStyle')))
         qApp.setPalette(qApp.style().standardPalette())
         qApp.setStyleSheet(static)
         return
 
-    qApp.setStyle(QStyleFactory.create("Fusion"))
-    custom_palette = load_color_scheme(f":/schemes/{color_scheme}")
+    qApp.setStyle(QStyleFactory.create('Fusion'))
+    custom_palette = load_color_scheme(f':/schemes/{color_scheme}')
     if custom_palette is not None:
         qApp.setPalette(custom_palette)
         qApp.setStyleSheet(static)
@@ -111,7 +111,7 @@ def set_color_pallete(color_scheme: str) -> None:
 
 
 def get_color_schemes() -> Iterable[str]:
-    it = QDirIterator(":/schemes/")
+    it = QDirIterator(':/schemes/')
     while it.hasNext():
         it.next()
         yield it.fileName()
@@ -122,44 +122,44 @@ def set_style_sheet(style_sheet: str) -> None:
     qApp: QApplication = QApplication.instance()
 
     if not style_sheet:
-        qApp.setStyle(QStyleFactory.create(qApp.property("rareDefaultQtStyle")))
+        qApp.setStyle(QStyleFactory.create(qApp.property('rareDefaultQtStyle')))
         qApp.setStyleSheet(static)
         return
 
-    qApp.setStyle(QStyleFactory.create("Fusion"))
-    file = QFile(f":/stylesheets/{style_sheet}/stylesheet.qss")
+    qApp.setStyle(QStyleFactory.create('Fusion'))
+    file = QFile(f':/stylesheets/{style_sheet}/stylesheet.qss')
     file.open(QFile.OpenModeFlag.ReadOnly)
-    stylesheet = file.readAll().data().decode("utf-8")
+    stylesheet = file.readAll().data().decode('utf-8')
     file.close()
     qApp.setStyleSheet(stylesheet + static)
 
     icon_color_normal = qApp.palette().color(QPalette.ColorRole.Text).name()  # noqa: F841
     icon_color_disabled = qApp.palette().color(QPalette.ColorRole.Text).name()  # noqa: F841
-    qtawesome.set_defaults(color="#eee", color_disabled="#eee")
+    qtawesome.set_defaults(color='#eee', color_disabled='#eee')
 
 
 def get_style_sheets() -> Iterable[str]:
-    it = QDirIterator(":/stylesheets/")
+    it = QDirIterator(':/stylesheets/')
     while it.hasNext():
         it.next()
         yield it.fileName()
 
 
-def get_translations() -> Tuple[Tuple[str, str], ...]:
+def get_translations() -> tuple[tuple[str, str], ...]:
     langs = []
-    for i in os.listdir(os.path.join(resources_path, "languages")):
-        if i.endswith(".qm") and i.startswith("rare_"):
-            locale = QLocale(i.removesuffix(".qm").removeprefix("rare_"))
+    for i in os.listdir(os.path.join(resources_path, 'languages')):
+        if i.endswith('.qm') and i.startswith('rare_'):
+            locale = QLocale(i.removesuffix('.qm').removeprefix('rare_'))
             langs.append(
                 (
                     locale.name(),
-                    f"{locale.nativeLanguageName()} ({locale.nativeCountryName()})",
+                    f'{locale.nativeLanguageName()} ({locale.nativeCountryName()})',
                 )
             )
     return tuple(langs)
 
 
-def path_size(path: Union[str, os.PathLike]) -> int:
+def path_size(path: str | os.PathLike) -> int:
     return sum(
         os.stat(os.path.join(dp, f)).st_size
         for dp, dn, filenames in os.walk(path)
@@ -168,10 +168,10 @@ def path_size(path: Union[str, os.PathLike]) -> int:
     )
 
 
-def format_size(b: Union[int, float]) -> str:
-    for s in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei"):
+def format_size(b: int | float) -> str:
+    for s in ('', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei'):
         if b < 1024:
-            return f"{b:.2f} {s}B"
+            return f'{b:.2f} {s}B'
         b /= 1024
     return str(b)
 
@@ -180,23 +180,23 @@ def relative_date(date):
     diff = datetime.now(UTC) - date
     s = diff.seconds
     if diff.days > 7 or diff.days < 0:
-        return date.strftime("%d %b %y")
+        return date.strftime('%d %b %y')
     elif diff.days == 1:
-        return "1 day ago"
+        return '1 day ago'
     elif diff.days > 1:
-        return "{} days ago".format(diff.days)
+        return f'{diff.days} days ago'
     elif s <= 1:
-        return "just now"
+        return 'just now'
     elif s < 60:
-        return "{} seconds ago".format(s)
+        return f'{s} seconds ago'
     elif s < 120:
-        return "1 minute ago"
+        return '1 minute ago'
     elif s < 3600:
-        return "{} minutes ago".format(s // 60)
+        return f'{s // 60} minutes ago'
     elif s < 7200:
-        return "1 hour ago"
+        return '1 hour ago'
     else:
-        return "{} hours ago".format(s // 3600)
+        return f'{s // 3600} hours ago'
 
 
 def qta_icon(icn_str: str, fallback: str = None, **kwargs):
@@ -204,15 +204,15 @@ def qta_icon(icn_str: str, fallback: str = None, **kwargs):
         return qtawesome.icon(icn_str, **kwargs)
     except Exception as e:
         if not fallback:
-            logger.warning(f"{e} {icn_str}")
+            logger.warning(f'{e} {icn_str}')
     if fallback:
         try:
             return qtawesome.icon(fallback, **kwargs)
         except Exception as e:
-            logger.error(f"{e} {icn_str}")
-    if kwargs.get("color"):
-        kwargs["color"] = "red"
-    return qtawesome.icon("ei.error", **kwargs)
+            logger.error(f'{e} {icn_str}')
+    if kwargs.get('color'):
+        kwargs['color'] = 'red'
+    return qtawesome.icon('ei.error', **kwargs)
 
 
 # Source - https://stackoverflow.com/a
@@ -226,14 +226,14 @@ def partial_bound_method(bound_method, *args, **kwargs):
     return (lambda *args: f(*args)).__get__(bound_method.__self__)
 
 
-def widget_object_name(widget: Union[QObject, ShibokenObject, Type], suffix: str) -> str:
-    suffix = f"_{suffix}" if suffix else ""
+def widget_object_name(widget: QObject | ShibokenObject | type, suffix: str) -> str:
+    suffix = f'_{suffix}' if suffix else ''
     if isinstance(widget, QObject):
-        return f"{type(widget).__name__}{suffix}"
-    elif isinstance(widget, ShibokenObject) or isinstance(widget, type):
-        return f"{widget.__name__}{suffix}"
+        return f'{type(widget).__name__}{suffix}'
+    elif isinstance(widget, (ShibokenObject, type)):
+        return f'{widget.__name__}{suffix}'
     else:
-        raise RuntimeError(f"Argument {widget} not a QObject or type of QObject")
+        raise RuntimeError(f'Argument {widget} not a QObject or type of QObject')
 
 
 def elide_text(label: QLabel, text: str) -> str:
@@ -242,4 +242,4 @@ def elide_text(label: QLabel, text: str) -> str:
 
 
 def style_hyperlink(link: str, title: str) -> str:
-    return "<a href='{}' style='color: #2980b9; text-decoration:none'>{}</a>".format(link, title)
+    return f"<a href='{link}' style='color: #2980b9; text-decoration:none'>{title}</a>"

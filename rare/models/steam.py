@@ -3,11 +3,11 @@ import platform
 import shlex
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Type
+from typing import Any
 
 
 class SteamUser:
-    def __init__(self, long_id: str, user: Dict):
+    def __init__(self, long_id: str, user: dict):
         super(SteamUser, self).__init__()
         self._long_id: str = long_id
         self._user = user.copy()
@@ -22,19 +22,19 @@ class SteamUser:
 
     @property
     def account_name(self) -> str:
-        return self._user.get("AccountName", "")
+        return self._user.get('AccountName', '')
 
     @property
     def persona_name(self) -> str:
-        return self._user.get("PersonaName", "")
+        return self._user.get('PersonaName', '')
 
     @property
     def most_recent(self) -> bool:
-        return bool(int(self._user.get("MostRecent", "0")))
+        return bool(int(self._user.get('MostRecent', '0')))
 
     @property
     def last_login(self) -> datetime:
-        return datetime.fromtimestamp(float(self._user.get("Timestamp", "0")), timezone.utc)
+        return datetime.fromtimestamp(float(self._user.get('Timestamp', '0')), timezone.utc)
 
     @property
     def __dict__(self):
@@ -69,46 +69,46 @@ class SteamShortcut:
     DevkitOverrideAppID: int
     LastPlayTime: int
     FlatpakAppID: str
-    tags: Dict = field(default_factory=dict)
+    tags: dict = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: Type["SteamShortcut"], src: Dict[str, Any]) -> "SteamShortcut":
+    def from_dict(cls: type['SteamShortcut'], src: dict[str, Any]) -> 'SteamShortcut':
         d = src.copy()
         tmp = cls(
-            appid=d.pop("appid", 0),
-            AppName=d.pop("AppName", ""),
-            Exe=d.pop("Exe", ""),
-            StartDir=d.pop("StartDir", ""),
-            icon=d.pop("icon", ""),
-            ShortcutPath=d.pop("ShortcutPath", ""),
-            LaunchOptions=d.pop("LaunchOptions", ""),
-            IsHidden=bool(d.pop("IsHidden", 0)),
-            AllowDesktopConfig=bool(d.pop("AllowDesktopConfig", 1)),
-            AllowOverlay=bool(d.pop("AllowOverlay", 1)),
-            OpenVR=bool(d.pop("OpenVR", 0)),
-            Devkit=bool(d.pop("Devkit", 0)),
-            DevkitGameID=d.pop("DevkitGameID", ""),
-            DevkitOverrideAppID=d.pop("DevkitOverrideAppID", 0),
-            LastPlayTime=d.pop("LastPlayTime", 0),
-            FlatpakAppID=d.pop("FlatpakAppID", ""),
-            tags=d.pop("tags", {}),
+            appid=d.pop('appid', 0),
+            AppName=d.pop('AppName', ''),
+            Exe=d.pop('Exe', ''),
+            StartDir=d.pop('StartDir', ''),
+            icon=d.pop('icon', ''),
+            ShortcutPath=d.pop('ShortcutPath', ''),
+            LaunchOptions=d.pop('LaunchOptions', ''),
+            IsHidden=bool(d.pop('IsHidden', 0)),
+            AllowDesktopConfig=bool(d.pop('AllowDesktopConfig', 1)),
+            AllowOverlay=bool(d.pop('AllowOverlay', 1)),
+            OpenVR=bool(d.pop('OpenVR', 0)),
+            Devkit=bool(d.pop('Devkit', 0)),
+            DevkitGameID=d.pop('DevkitGameID', ''),
+            DevkitOverrideAppID=d.pop('DevkitOverrideAppID', 0),
+            LastPlayTime=d.pop('LastPlayTime', 0),
+            FlatpakAppID=d.pop('FlatpakAppID', ''),
+            tags=d.pop('tags', {}),
         )
         return tmp
 
     @classmethod
     def create(
-        cls: Type["SteamShortcut"],
+        cls: type['SteamShortcut'],
         app_name: str,
         app_title: str,
         executable: str,
         start_dir: str,
         icon: str,
-        launch_options: List[str],
-    ) -> "SteamShortcut":
+        launch_options: list[str],
+    ) -> 'SteamShortcut':
         shortcut = cls.from_dict({})
         shortcut.appid = cls.calculate_appid(app_name)
         shortcut.AppName = app_title
-        shortcut.Exe = executable if platform.system() == "Windows" else shlex.quote(executable)
+        shortcut.Exe = executable if platform.system() == 'Windows' else shlex.quote(executable)
         shortcut.StartDir = start_dir
         shortcut.icon = icon
         shortcut.LaunchOptions = shlex.join(launch_options)
@@ -116,8 +116,8 @@ class SteamShortcut:
 
     @staticmethod
     def calculate_appid(app_name) -> int:
-        key = "rare_steam_shortcut_" + app_name
-        top = binascii.crc32(str.encode(key, "utf-8")) | 0x80000000
+        key = 'rare_steam_shortcut_' + app_name
+        top = binascii.crc32(str.encode(key, 'utf-8')) | 0x80000000
         return (((top << 32) | 0x02000000) >> 32) - 0x100000000
 
     def shortcut_appid(self) -> int:
@@ -128,19 +128,19 @@ class SteamShortcut:
 
     @property
     def grid_wide(self) -> str:
-        return f"{self.coverart_appid()}.png"
+        return f'{self.coverart_appid()}.png'
 
     @property
     def grid_tall(self) -> str:
-        return f"{self.coverart_appid()}p.png"
+        return f'{self.coverart_appid()}p.png'
 
     @property
     def game_hero(self) -> str:
-        return f"{self.coverart_appid()}_hero.png"
+        return f'{self.coverart_appid()}_hero.png'
 
     @property
     def game_logo(self) -> str:
-        return f"{self.coverart_appid()}_logo.png"
+        return f'{self.coverart_appid()}_logo.png'
 
     @property
     def last_played(self):

@@ -2,9 +2,10 @@ import configparser
 import os
 import time
 from argparse import Namespace
+from collections.abc import Callable, Iterable, Iterator
 from itertools import chain
 from logging import getLogger
-from typing import Callable, Dict, Iterable, Iterator, List, Optional, Set, Tuple, Union
+from typing import Optional
 
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile
@@ -30,7 +31,7 @@ from .workers import (
     QueueWorker,
     VerifyWorker,
 )
-from .workers.fetch import SteamAppIdsWorker
+from .workers.fetch import RuntimeAssetsWorker
 from .workers.uninstall import uninstall_game
 from .workers.worker import QueueWorkerInfo, QueueWorkerState
 from .wrappers import Wrappers
@@ -45,19 +46,19 @@ class RareCore(QObject):
     # completed_entitlements = Signal()
 
     # lk: special case class attribute, this has to be here
-    __instance: Optional["RareCore"] = None
+    __instance: Optional['RareCore'] = None
 
     def __init__(self, settings: RareAppSettings, args: Namespace):
         if self.__instance is not None:
-            raise RuntimeError("RareCore already initialized")
+            raise RuntimeError('RareCore already initialized')
         super(RareCore, self).__init__()
         self.logger = getLogger(type(self).__name__)
         self.__settings = settings
-        self.__args: Optional[Namespace] = None
-        self.__signals: Optional[GlobalSignals] = None
-        self.__core: Optional[LegendaryCore] = None
-        self.__image_manager: Optional[ImageManager] = None
-        self.__wrappers: Optional[Wrappers] = None
+        self.__args: Namespace | None = None
+        self.__signals: GlobalSignals | None = None
+        self.__core: LegendaryCore | None = None
+        self.__image_manager: ImageManager | None = None
+        self.__wrappers: Wrappers | None = None
 
         self.__start_time = time.perf_counter()
 
@@ -68,14 +69,14 @@ class RareCore(QObject):
         self.image_manager(init=True)
         self.__wrappers = Wrappers()
 
-        self.workers_disk: List[QueueWorker] = []
+        self.workers_disk: list[QueueWorker] = []
         self.threadpool_disk = QThreadPool()
         self.threadpool_disk.setMaxThreadCount(2)
-        self.workers_net: List[QueueWorker] = []
+        self.workers_net: list[QueueWorker] = []
         self.threadpool_net = QThreadPool()
         self.threadpool_net.setMaxThreadCount(2)
 
-        self.__library: Dict[str, RareGame] = {}
+        self.__library: dict[str, RareGame] = {}
         self.__eos_overlay = RareEosOverlay(self.__settings, self.__core, self.__image_manager, EOSOverlayApp)
         self.__eos_overlay.signals.game.install.connect(self.__signals.game.install)
         self.__eos_overlay.signals.game.uninstall.connect(self.__signals.game.uninstall)
@@ -103,7 +104,7 @@ class RareCore(QObject):
             self.workers_disk.append(worker)
             self.threadpool_disk.start(worker, priority=0)
         else:
-            raise RuntimeError(f"Cannot enqueue unkown worker type {type(worker).__name__}")
+            raise RuntimeError(f'Cannot enqueue unkown worker type {type(worker).__name__}')
         self.__signals.application.update_statusbar.emit()
 
     def _on_worker_finished(self, worker: QueueWorker):
@@ -135,98 +136,98 @@ class RareCore(QObject):
             yield w.worker_info()
 
     @staticmethod
-    def instance() -> "RareCore":
-        raise RuntimeError("RareCore.instance() method is deprecated")
+    def instance() -> 'RareCore':
+        raise RuntimeError('RareCore.instance() method is deprecated')
 
     def signals(self, init: bool = False) -> GlobalSignals:
         if self.__signals is None and not init:
-            raise RuntimeError("Uninitialized use of GlobalSignalsSingleton")
+            raise RuntimeError('Uninitialized use of GlobalSignalsSingleton')
         if self.__signals is not None and init:
-            raise RuntimeError("GlobalSignals already initialized")
+            raise RuntimeError('GlobalSignals already initialized')
         if init:
             self.__signals = GlobalSignals()
         return self.__signals
 
-    def args(self, args: Namespace = None) -> Optional[Namespace]:
+    def args(self, args: Namespace = None) -> Namespace | None:
         if self.__args is None and args is None:
-            raise RuntimeError("Uninitialized use of ArgumentsSingleton")
+            raise RuntimeError('Uninitialized use of ArgumentsSingleton')
         if self.__args is not None and args is not None:
-            raise RuntimeError("Arguments already initialized")
+            raise RuntimeError('Arguments already initialized')
         if args is not None:
             self.__args = args
         return self.__args
 
     def core(self, init: bool = False) -> LegendaryCore:
         if self.__core is None and not init:
-            raise RuntimeError("Uninitialized use of LegendaryCoreSingleton")
+            raise RuntimeError('Uninitialized use of LegendaryCoreSingleton')
         if self.__core is not None and init:
-            raise RuntimeError("LegendaryCore already initialized")
+            raise RuntimeError('LegendaryCore already initialized')
         if init:
             try:
                 self.__core = LegendaryCore()
             except configparser.MissingSectionHeaderError as e:
-                self.logger.warning("Config is corrupt: %s", e)
-                if config_path := os.environ.get("LEGENDARY_CONFIG_PATH"):
+                self.logger.warning('Config is corrupt: %s', e)
+                if config_path := os.environ.get('LEGENDARY_CONFIG_PATH'):
                     path = config_path
-                elif config_path := os.environ.get("XDG_CONFIG_HOME"):
-                    path = os.path.join(config_path, "legendary")
+                elif config_path := os.environ.get('XDG_CONFIG_HOME'):
+                    path = os.path.join(config_path, 'legendary')
                 else:
-                    path = os.path.expanduser("~/.config/legendary")
-                self.logger.info("Creating config in path: %s", config_path)
-                with open(os.path.join(path, "config.ini"), "w", encoding="utf-8") as config_file:
-                    config_file.write("[Legendary]")
+                    path = os.path.expanduser('~/.config/legendary')
+                self.logger.info('Creating config in path: %s', config_path)
+                with open(os.path.join(path, 'config.ini'), 'w', encoding='utf-8') as config_file:
+                    config_file.write('[Legendary]')
                 self.__core = LegendaryCore()
 
-            self.__core.egs._store_gql_host = "launcher.store.epicgames.com"
+            self.__core.egs._store_gql_host = 'launcher.store.epicgames.com'
 
             # Initialize sections if they don't exist
-            for section in ["Legendary", "default", "default.env"]:
+            for section in ['Legendary', 'default', 'default.env']:
                 if section not in self.__core.lgd.config.sections():
                     self.__core.lgd.config.add_section(section)
 
             # Set some platform defaults if unset
-            def check_config(option: str, accepted: Set = None) -> bool:
-                _exists = self.__core.lgd.config.has_option("Legendary", option)
-                _value = self.__core.lgd.config.get("Legendary", option, fallback="")
+            def check_config(option: str, accepted: set = None) -> bool:
+                _exists = self.__core.lgd.config.has_option('Legendary', option)
+                _value = self.__core.lgd.config.get('Legendary', option, fallback='')
                 _accepted = _value in accepted if accepted is not None else True
                 return _exists and bool(_value) and _accepted
 
-            if not check_config("default_platform", {"Windows", "Win32", "Mac"}):
-                self.__core.lgd.config.set("Legendary", "default_platform", self.__core.default_platform)
-            if not check_config("install_dir"):
-                self.__core.lgd.config.set("Legendary", "install_dir", self.__core.get_default_install_dir())
-            if not check_config("mac_install_dir"):
+            if not check_config('default_platform', {'Windows', 'Win32', 'Mac'}):
+                self.__core.lgd.config.set('Legendary', 'default_platform', self.__core.default_platform)
+            if not check_config('install_dir'):
+                self.__core.lgd.config.set('Legendary', 'install_dir', self.__core.get_default_install_dir())
+            if not check_config('mac_install_dir'):
                 self.__core.lgd.config.set(
-                    "Legendary",
-                    "mac_install_dir",
+                    'Legendary',
+                    'mac_install_dir',
                     self.__core.get_default_install_dir(self.__core.default_platform),
                 )
 
             # Always set these options
             # Avoid implicitly falling back to Windows games on macOS
-            self.__core.lgd.config.set("Legendary", "install_platform_fallback", str(False))
+            self.__core.lgd.config.set('Legendary', 'install_platform_fallback', str(False))
             # Force-disable automatic use of crossover on macOS (remove this when we support crossover)
-            self.__core.lgd.config.set("Legendary", "disable_auto_crossover", str(True))
+            self.__core.lgd.config.set('Legendary', 'disable_auto_crossover', str(True))
             # Force-disable automatic sync with EGL, it seems to have issues
-            self.__core.lgd.config.set("Legendary", "egl_sync", str(False))
+            self.__core.lgd.config.set('Legendary', 'egl_sync', str(False))
 
             # workaround if egl sync enabled, but no programdata_path
             # programdata_path might be unset if logging in through the browser
             if self.__core.egl_sync_enabled:
                 if self.__core.egl.programdata_path is None:
-                    self.__core.lgd.config.remove_option("Legendary", "egl_sync")
+                    self.__core.lgd.config.remove_option('Legendary', 'egl_sync')
                 else:
                     if not os.path.exists(self.__core.egl.programdata_path):
-                        self.__core.lgd.config.remove_option("Legendary", "egl_sync")
+                        self.__core.lgd.config.remove_option('Legendary', 'egl_sync')
 
             self.__core.lgd.save_config()
         return self.__core
 
     def image_manager(self, init: bool = False) -> ImageManager:
         if self.__image_manager is None and not init:
-            raise RuntimeError("Uninitialized use of ImageManagerSingleton")
+            raise RuntimeError('Uninitialized use of ImageManagerSingleton')
         if self.__image_manager is not None and init:
-            raise RuntimeError("ImageManager already initialized")
+            raise RuntimeError('ImageManager already initialized')
         if self.__image_manager is None:
             self.__image_manager = ImageManager(self.signals(), self.core())
         return self.__image_manager
@@ -270,26 +271,26 @@ class RareCore(QObject):
                     dlc.igame = None
             self.logger.info(f'Removing "{rgame.app_title}" because "{rgame.igame.install_path}" does not exist...')
             uninstall_game(self.__core, rgame, self.logger, keep_files=True, keep_config=True)
-            self.logger.info(f"Uninstalled {rgame.app_title}, because no game files exist")
+            self.logger.info(f'Uninstalled {rgame.app_title}, because no game files exist')
             rgame.igame = None
             return
         # lk: games that don't have an override and can't find their executable due to case sensitivity
         # lk: will still erroneously require verification. This might need to be removed completely
         # lk: or be decoupled from the verification requirement
-        if override_exe := self.__core.lgd.config.get(rgame.app_name, "override_exe", fallback=""):
+        if override_exe := self.__core.lgd.config.get(rgame.app_name, 'override_exe', fallback=''):
             igame_executable = override_exe
         else:
             igame_executable = rgame.igame.executable
         # lk: Case-insensitive search for the game's executable (example: Brothers - A Tale of two Sons)
-        executable_path = os.path.join(rgame.igame.install_path, igame_executable.replace("\\", "/").lstrip("/"))
+        executable_path = os.path.join(rgame.igame.install_path, igame_executable.replace('\\', '/').lstrip('/'))
         file_list = map(str.lower, os.listdir(os.path.dirname(executable_path)))
         if os.path.basename(executable_path).lower() not in file_list:
             rgame.igame.needs_verification = True
             self.__core.lgd.set_installed_game(rgame.app_name, rgame.igame)
             rgame.update_igame()
-            self.logger.info(f"{rgame.app_title} needs verification")
+            self.logger.info(f'{rgame.app_title} needs verification')
 
-    def get_game(self, app_name: str) -> Union[RareEosOverlay, RareGame]:
+    def get_game(self, app_name: str) -> RareEosOverlay | RareGame:
         if app_name == EOSOverlayApp.app_name:
             return self.__eos_overlay
         return self.__library[app_name]
@@ -320,15 +321,15 @@ class RareCore(QObject):
 
     def __create_or_update_rgame(self, game: Game) -> RareGame:
         if rgame := self.__library.get(game.app_name, False):
-            self.logger.warning(f"{rgame.app_name} already present in {type(self).__name__}")
-            self.logger.info(f"Updating Game for {rgame.app_name}")
+            self.logger.warning(f'{rgame.app_name} already present in {type(self).__name__}')
+            self.logger.info(f'Updating Game for {rgame.app_name}')
             rgame.update_rgame()
         else:
             rgame = RareGame(self.__settings, self.__core, self.__image_manager, game)
             self.__add_game(rgame)
         return rgame
 
-    def __add_games_and_dlcs(self, games: List[Game], dlcs_dict: Dict[str, List]) -> None:
+    def __add_games_and_dlcs(self, games: list[Game], dlcs_dict: dict[str, list]) -> None:
         length = len(games)
         for idx, game in enumerate(games):
             rgame = self.__create_or_update_rgame(game)
@@ -347,8 +348,8 @@ class RareCore(QObject):
                     self.logger.info(f'Marking "{rgame.app_title}" as not installed because an exception has occurred...')
                     self.logger.error(e)
                     rgame.set_installed(False)
-            progress = int(idx / length * self.__fetch_progress) + (100 - self.__fetch_progress)
-            self.progress.emit(progress, self.tr("Loaded <b>{}</b>").format(rgame.app_title))
+            progress = int((idx / length) * (100 - self.__fetch_progress)) + self.__fetch_progress
+            self.progress.emit(progress, self.tr('Loaded <b>{}</b>').format(rgame.app_title))
 
     @Slot(int, str)
     def __on_fetch_progress(self, increment: int, message: str):
@@ -356,7 +357,7 @@ class RareCore(QObject):
         self.progress.emit(self.__fetch_progress, message)
 
     @Slot(object, int)
-    def __on_fetch_result(self, result: Tuple, result_type: int):
+    def __on_fetch_result(self, result: tuple, result_type: int):
         if result_type == FetchWorker.Result.GAMESDLCS:
             self.__add_games_and_dlcs(*result)
             self.__fetched_games_dlcs = True
@@ -365,10 +366,10 @@ class RareCore(QObject):
             self.__core.lgd.entitlements = result
             self.__fetched_entitlements = True
 
-        if result_type == FetchWorker.Result.STEAMAPPIDS:
+        if result_type == FetchWorker.Result.EXTRAS:
             self.__fetched_steamappids = True
 
-        self.logger.info("Acquired data from %s worker", FetchWorker.Result(result_type).name)
+        self.logger.info('Acquired data from %s worker', FetchWorker.Result(result_type).name)
 
         # Return early if there are still things to fetch
         if not all(
@@ -380,54 +381,54 @@ class RareCore(QObject):
         ):
             return
 
-        self.logger.debug("Fetch time %s seconds", time.perf_counter() - self.__start_time)
+        self.logger.debug('Fetch time %s seconds', time.perf_counter() - self.__start_time)
         self.__wrappers.import_wrappers(self.__settings, self.__core, [rgame.app_name for rgame in self.games])
 
         # Look for Rare shortcuts in Steam
         steam_shortcuts.load_steam_shortcuts()
 
-        self.progress.emit(100, self.tr("Launching Rare"))
+        self.progress.emit(100, self.tr('Launching Rare'))
         self.completed.emit()
         QTimer.singleShot(100, self.__post_init)
 
     def fetch(self):
         self.__start_time = time.perf_counter()
 
-        games_dlcs_worker = GamesDlcsWorker(self.__settings, self.__core, self.__args)
+        games_dlcs_worker = GamesDlcsWorker(self.__settings, self.__core, self.__args, segment=40)
         games_dlcs_worker.signals.progress.connect(self.__on_fetch_progress)
         games_dlcs_worker.signals.result.connect(self.__on_fetch_result)
 
-        entitlements_worker = EntitlementsWorker(self.__settings, self.__core, self.__args)
+        entitlements_worker = EntitlementsWorker(self.__settings, self.__core, self.__args, segment=5)
         entitlements_worker.signals.progress.connect(self.__on_fetch_progress)
         entitlements_worker.signals.result.connect(self.__on_fetch_result)
 
-        steamappids_worker = SteamAppIdsWorker(self.__settings, self.__core, self.__args)
-        steamappids_worker.signals.progress.connect(self.__on_fetch_progress)
-        steamappids_worker.signals.result.connect(self.__on_fetch_result)
+        runtime_assets_worker = RuntimeAssetsWorker(self.__settings, self.__core, self.__args, segment=10)
+        runtime_assets_worker.signals.progress.connect(self.__on_fetch_progress)
+        runtime_assets_worker.signals.result.connect(self.__on_fetch_result)
 
         QThreadPool.globalInstance().start(games_dlcs_worker)
         QThreadPool.globalInstance().start(entitlements_worker)
-        QThreadPool.globalInstance().start(steamappids_worker)
+        QThreadPool.globalInstance().start(runtime_assets_worker)
 
     def __fetch_saves(self) -> None:
-        saves_dict: Dict[str, List[SaveGameFile]] = {}
+        saves_dict: dict[str, list[SaveGameFile]] = {}
         try:
-            with timelogger(self.logger, "Request saves"):
+            with timelogger(self.logger, 'Request saves'):
                 saves_list = self.__core.get_save_games()
             for s in saves_list:
-                if s.app_name not in saves_dict.keys():
+                if s.app_name not in saves_dict:
                     saves_dict[s.app_name] = [s]
                 else:
                     saves_dict[s.app_name].append(s)
             for app_name, saves in saves_dict.items():
-                if app_name not in self.__library.keys():
+                if app_name not in self.__library:
                     continue
                 self.__library[app_name].load_saves(saves)
         except (HTTPError, ConnectionError) as e:
-            self.logger.error("Exception while fetching saves from EGS.")
+            self.logger.error('Exception while fetching saves from EGS.')
             self.logger.error(e)
             return
-        self.logger.info(f"Saves: {len(saves_dict)}")
+        self.logger.info(f'Saves: {len(saves_dict)}')
 
     def fetch_saves(self):
         saves_worker = QRunnable.create(self.__fetch_saves)
@@ -443,8 +444,8 @@ class RareCore(QObject):
         self.resolve_origin()
 
     @property
-    def game_tags(self) -> Tuple[str, ...]:
-        default_tags = ("favorite", "backlog", "completed", "hidden")
+    def game_tags(self) -> tuple[str, ...]:
+        default_tags = ('favorite', 'backlog', 'completed', 'hidden')
         custom_tags = set()
         for rgame in self.games:
             custom_tags.update(rgame.tags)
@@ -478,7 +479,7 @@ class RareCore(QObject):
             yield game.game
 
     @property
-    def dlcs(self) -> Dict[str, set[RareGame]]:
+    def dlcs(self) -> dict[str, set[RareGame]]:
         """!
         RareGames that ARE DLCs themselves
         """

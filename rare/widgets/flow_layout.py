@@ -1,4 +1,4 @@
-from typing import List, Optional, overload
+from typing import overload
 
 from PySide6.QtCore import QPoint, QRect, QSize, Qt
 from PySide6.QtWidgets import QLayout, QLayoutItem, QSizePolicy, QStyle, QWidget
@@ -10,7 +10,7 @@ class FlowLayout(QLayout):
         self.setObjectName(type(self).__name__)
         self._hspacing = -1
         self._vspacing = -1
-        self._items: List[QLayoutItem] = []
+        self._items: list[QLayoutItem] = []
 
     def __del__(self):
         del self._items[:]
@@ -70,12 +70,12 @@ class FlowLayout(QLayout):
     def count(self) -> int:
         return len(self._items)
 
-    def itemAt(self, index: int) -> Optional[QLayoutItem]:
+    def itemAt(self, index: int) -> QLayoutItem | None:
         if 0 <= index < len(self._items):
             return self._items[index]
         return None
 
-    def takeAt(self, index: int) -> Optional[QLayoutItem]:
+    def takeAt(self, index: int) -> QLayoutItem | None:
         if 0 <= index < len(self._items):
             item = self._items.pop(index)
             self.invalidate()

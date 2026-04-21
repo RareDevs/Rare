@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Protocol, Union
+from typing import Protocol
 
 from PySide6.QtCore import (
     QSize,
@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
 
 from rare.utils.misc import qta_icon
 
-logger = getLogger("SideTab")
+logger = getLogger('SideTab')
 
 
 class SideTabBar(QTabBar):
@@ -56,7 +56,7 @@ class SideTabBar(QTabBar):
             painter.restore()
 
 
-class SideTabContents(object):
+class SideTabContents:
     # str: title
     set_title = Signal(str)
     implements_scrollarea: bool = False
@@ -78,8 +78,8 @@ class SideTabContentsProtocol(Protocol):
 class SideTabContainer(QWidget):
     def __init__(
         self,
-        widget: Union[QWidget, SideTabContentsProtocol],
-        title: str = "",
+        widget: QWidget | SideTabContentsProtocol,
+        title: str = '',
         parent: QWidget = None,
     ):
         super(SideTabContainer, self).__init__(parent=parent)
@@ -89,13 +89,13 @@ class SideTabContainer(QWidget):
         if widget.layout():
             widget.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
             widget.layout().setContentsMargins(0, 0, 3, 0)
-        if hasattr(widget, "set_title"):
+        if hasattr(widget, 'set_title'):
             widget.set_title.connect(self.setTitle)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.title)
 
-        if not hasattr(widget, "implements_scrollarea") or not widget.implements_scrollarea:
+        if not hasattr(widget, 'implements_scrollarea') or not widget.implements_scrollarea:
             scrollarea = QScrollArea(self)
             scrollarea.setSizeAdjustPolicy(QScrollArea.SizeAdjustPolicy.AdjustToContents)
             scrollarea.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -113,7 +113,7 @@ class SideTabContainer(QWidget):
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
     def setTitle(self, text: str) -> None:
-        self.title.setText(f"<h2>{text}</h2>")
+        self.title.setText(f'<h2>{text}</h2>')
         self.title.setVisible(bool(text))
 
 
@@ -128,8 +128,8 @@ class SideTabWidget(QTabWidget):
         if show_back:
             super(SideTabWidget, self).addTab(
                 QWidget(self),
-                qta_icon("mdi.keyboard-backspace", "ei.backward"),
-                self.tr("Back"),
+                qta_icon('mdi.keyboard-backspace', 'ei.backward'),
+                self.tr('Back'),
             )
             self.tabBarClicked.connect(self.back_func)
 
@@ -138,6 +138,6 @@ class SideTabWidget(QTabWidget):
         if not tab:
             self.back_clicked.emit()
 
-    def addTab(self, widget: Union[QWidget, SideTabContentsProtocol], a1: str, title: str = "") -> int:
+    def addTab(self, widget: QWidget | SideTabContentsProtocol, a1: str, title: str = '') -> int:
         container = SideTabContainer(widget, title, parent=self)
         return super(SideTabWidget, self).addTab(container, a1)

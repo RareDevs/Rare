@@ -1,6 +1,3 @@
-from logging import getLogger
-from typing import Type
-
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QHideEvent
 from PySide6.QtWidgets import QVBoxLayout, QWidget
@@ -10,11 +7,8 @@ from rare.shared import RareCore
 from rare.utils import config_helper as config
 from rare.widgets.side_tab import SideTabContents
 
-from .widgets.env_vars import EnvVars
 from .widgets.launch import LaunchSettingsBase, LaunchSettingsType
 from .widgets.wrappers import WrapperSettings
-
-logger = getLogger("GlobalGameSettings")
 
 
 class GameSettingsBase(QWidget, SideTabContents):
@@ -22,23 +16,19 @@ class GameSettingsBase(QWidget, SideTabContents):
         self,
         settings: RareAppSettings,
         rcore: RareCore,
-        launch_widget: Type[LaunchSettingsType],
-        envvar_widget: Type[EnvVars],
+        launch_widget: type[LaunchSettingsType],
         parent=None,
     ):
         super(GameSettingsBase, self).__init__(parent=parent)
         self.implements_scrollarea = True
 
         self.settings = settings
-        self.core = rcore.core()
-        self.app_name: str = "default"
+        self.app_name: str = 'default'
 
         self.launch = launch_widget(rcore, self)
-        self.env_vars = envvar_widget(self.core, self)
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.addWidget(self.launch, stretch=0)
-        self.main_layout.addWidget(self.env_vars, stretch=2)
         self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
     def hideEvent(self, a0: QHideEvent):
@@ -55,6 +45,4 @@ class GlobalLaunchSettings(LaunchSettingsBase):
 
 class GlobalGameSettings(GameSettingsBase):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
-        super(GlobalGameSettings, self).__init__(
-            settings, rcore, launch_widget=GlobalLaunchSettings, envvar_widget=EnvVars, parent=parent
-        )
+        super(GlobalGameSettings, self).__init__(settings, rcore, launch_widget=GlobalLaunchSettings, parent=parent)

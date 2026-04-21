@@ -1,5 +1,4 @@
 import os
-from typing import Optional, Tuple, Union
 
 from PySide6.QtCore import QSignalBlocker, QThreadPool, Signal, Slot
 from PySide6.QtGui import QFont, QShowEvent, Qt
@@ -21,7 +20,7 @@ class MoveDialog(ActionDialog):
 
     def __init__(self, rcore: RareCore, rgame: RareGame, parent=None):
         super(MoveDialog, self).__init__(parent=parent)
-        header = self.tr("Move")
+        header = self.tr('Move')
         self.setWindowTitle(game_title(header, rgame.app_title))
         self.setSubtitle(game_title(header, rgame.app_title))
 
@@ -34,7 +33,7 @@ class MoveDialog(ActionDialog):
 
         self.rcore = rcore
         self.core = rcore.core()
-        self.rgame: Optional[RareGame] = rgame
+        self.rgame: RareGame | None = rgame
         self.options: MoveGameModel = MoveGameModel(rgame.app_name, rgame.install_path, rgame.folder_name)
 
         self.target_path_edit = PathEdit(
@@ -45,12 +44,12 @@ class MoveDialog(ActionDialog):
         )
         self.target_path_edit.setReadOnly(True)
         self.target_path_edit.reasons = {
-            MovePathEditReasons.MOVEDIALOG_DST_MISSING: self.tr("You need to provide the destination directory."),
-            MovePathEditReasons.MOVEDIALOG_NO_WRITE: self.tr("No write permission on destination."),
-            MovePathEditReasons.MOVEDIALOG_SAME_DIR: self.tr("Same directory or subdirectory selected."),
-            MovePathEditReasons.MOVEDIALOG_DST_IN_SRC: self.tr("Destination is inside source directory"),
-            MovePathEditReasons.MOVEDIALOG_NESTED_DIR: self.tr("Game install directories cannot be nested."),
-            MovePathEditReasons.MOVEDIALOG_NO_SPACE: self.tr("Not enough space available on drive."),
+            MovePathEditReasons.MOVEDIALOG_DST_MISSING: self.tr('You need to provide the destination directory.'),
+            MovePathEditReasons.MOVEDIALOG_NO_WRITE: self.tr('No write permission on destination.'),
+            MovePathEditReasons.MOVEDIALOG_SAME_DIR: self.tr('Same directory or subdirectory selected.'),
+            MovePathEditReasons.MOVEDIALOG_DST_IN_SRC: self.tr('Destination is inside source directory'),
+            MovePathEditReasons.MOVEDIALOG_NESTED_DIR: self.tr('Game install directories cannot be nested.'),
+            MovePathEditReasons.MOVEDIALOG_NO_SPACE: self.tr('Not enough space available on drive.'),
         }
         self.target_path_edit.validationFinished.connect(self.__on_target_path_validation)
         self.ui.main_layout.setWidget(
@@ -60,7 +59,7 @@ class MoveDialog(ActionDialog):
         )
 
         self.full_path_info = ElideLabel(parent=self)
-        self.full_path_info.setFont(QFont("monospace"))
+        self.full_path_info.setFont(QFont('monospace'))
         self.ui.main_layout.setWidget(
             self.ui.main_layout.getWidgetPosition(self.ui.full_path_label)[0],
             QFormLayout.ItemRole.FieldRole,
@@ -73,12 +72,12 @@ class MoveDialog(ActionDialog):
         self.ui.reset_name_check.setChecked(self.options.reset_name)
         self.ui.reset_name_check.checkStateChanged.connect(self.__on_reset_name_changed)
 
-        self.accept_button.setText(self.tr("Move"))
-        self.accept_button.setIcon(qta_icon("mdi.folder-move-outline"))
-        self.accept_button.setObjectName("MoveButton")
+        self.accept_button.setText(self.tr('Move'))
+        self.accept_button.setIcon(qta_icon('mdi.folder-move-outline'))
+        self.accept_button.setObjectName('MoveButton')
 
-        self.action_button.setText(self.tr("Validate"))
-        self.action_button.setIcon(qta_icon("fa.check", "fa5s.check"))
+        self.action_button.setText(self.tr('Validate'))
+        self.action_button.setIcon(qta_icon('fa.check', 'fa5s.check'))
 
         self.setCentralWidget(move_widget)
 
@@ -90,7 +89,7 @@ class MoveDialog(ActionDialog):
 
     def action_handler(self):
         self.set_error_labels()
-        message = self.tr("Updating...")
+        message = self.tr('Updating...')
         self.set_size_labels(message, message)
         self.setActive(True, disable=False)
         self.options.target_path = self.target_path_edit.text()
@@ -109,7 +108,7 @@ class MoveDialog(ActionDialog):
 
     def reject_handler(self):
         self.options.accepted = False
-        self.options.target_path = ""
+        self.options.target_path = ''
 
     @Slot(Qt.CheckState)
     def __on_rename_path_changed(self, state: Qt.CheckState):
@@ -128,12 +127,12 @@ class MoveDialog(ActionDialog):
         self.action_button.setEnabled(True)
 
     @staticmethod
-    def __target_path_edit_callback(path: str) -> Tuple[bool, str, int]:
+    def __target_path_edit_callback(path: str) -> tuple[bool, str, int]:
         if not path:
             return False, path, IndicatorReasonsCommon.IS_EMPTY
         try:
-            perms_path = os.path.join(path, ".rare_perms")
-            open(perms_path, "w").close()
+            perms_path = os.path.join(path, '.rare_perms')
+            open(perms_path, 'w').close()
             os.unlink(perms_path)
         except PermissionError:
             return False, path, IndicatorReasonsCommon.PERM_NO_WRITE
@@ -142,14 +141,12 @@ class MoveDialog(ActionDialog):
         return True, path, IndicatorReasonsCommon.VALID
 
     @Slot(bool, object, object, MovePathEditReasons)
-    def __on_worker_result(
-        self, is_valid: bool, src_size: Union[int, float], dst_size: Union[int, float], reason: MovePathEditReasons
-    ):
+    def __on_worker_result(self, is_valid: bool, src_size: int | float, dst_size: int | float, reason: MovePathEditReasons):
         self.setActive(False, disable=False)
         self.set_size_labels(src_size, dst_size)
         self.action_button.setEnabled(False)
         self.accept_button.setEnabled(is_valid)
-        error, reason = (self.tr("Error"), self.target_path_edit.reasons[reason]) if not is_valid else ("", "")
+        error, reason = (self.tr('Error'), self.target_path_edit.reasons[reason]) if not is_valid else ('', '')
         self.set_error_labels(error, reason)
 
     @Slot(bool, str)
@@ -158,11 +155,11 @@ class MoveDialog(ActionDialog):
         self.full_path_info.setText(self.options.full_path)
         self.action_button.setEnabled(is_valid and not self.active())
         self.accept_button.setEnabled(False)
-        error, reason = (self.tr("Error"), reason) if not is_valid else ("", "")
+        error, reason = (self.tr('Error'), reason) if not is_valid else ('', '')
         self.set_error_labels(error, reason)
 
     @staticmethod
-    def __set_size_label(label: QLabel, value: Union[int, float, str]):
+    def __set_size_label(label: QLabel, value: int | float | str):
         is_numeric = isinstance(value, (int, float))
         font = label.font()
         font.setBold(is_numeric)
@@ -171,11 +168,11 @@ class MoveDialog(ActionDialog):
         text = format_size(value) if is_numeric else value
         label.setText(text)
 
-    def set_size_labels(self, required: Union[int, float, str], available: Union[int, float, str]):
+    def set_size_labels(self, required: int | float | str, available: int | float | str):
         self.__set_size_label(self.ui.required_space_text, required)
         self.__set_size_label(self.ui.available_space_text, available)
 
-    def set_error_labels(self, label: str = "", message: str = ""):
+    def set_error_labels(self, label: str = '', message: str = ''):
         self.ui.warning_label.setVisible(bool(label))
         self.ui.warning_label.setText(label)
         self.ui.warning_text.setVisible(bool(message))

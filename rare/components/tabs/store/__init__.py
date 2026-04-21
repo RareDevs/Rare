@@ -17,20 +17,20 @@ class StoreTab(SideTabWidget):
         self.core = core
         # self.rcore = rcore
         self.api = StoreAPI(
-            self.core.egs.session.headers["Authorization"],
+            self.core.egs.session.headers['Authorization'],
             self.core.language_code,
             self.core.country_code,
             [],  # [i.asset_infos["Windows"].namespace for i in self.rcore.game_list if bool(i.asset_infos)]
         )
 
         self.landing = LandingPage(self.api, parent=self)
-        self.landing_index = self.addTab(self.landing, self.tr("Store"))
+        self.landing_index = self.addTab(self.landing, self.tr('Store'))
 
         self.search = SearchPage(self.api, parent=self)
-        self.search_index = self.addTab(self.search, self.tr("Search"))
+        self.search_index = self.addTab(self.search, self.tr('Search'))
 
         self.wishlist = WishlistPage(self.api, parent=self)
-        self.wishlist_index = self.addTab(self.wishlist, self.tr("Wishlist"))
+        self.wishlist_index = self.addTab(self.wishlist, self.tr('Wishlist'))
 
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous() or self.init:

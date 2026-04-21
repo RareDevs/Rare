@@ -1,5 +1,3 @@
-from typing import Union
-
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -15,25 +13,25 @@ from rare.widgets.dialogs import ButtonDialog, game_title
 class UninstallDialog(ButtonDialog):
     result_ready = Signal(UninstallOptionsModel)
 
-    def __init__(self, rgame: Union[RareGame, RareEosOverlay], options: UninstallOptionsModel, parent=None):
+    def __init__(self, rgame: RareGame | RareEosOverlay, options: UninstallOptionsModel, parent=None):
         super(UninstallDialog, self).__init__(parent=parent)
-        header = self.tr("Uninstall")
+        header = self.tr('Uninstall')
         self.setWindowTitle(game_title(header, rgame.app_title))
         self.setSubtitle(game_title(header, rgame.app_title))
 
-        self.keep_files = QCheckBox(self.tr("Keep files"))
+        self.keep_files = QCheckBox(self.tr('Keep files'))
         self.keep_files.setChecked(bool(options.keep_files))
         self.keep_files.setEnabled(not rgame.is_overlay)
 
-        self.keep_folder = QCheckBox(self.tr("Keep game folder"))
+        self.keep_folder = QCheckBox(self.tr('Keep game folder'))
         self.keep_folder.setChecked(bool(options.keep_folder))
         self.keep_folder.setEnabled(not rgame.is_overlay and not rgame.is_dlc)
 
-        self.keep_config = QCheckBox(self.tr("Keep configuation"))
+        self.keep_config = QCheckBox(self.tr('Keep configuation'))
         self.keep_config.setChecked(bool(options.keep_config))
         self.keep_config.setEnabled(not rgame.is_overlay and not rgame.is_dlc)
 
-        self.keep_overlay_keys = QCheckBox(self.tr("Keep EOS Overlay registry keys"))
+        self.keep_overlay_keys = QCheckBox(self.tr('Keep EOS Overlay registry keys'))
         self.keep_overlay_keys.setChecked(bool(options.keep_overlay_keys))
         self.keep_overlay_keys.setEnabled(rgame.is_overlay)
 
@@ -45,9 +43,9 @@ class UninstallDialog(ButtonDialog):
 
         self.setCentralLayout(layout)
 
-        self.accept_button.setText(self.tr("Uninstall"))
-        self.accept_button.setIcon(qta_icon("ri.uninstall-line"))
-        self.accept_button.setObjectName("UninstallButton")
+        self.accept_button.setText(self.tr('Uninstall'))
+        self.accept_button.setIcon(qta_icon('ri.uninstall-line'))
+        self.accept_button.setObjectName('UninstallButton')
 
         self.keep_files.checkStateChanged.connect(self.__on_keep_files_changed)
 

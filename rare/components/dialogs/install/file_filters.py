@@ -10,7 +10,7 @@ class InstallDialogFileFilters(CollapsibleFrame):
     def __init__(self, parent=None):
         super(InstallDialogFileFilters, self).__init__(parent=parent)
 
-        title = self.tr("File filters")
+        title = self.tr('File filters')
         self.setTitle(title)
 
         self.widget = QWidget(parent=self)
@@ -27,9 +27,9 @@ class InstallDialogFileFilters(CollapsibleFrame):
 
     def add_item(self, data: str):
         li = QListWidgetItem(data, self.ui.exclude_list)
-        li.setFont(QFont("monospace"))
+        li.setFont(QFont('monospace'))
         li.setCheckState(Qt.CheckState.Unchecked)
         self.ui.exclude_list.addItem(li)
 
 
-__all__ = ["InstallDialogFileFilters"]
+__all__ = ['InstallDialogFileFilters']

@@ -22,7 +22,7 @@ class StoreWindow(QDialog):
         self.store_tab.show()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import logging
 
     # import rare.resources.stylesheets.RareStyle
@@ -31,13 +31,13 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.DEBUG)
 
     app = QApplication(sys.argv)
-    app.setApplicationName("Rare")
-    app.setOrganizationName("Rare")
+    app.setApplicationName('Rare')
+    app.setOrganizationName('Rare')
 
-    set_style_sheet("")
-    set_style_sheet("RareStyle")
+    set_style_sheet('')
+    set_style_sheet('RareStyle')
     window = StoreWindow()
-    window.setWindowTitle(f"{app.applicationName()} - Store")
+    window.setWindowTitle(f'{app.applicationName()} - Store')
     window.resize(QSize(1280, 800))
     window.show()
     app.exec()

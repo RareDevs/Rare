@@ -48,7 +48,7 @@ class RareAppException(QObject):
 
     @Slot(object, object, object)
     def _on_exception(self, exc_type, exc_value, exc_tb):
-        message = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+        message = ''.join(traceback.format_exception(exc_type, exc_value, exc_tb))
         if self._handler(exc_type, exc_value, exc_tb):
             return
         self.logger.fatal(message)
@@ -56,10 +56,10 @@ class RareAppException(QObject):
             QMessageBox.Icon.Critical,
             exc_type.__name__,
             self.tr(
-                "An error has occurred!\n\n"
-                "You can report this issue at\n"
-                "https://github.com/RareDevs/Rare/issues\n\n"
-                "Be sure to include the detailed text in your report."
+                'An error has occurred!\n\n'
+                'You can report this issue at\n'
+                'https://github.com/RareDevs/Rare/issues\n\n'
+                'Be sure to include the detailed text in your report.'
             ),
             detailedText=message,
             buttons=QMessageBox.StandardButton.Ignore | QMessageBox.StandardButton.Abort,
@@ -78,9 +78,9 @@ class RareApp(QApplication):
         self.setQuitOnLastWindowClosed(False)
         self.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, True)
 
-        self.setDesktopFileName("rare")
-        self.setApplicationName("Rare")
-        self.setOrganizationName("Rare")
+        self.setDesktopFileName('rare')
+        self.setApplicationName('Rare')
+        self.setOrganizationName('Rare')
 
         # Create directories after QStandardPaths has been initialized
         paths.create_dirs()
@@ -91,33 +91,33 @@ class RareApp(QApplication):
 
         # Set up common logging channel to stderr
         logging.basicConfig(
-            format="[%(name)s] %(levelname)s: %(message)s",
+            format='[%(name)s] %(levelname)s: %(message)s',
             level=logging.DEBUG if args.debug else logging.INFO,
             stream=sys.stderr,
         )
 
-        start_time = time.strftime("%y-%m-%d--%H-%M")  # year-month-day-hour-minute
+        start_time = time.strftime('%y-%m-%d--%H-%M')  # year-month-day-hour-minute
         file_handler = logging.FileHandler(
             filename=os.path.join(paths.log_dir(), log_file.format(start_time)),
-            encoding="utf-8",
+            encoding='utf-8',
         )
-        file_handler.setFormatter(fmt=logging.Formatter("[%(name)s] %(levelname)s: %(message)s"))
+        file_handler.setFormatter(fmt=logging.Formatter('[%(name)s] %(levelname)s: %(message)s'))
         file_handler.setLevel(logging.DEBUG if args.debug else logging.INFO)
 
         logging.root.addHandler(file_handler)
         logging.getLogger().setLevel(logging.DEBUG if args.debug else logging.INFO)
 
         # keep requests, asyncio and pillow quiet
-        logging.getLogger("requests").setLevel(logging.WARNING)
-        logging.getLogger("urllib3").setLevel(logging.WARNING)
-        logging.getLogger("asyncio").setLevel(logging.WARNING)
+        logging.getLogger('requests').setLevel(logging.WARNING)
+        logging.getLogger('urllib3').setLevel(logging.WARNING)
+        logging.getLogger('asyncio').setLevel(logging.WARNING)
 
         self.logger.info(
-            f"Launching Rare version {rare.__version__} Codename: {rare.__codename__}\n"
-            f" - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n"
-            f" - Operating System: {platform.system()}, Python version: {platform.python_version()}\n"
-            f" - Running {sys.executable} {' '.join(sys.argv)}\n"
-            f" - Qt version: {QT_VERSION_STR}, PySide6 version: {PYSIDE_VERSION_STR}"
+            f'Launching Rare version {rare.__version__} Codename: {rare.__codename__}\n'
+            f' - Using Legendary {legendary.__version__} Codename: {legendary.__codename__} as backend\n'
+            f' - Operating System: {platform.system()}, Python version: {platform.python_version()}\n'
+            f' - Running {sys.executable} {" ".join(sys.argv)}\n'
+            f' - Qt version: {QT_VERSION_STR}, PySide6 version: {PYSIDE_VERSION_STR}'
         )
 
         self.settings = RareAppSettings(self)
@@ -128,29 +128,29 @@ class RareApp(QApplication):
         # Style
         # lk: this is a bit silly but serves well until we have a class
         # lk: store the default qt style name from the system on startup as a property for later reference
-        self.setProperty("rareDefaultQtStyle", self.style().objectName())
+        self.setProperty('rareDefaultQtStyle', self.style().objectName())
         if color_scheme := self.settings.get_value(app_settings.color_scheme):
-            self.settings.set_value(app_settings.style_sheet, "")
+            self.settings.set_value(app_settings.style_sheet, '')
             set_color_pallete(str(color_scheme))
         elif style_sheet := self.settings.get_value(app_settings.style_sheet):
-            self.settings.set_value(app_settings.color_scheme, "")
+            self.settings.set_value(app_settings.color_scheme, '')
             set_style_sheet(str(style_sheet))
         else:
             self.setStyleSheet(get_static_style())
-        self.setWindowIcon(QIcon(":/images/icon.png"))
+        self.setWindowIcon(QIcon(':/images/icon.png'))
 
     def load_translator(self, lang: str):
         # translator for qt stuff
         locale = QLocale(lang)
-        self.logger.info("Using locale: %s", locale.name())
+        self.logger.info('Using locale: %s', locale.name())
         translations = {
-            "qtbase": QLibraryInfo.location(QLibraryInfo.LibraryPath.TranslationsPath),
-            "rare": os.path.join(paths.resources_path, "languages"),
+            'qtbase': QLibraryInfo.location(QLibraryInfo.LibraryPath.TranslationsPath),
+            'rare': os.path.join(paths.resources_path, 'languages'),
         }
         for filename, path in translations.items():
             translator = QTranslator(self)
-            if translator.load(locale, filename, "_", path):
-                self.logger.debug("Loaded translation file: %s", translator.filePath())
+            if translator.load(locale, filename, '_', path):
+                self.logger.debug('Loaded translation file: %s', translator.filePath())
                 self.installTranslator(translator)
             else:
                 self.logger.info("Couldn't find translation for locale: %s", locale.name())

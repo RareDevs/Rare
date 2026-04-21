@@ -26,7 +26,7 @@ def game_title(text: str, app_title: str) -> str:
 
 
 def dialog_title(text: str) -> str:
-    return f"{text} - {QCoreApplication.instance().applicationName()}"
+    return f'{text} - {QCoreApplication.instance().applicationName()}'
 
 
 class BaseDialog(QDialog):
@@ -82,8 +82,8 @@ class ButtonDialog(BaseDialog):
         self.subtitle_label.setVisible(False)
 
         self.reject_button = QPushButton(self)
-        self.reject_button.setText(self.tr("Cancel"))
-        self.reject_button.setIcon(qta_icon("fa.remove", "fa5s.times"))
+        self.reject_button.setText(self.tr('Cancel'))
+        self.reject_button.setIcon(qta_icon('fa.remove', 'fa5s.times'))
         self.reject_button.setAutoDefault(False)
         self.reject_button.clicked.connect(self.reject)
 
@@ -118,7 +118,7 @@ class ButtonDialog(BaseDialog):
         raise RuntimeError(f"Don't use `close()` with {type(self).__name__}")
 
     def setSubtitle(self, text: str):
-        self.subtitle_label.setText(f"<b>{text}</b>")
+        self.subtitle_label.setText(f'<b>{text}</b>')
         self.subtitle_label.setVisible(True)
 
     def setCentralWidget(self, widget: QWidget):
@@ -226,16 +226,16 @@ class ActionDialog(ButtonDialog):
         super(BaseDialog, self).closeEvent(a0)
 
 
-__all__ = ["dialog_title", "game_title", "BaseDialog", "ButtonDialog", "ActionDialog"]
+__all__ = ['dialog_title', 'game_title', 'BaseDialog', 'ButtonDialog', 'ActionDialog']
 
 
 class TestDialog(BaseDialog):
     def __init__(self, parent=None):
         super(TestDialog, self).__init__(parent=parent)
 
-        self.accept_button = QPushButton("accept", self)
-        self.reject_button = QPushButton("reject", self)
-        self.action_button = QPushButton("action", self)
+        self.accept_button = QPushButton('accept', self)
+        self.reject_button = QPushButton('reject', self)
+        self.action_button = QPushButton('action', self)
         self.button_box = QDialogButtonBox(Qt.Orientation.Horizontal, self)
         self.button_box.addButton(self.accept_button, QDialogButtonBox.ButtonRole.AcceptRole)
         self.button_box.addButton(self.reject_button, QDialogButtonBox.ButtonRole.RejectRole)
@@ -253,13 +253,13 @@ class TestDialog(BaseDialog):
         super().setWindowTitle(dialog_title(a0))
 
     def close(self):
-        print("in close")
+        print('in close')
         super().close()
 
     def closeEvent(self, a0: QCloseEvent) -> None:
-        print("in closeEvent")
+        print('in closeEvent')
         if a0.spontaneous():
-            print("is spontaneous")
+            print('is spontaneous')
             a0.ignore()
             return
         if self.reject_close:
@@ -270,31 +270,31 @@ class TestDialog(BaseDialog):
         # super().closeEvent(a0)
 
     def done(self, a0):
-        print(f"in done {a0}")
+        print(f'in done {a0}')
         return
         super().done(a0)
 
     def accept(self):
-        print("in accept")
+        print('in accept')
         self._on_accept()
         # return
         # super().accept()
 
     def reject(self):
-        print("in reject")
+        print('in reject')
         self._on_reject()
         # return
         # super().reject()
 
     def _on_close(self):
-        print("in _on_close")
+        print('in _on_close')
 
     def _on_accept(self):
-        print("in _on_accepted")
+        print('in _on_accepted')
         # self.close()
 
     def _on_reject(self):
-        print("in _on_rejected")
+        print('in _on_rejected')
         self.close()
 
     def keyPressEvent(self, a0: QKeyEvent) -> None:
@@ -309,5 +309,5 @@ def test_dialog():
     sys.exit(ret)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     test_dialog()

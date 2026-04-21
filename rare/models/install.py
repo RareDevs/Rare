@@ -2,7 +2,6 @@ import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
 from legendary.models.game import Game, InstalledGame
@@ -13,12 +12,12 @@ from rare.lgndr.downloader.mp.manager import DLManager
 @dataclass
 class InstallOptionsModel:
     app_name: str
-    base_path: str = ""
+    base_path: str = ''
     shared_memory: int = 1024
     max_workers: int = os.cpu_count() * 2
     force: bool = False
-    platform: str = "Windows"
-    install_tag: Optional[List[str]] = None
+    platform: str = 'Windows'
+    install_tag: list[str] | None = None
     read_files: bool = False
     order_opt: bool = False
     repair_mode: bool = False
@@ -37,11 +36,11 @@ class InstallOptionsModel:
     silent: bool = False
     install_prereqs: bool = False
 
-    def as_install_kwargs(self) -> Dict:
+    def as_install_kwargs(self) -> dict:
         return {
             k: getattr(self, k)
             for k in vars(self)
-            if k not in ["update", "silent", "create_shortcut", "overlay", "install_prereqs"]
+            if k not in ['update', 'silent', 'create_shortcut', 'overlay', 'install_prereqs']
         }
 
 
@@ -58,19 +57,19 @@ class InstallDownloadModel:
 
 class InstallQueueItemModel:
     def __init__(self, options: InstallOptionsModel, download: InstallDownloadModel = None):
-        self.options: Optional[InstallOptionsModel] = options
+        self.options: InstallOptionsModel | None = options
         # lk: internal attribute holders
-        self.__download: Optional[InstallDownloadModel] = None
-        self.__date: Optional[datetime] = None
+        self.__download: InstallDownloadModel | None = None
+        self.__date: datetime | None = None
 
         self.download = download
 
     @property
-    def download(self) -> Optional[InstallDownloadModel]:
+    def download(self) -> InstallDownloadModel | None:
         return self.__download
 
     @download.setter
-    def download(self, download: Optional[InstallDownloadModel]):
+    def download(self, download: InstallDownloadModel | None):
         self.__download = download
         if download is not None:
             self.__date = datetime.now()
@@ -93,7 +92,7 @@ class UninstallOptionsModel:
     keep_overlay_keys: bool = None
 
     @property
-    def __values(self) -> Tuple[bool, bool, bool, bool, bool]:
+    def __values(self) -> tuple[bool, bool, bool, bool, bool]:
         return (
             self.accepted,
             self.keep_files,
@@ -103,7 +102,7 @@ class UninstallOptionsModel:
         )
 
     @__values.setter
-    def __values(self, values: Tuple[bool, bool, bool, bool, bool]):
+    def __values(self, values: tuple[bool, bool, bool, bool, bool]):
         (
             self.accepted,
             self.keep_files,
@@ -129,7 +128,7 @@ class UninstallOptionsModel:
 class SelectiveDownloadsModel:
     app_name: str
     accepted: bool = None
-    install_tag: Optional[List[str]] = None
+    install_tag: list[str] | None = None
 
     def __bool__(self):
         return bool(self.app_name) and (self.accepted is not None) and (self.install_tag is not None)
@@ -180,7 +179,7 @@ class MoveGameModel:
     @property
     def target_name(self) -> str:
         if self._rename_path:
-            return ""
+            return ''
         if self._reset_name:
             return self.default_name
         return self._target_name

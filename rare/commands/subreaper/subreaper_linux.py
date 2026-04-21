@@ -5,11 +5,12 @@ import os
 import signal
 import sys
 from argparse import Namespace
+from collections.abc import Generator
 from ctypes import CDLL, byref, c_int, create_string_buffer
 from ctypes.util import find_library
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Generator, List
+from typing import Any
 
 from .util import find_mangohud_bin, find_mangohud_shim
 
@@ -21,11 +22,11 @@ PR_SET_CHILD_SUBREAPER = 36
 
 def get_libc() -> str:
     """Find libc.so from the user's system."""
-    return find_library("c") or ""
+    return find_library('c') or ''
 
 
 def _get_pids() -> Generator[int, Any, None]:
-    yield from (int(pid.name) for pid in Path("/proc").glob("*") if pid.name.isdigit())
+    yield from (int(pid.name) for pid in Path('/proc').glob('*') if pid.name.isdigit())
 
 
 def get_pstree_from_pid(root_pid: int) -> set[int]:
@@ -35,10 +36,10 @@ def get_pstree_from_pid(root_pid: int) -> set[int]:
 
     for pid in _get_pids():
         try:
-            path = Path(f"/proc/{pid}/status")
-            with path.open(mode="r", encoding="utf-8") as file:
-                st_ppid = next(line for line in file if line.startswith("PPid:"))
-                st_ppid = st_ppid.removeprefix("PPid:").strip()
+            path = Path(f'/proc/{pid}/status')
+            with path.open(mode='r', encoding='utf-8') as file:
+                st_ppid = next(line for line in file if line.startswith('PPid:'))
+                st_ppid = st_ppid.removeprefix('PPid:').strip()
                 pid_to_ppid[pid] = int(st_ppid)
         except (FileNotFoundError, ProcessLookupError, ValueError):
             continue
@@ -55,16 +56,16 @@ def get_pstree_from_pid(root_pid: int) -> set[int]:
     return descendants
 
 
-def subreaper(args: Namespace, other: List[str]) -> int:
-    logger = getLogger("subreaper")
+def subreaper(args: Namespace, other: list[str]) -> int:
+    logger = getLogger('subreaper')
     logging.basicConfig(
-        format="[%(name)s] %(levelname)s: %(message)s",
+        format='[%(name)s] %(levelname)s: %(message)s',
         level=logging.DEBUG if args.debug else logging.INFO,
         stream=sys.stderr,
     )
 
-    logger.debug("command: %s", args)
-    logger.debug("arguments: %s", other)
+    logger.debug('command: %s', args)
+    logger.debug('arguments: %s', other)
 
     def signal_handler(sig, frame):
         logger.info("Caught '%s' signal.", signal.strsignal(sig))
@@ -72,13 +73,13 @@ def subreaper(args: Namespace, other: List[str]) -> int:
         for p in pstree:
             os.kill(p, sig)
 
-    command: List[str] = [args.command, *other]
+    command: list[str] = [args.command, *other]
     workdir: str = args.workdir
     child_status: int = 0
 
     libc_path: str = get_libc()
     if not libc_path:
-        logger.error("Could not find libc")
+        logger.error('Could not find libc')
         return 1
     libc: CDLL = CDLL(libc_path)
 
@@ -92,24 +93,24 @@ def subreaper(args: Namespace, other: List[str]) -> int:
         # c_ulong,
     ]
 
-    proc_name = b"reaper"
+    proc_name = b'reaper'
     buff = create_string_buffer(len(proc_name) + 1)
     buff.value = proc_name
     prctl_ret = prctl(PR_SET_NAME, byref(buff), 0, 0, 0)
-    logger.debug("prctl PR_SET_NAME exited with status: %s", prctl_ret)
+    logger.debug('prctl PR_SET_NAME exited with status: %s', prctl_ret)
 
     prctl_ret = prctl(PR_SET_CHILD_SUBREAPER, 1, 0, 0, 0, 0)
-    logger.debug("prctl PR_SET_CHILD_SUBREAPER exited with status: %s", prctl_ret)
+    logger.debug('prctl PR_SET_CHILD_SUBREAPER exited with status: %s', prctl_ret)
 
-    if os.environ.get("MANGOHUD") == "1":
+    if os.environ.get('MANGOHUD') == '1':
         if mangoshim := find_mangohud_shim():
-            os.environ["LD_PRELOAD"] = f'{os.environ.get("LD_PRELOAD", "")}:{mangoshim}'
+            os.environ['LD_PRELOAD'] = f'{os.environ.get("LD_PRELOAD", "")}:{mangoshim}'
         elif mangobin := find_mangohud_bin():
             command.insert(0, mangobin)
 
     pid = os.fork()  # pylint: disable=E1101
     if pid == -1:
-        logger.error("Fork failed")
+        logger.error('Fork failed')
 
     if pid == 0:
         sys.stdout.flush()
@@ -123,7 +124,7 @@ def subreaper(args: Namespace, other: List[str]) -> int:
     while True:
         try:
             child_pid, child_status = os.wait()  # pylint: disable=E1101
-            logger.info("Child %s exited with status: %s", child_pid, child_status)
+            logger.info('Child %s exited with status: %s', child_pid, child_status)
         except ChildProcessError as e:
             logger.info(e)
             break
@@ -131,11 +132,11 @@ def subreaper(args: Namespace, other: List[str]) -> int:
     return child_status
 
 
-if __name__ == "__main__":
-    sep = sys.argv.index("--")
+if __name__ == '__main__':
+    sep = sys.argv.index('--')
     argv = sys.argv[sep + 1 :]
     args = Namespace(command=argv.pop(0), workdir=os.getcwd(), debug=True)
     subreaper(args, argv)
 
 
-__all__ = ["subreaper"]
+__all__ = ['subreaper']

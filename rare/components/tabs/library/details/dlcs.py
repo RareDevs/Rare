@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFrame, QMessageBox, QToolBox
@@ -54,10 +52,10 @@ class InstalledGameDlcWidget(GameDlcWidget):
     def __init__(self, rgame: RareGame, rdlc: RareGame, parent=None):
         super(InstalledGameDlcWidget, self).__init__(rgame=rgame, rdlc=rdlc, parent=parent)
         # lk: set object names for CSS properties
-        self.ui.action_button.setObjectName("UninstallButton")
+        self.ui.action_button.setObjectName('UninstallButton')
         self.ui.action_button.clicked.connect(self.uninstall_dlc)
-        self.ui.action_button.setText(self.tr("Uninstall DLC"))
-        self.ui.action_button.setIcon(qta_icon("ri.uninstall-line"))
+        self.ui.action_button.setText(self.tr('Uninstall DLC'))
+        self.ui.action_button.setIcon(qta_icon('ri.uninstall-line'))
         # lk: don't reference `self.rdlc` here because the object has been deleted
         rdlc.signals.game.uninstalled.connect(self.__uninstalled)
 
@@ -75,10 +73,10 @@ class AvailableGameDlcWidget(GameDlcWidget):
     def __init__(self, rgame: RareGame, rdlc: RareGame, parent=None):
         super(AvailableGameDlcWidget, self).__init__(rgame=rgame, rdlc=rdlc, parent=parent)
         # lk: set object names for CSS properties
-        self.ui.action_button.setObjectName("InstallButton")
+        self.ui.action_button.setObjectName('InstallButton')
         self.ui.action_button.clicked.connect(self.install_dlc)
-        self.ui.action_button.setText(self.tr("Install DLC"))
-        self.ui.action_button.setIcon(qta_icon("ri.install-line"))
+        self.ui.action_button.setText(self.tr('Install DLC'))
+        self.ui.action_button.setIcon(qta_icon('ri.install-line'))
 
         # lk: don't reference `self.rdlc` here because the object has been deleted
         rdlc.signals.game.installed.connect(self.__installed)
@@ -91,8 +89,8 @@ class AvailableGameDlcWidget(GameDlcWidget):
         if not self.rgame.is_installed:
             QMessageBox.warning(
                 self,
-                self.tr("Error"),
-                self.tr("Base Game is not installed. Please install {} first").format(self.rgame.app_title),
+                self.tr('Error'),
+                self.tr('Base Game is not installed. Please install {} first').format(self.rgame.app_title),
             )
             return
         self.rdlc.install()
@@ -107,26 +105,26 @@ class GameDlcs(QToolBox, SideTabContents):
         self.core = rcore.core()
         self.signals = rcore.signals()
 
-        self.rgame: Optional[RareGame] = None
+        self.rgame: RareGame | None = None
 
-    def list_installed(self) -> List[InstalledGameDlcWidget]:
+    def list_installed(self) -> list[InstalledGameDlcWidget]:
         return self.ui.installed_dlc_container.findChildren(
             InstalledGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly
         )
 
-    def list_available(self) -> List[AvailableGameDlcWidget]:
+    def list_available(self) -> list[AvailableGameDlcWidget]:
         return self.ui.available_dlc_container.findChildren(
             AvailableGameDlcWidget, options=Qt.FindChildOption.FindDirectChildrenOnly
         )
 
-    def get_installed(self, app_name: str) -> Optional[InstalledGameDlcWidget]:
+    def get_installed(self, app_name: str) -> InstalledGameDlcWidget | None:
         return self.ui.installed_dlc_container.findChild(
             InstalledGameDlcWidget,
             name=widget_object_name(InstalledGameDlcWidget, app_name),
             options=Qt.FindChildOption.FindDirectChildrenOnly,
         )
 
-    def get_available(self, app_name: str) -> Optional[AvailableGameDlcWidget]:
+    def get_available(self, app_name: str) -> AvailableGameDlcWidget | None:
         return self.ui.available_dlc_container.findChild(
             AvailableGameDlcWidget,
             name=widget_object_name(AvailableGameDlcWidget, app_name),

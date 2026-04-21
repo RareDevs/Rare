@@ -1,7 +1,6 @@
 from collections import deque
 from enum import IntEnum
 from logging import getLogger
-from typing import Deque, Optional
 
 from legendary.models.game import Game, InstalledGame
 from PySide6.QtCore import Qt, Signal, Slot
@@ -19,7 +18,7 @@ from rare.models.install import InstallOptionsModel, InstallQueueItemModel
 from rare.shared.image_manager import ImageManager
 from rare.utils.misc import widget_object_name
 
-logger = getLogger("QueueGroup")
+logger = getLogger('QueueGroup')
 
 
 class UpdateGroup(QGroupBox):
@@ -29,8 +28,8 @@ class UpdateGroup(QGroupBox):
     def __init__(self, imgmgr: ImageManager, parent=None):
         super(UpdateGroup, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
-        self.setTitle(self.tr("Updates"))
-        self.__text = QLabel(self.tr("No updates available"))
+        self.setTitle(self.tr('Updates'))
+        self.__text = QLabel(self.tr('No updates available'))
         self.__text.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         # lk: For findChildren to work, the update's layout has to be in a widget
@@ -45,7 +44,7 @@ class UpdateGroup(QGroupBox):
 
         self.imgmgr = imgmgr
 
-    def __find_widget(self, app_name: str) -> Optional[UpdateWidget]:
+    def __find_widget(self, app_name: str) -> UpdateWidget | None:
         return self.__container.findChild(UpdateWidget, name=widget_object_name(UpdateWidget, app_name))
 
     def count(self) -> int:
@@ -96,8 +95,8 @@ class QueueGroup(QGroupBox):
     def __init__(self, core: LegendaryCore, imgmgr: ImageManager, parent=None):
         super(QueueGroup, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
-        self.setTitle(self.tr("Queue"))
-        self.__text = QLabel(self.tr("No downloads in queue"), self)
+        self.setTitle(self.tr('Queue'))
+        self.__text = QLabel(self.tr('No downloads in queue'), self)
         self.__text.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         # lk: For findChildren to work, the queue's layout has to be in a widget
@@ -112,9 +111,9 @@ class QueueGroup(QGroupBox):
 
         self.core = core
         self.imgmgr = imgmgr
-        self.__queue: Deque[str] = deque()
+        self.__queue: deque[str] = deque()
 
-    def __find_widget(self, app_name: str) -> Optional[QueueWidget]:
+    def __find_widget(self, app_name: str) -> QueueWidget | None:
         return self.__container.findChild(QueueWidget, name=widget_object_name(QueueWidget, app_name))
 
     def count(self) -> int:

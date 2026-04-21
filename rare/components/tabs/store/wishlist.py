@@ -1,5 +1,4 @@
 from enum import IntEnum
-from typing import List
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -74,24 +73,24 @@ class WishlistWidget(QWidget, SideTabContents):
         self.ui.container_layout.addLayout(self.wishlist_layout, stretch=1)
 
         filters = {
-            WishlistFilter.NONE: self.tr("All items"),
-            WishlistFilter.DISCOUNT: self.tr("Discount"),
+            WishlistFilter.NONE: self.tr('All items'),
+            WishlistFilter.DISCOUNT: self.tr('Discount'),
         }
         for data, text in filters.items():
             self.ui.filter_combo.addItem(text, data)
         self.ui.filter_combo.currentIndexChanged.connect(self.filter_wishlist)
 
         sortings = {
-            WishlistOrder.NAME: self.tr("Name"),
-            WishlistOrder.PRICE: self.tr("Price"),
-            WishlistOrder.DISCOUNT: self.tr("Discount"),
-            WishlistOrder.DEVELOPER: self.tr("Developer"),
+            WishlistOrder.NAME: self.tr('Name'),
+            WishlistOrder.PRICE: self.tr('Price'),
+            WishlistOrder.DISCOUNT: self.tr('Discount'),
+            WishlistOrder.DEVELOPER: self.tr('Developer'),
         }
         for data, text in sortings.items():
             self.ui.order_combo.addItem(text, data)
         self.ui.order_combo.currentIndexChanged.connect(self.order_wishlist)
 
-        self.ui.reload_button.setIcon(qta_icon("fa.refresh", "fa5s.sync", color="white"))
+        self.ui.reload_button.setIcon(qta_icon('fa.refresh', 'fa5s.sync', color='white'))
         self.ui.reload_button.clicked.connect(self._update_widget)
 
         self.ui.reverse_check.stateChanged.connect(self._on_reverse_changed)
@@ -112,7 +111,7 @@ class WishlistWidget(QWidget, SideTabContents):
             game.id,
             lambda success: self._update_widget()
             if success
-            else QMessageBox.warning(self, "Error", self.tr("Could not remove game from wishlist")),
+            else QMessageBox.warning(self, 'Error', self.tr('Could not remove game from wishlist')),
         )
         self.update_wishlist.emit()
 
@@ -133,7 +132,7 @@ class WishlistWidget(QWidget, SideTabContents):
     __ordering = {
         WishlistOrder.NAME: lambda x: x.catalog_game.title,
         WishlistOrder.PRICE: lambda x: x.catalog_game.price.totalPrice.discountPrice,
-        WishlistOrder.DEVELOPER: lambda x: x.catalog_game.seller["name"],
+        WishlistOrder.DEVELOPER: lambda x: x.catalog_game.seller['name'],
         WishlistOrder.DISCOUNT: lambda x: 1
         - (x.catalog_game.price.totalPrice.discountPrice / x.catalog_game.price.totalPrice.originalPrice),
     }
@@ -155,8 +154,8 @@ class WishlistWidget(QWidget, SideTabContents):
         self.order_wishlist(self.ui.order_combo.currentIndex())
 
     @Slot(object)
-    def set_wishlist(self, wishlist: List[WishlistItemModel] = None):
-        if wishlist and wishlist[0] == "error":
+    def set_wishlist(self, wishlist: list[WishlistItemModel] = None):
+        if wishlist and wishlist[0] == 'error':
             return
 
         widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
