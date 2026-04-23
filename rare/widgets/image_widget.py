@@ -1,6 +1,6 @@
-from contextlib import suppress
 from enum import Enum
 
+import shiboken6
 from PySide6.QtCore import QRectF, QSize, Qt
 from PySide6.QtGui import (
     QBrush,
@@ -67,7 +67,7 @@ class ImageWidget(QWidget):
             self.paint_image = self.paint_image_empty
         # FIXME: this suppresss the RuntimeError raised by Qt if the widget has already
         # deleted. Temporary until I look into it again.
-        with suppress(RuntimeError):
+        if shiboken6.isValid(self):
             self.update()
 
     def sizeHint(self) -> QSize:
@@ -200,7 +200,8 @@ class LoadingSpinnerImageWidget(LoadingImageWidget):
 
     def _on_image_ready(self, data):
         super()._on_image_ready(data)
-        self.spinner.stop()
+        if shiboken6.isValid(self.spinner):
+            self.spinner.stop()
 
 
 __all__ = ['ImageSize', 'ImageWidget', 'LoadingImageWidget', 'LoadingSpinnerImageWidget']
