@@ -34,7 +34,7 @@ class ImageUrlModel:
         return tmp
 
     @classmethod
-    def from_dict(cls: type['ImageUrlModel'], src: dict[str, Any]) -> 'ImageUrlModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'ImageUrlModel':
         d = src.copy()
         return cls(type=d.pop('type', ''), url=d.pop('url', ''))
 
@@ -66,7 +66,7 @@ class KeyImagesModel:
         return bool(self.key_images)
 
     @classmethod
-    def from_list(cls: type['KeyImagesModel'], src: list[dict]):
+    def from_list(cls, src: list[dict]):
         d = src.copy()
         key_images = tuple(map(ImageUrlModel.from_dict, d))
         return cls(key_images=key_images)
@@ -112,7 +112,7 @@ class TotalPriceModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['TotalPriceModel'], src: dict[str, Any]) -> 'TotalPriceModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'TotalPriceModel':
         d = src.copy()
         return cls(
             discountPrice=d.pop('discountPrice', 0),
@@ -133,7 +133,7 @@ class GetPriceResModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['GetPriceResModel'], src: dict[str, Any]) -> 'GetPriceResModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'GetPriceResModel':
         d = src.copy()
         total_price = TotalPriceModel.from_dict(x) if (x := d.pop('totalPrice', {})) else None
         return cls(totalPrice=total_price, lineOffers=d.pop('lineOffers', {}), unmapped=d)
@@ -150,7 +150,7 @@ class PromotionalOfferModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['PromotionalOfferModel'], src: dict[str, Any]) -> 'PromotionalOfferModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'PromotionalOfferModel':
         d = src.copy()
         start_date = parse_date(x) if (x := d.pop('startDate', '')) else None
         end_date = parse_date(x) if (x := d.pop('endDate', '')) else None
@@ -168,7 +168,7 @@ class PromotionalOffersModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_list(cls: type['PromotionalOffersModel'], src: dict[str, list]) -> 'PromotionalOffersModel':
+    def from_list(cls, src: dict[str, list]) -> 'PromotionalOffersModel':
         d = src.copy()
         promotional_offers = tuple(map(PromotionalOfferModel.from_dict, d.pop('promotionalOffers', [])))
         return cls(promotionalOffers=promotional_offers, unmapped=d)
@@ -181,7 +181,7 @@ class PromotionsModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['PromotionsModel'], src: dict[str, Any]) -> 'PromotionsModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'PromotionsModel':
         d = src.copy()
         promotional_offers = tuple(map(PromotionalOffersModel.from_list, d.pop('promotionalOffers', [])))
         upcoming_promotional_offers = tuple(map(PromotionalOffersModel.from_list, d.pop('upcomingPromotionalOffers', [])))
@@ -220,7 +220,7 @@ class CatalogOfferModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['CatalogOfferModel'], src: dict[str, Any]) -> 'CatalogOfferModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'CatalogOfferModel':
         d = src.copy()
         effective_date = parse_date(x) if (x := d.pop('effectiveDate', '')) else None
         expiry_date = parse_date(x) if (x := d.pop('expiryDate', '')) else None
@@ -269,7 +269,7 @@ class WishlistItemModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['WishlistItemModel'], src: dict[str, Any]) -> 'WishlistItemModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'WishlistItemModel':
         d = src.copy()
         created = parse_date(x) if (x := d.pop('created', '')) else None
         offer = CatalogOfferModel.from_dict(x) if (x := d.pop('offer', {})) else None
@@ -294,7 +294,7 @@ class PagingModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['PagingModel'], src: dict[str, Any]) -> 'PagingModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'PagingModel':
         d = src.copy()
         count = d.pop('count', 0)
         total = d.pop('total', 0)
@@ -308,7 +308,7 @@ class SearchStoreModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['SearchStoreModel'], src: dict[str, Any]) -> 'SearchStoreModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'SearchStoreModel':
         d = src.copy()
         _elements = d.pop('elements', [])
         elements = tuple(map(CatalogOfferModel.from_dict, _elements))
@@ -322,7 +322,7 @@ class CatalogModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['CatalogModel'], src: dict[str, Any]) -> 'CatalogModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'CatalogModel':
         d = src.copy()
         search_store = SearchStoreModel.from_dict(x) if (x := d.pop('searchStore', {})) else None
         return cls(searchStore=search_store, unmapped=d)
@@ -335,7 +335,7 @@ class WishlistItemsModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['WishlistItemsModel'], src: dict[str, Any]) -> 'WishlistItemsModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'WishlistItemsModel':
         d = src.copy()
         _elements = d.pop('elements', [])
         elements = tuple(map(WishlistItemModel.from_dict, _elements))
@@ -349,7 +349,7 @@ class RemoveFromWishlistModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['RemoveFromWishlistModel'], src: dict[str, Any]) -> 'RemoveFromWishlistModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'RemoveFromWishlistModel':
         d = src.copy()
         return cls(success=d.pop('success', False), unmapped=d)
 
@@ -361,7 +361,7 @@ class AddToWishlistModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['AddToWishlistModel'], src: dict[str, Any]) -> 'AddToWishlistModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'AddToWishlistModel':
         d = src.copy()
         wishlist_item = WishlistItemModel.from_dict(x) if (x := d.pop('wishlistItem', {})) else None
         return cls(wishlistItem=wishlist_item, success=d.pop('success', False), unmapped=d)
@@ -375,7 +375,7 @@ class WishlistModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['WishlistModel'], src: dict[str, Any]) -> 'WishlistModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'WishlistModel':
         d = src.copy()
         wishlist_items = WishlistItemsModel.from_dict(x) if (x := d.pop('wishlistItems', {})) else None
         remove_from_wishlist = RemoveFromWishlistModel.from_dict(x) if (x := d.pop('removeFromWishlist', {})) else None
@@ -399,7 +399,7 @@ class DataModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['DataModel'], src: dict[str, Any]) -> 'DataModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'DataModel':
         d = src.copy()
         catalog = CatalogModel.from_dict(x) if (x := d.pop('Catalog', {})) else None
         wishlist = WishlistModel.from_dict(x) if (x := d.pop('Wishlist', {})) else None
@@ -417,7 +417,7 @@ class ErrorModel:
         return f'{self.correlationId} - {self.message}'
 
     @classmethod
-    def from_dict(cls: type['ErrorModel'], src: dict[str, Any]) -> 'ErrorModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'ErrorModel':
         d = src.copy()
         return cls(
             message=d.pop('message', ''),
@@ -432,7 +432,7 @@ class ExtensionsModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['ExtensionsModel'], src: dict[str, Any]) -> 'ExtensionsModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'ExtensionsModel':
         d = src.copy()
         return cls(unmapped=d)
 
@@ -445,7 +445,7 @@ class ResponseModel:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['ResponseModel'], src: dict[str, Any]) -> 'ResponseModel':
+    def from_dict(cls, src: dict[str, Any]) -> 'ResponseModel':
         d = src.copy()
         data = DataModel.from_dict(x) if (x := d.pop('data', {})) else None
         _errors = d.pop('errors', [])
