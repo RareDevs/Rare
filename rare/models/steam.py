@@ -72,7 +72,7 @@ class SteamShortcut:
     tags: dict = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['SteamShortcut'], src: dict[str, Any]) -> 'SteamShortcut':
+    def from_dict(cls, src: dict[str, Any]) -> 'SteamShortcut':
         d = src.copy()
         tmp = cls(
             appid=d.pop('appid', 0),
@@ -97,7 +97,7 @@ class SteamShortcut:
 
     @classmethod
     def create(
-        cls: type['SteamShortcut'],
+        cls,
         app_name: str,
         app_title: str,
         executable: str,

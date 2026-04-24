@@ -27,7 +27,7 @@ class OverlayLineEdit(QLineEdit):
         return f'{self.option}={text}' if (text := self.text()) else None
 
     def setValue(self, options: dict[str, str]):
-        if (value := options.get(self.option, None)) is not None:
+        if (value := options.get(self.option)) is not None:
             self.setText(value)
             options.pop(self.option)
         else:
@@ -47,7 +47,7 @@ class OverlayComboBox(QComboBox):
         return f'{self.option}={self.currentData(Qt.ItemDataRole.UserRole)}' if self.currentIndex() > 0 else None
 
     def setValue(self, options: dict[str, str]):
-        if (value := options.get(self.option, None)) is not None:
+        if (value := options.get(self.option)) is not None:
             self.setCurrentIndex(self.findData(value, Qt.ItemDataRole.UserRole))
             options.pop(self.option)
         else:
@@ -85,7 +85,7 @@ class OverlayCheckBox(QCheckBox):
         return value if checked ^ self.default_enabled else None
 
     def setValue(self, options: dict[str, str]):
-        if options.get(self.option, None) is not None:
+        if options.get(self.option) is not None:
             if self.values:
                 self.setChecked(bool(self.values.index(options[self.option])))
             else:

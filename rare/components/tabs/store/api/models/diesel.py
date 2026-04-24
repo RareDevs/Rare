@@ -17,7 +17,7 @@ class DieselSystemDetailItem:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['DieselSystemDetailItem'], src: dict[str, Any]) -> 'DieselSystemDetailItem':
+    def from_dict(cls, src: dict[str, Any]) -> 'DieselSystemDetailItem':
         d = src.copy()
         return cls(
             _type=d.pop('_type', ''),
@@ -36,7 +36,7 @@ class DieselSystemDetail:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['DieselSystemDetail'], src: dict[str, Any]) -> 'DieselSystemDetail':
+    def from_dict(cls, src: dict[str, Any]) -> 'DieselSystemDetail':
         d = src.copy()
         details = tuple(map(DieselSystemDetailItem.from_dict, d.pop('details', [])))
         return cls(
@@ -56,7 +56,7 @@ class DieselSystemDetails:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['DieselSystemDetails'], src: dict[str, Any]) -> 'DieselSystemDetails':
+    def from_dict(cls, src: dict[str, Any]) -> 'DieselSystemDetails':
         d = src.copy()
         systems = tuple(map(DieselSystemDetail.from_dict, d.pop('systems', [])))
         return cls(
@@ -78,7 +78,7 @@ class DieselProductAbout:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['DieselProductAbout'], src: dict[str, Any]) -> 'DieselProductAbout':
+    def from_dict(cls, src: dict[str, Any]) -> 'DieselProductAbout':
         d = src.copy()
         return cls(
             _type=d.pop('_type', ''),
@@ -99,7 +99,7 @@ class DieselProductDetail:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['DieselProductDetail'], src: dict[str, Any]) -> 'DieselProductDetail':
+    def from_dict(cls, src: dict[str, Any]) -> 'DieselProductDetail':
         d = src.copy()
         about = DieselProductAbout.from_dict(x) if (x := d.pop('about'), {}) else None
         requirements = DieselSystemDetails.from_dict(x) if (x := d.pop('requirements', {})) else None
@@ -127,7 +127,7 @@ class DieselProduct:
     unmapped: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls: type['DieselProduct'], src: dict[str, Any]) -> 'DieselProduct':
+    def from_dict(cls, src: dict[str, Any]) -> 'DieselProduct':
         d = src.copy()
         pages = tuple(map(DieselProduct.from_dict, d.pop('pages', [])))
         data = DieselProductDetail.from_dict(x) if (x := d.pop('data', {})) else None
