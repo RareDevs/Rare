@@ -84,7 +84,7 @@ class RareCore(QObject):
         self.__fetch_progress: int = 0
         self.__fetched_games_dlcs: bool = False
         self.__fetched_entitlements: bool = False
-        self.__fetched_steamappids: bool = False
+        self.__fetched_runtimeassets: bool = False
 
         RareCore.__instance = self
 
@@ -368,8 +368,8 @@ class RareCore(QObject):
             self.__core.lgd.entitlements = result
             self.__fetched_entitlements = True
 
-        if result_type == FetchWorker.Result.EXTRAS:
-            self.__fetched_steamappids = True
+        if result_type == FetchWorker.Result.RUNTIMEASSETS:
+            self.__fetched_runtimeassets = True
 
         self.logger.info('Acquired data from %s worker', FetchWorker.Result(result_type).name)
 
@@ -378,7 +378,7 @@ class RareCore(QObject):
             {
                 self.__fetched_games_dlcs,
                 self.__fetched_entitlements,
-                self.__fetched_steamappids,
+                self.__fetched_runtimeassets,
             }
         ):
             return

@@ -12,7 +12,7 @@ from rare.models.settings import RareAppSettings, app_settings
 from rare.utils.metrics import timelogger
 from rare.utils.steam_grades import steam_grades
 from rare.utils.workarounds import workarounds
-from rare.utils.wrapper_exe import download_wrapper_exe
+from rare.utils.wrapper_exe import download_lgd_wrapper
 
 from .worker import Worker
 
@@ -27,7 +27,7 @@ class FetchWorker(Worker):
         ERROR = 0
         GAMESDLCS = 1
         ENTITLEMENTS = 2
-        EXTRAS = 3
+        RUNTIMEASSETS = 3
 
     def __init__(self, settings: RareAppSettings, core: LegendaryCore, args: Namespace, segment: int):
         super(FetchWorker, self).__init__()
@@ -60,10 +60,10 @@ class RuntimeAssetsWorker(FetchWorker):
             self.signals.progress.emit(increment, self.signals.tr('Updating workarounds'))
             with timelogger(self.logger, 'Request wrapper exe'):
                 try:
-                    download_wrapper_exe()
+                    download_lgd_wrapper()
                 except Exception as e:
                     self.logger.warning(e)
-        self.signals.result.emit((), FetchWorker.Result.EXTRAS)
+        self.signals.result.emit((), FetchWorker.Result.RUNTIMEASSETS)
         return
 
 
