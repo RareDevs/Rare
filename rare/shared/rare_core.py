@@ -5,7 +5,6 @@ from argparse import Namespace
 from collections.abc import Callable, Iterable, Iterator
 from itertools import chain
 from logging import getLogger
-from typing import Optional
 
 from legendary.lfs.eos import EOSOverlayApp
 from legendary.models.game import Game, SaveGameFile

@@ -23,8 +23,6 @@ def wrapper_path() -> Path:
 
 
 def download_lgd_wrapper() -> bool:
-    config.remove_envvar('default', 'LEGENDARY_WRAPPER_EXE')
-
     runtime_assets = {
         wrapper_path().name: {
             'version': 'v0.0',

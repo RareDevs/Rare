@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QHideEvent
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
@@ -12,6 +12,9 @@ from .widgets.wrappers import WrapperSettings
 
 
 class GameSettingsBase(QWidget, SideTabContents):
+    # str: option key
+    environ_changed: Signal = Signal(str)
+
     def __init__(
         self,
         settings: RareAppSettings,
@@ -26,6 +29,7 @@ class GameSettingsBase(QWidget, SideTabContents):
         self.app_name: str = 'default'
 
         self.launch = launch_widget(rcore, self)
+        self.launch.environ_changed.connect(self.environ_changed)
 
         self.main_layout = QVBoxLayout(self)
         self.main_layout.addWidget(self.launch, stretch=0)

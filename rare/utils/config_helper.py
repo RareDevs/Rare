@@ -35,10 +35,6 @@ def set_boolean(app_name: str, option: str, value: bool) -> None:
     set_option(app_name, option, str(value).lower())
 
 
-def set_envvar(app_name: str, envvar: str, value: str) -> None:
-    set_option(f'{app_name}.env', envvar, value)
-
-
 def remove_section(app_name: str) -> None:
     return
     # Disabled due to env variables implementation
@@ -55,10 +51,6 @@ def remove_option(app_name: str, option: str) -> None:
     # save_config()
 
 
-def remove_envvar(app_name: str, option: str) -> None:
-    remove_option(f'{app_name}.env', option)
-
-
 def adjust_option(app_name: str, option: str, value: str) -> None:
     if value:
         set_option(app_name, option, value)
@@ -68,6 +60,14 @@ def adjust_option(app_name: str, option: str, value: str) -> None:
 
 def get_option(app_name: str, option: str, fallback: Any = None) -> str:
     return _config.get(app_name, option, fallback=fallback)
+
+
+def adjust_option_with_global(app_name: str, option: str, value: str) -> None:
+    value = value if value else ''
+    if value == get_option('default', option, ''):
+        remove_option(app_name, option)
+    else:
+        set_option(app_name, option, value)
 
 
 def get_option_with_global(app_name: str, option: str, fallback: Any = None) -> str:
@@ -80,15 +80,28 @@ def get_boolean(app_name: str, option: str, fallback: bool = False) -> bool:
     return _config.getboolean(app_name, option, fallback=fallback)
 
 
+def set_envvar(app_name: str, envvar: str, value: str) -> None:
+    set_option(f'{app_name}.env', envvar, value)
+
+
+def remove_envvar(app_name: str, option: str) -> None:
+    remove_option(f'{app_name}.env', option)
+
+
 def adjust_envvar(app_name: str, option: str, value: str) -> None:
-    if value:
-        set_envvar(app_name, option, value)
-    else:
-        remove_envvar(app_name, option)
+    adjust_option(f'{app_name}.env', option, value)
 
 
 def get_envvar(app_name: str, option: str, fallback: Any = None) -> str:
     return get_option(f'{app_name}.env', option, fallback=fallback)
+
+
+def adjust_envvar_with_global(app_name: str, option: str, value: str) -> None:
+    value = value if value else ''
+    if value == get_envvar('default', option, ''):
+        remove_envvar(app_name, option)
+    else:
+        set_envvar(app_name, option, value)
 
 
 def get_envvar_with_global(app_name: str, option: str, fallback: Any = None) -> str:

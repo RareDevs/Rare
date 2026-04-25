@@ -61,9 +61,7 @@ class Settings(Namespace):
 
     local_shader_cache = Setting(key='local_shader_cache', default=False, dtype=bool)
     create_shortcut = Setting(
-        key='create_shortcut',
-        default=pf.system() == 'Windows' and 'WINEUSERNAME' not in os.environ,
-        dtype=bool
+        key='create_shortcut', default=pf.system() == 'Windows' and 'WINEUSERNAME' not in os.environ, dtype=bool
     )
 
 
