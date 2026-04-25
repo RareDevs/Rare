@@ -46,7 +46,7 @@ class RareCore(QObject):
     # completed_entitlements = Signal()
 
     # lk: special case class attribute, this has to be here
-    __instance: Optional['RareCore'] = None
+    __instance: 'RareCore' = None
 
     def __init__(self, settings: RareAppSettings, args: Namespace):
         if self.__instance is not None:
@@ -54,11 +54,11 @@ class RareCore(QObject):
         super(RareCore, self).__init__()
         self.logger = getLogger(type(self).__name__)
         self.__settings = settings
-        self.__args: Namespace | None = None
-        self.__signals: GlobalSignals | None = None
-        self.__core: LegendaryCore | None = None
-        self.__image_manager: ImageManager | None = None
-        self.__wrappers: Wrappers | None = None
+        self.__args: Namespace = None
+        self.__signals: GlobalSignals = None
+        self.__core: LegendaryCore = None
+        self.__image_manager: ImageManager = None
+        self.__wrappers: Wrappers = None
 
         self.__start_time = time.perf_counter()
 
@@ -196,12 +196,14 @@ class RareCore(QObject):
                 self.__core.lgd.config.set('Legendary', 'default_platform', self.__core.default_platform)
             if not check_config('install_dir'):
                 self.__core.lgd.config.set('Legendary', 'install_dir', self.__core.get_default_install_dir())
+                os.makedirs(self.__core.get_default_install_dir(), exist_ok=True)
             if not check_config('mac_install_dir'):
                 self.__core.lgd.config.set(
                     'Legendary',
                     'mac_install_dir',
                     self.__core.get_default_install_dir(self.__core.default_platform),
                 )
+                os.makedirs(self.__core.get_default_install_dir(self.__core.default_platform), exist_ok=True)
 
             # Always set these options
             # Avoid implicitly falling back to Windows games on macOS
@@ -320,7 +322,7 @@ class RareCore(QObject):
         return filter(condition, self.__library.values())
 
     def __create_or_update_rgame(self, game: Game) -> RareGame:
-        if rgame := self.__library.get(game.app_name, False):
+        if rgame := self.__library.get(game.app_name):
             self.logger.warning(f'{rgame.app_name} already present in {type(self).__name__}')
             self.logger.info(f'Updating Game for {rgame.app_name}')
             rgame.update_rgame()
@@ -333,7 +335,7 @@ class RareCore(QObject):
         length = len(games)
         for idx, game in enumerate(games):
             rgame = self.__create_or_update_rgame(game)
-            if game_dlcs := dlcs_dict.get(rgame.game.catalog_item_id, False):
+            if game_dlcs := dlcs_dict.get(rgame.game.catalog_item_id):
                 for dlc in game_dlcs:
                     rdlc = self.__create_or_update_rgame(dlc)
                     if rdlc not in rgame.owned_dlcs:

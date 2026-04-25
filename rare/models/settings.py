@@ -1,4 +1,5 @@
 import locale
+import os
 import platform as pf
 from argparse import Namespace
 from typing import Any, Optional
@@ -59,7 +60,11 @@ class Settings(Namespace):
     discord_rpc_os = Setting(key='discord_rpc_os', default=True, dtype=bool)
 
     local_shader_cache = Setting(key='local_shader_cache', default=False, dtype=bool)
-    create_shortcut = Setting(key='create_shortcut', default=pf.system() == 'Windows', dtype=bool)
+    create_shortcut = Setting(
+        key='create_shortcut',
+        default=pf.system() == 'Windows' and 'WINEUSERNAME' not in os.environ,
+        dtype=bool
+    )
 
 
 app_settings = Settings()
