@@ -99,8 +99,8 @@ class InstallDialog(ActionDialog):
 
         self.install_dir_edit.setDisabled(rgame.is_installed or rgame.is_dlc)
         self.ui.install_dir_label.setDisabled(rgame.is_installed or rgame.is_dlc)
-        self.ui.shortcut_label.setDisabled(rgame.is_installed or rgame.is_dlc)
-        self.ui.shortcut_check.setDisabled(rgame.is_installed or rgame.is_dlc)
+        self.ui.shortcut_label.setDisabled(rgame.is_installed or rgame.is_dlc or 'WINEUSERNAME' in os.environ)
+        self.ui.shortcut_check.setDisabled(rgame.is_installed or rgame.is_dlc or 'WINEUSERNAME' in os.environ)
         self.ui.shortcut_check.setChecked(not rgame.is_installed and self.settings.get_value(app_settings.create_shortcut))
         self.ui.shortcut_check.checkStateChanged.connect(self._on_option_changed_no_reload)
 

@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QApplication
 
 from rare.utils import config_helper as config
 from rare.utils.paths import data_dir
+from rare.utils.wrapper_exe import wrapper_path
 
 
 class Workarounds:
@@ -71,10 +72,15 @@ class Workarounds:
         return QApplication.instance().primaryScreen().geometry().width()
 
     @staticmethod
+    def wrapper_exe() -> str:
+        return str(wrapper_path())
+
+    @staticmethod
     def subst(text: str) -> str:
         return text.format(
             res_width=Workarounds.screen_width(),
             res_height=Workarounds.screen_height(),
+            wrapper_exe=Workarounds.wrapper_exe(),
         )
 
 

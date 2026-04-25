@@ -85,7 +85,7 @@ def image_icon_path(app_name: str, color: bool = True) -> Path:
     return image_dir_game(app_name).joinpath('icon.png' if color else 'icon_gray.png')
 
 
-def runtime_assets_json() -> Path:
+def runtime_assets_path() -> Path:
     return data_dir().joinpath('runtime_assets.json')
 
 

@@ -13,6 +13,7 @@ from rare.models.game import RareGame
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
+from rare.utils.wrapper_exe import wrapper_path
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 logger = getLogger('LocalGameSettings')
@@ -34,13 +35,13 @@ class LocalLaunchSettings(LaunchSettingsBase):
         self.skip_update_combo.addItem(self.tr('Default'), None)
         self.skip_update_combo.addItem(self.tr('No'), 'false')
         self.skip_update_combo.addItem(self.tr('Yes'), 'true')
-        self.skip_update_combo.currentIndexChanged.connect(self.__skip_update_changed)
+        self.skip_update_combo.currentIndexChanged.connect(self._skip_update_changed)
 
         self.offline_combo = QComboBox(self)
         self.offline_combo.addItem(self.tr('Default'), None)
         self.offline_combo.addItem(self.tr('No'), 'false')
         self.offline_combo.addItem(self.tr('Yes'), 'true')
-        self.offline_combo.currentIndexChanged.connect(self.__offline_changed)
+        self.offline_combo.currentIndexChanged.connect(self._offline_changed)
 
         self.override_exe_name_filters: tuple[str, ...] = (
             '*.exe',
@@ -54,14 +55,14 @@ class LocalLaunchSettings(LaunchSettingsBase):
             file_mode=QFileDialog.FileMode.ExistingFile,
             name_filters=self.override_exe_name_filters,
             placeholder=self.tr('Relative path to the replacement executable'),
-            edit_func=self.__override_exe_edit_callback,
-            save_func=self.__override_exe_save_callback,
+            edit_func=self._override_exe_edit_callback,
+            save_func=self._override_exe_save_callback,
             parent=self,
         )
 
         self.launch_params_edit = QLineEdit(self)
         self.launch_params_edit.setPlaceholderText(self.tr('Game specific command line arguments'))
-        self.launch_params_edit.textChanged.connect(self.__launch_params_changed)
+        self.launch_params_edit.textChanged.connect(self._launch_params_changed)
 
         self.main_layout.insertRow(0, self.tr('Skip update check'), self.skip_update_combo)
         self.main_layout.insertRow(1, self.tr('Offline mode'), self.offline_combo)
@@ -94,11 +95,11 @@ class LocalLaunchSettings(LaunchSettingsBase):
         return super().showEvent(a0)
 
     @Slot(int)
-    def __skip_update_changed(self, index):
+    def _skip_update_changed(self, index):
         data = self.skip_update_combo.itemData(index, Qt.ItemDataRole.UserRole)
         config.adjust_option(self.app_name, 'skip_update_check', data)
 
-    def __override_exe_edit_callback(self, path: str) -> tuple[bool, str, int]:
+    def _override_exe_edit_callback(self, path: str) -> tuple[bool, str, int]:
         if not path or self.igame is None:
             return True, path, IndicatorReasonsCommon.VALID
         if not os.path.isabs(path):
@@ -116,16 +117,24 @@ class LocalLaunchSettings(LaunchSettingsBase):
         path = os.path.relpath(path, self.igame.install_path)
         return True, path, IndicatorReasonsCommon.VALID
 
-    def __override_exe_save_callback(self, path: str):
+    def _override_exe_save_callback(self, path: str):
         config.adjust_option(self.app_name, 'override_exe', path)
 
     @Slot(int)
-    def __offline_changed(self, index):
+    def _offline_changed(self, index):
         data = self.skip_update_combo.itemData(index, Qt.ItemDataRole.UserRole)
         config.adjust_option(self.app_name, 'offline', data)
 
-    def __launch_params_changed(self, value) -> None:
+    def _launch_params_changed(self, value) -> None:
         config.adjust_option(self.app_name, 'start_params', value)
+
+    @Slot(Qt.CheckState)
+    def _lgd_wrapper_check_changed(self, state: Qt.CheckState):
+        _wrapper = str(wrapper_path())
+        config.adjust_envvar_with_global(
+            self.app_name, 'LEGENDARY_WRAPPER_EXE', _wrapper if state == Qt.CheckState.Checked else ''
+        )
+        self.environ_changed.emit('LEGENDARY_WRAPPER_EXE')
 
     def load_settings(self, rgame: RareGame):
         self.game = rgame.game
