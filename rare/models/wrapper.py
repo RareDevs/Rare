@@ -69,7 +69,7 @@ class Wrapper:
         return self.as_str == other.as_str
 
     def __hash__(self):
-        return hash(self.__command)
+        return hash(" ".join(self.__command))
 
     def __bool__(self) -> bool:
         return True if not self.is_editable else bool(self.as_str.strip())
