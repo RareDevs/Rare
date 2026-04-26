@@ -5,7 +5,6 @@ from pathlib import Path
 import requests
 from orjson import orjson
 
-from rare.utils import config_helper as config
 from rare.utils.paths import data_dir, runtime_assets_path
 
 logger = getLogger('WrapperExe')
