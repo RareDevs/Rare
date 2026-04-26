@@ -72,6 +72,7 @@ class EosPrefixWidget(QFrame):
         self.overlay_label = ElideLabel(parent=self)
         self.overlay_label.setDisabled(True)
         self.overlay_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self.overlay_label.setObjectName('InfoLabel')
 
         self.path_select = QComboBox(self)
         self.path_select.setMaximumWidth(150)

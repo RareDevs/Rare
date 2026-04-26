@@ -37,6 +37,7 @@ class RareSettings(QWidget):
 
         self.ui = Ui_RareSettings()
         self.ui.setupUi(self)
+        self.ui.interface_info.setObjectName('InfoLabel')
 
         # Select lang
         self.ui.lang_select.addItem(self.tr('System default'), app_settings.language.default)

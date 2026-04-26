@@ -45,6 +45,9 @@ class LegendarySettings(QWidget):
 
         self.ui = Ui_LegendarySettings()
         self.ui.setupUi(self)
+        self.ui.max_workers_info_label.setObjectName('InfoLabel')
+        self.ui.max_memory_info_label.setObjectName('InfoLabel')
+        self.ui.metadata_info.setObjectName('InfoLabel')
 
         self.settings = settings
         self.rcore = rcore

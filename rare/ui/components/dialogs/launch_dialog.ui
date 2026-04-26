@@ -46,6 +46,18 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QLabel" name="info_label">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Progress might look stuck when launching for the first time.</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

@@ -21,7 +21,7 @@
   </property>
   <layout class="QFormLayout" name="import_layout">
    <property name="labelAlignment">
-    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
    </property>
    <item row="0" column="0">
     <widget class="QLabel" name="path_edit_label">
@@ -138,7 +138,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="platform_tooltip">
+      <widget class="QLabel" name="platform_info">
        <property name="font">
         <font>
          <italic>true</italic>

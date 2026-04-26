@@ -7,7 +7,7 @@ from logging import getLogger
 from legendary.models.egl import EGLManifest
 from legendary.models.game import InstalledGame
 from PySide6.QtCore import QRunnable, Qt, QThreadPool, Signal, Slot
-from PySide6.QtGui import QShowEvent
+from PySide6.QtGui import QFont, QShowEvent
 from PySide6.QtWidgets import (
     QFileDialog,
     QFormLayout,
@@ -97,13 +97,15 @@ class EGLSyncGroup(QGroupBox):
         super().showEvent(a0)
 
     def __run_wine_resolver(self):
+        font = QFont()
+        font.setItalic(True)
+        self.egl_path_info.setFont(font)
         self.egl_path_info.setText(self.tr('Updating...'))
         wine_resolver = WinePathResolver(self.core, 'default', str(PathSpec.egl_programdata()))
         wine_resolver.signals.result_ready.connect(self.__on_wine_resolver_result)
         QThreadPool.globalInstance().start(wine_resolver)
 
     def __on_wine_resolver_result(self, path):
-        self.egl_path_info.setText(path)
         if not path:
             self.egl_path_info.setText(
                 self.tr('Default Wine prefix is unset, or path does not exist. Create it or configure it in Settings -> Linux.')
@@ -116,6 +118,8 @@ class EGLSyncGroup(QGroupBox):
                 )
             )
         else:
+            self.egl_path_info.setFont(QFont('monospace'))
+            self.egl_path_info.setText(path)
             self.egl_path_edit.setText(path)
 
     @staticmethod
