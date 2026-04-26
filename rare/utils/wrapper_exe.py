@@ -55,7 +55,6 @@ def download_lgd_wrapper() -> bool:
     try:
         resp = requests.get(download_url, timeout=5)
         wrapper_path().write_bytes(resp.content)
-        config.set_envvar('default', 'LEGENDARY_WRAPPER_EXE', str(wrapper_path))
     except requests.exceptions.Timeout:
         return False
 
