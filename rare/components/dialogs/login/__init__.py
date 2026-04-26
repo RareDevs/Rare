@@ -20,6 +20,8 @@ class LandingPage(QFrame):
         self.setFrameStyle(QFrame.Shape.StyledPanel)
         self.ui = Ui_LandingPage()
         self.ui.setupUi(self)
+        self.ui.login_browser_label.setObjectName('InfoLabel')
+        self.ui.login_import_label.setObjectName('InfoLabel')
 
 
 class LoginDialog(BaseDialog):
@@ -76,6 +78,7 @@ class LoginDialog(BaseDialog):
             ),
         }
         self.ui.info_label.setText(self.info_message[self.landing_index])
+        self.ui.info_label.setObjectName('InfoLabel')
 
         self.login_stack.setMinimumWidth(640)
         self.login_stack.setMinimumHeight(180)

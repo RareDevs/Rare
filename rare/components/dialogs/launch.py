@@ -1,4 +1,5 @@
 from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtWidgets import QLabel
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.shared import RareCore
@@ -31,7 +32,18 @@ class LaunchDialog(BaseDialog):
 
         self.progress_info = ElideLabel(parent=self)
         self.progress_info.setFixedHeight(False)
-        self.ui.launch_layout.addWidget(self.progress_info)
+        self.progress_info.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        self.ui.launch_layout.insertWidget(
+            self.ui.launch_layout.indexOf(self.ui.progress_bar) + 1, self.progress_info
+        )
+        self.ui.info_label.setObjectName('InfoLabel')
+
+        self.ui.launch_layout.setStretch(
+            self.ui.launch_layout.indexOf(self.ui.title_label), 2
+        )
+        self.ui.launch_layout.setStretch(
+            self.ui.launch_layout.indexOf(self.progress_info), 2
+        )
 
         self.rcore = rcore
         self.rcore.progress.connect(self.__on_progress)

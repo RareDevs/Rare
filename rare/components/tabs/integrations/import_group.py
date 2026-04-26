@@ -156,6 +156,7 @@ class ImportGroup(QGroupBox):
 
         self.ui = Ui_ImportGroup()
         self.ui.setupUi(self)
+        self.ui.platform_info.setObjectName('InfoLabel')
 
         self.worker: ImportWorker | None = None
         self.threadpool = QThreadPool.globalInstance()

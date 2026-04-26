@@ -41,10 +41,16 @@ style['QPushButton[flat="true"]'].setValues(
 
 
 # InfoLabel
+info_label_props = {
+    'color': '#999',
+    'fontStyle': 'italic',
+    'fontWeight': 'normal',
+}
 style.QLabel['#InfoLabel'].setValues(
-    color='#999',
-    fontStyle='italic',
-    fontWeight='normal',
+    **info_label_props
+)
+style.QCheckBox['#InfoLabel'].setValues(
+    **info_label_props
 )
 
 

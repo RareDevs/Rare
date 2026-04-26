@@ -28,6 +28,11 @@ QLabel#InfoLabel {
     font-style: italic;
     font-weight: normal;
 }
+QCheckBox#InfoLabel {
+    color: #999;
+    font-style: italic;
+    font-weight: normal;
+}
 QPushButton#InstallButton {
     border-color: #00b400;
     background-color: #006400;
