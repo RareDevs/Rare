@@ -188,7 +188,7 @@ start = "rare.main:main"
 [tool.poetry.dev-dependencies]
 Nuitka = "^2.4.8"
 pylint = "^3.2.7"
-black = "^24.3.0"
+black = "^26.3.1"
 PySide6-stubs = "^6.4.2.0"
 
 [tool.poetry-dynamic-versioning]
