@@ -150,8 +150,9 @@ class ProtonSettings(QGroupBox):
         steam_environ = steam.get_steam_environment(steam_tool, self.compat_edit.text())
         library_paths = steam_environ.get('STEAM_COMPAT_LIBRARY_PATHS', '')
         if self.app_name != 'default' and (install_path := self.rcore.get_game(self.app_name).install_path):
+            game_library = os.path.dirname(install_path)
             library_paths = (
-                ':'.join([library_paths, os.path.dirname(install_path)]) if library_paths else os.path.dirname(install_path)
+                ':'.join([library_paths, game_library]) if library_paths else game_library
             )
             # https://gitlab.steamos.cloud/steamrt/steam-runtime-tools/-/blob/main/docs/steam-compat-tool-interface.md#non-steam-games
             steam_environ['STEAM_COMPAT_INSTALL_PATH'] = install_path
