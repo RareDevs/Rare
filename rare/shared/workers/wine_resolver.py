@@ -180,7 +180,7 @@ class OriginWineWorker(WinePathResolver):
             if install_dir:
                 if os.path.isdir(install_dir):
                     install_size = path_size(install_dir)
-                    rgame.set_origin_attributes(install_dir, install_size)
+                    rgame.set_third_party_attributes(install_dir, install_size)
                     self.logger.info(
                         "Origin game '%s' (%s, %s)",
                         rgame.app_title,

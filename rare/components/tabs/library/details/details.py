@@ -432,8 +432,10 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.app_name.setText(rgame.app_name)
         self.ui.dev.setText(rgame.developer)
 
-        if rgame.is_non_asset:
-            self.ui.install_button.setText(self.tr('Link/Launch'))
+        if rgame.is_non_asset or rgame.is_third_party:
+            self.ui.install_button.setText(
+                self.tr('Launch in EA App') if rgame.is_origin else self.tr('Launch in Ubisoft Connect')
+            )
             self.ui.actions_stack.setCurrentWidget(self.ui.uninstalled_page)
         else:
             self.ui.install_button.setText(self.tr('Install'))

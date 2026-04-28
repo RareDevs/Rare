@@ -65,14 +65,14 @@ class GameDetailsTabs(SideTabWidget):
         self.details_tab.update_game(rgame)
 
         self.game_settings_tab.load_settings(rgame)
-        self.game_settings_tab.launch.setEnabled(rgame.is_installed or rgame.is_origin)
+        self.game_settings_tab.launch.setEnabled(rgame.is_installed or rgame.is_third_party)
 
         if pf.system() != 'Windows':
             self.compat_settings_tab.load_settings(rgame)
-            self.compat_settings_tab.setEnabled(rgame.is_installed or rgame.is_origin)
+            self.compat_settings_tab.setEnabled(rgame.is_installed or rgame.is_third_party)
 
         self.environ_tab.load_settings(rgame)
-        self.environ_tab.setEnabled(rgame.is_installed or rgame.is_origin)
+        self.environ_tab.setEnabled(rgame.is_installed or rgame.is_third_party)
 
         self.dlcs_tab.update_dlcs(rgame)
         self.dlcs_tab.setEnabled(rgame.is_installed and bool(rgame.owned_dlcs))

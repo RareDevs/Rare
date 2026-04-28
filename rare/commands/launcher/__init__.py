@@ -335,7 +335,7 @@ class RareLauncher(RareApp):
             self.stop()
             return
 
-        if platform.system() == 'Windows' and params.is_origin_game:
+        if platform.system() == 'Windows' and params.is_third_party_game:
             # executable is a protocol link (link2ea://launchgame/...)
             QDesktopServices.openUrl(QUrl(params.executable))
             self.stop()  # stop because it is not a subprocess

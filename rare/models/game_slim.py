@@ -160,16 +160,15 @@ class RareGameBase(QObject):
 
     @property
     def is_origin(self) -> bool:
-        """!
-        @brief Property to report if a Game is an Origin game
+        return bool(self.game.is_origin_game)
 
-        Legendary and by extenstion Rare can't launch Origin games directly,
-        it just launches the Origin client and thus requires a bit of a special
-        handling to let the user know.
+    @property
+    def is_ubisoft(self) -> bool:
+        return bool(self.game.is_ubisoft_game)
 
-        @return bool If the game is an Origin game
-        """
-        return self.game.third_party_store in {'Origin', 'the EA app'}
+    @property
+    def is_third_party(self) -> bool:
+        return self.is_origin or self.is_ubisoft
 
     @property
     def is_android(self) -> bool:
@@ -230,7 +229,7 @@ class RareGameSlim(RareGameBase):
 
     @property
     def is_installed(self) -> bool:
-        if self.is_origin:
+        if self.is_third_party:
             return True
         return self.igame is not None
 
