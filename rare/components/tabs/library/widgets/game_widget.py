@@ -92,7 +92,8 @@ class GameWidget(LibraryWidget):
             'can_launch': self.tr('Launch game'),
             'is_foreign': self.tr('Launch offline'),
             'has_update': self.tr('Launch without version check'),
-            'is_origin': self.tr('Launch/Link'),
+            'is_origin': self.tr('Launch in EA App'),
+            'is_ubisoft': self.tr('Launch in Ubisoft Connect'),
             'not_can_launch': self.tr("Can't launch"),
         }
 
@@ -169,7 +170,7 @@ class GameWidget(LibraryWidget):
         for action in self.actions():
             self.removeAction(action)
 
-        if self.rgame.is_installed or self.rgame.is_origin:
+        if self.rgame.is_installed or self.rgame.is_third_party:
             self.addAction(self.launch_action)
         else:
             self.addAction(self.install_action)
@@ -194,7 +195,7 @@ class GameWidget(LibraryWidget):
             self.addAction(self.steam_shortcut_action)
 
         self.addAction(self.reload_action)
-        if self.rgame.is_installed and not self.rgame.is_origin:
+        if self.rgame.is_installed and not self.rgame.is_third_party:
             self.addAction(self.uninstall_action)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
@@ -216,6 +217,8 @@ class GameWidget(LibraryWidget):
                     self.ui.tooltip_label.setText(self.hover_strings['not_can_launch'])
                 elif self.rgame.is_origin:
                     self.ui.tooltip_label.setText(self.hover_strings['is_origin'])
+                elif self.rgame.is_ubisoft:
+                    self.ui.tooltip_label.setText(self.hover_strings['is_ubisoft'])
                 elif self.rgame.has_update:
                     self.ui.tooltip_label.setText(self.hover_strings['has_update'])
                 elif self.rgame.is_foreign and self.rgame.can_run_offline:

@@ -52,28 +52,32 @@ class LaunchParams:
     environment: dict[str, str] = field(default_factory=dict)
     pre_launch_command: str = ''
     pre_launch_wait: bool = False
-    is_origin_game: bool = False  # only for windows to launch as url
+    is_third_party_game: bool = False  # only for windows to launch as url
 
     def __bool__(self):
         return bool(self.executable)
 
 
-def get_origin_params(rgame: RareGameSlim, init: InitParams, launch: LaunchParams) -> LaunchParams:
+def get_third_party_params(rgame: RareGameSlim, init: InitParams, launch: LaunchParams) -> LaunchParams:
     core = rgame.core
     app_name = rgame.app_name
 
-    origin_uri = core.get_origin_uri(app_name, init.offline)
+    uri = (
+        core.get_origin_uri(app_name, init.offline)
+        if rgame.is_origin
+        else core.get_ubisoft_uri(app_name, init.offline)
+    )
     if platform.system() == 'Windows':
-        command = [origin_uri]
+        command = [uri]
     else:
         command = core.get_app_launch_command(app_name)
         if not os.path.exists(command[0]) and shutil.which(command[0]) is None:
             return launch
-        command.append(origin_uri)
+        command.append(uri)
 
     exe, args, env = prepare_process(command, core.get_app_environment(app_name))
 
-    launch.is_origin_game = True
+    launch.is_third_party_game = True
     launch.executable = exe
     launch.arguments = args
     launch.environment = env
@@ -132,7 +136,7 @@ def get_launch_params(rgame: RareGameSlim, init: InitParams = None) -> LaunchPar
     if not rgame.game:
         raise GameArgsError(f'Could not find metadata for {rgame.app_title}')
 
-    if rgame.is_origin:
+    if rgame.is_third_party:
         init.offline = False
     else:
         if not rgame.is_installed:
@@ -143,8 +147,8 @@ def get_launch_params(rgame: RareGameSlim, init: InitParams = None) -> LaunchPar
         if not os.path.exists(rgame.install_path):
             raise GameArgsError('Game path does not exist')
 
-    if rgame.is_origin:
-        resp = get_origin_params(rgame, init, resp)
+    if rgame.is_third_party:
+        resp = get_third_party_params(rgame, init, resp)
     else:
         resp = get_game_params(rgame, init, resp)
 

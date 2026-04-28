@@ -342,7 +342,7 @@ class RareCore(QObject):
             # lk: since loading has to know about the game's state,
             # validate installation just by trying to add each RareGame
             # TODO: this should probably be moved into RareGame
-            if rgame.is_installed and not (rgame.is_dlc or rgame.is_non_asset):
+            if rgame.is_installed and not rgame.is_third_party and not (rgame.is_dlc or rgame.is_non_asset):
                 try:
                     self.__validate_install(rgame)
                 except FileNotFoundError as e:
@@ -435,14 +435,14 @@ class RareCore(QObject):
         saves_worker = QRunnable.create(self.__fetch_saves)
         QThreadPool.globalInstance().start(saves_worker)
 
-    def resolve_origin(self) -> None:
+    def resolve_third_party(self) -> None:
         origin_worker = OriginWineWorker(self.__core, list(self.origin_games))
         QThreadPool.globalInstance().start(origin_worker)
 
     def __post_init(self) -> None:
         if not self.__args.offline:
             self.fetch_saves()
-        self.resolve_origin()
+        self.resolve_third_party()
 
     @property
     def game_tags(self) -> tuple[str, ...]:
@@ -460,19 +460,19 @@ class RareCore(QObject):
 
     @property
     def games(self) -> Iterator[RareGame]:
-        return self.__filter_games(lambda game: not game.is_dlc or game.is_launchable_addon)
+        return self.__filter_games(lambda rgame: not rgame.is_dlc or rgame.is_launchable_addon)
 
     @property
     def installed_games(self) -> Iterator[RareGame]:
-        return self.__filter_games(lambda game: game.is_installed and not game.is_dlc)
+        return self.__filter_games(lambda rgame: rgame.is_installed and not rgame.is_dlc)
 
     @property
     def origin_games(self) -> Iterator[RareGame]:
-        return self.__filter_games(lambda game: game.is_origin and not game.is_dlc)
+        return self.__filter_games(lambda rgame: rgame.is_origin and not rgame.is_dlc)
 
     @property
     def ubisoft_games(self) -> Iterator[RareGame]:
-        return self.__filter_games(lambda game: game.is_ubisoft and not game.is_dlc)
+        return self.__filter_games(lambda rgame: rgame.is_ubisoft and not rgame.is_dlc)
 
     @property
     def game_list(self) -> Iterator[Game]:

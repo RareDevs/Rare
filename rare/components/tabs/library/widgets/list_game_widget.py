@@ -38,7 +38,11 @@ class ListGameWidget(GameWidget):
 
         self.ui.launch_btn.setEnabled(self.rgame.can_launch)
 
-        self.ui.launch_btn.setText(self.tr('Launch') if not self.rgame.is_origin else self.tr('Link/Play'))
+        if not self.rgame.is_third_party:
+            self.ui.launch_btn.setText(self.tr('Launch'))
+        else:
+            self.ui.launch_btn.setText(self.tr('Launch in EA App') if self.rgame.is_origin else self.tr('Launch in Ubisoft Connect'))
+
         self.ui.developer_label.setText(self.rgame.developer)
         # self.version_label.setVisible(self.is_installed)
         if self.rgame.igame:

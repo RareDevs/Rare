@@ -91,8 +91,8 @@ class RareGame(RareGameSlim):
         game: Game,
     ):
         super(RareGame, self).__init__(settings, legendary_core, game)
-        self.__origin_install_path: str | None = None
-        self.__origin_install_size: int | None = None
+        self._third_party_install_path: str | None = None
+        self._third_party_install_size: int | None = None
 
         self.image_manager = image_manager
 
@@ -251,15 +251,15 @@ class RareGame(RareGameSlim):
 
         @return int The size of the installation
         """
-        if self.is_origin:
-            return self.__origin_install_size if self.__origin_install_size is not None else 0
+        if self.is_third_party:
+            return self._third_party_install_size if self._third_party_install_size is not None else 0
         return self.igame.install_size if self.igame is not None else 0
 
     @property
     def install_path(self) -> str | None:
-        if self.is_origin:
+        if self.is_third_party:
             # TODO Linux is also C:\\...
-            return self.__origin_install_path
+            return self._third_party_install_path
         return super(RareGame, self).install_path
 
     @install_path.setter
@@ -267,8 +267,8 @@ class RareGame(RareGameSlim):
         if self.igame:
             self.igame.install_path = path
             self.store_igame()
-        elif self.is_origin:
-            self.__origin_install_path = path
+        elif self.is_third_party:
+            self._third_party_install_path = path
 
     @property
     def remote_version(self) -> str:
@@ -314,7 +314,7 @@ class RareGame(RareGameSlim):
 
         @return bool If the game should be considered installed
         """
-        return (self.igame is not None) or (self.is_origin and self.__origin_install_path is not None)
+        return (self.igame is not None) or self.is_ubisoft or self.is_origin
 
     def set_installed(self, installed: bool) -> None:
         """!
@@ -450,17 +450,13 @@ class RareGame(RareGameSlim):
 
         @return bool If the game doesn't have assets
         """
-
         # Asset infos are usually None, but there was a bug, that it was an empty GameAsset class
-        return not self.game.asset_infos or not next(iter(self.game.asset_infos.values())).app_name
+
+        return not self.game.asset_infos or not next(iter(self.game.asset_infos.values())).app_name or self.is_third_party
 
     @property
     def is_android_only(self) -> bool:
         return self.is_non_asset and self.is_android
-
-    @property
-    def is_ubisoft(self) -> bool:
-        return self.game.partner_link_type == 'ubisoft'
 
     @property
     def folder_name(self) -> str:
@@ -632,9 +628,9 @@ class RareGame(RareGameSlim):
         self.logger.debug(f'Saving tags for {self.game.app_title}: {self.metadata.tags}')
         self.__save_metadata()
 
-    def set_origin_attributes(self, path: str, size: int = 0) -> None:
-        self.__origin_install_path = path
-        self.__origin_install_size = size
+    def set_third_party_attributes(self, path: str, size: int = 0) -> None:
+        self._third_party_install_path = path
+        self._third_party_install_size = size
         if self.install_path and self.install_size:
             self.signals.game.installed.emit(self.app_name)
         else:
@@ -643,7 +639,7 @@ class RareGame(RareGameSlim):
 
     @property
     def can_launch(self) -> bool:
-        if self.is_idle and self.is_origin:
+        if self.is_idle and self.is_third_party:
             return True
         if self.is_installed:
             if (not self.is_idle) or self.needs_verification:

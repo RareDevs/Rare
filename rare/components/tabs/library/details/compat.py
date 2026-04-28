@@ -44,7 +44,11 @@ if pf.system() in {'Linux', 'FreeBSD'}:
 
         def _get_compat_path(self, compat_location: ProtonSettings.CompatLocation):
             folder_name = 'default'
-            local_folder_name = self.rcore.get_game(self.app_name).folder_name
+            rgame = self.rcore.get_game(self.app_name)
+            if rgame.is_third_party:
+                local_folder_name = "Origin" if rgame.is_origin else "Ubisoft"
+            else:
+                local_folder_name = rgame.folder_name
             if compat_location == ProtonSettings.CompatLocation.NONE:
                 if wine_prefix_dir(local_folder_name).joinpath('system.reg').is_file():
                     compat_location = ProtonSettings.CompatLocation.ISOLATED
