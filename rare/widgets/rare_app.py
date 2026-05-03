@@ -76,7 +76,8 @@ class RareApp(QApplication):
         self.logger = logging.getLogger(type(self).__name__)
         self._hook = RareAppException(self)
         self.setQuitOnLastWindowClosed(False)
-        self.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, True)
+        use_qt_dialogs = not os.environ.get('SNAP')
+        self.setAttribute(Qt.ApplicationAttribute.AA_DontUseNativeDialogs, use_qt_dialogs)
 
         self.setDesktopFileName('rare')
         self.setApplicationName('Rare')
