@@ -350,6 +350,7 @@ def create_desktop_link(app_name: str, app_title: str = '', link_name: str = '',
             desktop_file.write(
                 '[Desktop Entry]\n'
                 f'Name={app_title}\n'
+                f'Comment={app_title} (Rare)\n'
                 'Type=Application\n'
                 'Categories=Game;\n'
                 f'Icon={icon_path}\n'
