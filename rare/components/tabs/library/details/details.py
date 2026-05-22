@@ -13,6 +13,7 @@ from PySide6.QtCore import (
 from PySide6.QtGui import QFontMetrics, QHideEvent, QShowEvent
 from PySide6.QtWidgets import (
     QCheckBox,
+    QFormLayout,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -34,6 +35,7 @@ from rare.utils.misc import format_size, qta_icon, relative_date, style_hyperlin
 from rare.utils.paths import cache_dir
 from rare.utils.qrequests import QRequests
 from rare.widgets.dialogs import ButtonDialog, game_title
+from rare.widgets.elide_label import ElideLabel
 from rare.widgets.image_widget import ImageSize, ImageWidget, LoadingImageWidget
 from rare.widgets.side_tab import SideTabContents
 
@@ -65,6 +67,13 @@ class GameDetails(QWidget, SideTabContents):
         self.ui.repair_button.setIcon(qta_icon('mdi.progress-wrench'))
         self.ui.move_button.setIcon(qta_icon('mdi.folder-move-outline'))
         self.ui.uninstall_button.setIcon(qta_icon('ri.uninstall-line'))
+
+        self.version = ElideLabel(parent=self)
+        self.ui.details_layout.setWidget(
+            self.ui.details_layout.getWidgetPosition(self.ui.version_label)[0],
+            QFormLayout.ItemRole.FieldRole,
+            self.version,
+        )
 
         self.ui.grade.setOpenExternalLinks(True)
         self.ui.install_path.setOpenExternalLinks(True)
@@ -325,8 +334,8 @@ class GameDetails(QWidget, SideTabContents):
         self.image.setPixmap(self.rgame.get_pixmap(ImageSize.DisplayTall, True))
 
         self.ui.version_label.setDisabled(self.rgame.is_non_asset)
-        self.ui.version.setDisabled(self.rgame.is_non_asset)
-        self.ui.version.setText(self.rgame.version if not self.rgame.is_non_asset else 'N/A')
+        self.version.setDisabled(self.rgame.is_non_asset)
+        self.version.setText(self.rgame.version if not self.rgame.is_non_asset else 'N/A')
 
         self.ui.install_size_label.setEnabled(bool(self.rgame.install_size))
         self.ui.install_size.setEnabled(bool(self.rgame.install_size))
