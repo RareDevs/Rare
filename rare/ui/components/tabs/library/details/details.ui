@@ -168,7 +168,7 @@
              <x>0</x>
              <y>0</y>
              <width>274</width>
-             <height>371</height>
+             <height>417</height>
             </rect>
            </property>
            <attribute name="label">
@@ -181,7 +181,7 @@
              <x>0</x>
              <y>0</y>
              <width>274</width>
-             <height>371</height>
+             <height>417</height>
             </rect>
            </property>
            <attribute name="label">
@@ -194,7 +194,7 @@
              <x>0</x>
              <y>0</y>
              <width>274</width>
-             <height>371</height>
+             <height>417</height>
             </rect>
            </property>
            <attribute name="label">
@@ -269,7 +269,7 @@
         <item row="0" column="1">
          <widget class="QLabel" name="dev">
           <property name="text">
-           <string notr="true">error</string>
+           <string notr="true">dev_error</string>
           </property>
           <property name="textInteractionFlags">
            <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
@@ -300,7 +300,7 @@
         <item row="1" column="1">
          <widget class="QLabel" name="app_name">
           <property name="text">
-           <string notr="true">error</string>
+           <string notr="true">app_name_error</string>
           </property>
           <property name="textInteractionFlags">
            <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
@@ -328,16 +328,6 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="version">
-          <property name="text">
-           <string notr="true">error</string>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0">
          <widget class="QLabel" name="grade_label">
           <property name="sizePolicy">
@@ -362,7 +352,7 @@
         <item row="3" column="1">
          <widget class="QLabel" name="grade">
           <property name="text">
-           <string notr="true">error</string>
+           <string notr="true">grade_error</string>
           </property>
           <property name="textInteractionFlags">
            <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
@@ -370,7 +360,7 @@
          </widget>
         </item>
         <item row="4" column="0">
-         <widget class="QLabel" name="install_size_label">
+         <widget class="QLabel" name="platform_label">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -383,7 +373,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Installation size</string>
+           <string>Platform</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -391,12 +381,9 @@
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QLabel" name="install_size">
+         <widget class="QLabel" name="platform">
           <property name="text">
-           <string notr="true">error</string>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
+           <string notr="true">platform_error</string>
           </property>
          </widget>
         </item>
@@ -424,7 +411,7 @@
         <item row="5" column="1">
          <widget class="QLabel" name="install_path">
           <property name="text">
-           <string notr="true">error</string>
+           <string notr="true">install_path_error</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
@@ -435,7 +422,7 @@
          </widget>
         </item>
         <item row="6" column="0">
-         <widget class="QLabel" name="platform_label">
+         <widget class="QLabel" name="install_size_label">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -448,7 +435,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Platform</string>
+           <string>Installation size</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -456,9 +443,12 @@
          </widget>
         </item>
         <item row="6" column="1">
-         <widget class="QLabel" name="platform">
+         <widget class="QLabel" name="install_size">
           <property name="text">
-           <string notr="true">error</string>
+           <string notr="true">install_size_error</string>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
           </property>
          </widget>
         </item>
