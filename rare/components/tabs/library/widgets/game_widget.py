@@ -84,6 +84,9 @@ class GameWidget(LibraryWidget):
             'needs_verification': self.tr('Needs verification'),
             'not_can_launch': self.tr("Can't launch"),
             'save_not_up_to_date': self.tr('Save is not up-to-date'),
+            'is_origin': 'The EA App',
+            'is_ubisoft': 'Ubisoft Connect',
+            'is_android': 'Android',
         }
 
         self.hover_strings = {
@@ -150,6 +153,12 @@ class GameWidget(LibraryWidget):
                 and not self.rgame.is_save_up_to_date
             ):
                 self.ui.status_label.setText(self.state_strings['save_not_up_to_date'])
+            elif self.rgame.is_origin:
+                self.ui.status_label.setText(self.state_strings['is_origin'])
+            elif self.rgame.is_ubisoft:
+                self.ui.status_label.setText(self.state_strings['is_ubisoft'])
+            elif self.rgame.is_android_only:
+                self.ui.status_label.setText(self.state_strings['is_android'])
             else:
                 self.ui.status_label.setText(self.state_strings[self.rgame.state])
         else:
