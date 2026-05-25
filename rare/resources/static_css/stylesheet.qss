@@ -107,14 +107,14 @@ QLabel#ProgressLabel {
 QLabel#IconWidgetStatusLabel {
     font-weight: bold;
     color: white;
-    background-color: rgba(0, 0, 0, 65%);
+    background-color: rgba(0, 0, 0, 80%);
     border-radius: 5%;
     border-top-left-radius: 11%;
     border-top-right-radius: 11%;
 }
 QWidget#IconWidgetMiniWidget {
     color: rgb(238, 238, 238);
-    background-color: rgba(0, 0, 0, 65%);
+    background-color: rgba(0, 0, 0, 80%);
     border-radius: 5%;
     border-bottom-left-radius: 9%;
     border-bottom-right-radius: 9%;
@@ -131,7 +131,7 @@ QLabel#IconWidgetTooltipLabel {
 QPushButton#IconWidgetButton {
     border: 1px solid black;
     border-radius: 10%;
-    background-color: rgba(0, 0, 0, 65%);
+    background-color: rgba(0, 0, 0, 80%);
 }
 QPushButton#IconWidgetButton:hover {
     border-color: gray;

@@ -137,7 +137,7 @@ style.QLabel[css_name(ProgressLabel)].setValues(
 from rare.components.tabs.library.widgets.icon_widget import IconWidget  # noqa: E402
 
 icon_background_props = {
-    'backgroundColor': 'rgba(0, 0, 0, 65%)',
+    'backgroundColor': 'rgba(0, 0, 0, 80%)',
 }
 style.QLabel[css_name(IconWidget, 'StatusLabel')].setValues(
     fontWeight='bold',
