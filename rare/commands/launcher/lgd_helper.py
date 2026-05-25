@@ -70,17 +70,21 @@ def get_third_party_params(rgame: RareGameSlim, init: InitParams, launch: Launch
     if platform.system() == 'Windows':
         command = [uri]
     else:
-        command = core.get_app_launch_command(app_name)
+        disable_wine = rgame.core.lgd.config.getboolean(
+            app_name, 'no_wine', fallback=rgame.core.lgd.config.get('default', 'no_wine', fallback=False)
+        )
+        command = core.get_app_launch_command(app_name, disable_wine=disable_wine)
         if not os.path.exists(command[0]) and shutil.which(command[0]) is None:
             return launch
+        command.append('start.exe')
         command.append(uri)
 
-    exe, args, env = prepare_process(command, core.get_app_environment(app_name))
+    _exe, _args, _env = prepare_process(command, core.get_app_environment(app_name))
 
     launch.is_third_party_game = True
-    launch.executable = exe
-    launch.arguments = args
-    launch.environment = env
+    launch.executable = _exe
+    launch.arguments = _args
+    launch.environment = _env
 
     return launch
 
