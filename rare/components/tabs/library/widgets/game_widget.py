@@ -100,6 +100,7 @@ class GameWidget(LibraryWidget):
             'not_can_launch': self.tr("Can't launch"),
         }
 
+        self._pixmap_timer: bool = False
         self._ui = None
 
     # lk: abstract class for typing, the `self.ui` attribute should be used
@@ -123,14 +124,16 @@ class GameWidget(LibraryWidget):
         pass
 
     def paintEvent(self, a0: QPaintEvent) -> None:
+        if self._pixmap_timer:
+            return super().paintEvent(a0)
         if not self.visibleRegion().isNull() and not self.rgame.has_pixmap:
+            self._pixmap_timer = True
             self.startTimer(random.randrange(42, 2361, 129), Qt.TimerType.CoarseTimer)
-            # self.startTimer(random.randrange(42, 2361, 363), Qt.VeryCoarseTimer)
-            # self.rgame.load_pixmap()
-        super().paintEvent(a0)
+        return super().paintEvent(a0)
 
     def timerEvent(self, a0):
         self.killTimer(a0.timerId())
+        self._pixmap_timer = False
         self.rgame.load_pixmaps()
 
     def showEvent(self, a0: QShowEvent) -> None:
