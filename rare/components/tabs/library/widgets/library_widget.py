@@ -148,14 +148,16 @@ class LibraryWidget(ImageWidget):
         self.updateProgress(0)
 
     @Slot(int)
-    def updateProgress(self, progress: int):
+    def updateProgress(self, progress: int) -> None:
         self.progress_label.setText(f'{progress:02}%')
+        if self._color_pixmap is None or self._gray_pixmap is None:
+            return
         if progress > self._progress:
             self._progress = progress
             self.setPixmap(self.progressPixmap(self._color_pixmap, self._gray_pixmap, progress))
 
     @Slot(bool)
-    def hideProgress(self, stopped: bool):
+    def hideProgress(self, stopped: bool) -> None:
         self._color_pixmap = None
         self._gray_pixmap = None
         self.progress_label.setVisible(stopped)
