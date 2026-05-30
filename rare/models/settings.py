@@ -27,7 +27,6 @@ class Settings(Namespace):
     macos_meta = Setting(key='macos_meta', default=pf.system() == 'Darwin', dtype=bool)
     unreal_meta = Setting(key='unreal_meta', default=False, dtype=bool)
     exclude_non_asset = Setting(key='exclude_non_asset', default=False, dtype=bool)
-    exclude_entitlements = Setting(key='exclude_entitlements', default=False, dtype=bool)
 
     language = Setting(key='language', default=locale.getlocale()[0], dtype=str)
 

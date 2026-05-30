@@ -118,9 +118,6 @@ class LegendarySettings(QWidget):
         self.ui.exclude_non_asset_check.setChecked(self.settings.get_value(app_settings.exclude_non_asset))
         self.ui.exclude_non_asset_check.checkStateChanged.connect(self._on_exclude_non_asset_changed)
 
-        self.ui.exclude_entitlements_check.setChecked(self.settings.get_value(app_settings.exclude_entitlements))
-        self.ui.exclude_entitlements_check.checkStateChanged.connect(self._on_exclude_entitlements_changed)
-
         self.ui.refresh_metadata_button.clicked.connect(self._refresh_metadata)
         # FIXME: Disable the button for now because it interferes with RareCore
         self.ui.refresh_metadata_button.setEnabled(False)
@@ -279,7 +276,3 @@ class LegendarySettings(QWidget):
     @Slot(Qt.CheckState)
     def _on_exclude_non_asset_changed(self, state: Qt.CheckState):
         self.settings.set_value(app_settings.exclude_non_asset, state != Qt.CheckState.Unchecked)
-
-    @Slot(Qt.CheckState)
-    def _on_exclude_entitlements_changed(self, state: Qt.CheckState):
-        self.settings.set_value(app_settings.exclude_entitlements, state != Qt.CheckState.Unchecked)
