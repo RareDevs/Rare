@@ -1,5 +1,5 @@
 from .cloud_sync import CloudSyncWorker
-from .fetch import EntitlementsWorker, FetchWorker, GamesDlcsWorker
+from .fetch import FetchWorker, GamesDlcsWorker
 from .install import InstallInfoWorker
 from .move import MoveInfoWorker, MoveWorker
 from .uninstall import UninstallWorker
@@ -9,7 +9,6 @@ from .worker import QueueWorker, Worker
 
 __all__ = [
     'CloudSyncWorker',
-    'EntitlementsWorker',
     'FetchWorker',
     'GamesDlcsWorker',
     'InstallInfoWorker',
