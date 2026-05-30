@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>621</width>
+    <width>641</width>
     <height>420</height>
    </rect>
   </property>
@@ -262,18 +262,6 @@ Disabling this greatly improves start-up time, but some games might not be visib
           </property>
           <property name="text">
            <string>Exclude non-asset games</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="exclude_entitlements_check">
-          <property name="toolTip">
-           <string>Do not load entitlement data (i.e game's date of purchase) on start-up.
-
-Disabling this greatly improves start-up time, but some library filters may not work.</string>
-          </property>
-          <property name="text">
-           <string>Exclude entitlements</string>
           </property>
          </widget>
         </item>
