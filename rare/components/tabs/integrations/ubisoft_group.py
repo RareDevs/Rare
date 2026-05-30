@@ -52,14 +52,7 @@ class UbiGetInfoWorker(Worker):
                 uplay_keys = self.core.egs.store_get_uplay_codes()
             key_list = uplay_keys['data']['PartnerIntegration']['accountUplayCodes']
             redeemed = {k['gameId'] for k in key_list if k['redeemedOnUplay']}
-
-            if (entitlements := self.core.lgd.entitlements) is None:
-                with timelogger(self.logger, 'Request entitlements'):
-                    try:
-                        entitlements = self.core.egs.get_user_entitlements_full()
-                    except Exception as e:
-                        self.logger.warning(e)
-                self.core.lgd.entitlements = entitlements
+            entitlements = self.core.lgd.entitlements
             entitlements = {i['entitlementName'] for i in entitlements}
 
             self.signals.result.emit(redeemed, entitlements, ubi_account_id)
