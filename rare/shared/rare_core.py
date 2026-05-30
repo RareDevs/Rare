@@ -22,7 +22,6 @@ from rare.utils.metrics import timelogger
 from .image_manager import ImageManager
 from .workers import (
     CloudSyncWorker,
-    EntitlementsWorker,
     FetchWorker,
     GamesDlcsWorker,
     MoveWorker,
@@ -42,7 +41,6 @@ class RareCore(QObject):
     # lk: these are unused but remain if case they become relevant
     # completed_saves = Signal()
     # completed_origin = Signal()
-    # completed_entitlements = Signal()
 
     # lk: special case class attribute, this has to be here
     __instance: 'RareCore' = None
@@ -82,7 +80,6 @@ class RareCore(QObject):
 
         self.__fetch_progress: int = 0
         self.__fetched_games_dlcs: bool = False
-        self.__fetched_entitlements: bool = False
         self.__fetched_runtimeassets: bool = False
 
         RareCore.__instance = self
@@ -363,23 +360,13 @@ class RareCore(QObject):
             self.__add_games_and_dlcs(*result)
             self.__fetched_games_dlcs = True
 
-        if result_type == FetchWorker.Result.ENTITLEMENTS:
-            self.__core.lgd.entitlements = result
-            self.__fetched_entitlements = True
-
         if result_type == FetchWorker.Result.RUNTIMEASSETS:
             self.__fetched_runtimeassets = True
 
         self.logger.info('Acquired data from %s worker', FetchWorker.Result(result_type).name)
 
         # Return early if there are still things to fetch
-        if not all(
-            {
-                self.__fetched_games_dlcs,
-                self.__fetched_entitlements,
-                self.__fetched_runtimeassets,
-            }
-        ):
+        if not all({ self.__fetched_games_dlcs, self.__fetched_runtimeassets, }):
             return
 
         self.logger.debug('Fetch time %s seconds', time.perf_counter() - self.__start_time)
@@ -399,16 +386,11 @@ class RareCore(QObject):
         games_dlcs_worker.signals.progress.connect(self.__on_fetch_progress)
         games_dlcs_worker.signals.result.connect(self.__on_fetch_result)
 
-        entitlements_worker = EntitlementsWorker(self.__settings, self.__core, self.__args, segment=5)
-        entitlements_worker.signals.progress.connect(self.__on_fetch_progress)
-        entitlements_worker.signals.result.connect(self.__on_fetch_result)
-
         runtime_assets_worker = RuntimeAssetsWorker(self.__settings, self.__core, self.__args, segment=10)
         runtime_assets_worker.signals.progress.connect(self.__on_fetch_progress)
         runtime_assets_worker.signals.result.connect(self.__on_fetch_result)
 
         QThreadPool.globalInstance().start(games_dlcs_worker)
-        QThreadPool.globalInstance().start(entitlements_worker)
         QThreadPool.globalInstance().start(runtime_assets_worker)
 
     def __fetch_saves(self) -> None:

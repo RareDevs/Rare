@@ -26,7 +26,6 @@ class FetchWorker(Worker):
     class Result(IntEnum):
         ERROR = 0
         GAMESDLCS = 1
-        ENTITLEMENTS = 2
         RUNTIMEASSETS = 3
 
     def __init__(self, settings: RareAppSettings, core: LegendaryCore, args: Namespace, segment: int):
@@ -64,32 +63,6 @@ class RuntimeAssetsWorker(FetchWorker):
                 except Exception as e:
                     self.logger.warning(e)
         self.signals.result.emit((), FetchWorker.Result.RUNTIMEASSETS)
-        return
-
-
-class EntitlementsWorker(FetchWorker):
-    def run_real(self):
-        elapsed_days = 99
-        entitlements_json = os.path.join(self.core.lgd.path, 'entitlements.json')
-        if os.path.exists(entitlements_json):
-            mod_time = datetime.fromtimestamp(os.path.getmtime(entitlements_json))
-            elapsed_days = abs(datetime.now() - mod_time).days
-
-        want_entitlements = not self.settings.get_value(app_settings.exclude_entitlements) and elapsed_days > 1
-        want_entitlements = want_entitlements and not self.args.offline
-
-        entitlements = ()
-        if want_entitlements:
-            # Get entitlements, Ubisoft integration also uses them
-            self.signals.progress.emit(self.segment, self.signals.tr('Updating entitlements'))
-            with timelogger(self.logger, 'Request entitlements'):
-                try:
-                    entitlements = self.core.egs.get_user_entitlements_full()
-                except Exception as e:
-                    self.logger.warning(e)
-            self.core.lgd.entitlements = entitlements
-            self.logger.info('Entitlements: %s', len(list(entitlements)))
-        self.signals.result.emit(entitlements, FetchWorker.Result.ENTITLEMENTS)
         return
 
 
