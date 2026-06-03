@@ -115,9 +115,9 @@ class LocalRunnerSettings(RunnerSettingsBase):
 
     def __steam_appid_save_callback(self, text: str) -> None:
         self.steam_appid_edit.setInfo(self.__grades.steam_titles.get(text, ''))
+        self.rgame.steam_appid = text
         if text == self.rgame.steam_appid:
             return
-        self.rgame.steam_appid = text
         self.rgame.reset_steam_date()
 
     @Slot(Qt.CheckState)
