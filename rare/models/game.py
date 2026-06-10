@@ -5,6 +5,7 @@ import re
 from argparse import Namespace
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from functools import cached_property
 from threading import Lock
 from typing import Optional
 
@@ -550,7 +551,7 @@ class RareGame(RareGameSlim):
 
         return sdl_data
 
-    @property
+    @cached_property
     def sdl_available(self) -> bool:
         if self.igame is not None:
             manifest_data = self.core.lgd.load_manifest(self.app_name, self.igame.version, self.igame.platform)
@@ -881,6 +882,9 @@ class RareEosOverlay(RareGameBase):
             self.logger.error(e)
             return False
         return True
+
+    def sdl_data(self, platform: str) -> dict[str, dict] | None:
+        return None
 
     def install(self) -> bool:
         if not self.is_idle:
