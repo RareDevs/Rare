@@ -1,7 +1,5 @@
-import os
 import platform
 from argparse import Namespace
-from datetime import datetime
 from enum import IntEnum
 
 from PySide6.QtCore import QObject, Signal

@@ -1,5 +1,4 @@
 from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtWidgets import QLabel
 from requests.exceptions import ConnectionError, HTTPError
 
 from rare.shared import RareCore
