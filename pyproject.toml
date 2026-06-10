@@ -26,7 +26,7 @@ dependencies = [
     "QtAwesome",
     "legendary-gl @ git+https://github.com/RareDevs/legendary@3f5a7b31c2f61fe6a63248cf7972c678c4684068",
     "orjson",
-    "vdf @ git+https://github.com/solsticegamestudios/vdf/be1f7220238022f8b29fe747f0b643f280bfdb6e",
+    "vdf @ git+https://github.com/solsticegamestudios/vdf@f47c683c1330f0fcddec034fd49c26e41acd63f2",
     "pywin32 ; platform_system == 'Windows'",
 ]
 
