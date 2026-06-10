@@ -6,7 +6,7 @@ PySide6-Essentials >= 6.8.1
 QtAwesome
 legendary-gl @ https://github.com/RareDevs/legendary/archive/3f5a7b31c2f61fe6a63248cf7972c678c4684068.zip
 orjson
-vdf @ https://github.com/solsticegamestudios/vdf/archive/be1f7220238022f8b29fe747f0b643f280bfdb6e.zip
+vdf @ https://github.com/solsticegamestudios/vdf/archive/f47c683c1330f0fcddec034fd49c26e41acd63f2.zip
 pywin32 ; platform_system == "Windows"
 pypresence
 
