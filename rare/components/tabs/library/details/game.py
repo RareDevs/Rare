@@ -132,7 +132,8 @@ class LocalLaunchSettings(LaunchSettingsBase):
     def _lgd_wrapper_check_changed(self, state: Qt.CheckState):
         _wrapper = str(wrapper_path())
         config.adjust_envvar_with_global(
-            self.app_name, 'LEGENDARY_WRAPPER_EXE', _wrapper if state == Qt.CheckState.Checked else ''
+            self.app_name, 'LEGENDARY_WRAPPER_EXE',
+            _wrapper if state == Qt.CheckState.Checked else '0' if config.get_envvar('default', 'LEGENDARY_WRAPPER_EXE') else ''
         )
         self.environ_changed.emit('LEGENDARY_WRAPPER_EXE')
 
