@@ -117,9 +117,9 @@ def get_game_params(rgame: RareGameSlim, init: InitParams, launch: LaunchParams)
     full_params = []
     full_params.extend(params.launch_command)
     if 'LEGENDARY_WRAPPER_EXE' in params.environment:
-        lgd_wrapper = params.environment.pop('LEGENDARY_WRAPPER_EXE', '').strip()
-        if lgd_wrapper and os.path.isfile(lgd_wrapper):
-            full_params.append(lgd_wrapper)
+        wrapper = params.environment.pop('LEGENDARY_WRAPPER_EXE', '').strip()
+        if wrapper.endswith('.exe') and os.path.isfile(wrapper):
+            full_params.append(wrapper)
     full_params.append(os.path.join(params.game_directory, params.game_executable))
     full_params.extend(params.game_parameters)
     full_params.extend(params.egl_parameters)
