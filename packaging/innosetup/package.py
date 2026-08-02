@@ -7,14 +7,21 @@ from typing import Any
 
 import requests
 
-from rare import __version__
-
 INNOSETUP_VERSION = '7.0.2'
 USER_AGENT = 'Rare-IS-Builder / 1.0 https://github.com/RareDevs/Rare'
 
 GITHUB_HEADERS = {'Accept': 'application/vnd.github+json', 'User-Agent': USER_AGENT, 'X-GitHub-Api-Version': '2026-03-10'}
 MY_DIR = Path(__file__).parent
 REPO_ROOT = MY_DIR.parent.parent
+
+PACKAGE_ARCH = os.environ.get('INNOSETUP_PACKAGE_ARCH', 'x86_64')
+PACKAGE_FILES = os.environ.get('INNOSETUP_PACKAGE_FILES')
+try:
+    from rare import __version__
+    PACKAGE_VERSION = __version__
+except ImportError:
+    __version__ = '0.0.0.0'
+    PACKAGE_VERSION = os.environ.get('INNOSETUP_PACKAGE_VERSION', __version__)
 
 
 def install_innosetup() -> None:
@@ -79,18 +86,31 @@ def main():
         if iscc_path is None:
             raise RuntimeError('Did not find "iscc" executable after installation')
 
-    installer_files = list((REPO_ROOT / 'build').glob('exe.win*'))
-    if not installer_files:
-        raise RuntimeError(f'Did not find an "exe.win..." folder in {REPO_ROOT / "build"}. Did you run "freeze.py build_exe"?')
-    if len(installer_files) > 1:
-        print(f'Warning: Found multiple executable directories in {REPO_ROOT / "build"}. Choosing {installer_files[0]}')
-    files_dir = installer_files[0]
+    if PACKAGE_FILES is None:
+        installer_files = list((REPO_ROOT / 'build').glob('exe.win*'))
+        if not installer_files:
+            raise RuntimeError(f'Did not find an "exe.win..." folder in {REPO_ROOT / "build"}. Did you run "freeze.py build_exe"?')
+        if len(installer_files) > 1:
+            print(f'Warning: Found multiple executable directories in {REPO_ROOT / "build"}. Choosing {installer_files[0]}')
+        files_dir = installer_files[0]
+    else:
+        files_dir = REPO_ROOT / PACKAGE_FILES
+        if not files_dir.is_dir():
+            raise RuntimeError(f'Did not find folder {files_dir}. Did you build the project first?')
+
+    if PACKAGE_ARCH == 'arm64':
+        app_architecture = app_platform = 'arm64'
+    else:
+        app_architecture = 'x64compatible'
+        app_platform = 'x86_64'
 
     subprocess.run(
         [
             iscc_path,
-            f'/dAppVersion={__version__}',
-            f'/dNumericVersion={try_make_numeric(__version__)}',
+            f'/dAppVersion={try_make_numeric(PACKAGE_VERSION)}',
+            f'/dNumericVersion={try_make_numeric(PACKAGE_VERSION)}',
+            f'/dAppArchitecture={app_architecture}',
+            f'/dAppPlatform={app_platform}',
             f'/dSourceDir={REPO_ROOT}',
             f'/dFilesDir={files_dir}',
             MY_DIR / 'setup.iss',

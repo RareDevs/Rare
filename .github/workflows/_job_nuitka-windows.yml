@@ -96,9 +96,23 @@ jobs:
           mv rare.dist Rare-${{ inputs.version }}
           python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}', 'zip', '.', 'Rare-${{ inputs.version }}')"
           mv Rare-${{ inputs.version }}.zip Rare-${{ inputs.version }}-${{ matrix.arch }}-windows.zip
+      - name: Create installer
+        shell: bash
+        env:
+          INNOSETUP_PACKAGE_ARCH: ${{ matrix.arch }}
+          INNOSETUP_PACKAGE_FILES: Rare-${{ inputs.version }}
+          INNOSETUP_PACKAGE_VERSION: ${{ inputs.version }}
+        run: |
+          python packaging/innosetup/package.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: Rare-${{ inputs.version }}-${{ matrix.arch }}-windows.zip
           path: Rare-${{ inputs.version }}-${{ matrix.arch }}-windows.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Rare-${{ inputs.version }}-${{ matrix.arch }}-setup.exe
+          path: build/Rare-${{ inputs.version }}-${{ matrix.arch }}-setup.exe
