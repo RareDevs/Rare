@@ -102,8 +102,8 @@ jobs:
         shell: bash
         run: |
           mv rare.app Rare-${{ inputs.version }}-${{ matrix.arch }}.app
-          python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}-${{ matrix.arch }}.app', 'zip', '.', 'Rare-${{ inputs.version }}-${{ matrix.arch }}.app')"
-          mv Rare-${{ inputs.version }}-${{ matrix.arch }}.app.zip Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.app.zip
+          python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}-${{ matrix.arch }}', 'zip', '.', 'Rare-${{ inputs.version }}-${{ matrix.arch }}.app')"
+          mv Rare-${{ inputs.version }}-${{ matrix.arch }}.zip Rare-${{ inputs.version }}-${{ matrix.arch }}-macos.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
