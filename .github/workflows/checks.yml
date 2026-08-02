@@ -41,7 +41,7 @@ jobs:
           pip3 install pylint
       - name: Install target dependencies
         run: |
-          pip3 install -r misc/requirements.in
+          pip3 install -r packaging/requirements.in
       - name: Generate version information
         run: |
           pip3 install setuptools-scm
