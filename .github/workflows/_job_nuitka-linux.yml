@@ -93,14 +93,19 @@ jobs:
           find rare.dist -iname "*.so*" -type f -exec strip --strip-all {} \;
           strip --strip-all rare.dist/Rare.bin
       - name: Compress
+        id: compress
         shell: bash
+        env:
+          basename: Rare-${{ inputs.version }}-${{ matrix.arch }}-linux
         run: |
-          mv rare.dist Rare-${{ inputs.version }}
-          python -c "import shutil; shutil.make_archive('Rare-${{ inputs.version }}', 'zip', '.', 'Rare-${{ inputs.version }}')"
-          mv Rare-${{ inputs.version }}.zip Rare-${{ inputs.version }}-${{ matrix.arch }}-linux.zip
+          mv rare.dist ${{ env.basename }}
+          python -c "import shutil; fn='${{ env.basename }}'; shutil.make_archive(fn, 'zip', '.', fn)"
+          echo "basename=${{ env.basename }}" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Rare-${{ inputs.version }}-${{ matrix.arch }}-linux.zip
-          path: Rare-${{ inputs.version }}-${{ matrix.arch }}-linux.zip
+          name: ${{ steps.compress.outputs.basename }}.zip
+          path: ${{ steps.compress.outputs.basename }}.zip
+          if-no-files-found: error
+          archive: false
