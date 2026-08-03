@@ -100,7 +100,9 @@ jobs:
     with:
       version: ${{ inputs.prerelease && needs.version.outputs.version || github.ref_name }}
       file1: Rare-${{ needs.version.outputs.version }}-x86_64-windows.zip
+      file3: Rare-${{ needs.version.outputs.version }}-x86_64-setup.exe
       file2: Rare-${{ needs.version.outputs.version }}-arm64-windows.zip
+      file4: Rare-${{ needs.version.outputs.version }}-arm64-setup.exe
 
   cx-freeze-appimage:
     if: ${{ true }}
