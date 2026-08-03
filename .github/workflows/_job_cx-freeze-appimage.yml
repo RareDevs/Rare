@@ -52,21 +52,28 @@ jobs:
           ./tools/ts2qm.py
           python3 -m setuptools_scm --force-write-version-files
       - name: Build
+        id: build
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
+          basename: Rare-${{ inputs.version }}-${{ matrix.arch }}
         run: |
           python3 freeze.py bdist_appimage --updateinformation="gh-releases-zsync|RareDevs|Rare|latest-all|Rare*-${{ matrix.arch }}.AppImage.zsync"
-          mv dist/Rare-*.AppImage Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage
-          mv dist/Rare-*.AppImage.zsync Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage.zsync
+          mv dist/Rare-*.AppImage ${{ env.basename }}.AppImage
+          mv dist/Rare-*.AppImage.zsync ${{ env.basename }}.AppImage.zsync
+          echo "basename=${{ env.basename }}" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage
-          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage
+          name: ${{ steps.build.outputs.basename }}.AppImage
+          path: ${{ steps.build.outputs.basename }}.AppImage
+          if-no-files-found: error
+          archive: false
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage.zsync
-          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.AppImage.zsync
+          name: ${{ steps.build.outputs.basename }}.AppImage.zsync
+          path: ${{ steps.build.outputs.basename }}.AppImage.zsync
+          if-no-files-found: error
+          archive: false

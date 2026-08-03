@@ -53,14 +53,19 @@ jobs:
           ./tools/ts2qm.py
           python3 -m setuptools_scm --force-write-version-files
       - name: Build
+        id: build
         env:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.version }}
+          basename: Rare-${{ inputs.version }}-${{ matrix.arch }}
         run: |
           python3 freeze.py bdist_dmg
-          mv build/Rare.dmg Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
+          mv build/Rare.dmg ${{ env.basename }}.dmg
+          echo "basename=${{ env.basename }}" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
-          path: Rare-${{ inputs.version }}-${{ matrix.arch }}.dmg
+          name: ${{ steps.build.outputs.basename }}.dmg
+          path: ${{ steps.build.outputs.basename }}.dmg
+          if-no-files-found: error
+          archive: false
