@@ -502,25 +502,37 @@ class RareGame(RareGameSlim):
             ret = Namespace(**ret)
         return ret
 
-    @property
-    def eulas(self) -> list:
+    def pending_eulas(self) -> list:
         eulas = self.game.metadata.get('eulaIds') or ['$']
-
         pattern = r'\w+'
         keys = []
         for eula in eulas:
             keys += re.findall(pattern, eula)
-
         not_accepted_eulas = []
         for key in keys:
-            # if args.skip_epic and key == 'egstore':
-            #     continue
-            self.logger.debug(f'Fetching eula status for "{key}"')
-            eula = self.core.egs.eula_get_status(key)
+            self.logger.debug(f'Fetching EULA status for "{key}"')
+            # FIXME: Legendary 0.21.0 compatibility
+            try:
+                eula = self.core.egs.eula_get_status(key)
+            except Exception as e:
+                self.logger.error(f'Failed to fetch EULA status for "{key}" {e!r}')
+                continue
             if eula:
                 not_accepted_eulas.append(eula)
-
         return not_accepted_eulas
+
+    def accept_eulas(self, eulas: list) -> bool:
+        for eula in eulas:
+            key = eula.get('key')
+            version = eula.get('version')
+            locale = eula.get('locale')
+            self.logger.debug(f'Accepting "{key}" version {version}')
+            try:
+                self.core.egs.eula_accept(key, version, locale)
+            except Exception as e:
+                self.logger.error(f'Failed to accept EULA "{key}" {e!r}')
+                return False
+        return True
 
     def sdl_data(self, platform: str) -> dict[str, dict] | None:
         sdl_data = {}
@@ -881,6 +893,12 @@ class RareEosOverlay(RareGameBase):
             self.logger.error('Exception while writing registry to disable the overlay.')
             self.logger.error(e)
             return False
+        return True
+
+    def pending_eulas(self) -> list:
+        return []
+
+    def accept_euals(self, eulas: list):
         return True
 
     def sdl_data(self, platform: str) -> dict[str, dict] | None:
