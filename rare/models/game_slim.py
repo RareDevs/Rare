@@ -262,9 +262,15 @@ class RareGameSlim(RareGameBase):
             latest = self.latest_save
             # lk: if the save path wasn't known at startup, dt_local will be None
             # In that case resolve the save again before returning
-            latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
-                self.save_path, self.igame.save_timestamp, latest.file
-            )
+            # FIXME: Legendary 0.21.0 compatibility
+            if hasattr(self.igame, "save_timestamp"):
+                latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
+                    self.save_path, self.igame.save_timestamp, latest.file
+                )
+            else:
+                latest.status, (latest.dt_local, latest.dt_remote) = self.core.check_savegame_state(
+                    self.save_path, latest.file
+                )
             return latest.status, (latest.dt_local, latest.dt_remote)
         return SaveGameStatus.NO_SAVE, (None, None)
 
