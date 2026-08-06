@@ -20,11 +20,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: actions/setup-python@v7
-        with:
-          cache: pip
-          python-version: '3.13'
-          check-latest: true
+      - uses: ./.github/actions/setup-python
       - name: Install build dependencies
         run: |
           pip3 install --upgrade pip
