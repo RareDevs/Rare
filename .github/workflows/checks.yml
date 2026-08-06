@@ -31,9 +31,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: ./.github/actions/setup-python
         with:
-          python-version: ${{ matrix.version }}
+          version: ${{ matrix.version }}
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
