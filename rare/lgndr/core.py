@@ -102,7 +102,14 @@ class LegendaryCore(LegendaryCoreReal):
     #     return super(LegendaryCore, self).get_installed_game(app_name, skip_sync)
 
     def prepare_download(self, *args, **kwargs) -> tuple[DLManager, AnalysisResult, InstalledGame]:
-        dlm, analysis, igame = super(LegendaryCore, self).prepare_download(*args, **kwargs)
+        # FIXME: Legendary 0.21.0 compatibility
+        try:
+            dlm, analysis, igame = super(LegendaryCore, self).prepare_download(*args, **kwargs)
+        except TypeError:
+            _kwargs = kwargs
+            if "read_files" in _kwargs:
+                _kwargs.pop("read_files")
+            dlm, analysis, igame = super(LegendaryCore, self).prepare_download(*args, **_kwargs)
         # lk: monkeypatch run_real (the method that emits the stats) into DLManager
         # pylint: disable=E1111
         dlm.run_real = DLManager.run_real.__get__(dlm, DLManager)
