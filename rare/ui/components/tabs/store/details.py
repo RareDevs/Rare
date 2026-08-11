@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 
 ################################################################################
 ## Form generated from reading UI file 'details.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.1
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,24 +24,24 @@ from PySide6.QtWidgets import (
 )
 
 
-class Ui_StoreDetailsWidget(object):
+class Ui_StoreDetailsWidget:
     def setupUi(self, StoreDetailsWidget):
         if not StoreDetailsWidget.objectName():
-            StoreDetailsWidget.setObjectName(u"StoreDetailsWidget")
+            StoreDetailsWidget.setObjectName("StoreDetailsWidget")
         StoreDetailsWidget.resize(850, 492)
-        StoreDetailsWidget.setWindowTitle(u"StoreDetailsWidget")
+        StoreDetailsWidget.setWindowTitle("StoreDetailsWidget")
         self.main_layout = QHBoxLayout(StoreDetailsWidget)
-        self.main_layout.setObjectName(u"main_layout")
+        self.main_layout.setObjectName("main_layout")
         self.left_layout = QVBoxLayout()
-        self.left_layout.setObjectName(u"left_layout")
+        self.left_layout.setObjectName("left_layout")
         self.back_button = QPushButton(StoreDetailsWidget)
-        self.back_button.setObjectName(u"back_button")
+        self.back_button.setObjectName("back_button")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.back_button.sizePolicy().hasHeightForWidth())
         self.back_button.setSizePolicy(sizePolicy)
-        self.back_button.setText(u"")
+        self.back_button.setText("")
         self.back_button.setIconSize(QSize(32, 32))
         self.back_button.setFlat(True)
 
@@ -53,9 +52,9 @@ class Ui_StoreDetailsWidget(object):
 
         self.right_layout = QGridLayout()
         self.right_layout.setSpacing(24)
-        self.right_layout.setObjectName(u"right_layout")
+        self.right_layout.setObjectName("right_layout")
         self.requirements_frame = QFrame(StoreDetailsWidget)
-        self.requirements_frame.setObjectName(u"requirements_frame")
+        self.requirements_frame.setObjectName("requirements_frame")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
@@ -64,32 +63,32 @@ class Ui_StoreDetailsWidget(object):
         self.requirements_frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.requirements_frame.setFrameShadow(QFrame.Shadow.Sunken)
         self.requirements_layout = QHBoxLayout(self.requirements_frame)
-        self.requirements_layout.setObjectName(u"requirements_layout")
+        self.requirements_layout.setObjectName("requirements_layout")
         self.requirements_layout.setContentsMargins(0, 0, 0, 0)
 
         self.right_layout.addWidget(self.requirements_frame, 2, 0, 1, 2, Qt.AlignmentFlag.AlignBottom)
 
         self.description_label = QTextBrowser(StoreDetailsWidget)
-        self.description_label.setObjectName(u"description_label")
+        self.description_label.setObjectName("description_label")
         self.description_label.setMinimumSize(QSize(450, 0))
         self.description_label.setOpenExternalLinks(True)
 
         self.right_layout.addWidget(self.description_label, 1, 0, 1, 1)
 
         self.details_widget = QWidget(StoreDetailsWidget)
-        self.details_widget.setObjectName(u"details_widget")
+        self.details_widget.setObjectName("details_widget")
         sizePolicy1.setHeightForWidth(self.details_widget.sizePolicy().hasHeightForWidth())
         self.details_widget.setSizePolicy(sizePolicy1)
         self.details_widget.setMinimumSize(QSize(450, 0))
         self.details_layout = QFormLayout(self.details_widget)
-        self.details_layout.setObjectName(u"details_layout")
+        self.details_layout.setObjectName("details_layout")
         self.details_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         self.details_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.details_layout.setHorizontalSpacing(12)
         self.details_layout.setVerticalSpacing(12)
         self.details_layout.setContentsMargins(12, 0, 0, 0)
         self.title_label = QLabel(self.details_widget)
-        self.title_label.setObjectName(u"title_label")
+        self.title_label.setObjectName("title_label")
         font = QFont()
         font.setBold(True)
         self.title_label.setFont(font)
@@ -98,108 +97,108 @@ class Ui_StoreDetailsWidget(object):
         self.details_layout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.title_label)
 
         self.title = QLabel(self.details_widget)
-        self.title.setObjectName(u"title")
-        self.title.setText(u"title")
+        self.title.setObjectName("title")
+        self.title.setText("title")
         self.title.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.details_layout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.title)
 
         self.developer_label = QLabel(self.details_widget)
-        self.developer_label.setObjectName(u"developer_label")
+        self.developer_label.setObjectName("developer_label")
         self.developer_label.setFont(font)
         self.developer_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.developer_label)
 
         self.developer = QLabel(self.details_widget)
-        self.developer.setObjectName(u"developer")
-        self.developer.setText(u"developer")
+        self.developer.setObjectName("developer")
+        self.developer.setText("developer")
         self.developer.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.details_layout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.developer)
 
         self.publisher_label = QLabel(self.details_widget)
-        self.publisher_label.setObjectName(u"publisher_label")
+        self.publisher_label.setObjectName("publisher_label")
         self.publisher_label.setFont(font)
         self.publisher_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.publisher_label)
 
         self.publisher = QLabel(self.details_widget)
-        self.publisher.setObjectName(u"publisher")
-        self.publisher.setText(u"publisher")
+        self.publisher.setObjectName("publisher")
+        self.publisher.setText("publisher")
         self.publisher.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.details_layout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.publisher)
 
         self.status_label = QLabel(self.details_widget)
-        self.status_label.setObjectName(u"status_label")
+        self.status_label.setObjectName("status_label")
         self.status_label.setFont(font)
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.status_label)
 
         self.status = QLabel(self.details_widget)
-        self.status.setObjectName(u"status")
+        self.status.setObjectName("status")
 
         self.details_layout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.status)
 
         self.price_label = QLabel(self.details_widget)
-        self.price_label.setObjectName(u"price_label")
+        self.price_label.setObjectName("price_label")
         self.price_label.setFont(font)
         self.price_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.price_label)
 
         self.tags_label = QLabel(self.details_widget)
-        self.tags_label.setObjectName(u"tags_label")
+        self.tags_label.setObjectName("tags_label")
         self.tags_label.setFont(font)
         self.tags_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(5, QFormLayout.ItemRole.LabelRole, self.tags_label)
 
         self.tags = QLabel(self.details_widget)
-        self.tags.setObjectName(u"tags")
-        self.tags.setText(u"tags")
+        self.tags.setObjectName("tags")
+        self.tags.setText("tags")
 
         self.details_layout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.tags)
 
         self.social_links_label = QLabel(self.details_widget)
-        self.social_links_label.setObjectName(u"social_links_label")
+        self.social_links_label.setObjectName("social_links_label")
         self.social_links_label.setFont(font)
         self.social_links_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.social_links_label)
 
         self.actions_label = QLabel(self.details_widget)
-        self.actions_label.setObjectName(u"actions_label")
+        self.actions_label.setObjectName("actions_label")
         self.actions_label.setFont(font)
         self.actions_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.details_layout.setWidget(7, QFormLayout.ItemRole.LabelRole, self.actions_label)
 
         self.social_links = QWidget(self.details_widget)
-        self.social_links.setObjectName(u"social_links")
+        self.social_links.setObjectName("social_links")
         self.social_links_layout = QHBoxLayout(self.social_links)
-        self.social_links_layout.setObjectName(u"social_links_layout")
+        self.social_links_layout.setObjectName("social_links_layout")
         self.social_links_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         self.social_links_layout.setContentsMargins(0, 0, 0, 0)
 
         self.details_layout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.social_links)
 
         self.actions_widget = QWidget(self.details_widget)
-        self.actions_widget.setObjectName(u"actions_widget")
+        self.actions_widget.setObjectName("actions_widget")
         self.actions_widget.setMinimumSize(QSize(300, 0))
         self.actions_layout = QVBoxLayout(self.actions_widget)
-        self.actions_layout.setObjectName(u"actions_layout")
+        self.actions_layout.setObjectName("actions_layout")
         self.actions_layout.setContentsMargins(0, 0, 0, 0)
         self.store_button = QPushButton(self.actions_widget)
-        self.store_button.setObjectName(u"store_button")
+        self.store_button.setObjectName("store_button")
 
         self.actions_layout.addWidget(self.store_button)
 
         self.wishlist_button = QPushButton(self.actions_widget)
-        self.wishlist_button.setObjectName(u"wishlist_button")
+        self.wishlist_button.setObjectName("wishlist_button")
 
         self.actions_layout.addWidget(self.wishlist_button)
 
@@ -207,26 +206,26 @@ class Ui_StoreDetailsWidget(object):
         self.details_layout.setWidget(7, QFormLayout.ItemRole.FieldRole, self.actions_widget)
 
         self.price = QWidget(self.details_widget)
-        self.price.setObjectName(u"price")
+        self.price.setObjectName("price")
         sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.price.sizePolicy().hasHeightForWidth())
         self.price.setSizePolicy(sizePolicy2)
         self.price_layout = QHBoxLayout(self.price)
-        self.price_layout.setObjectName(u"price_layout")
+        self.price_layout.setObjectName("price_layout")
         self.price_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         self.price_layout.setContentsMargins(0, 0, 0, 0)
         self.original_price = QLabel(self.price)
-        self.original_price.setObjectName(u"original_price")
-        self.original_price.setText(u"orignal")
+        self.original_price.setObjectName("original_price")
+        self.original_price.setText("orignal")
         self.original_price.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.price_layout.addWidget(self.original_price)
 
         self.discount_price = QLabel(self.price)
-        self.discount_price.setObjectName(u"discount_price")
-        self.discount_price.setText(u"discount")
+        self.discount_price.setObjectName("discount_price")
+        self.discount_price.setText("discount")
 
         self.price_layout.addWidget(self.discount_price)
 
@@ -246,17 +245,16 @@ class Ui_StoreDetailsWidget(object):
     # setupUi
 
     def retranslateUi(self, StoreDetailsWidget):
-        self.title_label.setText(QCoreApplication.translate("StoreDetailsWidget", u"Title", None))
-        self.developer_label.setText(QCoreApplication.translate("StoreDetailsWidget", u"Developer", None))
-        self.publisher_label.setText(QCoreApplication.translate("StoreDetailsWidget", u"Publisher", None))
-        self.status_label.setText(QCoreApplication.translate("StoreDetailsWidget", u"Status", None))
-        self.status.setText(QCoreApplication.translate("StoreDetailsWidget", u"You already own this game", None))
-        self.price_label.setText(QCoreApplication.translate("StoreDetailsWidget", u"Price", None))
-        self.tags_label.setText(QCoreApplication.translate("StoreDetailsWidget", u"Tags", None))
-        self.social_links_label.setText(QCoreApplication.translate("StoreDetailsWidget", u"Links", None))
-        self.actions_label.setText(QCoreApplication.translate("StoreDetailsWidget", u"Actions", None))
-        self.store_button.setText(QCoreApplication.translate("StoreDetailsWidget", u"Buy in Epic Games Store", None))
-        self.wishlist_button.setText(QCoreApplication.translate("StoreDetailsWidget", u"Add to wishlist", None))
-        pass
+        self.title_label.setText(QCoreApplication.translate("StoreDetailsWidget", "Title", None))
+        self.developer_label.setText(QCoreApplication.translate("StoreDetailsWidget", "Developer", None))
+        self.publisher_label.setText(QCoreApplication.translate("StoreDetailsWidget", "Publisher", None))
+        self.status_label.setText(QCoreApplication.translate("StoreDetailsWidget", "Status", None))
+        self.status.setText(QCoreApplication.translate("StoreDetailsWidget", "You already own this game", None))
+        self.price_label.setText(QCoreApplication.translate("StoreDetailsWidget", "Price", None))
+        self.tags_label.setText(QCoreApplication.translate("StoreDetailsWidget", "Tags", None))
+        self.social_links_label.setText(QCoreApplication.translate("StoreDetailsWidget", "Links", None))
+        self.actions_label.setText(QCoreApplication.translate("StoreDetailsWidget", "Actions", None))
+        self.store_button.setText(QCoreApplication.translate("StoreDetailsWidget", "Buy in Epic Games Store", None))
+        self.wishlist_button.setText(QCoreApplication.translate("StoreDetailsWidget", "Add to wishlist", None))
     # retranslateUi
 

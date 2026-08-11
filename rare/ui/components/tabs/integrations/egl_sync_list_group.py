@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 
 ################################################################################
 ## Form generated from reading UI file 'egl_sync_list_group.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -21,23 +20,23 @@ from PySide6.QtWidgets import (
 )
 
 
-class Ui_EGLSyncListGroup(object):
+class Ui_EGLSyncListGroup:
     def setupUi(self, EGLSyncListGroup):
         if not EGLSyncListGroup.objectName():
-            EGLSyncListGroup.setObjectName(u"EGLSyncListGroup")
+            EGLSyncListGroup.setObjectName("EGLSyncListGroup")
         EGLSyncListGroup.resize(461, 206)
-        EGLSyncListGroup.setWindowTitle(u"EGLSyncListGroup")
-        EGLSyncListGroup.setTitle(u"")
+        EGLSyncListGroup.setWindowTitle("EGLSyncListGroup")
+        EGLSyncListGroup.setTitle("")
         self.egl_sync_list_layout = QVBoxLayout(EGLSyncListGroup)
-        self.egl_sync_list_layout.setObjectName(u"egl_sync_list_layout")
+        self.egl_sync_list_layout.setObjectName("egl_sync_list_layout")
         self.label = QLabel(EGLSyncListGroup)
-        self.label.setObjectName(u"label")
-        self.label.setText(u"")
+        self.label.setObjectName("label")
+        self.label.setText("")
 
         self.egl_sync_list_layout.addWidget(self.label)
 
         self.list = QListWidget(EGLSyncListGroup)
-        self.list.setObjectName(u"list")
+        self.list.setObjectName("list")
         self.list.setAlternatingRowColors(True)
         self.list.setSpacing(1)
         self.list.setSortingEnabled(True)
@@ -45,22 +44,22 @@ class Ui_EGLSyncListGroup(object):
         self.egl_sync_list_layout.addWidget(self.list)
 
         self.buttons_widget = QWidget(EGLSyncListGroup)
-        self.buttons_widget.setObjectName(u"buttons_widget")
+        self.buttons_widget.setObjectName("buttons_widget")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.buttons_widget.sizePolicy().hasHeightForWidth())
         self.buttons_widget.setSizePolicy(sizePolicy)
         self.buttons_layout = QHBoxLayout(self.buttons_widget)
-        self.buttons_layout.setObjectName(u"buttons_layout")
+        self.buttons_layout.setObjectName("buttons_layout")
         self.buttons_layout.setContentsMargins(0, 0, 0, 0)
         self.select_all_button = QPushButton(self.buttons_widget)
-        self.select_all_button.setObjectName(u"select_all_button")
+        self.select_all_button.setObjectName("select_all_button")
 
         self.buttons_layout.addWidget(self.select_all_button)
 
         self.select_none_button = QPushButton(self.buttons_widget)
-        self.select_none_button.setObjectName(u"select_none_button")
+        self.select_none_button.setObjectName("select_none_button")
 
         self.buttons_layout.addWidget(self.select_none_button)
 
@@ -69,8 +68,8 @@ class Ui_EGLSyncListGroup(object):
         self.buttons_layout.addItem(self.buttons_hspacer)
 
         self.action_button = QPushButton(self.buttons_widget)
-        self.action_button.setObjectName(u"action_button")
-        self.action_button.setText(u"Action")
+        self.action_button.setObjectName("action_button")
+        self.action_button.setText("Action")
 
         self.buttons_layout.addWidget(self.action_button)
 
@@ -82,8 +81,7 @@ class Ui_EGLSyncListGroup(object):
     # setupUi
 
     def retranslateUi(self, EGLSyncListGroup):
-        self.select_all_button.setText(QCoreApplication.translate("EGLSyncListGroup", u"Select all", None))
-        self.select_none_button.setText(QCoreApplication.translate("EGLSyncListGroup", u"Select none", None))
-        pass
+        self.select_all_button.setText(QCoreApplication.translate("EGLSyncListGroup", "Select all", None))
+        self.select_none_button.setText(QCoreApplication.translate("EGLSyncListGroup", "Select none", None))
     # retranslateUi
 

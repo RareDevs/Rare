@@ -2,7 +2,7 @@
 ################################################################################
 ## Form generated from reading UI file 'legendary.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.1
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -251,6 +251,5 @@ class Ui_LegendarySettings:
         self.exclude_non_asset_check.setText(QCoreApplication.translate("LegendarySettings", "Exclude non-asset games", None))
         self.metadata_info.setText(QCoreApplication.translate("LegendarySettings", "Restart Rare to apply", None))
         self.refresh_metadata_button.setText(QCoreApplication.translate("LegendarySettings", "Refresh metadata", None))
-        pass
     # retranslateUi
 
