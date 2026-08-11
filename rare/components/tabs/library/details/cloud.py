@@ -23,11 +23,11 @@ from rare.models.game import RareGame
 from rare.models.pathspec import PathSpec
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
-from rare.shared.workers.cloud_sync import CloudSyncWorker
+from rare.shared.workers.cloud import CloudSyncWorker
 from rare.shared.workers.wine_resolver import WineSavePathResolver
-from rare.ui.components.tabs.library.details.cloud_sync_widget import Ui_CloudSyncWidget
 from rare.utils.metrics import timelogger
 from rare.utils.misc import qta_icon
+from rare.widgets.cloudsync_widget import CloudSyncWidget
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 from rare.widgets.loading_widget import LoadingWidget
 from rare.widgets.side_tab import SideTabContents
@@ -38,25 +38,12 @@ class CloudSaves(QWidget, SideTabContents):
         super(CloudSaves, self).__init__(parent=parent)
         self.logger = getLogger(type(self).__name__)
 
-        self.sync_widget = QWidget(self)
-        self.sync_ui = Ui_CloudSyncWidget()
-        self.sync_ui.setupUi(self.sync_widget)
-
-        self.settings = settings
-        self.rcore = rcore
-        self.core = rcore.core()
-
-        self.sync_ui.icon_local.setPixmap(qta_icon('mdi.harddisk', 'fa5s.desktop').pixmap(128, 128))
-        self.sync_ui.icon_remote.setPixmap(qta_icon('mdi.cloud-outline', 'fa5s.cloud').pixmap(128, 128))
-
-        self.sync_ui.upload_button.clicked.connect(self.upload)
-        self.sync_ui.download_button.clicked.connect(self.download)
+        self.sync_widget = CloudSyncWidget(self)
+        self.sync_widget.uploadClicked.connect(self._on_upload)
+        self.sync_widget.downloadClicked.connect(self._on_download)
 
         self.loading_widget = LoadingWidget(parent=self.sync_widget)
         self.loading_widget.setVisible(False)
-
-        self.rgame: RareGame = None
-        self.save_path_spec: str = None
 
         self.settings_widget = QGroupBox(self)
         self.settings_widget.setTitle(self.tr('Settings'))
@@ -95,6 +82,12 @@ class CloudSaves(QWidget, SideTabContents):
         layout.addWidget(self.info_label)
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding))
 
+        self.settings = settings
+        self.rcore = rcore
+        self.core = rcore.core()
+        self.rgame: RareGame = None
+        self.save_path_spec: str = None
+
     def edit_save_path(self, text: str) -> tuple[bool, str, int]:
         # Validate against raw_save_path (usefull when the user types the path manually)
         # path = os.path.normpath(text.lower()).split("/")
@@ -114,13 +107,13 @@ class CloudSaves(QWidget, SideTabContents):
         if text != self.rgame.save_path:
             self.rgame.save_path = text
 
-    def upload(self):
+    def _on_upload(self):
         self.sync_widget.setEnabled(False)
         self.loading_widget.setVisible(True)
         worker = CloudSyncWorker(self.rgame, CloudSyncWorker.Mode.UPLOAD)
         self.rcore.enqueue_worker(self.rgame, worker)
 
-    def download(self):
+    def _on_download(self):
         self.sync_widget.setEnabled(False)
         self.loading_widget.setVisible(True)
         worker = CloudSyncWorker(self.rgame, CloudSyncWorker.Mode.DOWNLOAD)
@@ -195,10 +188,10 @@ class CloudSaves(QWidget, SideTabContents):
         self.info_label.setText(info_text)
         self.info_label.setVisible(bool(info_text))
         if not saves_ready:
-            self.sync_ui.date_info_local.setText('None')
-            self.sync_ui.age_label_local.setText('None')
-            self.sync_ui.date_info_remote.setText('None')
-            self.sync_ui.age_label_remote.setText('None')
+            self.sync_widget.local.date_label.setText('None')
+            self.sync_widget.local.age_label.setText('None')
+            self.sync_widget.remote.date_label.setText('None')
+            self.sync_widget.remote.age_label.setText('None')
             self.cloud_sync_check.setChecked(False)
             self.cloud_save_path_edit.setText('')
             return
@@ -206,12 +199,12 @@ class CloudSaves(QWidget, SideTabContents):
         status, (dt_local, dt_remote) = self.rgame.save_game_state
 
         local_tz = datetime.now().astimezone().tzinfo
-        self.sync_ui.date_info_local.setText(dt_local.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_local else 'None')
-        self.sync_ui.date_info_remote.setText(dt_remote.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_remote else 'None')
+        self.sync_widget.local.date_label.setText(dt_local.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_local else 'None')
+        self.sync_widget.remote.date_label.setText(dt_remote.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_remote else 'None')
 
         newer = self.tr('Newer')
-        self.sync_ui.age_label_local.setText(f'<b>{newer}</b>' if status == SaveGameStatus.LOCAL_NEWER else ' ')
-        self.sync_ui.age_label_remote.setText(f'<b>{newer}</b>' if status == SaveGameStatus.REMOTE_NEWER else ' ')
+        self.sync_widget.local.age_label.setText(f'<b>{newer}</b>' if status == SaveGameStatus.LOCAL_NEWER else ' ')
+        self.sync_widget.remote.age_label.setText(f'<b>{newer}</b>' if status == SaveGameStatus.REMOTE_NEWER else ' ')
 
         button_disabled = self.rgame.state in [
             RareGame.State.RUNNING,
@@ -223,8 +216,8 @@ class CloudSaves(QWidget, SideTabContents):
         else:
             self.loading_widget.stop()
 
-        self.sync_ui.upload_button.setDisabled(not dt_local)
-        self.sync_ui.download_button.setDisabled(not dt_remote)
+        self.sync_widget.local.button.setDisabled(not dt_local)
+        self.sync_widget.remote.button.setDisabled(not dt_remote)
 
         self.cloud_sync_check.blockSignals(True)
         self.cloud_sync_check.setChecked(self.rgame.auto_sync_saves)

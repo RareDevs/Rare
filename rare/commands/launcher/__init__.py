@@ -31,11 +31,11 @@ from PySide6.QtWidgets import QApplication
 from rare.lgndr.core import LegendaryCore
 from rare.models.game_slim import RareGameSlim
 from rare.models.launcher import Actions, BaseModel, ErrorModel, FinishedModel, StateChangedModel
-from rare.shared.workers.cloud_sync import CloudSyncWorker
+from rare.shared.workers.cloud import CloudSyncWorker
 from rare.utils.paths import get_rare_executable
 from rare.widgets.rare_app import RareApp, RareAppException
 
-from .cloud_sync_dialog import CloudSyncDialog, CloudSyncDialogResult
+from .cloud_dialog import CloudSyncDialog, CloudSyncDialogResult
 from .console_dialog import ConsoleDialog
 from .lgd_helper import InitParams, LaunchParams, dict_to_qprocenv, get_configured_qprocess, get_launch_params
 
@@ -122,7 +122,7 @@ class SyncCheckWorker(QRunnable):
     def run(self) -> None:
         try:
             self.rgame.update_saves()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.signals.error_occurred.emit(str(e))
             return
         self.signals.sync_state_ready.emit()
@@ -203,16 +203,28 @@ class RareLauncher(RareApp):
 
     @Slot(QProcess.ProcessState)
     def _on_game_process_changed(self, state: QProcess.ProcessState):
+        if not self.console:
+             return
         self.console.kill_button.setEnabled(state == QProcess.ProcessState.Running)
         self.console.terminate_button.setEnabled(state == QProcess.ProcessState.Running)
 
     @Slot()
     def _proc_log_stdout(self):
-        self.console.log_stdout(self.game_process.readAllStandardOutput().data().decode('utf-8', 'ignore'))
+        if not self.console:
+             return
+        data = self.game_process.readAllStandardOutput().data()
+        if isinstance(data, memoryview):
+            data = data.tobytes()
+        self.console.log_stdout(data.decode('utf-8', 'ignore'))
 
     @Slot()
     def _proc_log_stderr(self):
-        self.console.log_stderr(self.game_process.readAllStandardError().data().decode('utf-8', 'ignore'))
+        if not self.console:
+             return
+        data = self.game_process.readAllStandardError().data()
+        if isinstance(data, memoryview):
+            data = data.tobytes()
+        self.console.log_stderr(data.decode('utf-8', 'ignore'))
 
     @Slot()
     def _proc_term(self):
@@ -233,20 +245,21 @@ class RareLauncher(RareApp):
             with contextlib.suppress(RuntimeError):
                 self.socket.disconnectFromServer()
         self.logger.info('New connection')
-        self.socket = self.server.nextPendingConnection()
-        self.socket.disconnected.connect(self.socket_disconnected)
-        self.socket.flush()
+        socket = self.server.nextPendingConnection()
+        socket.disconnected.connect(self.socket_disconnected)
+        socket.flush()
+        self.socket = socket
 
     def socket_disconnected(self):
         self.logger.info('Server disconnected')
         self.socket = None
 
     def send_message(self, message: BaseModel):
-        if self.socket:
-            self.socket.write(json.dumps(vars(message)).encode('utf-8'))
-            self.socket.flush()
-        else:
+        if not self.socket:
             self.logger.error("Can't send message")
+            return
+        self.socket.write(json.dumps(vars(message)).encode('utf-8'))
+        self.socket.flush()
 
     def check_saves(self, exit_code: int):
         # self.rgame.signals.widget.refresh.connect(lambda: self.on_exit(exit_code))
@@ -258,12 +271,13 @@ class RareLauncher(RareApp):
             action = CloudSyncDialogResult.UPLOAD
             self.check_saves_finished(exit_code, action)
         else:
-            self.sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
+            sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
             # self.sync_dialog.result_ready.connect(
             #     lambda a: self.__check_saves_finished(exit_code, a)
             # )
-            self.sync_dialog.result_ready.connect((lambda obj, a: obj.check_saves_finished(exit_code, a)).__get__(self))
-            self.sync_dialog.open()
+            sync_dialog.result_ready.connect((lambda obj, a: obj.check_saves_finished(exit_code, a)).__get__(self))
+            sync_dialog.open()
+            self.sync_dialog = sync_dialog
 
     @Slot(int, int)
     @Slot(int, CloudSyncDialogResult)
@@ -427,9 +441,10 @@ class RareLauncher(RareApp):
             return
 
         _, (dt_local, dt_remote) = self.rgame.save_game_state
-        self.sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
-        self.sync_dialog.result_ready.connect(self.__sync_ready)
-        self.sync_dialog.open()
+        sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
+        sync_dialog.result_ready.connect(self.__sync_ready)
+        sync_dialog.open()
+        self.sync_dialog = sync_dialog
 
     @Slot(int)
     @Slot(CloudSyncDialogResult)
@@ -534,7 +549,7 @@ def launcher(args: Namespace) -> int:
 
     try:
         exit_code = app.exec()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         app.logger.error('Unhandled error %s', e)
         exit_code = 1
     finally:

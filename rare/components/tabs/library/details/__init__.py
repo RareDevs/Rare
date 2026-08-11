@@ -11,7 +11,7 @@ from rare.shared import RareCore
 from rare.utils.json_formatter import QJsonModel
 from rare.widgets.side_tab import SideTabContents, SideTabWidget
 
-from .cloud_saves import CloudSaves
+from .cloud import CloudSaves
 from .compat import LocalCompatSettings
 from .details import GameDetails
 from .dlcs import GameDlcs

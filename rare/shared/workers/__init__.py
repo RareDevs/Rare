@@ -1,4 +1,4 @@
-from .cloud_sync import CloudSyncWorker
+from .cloud import CloudSyncWorker
 from .fetch import FetchWorker, GamesDlcsWorker
 from .install import InstallInfoWorker
 from .move import MoveInfoWorker, MoveWorker
