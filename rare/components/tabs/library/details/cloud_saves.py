@@ -6,6 +6,7 @@ from logging import getLogger
 from legendary.models.game import SaveGameStatus
 from PySide6.QtCore import Qt, QThreadPool, Slot
 from PySide6.QtWidgets import (
+    QCheckBox,
     QFileDialog,
     QFormLayout,
     QGroupBox,
@@ -24,9 +25,6 @@ from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
 from rare.shared.workers.cloud_sync import CloudSyncWorker
 from rare.shared.workers.wine_resolver import WineSavePathResolver
-from rare.ui.components.tabs.library.details.cloud_settings_widget import (
-    Ui_CloudSettingsWidget,
-)
 from rare.ui.components.tabs.library.details.cloud_sync_widget import Ui_CloudSyncWidget
 from rare.utils.metrics import timelogger
 from rare.utils.misc import qta_icon
@@ -60,9 +58,8 @@ class CloudSaves(QWidget, SideTabContents):
         self.rgame: RareGame = None
         self.save_path_spec: str = None
 
-        self.cloud_widget = QGroupBox(self)
-        self.cloud_ui = Ui_CloudSettingsWidget()
-        self.cloud_ui.setupUi(self.cloud_widget)
+        self.settings_widget = QGroupBox(self)
+        self.settings_widget.setTitle(self.tr('Settings'))
 
         self.cloud_save_path_edit = PathEdit(
             path='',
@@ -72,24 +69,29 @@ class CloudSaves(QWidget, SideTabContents):
             save_func=self.save_save_path,
         )
         self.cloud_save_path_edit.setReadOnly(True)
-        self.cloud_ui.main_layout.setWidget(
-            self.cloud_ui.main_layout.getWidgetPosition(self.cloud_ui.path_label)[0],
-            QFormLayout.ItemRole.FieldRole,
-            self.cloud_save_path_edit,
-        )
 
         self.compute_save_path_button = QPushButton(qta_icon('fa.magic', 'fa5s.magic'), self.tr('Resolve path'))
         self.compute_save_path_button.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
-        self.compute_save_path_button.clicked.connect(self.__compute_save_path)
-        self.cloud_ui.main_layout.addRow(None, self.compute_save_path_button)
+        self.compute_save_path_button.clicked.connect(self._compute_save_path)
 
-        self.cloud_ui.sync_check.checkStateChanged.connect(self.__sync_check_changed)
+        font = self.font()
+        font.setItalic(True)
+
+        self.cloud_sync_check = QCheckBox(self.tr('Automatically synchronize saves with the cloud'))
+        self.cloud_sync_check.setObjectName('InfoLabel')
+        self.cloud_sync_check.setFont(font)
+        self.cloud_sync_check.checkStateChanged.connect(self._sync_check_changed)
+
+        settings_layout = QFormLayout(self.settings_widget)
+        settings_layout.addRow(self.tr('Enable sync'), self.cloud_sync_check)
+        settings_layout.addRow(self.tr('Saves path'), self.cloud_save_path_edit)
+        settings_layout.addRow('', self.compute_save_path_button)
 
         self.info_label = QLabel(parent=self)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.sync_widget)
-        layout.addWidget(self.cloud_widget)
+        layout.addWidget(self.settings_widget)
         layout.addWidget(self.info_label)
         layout.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding))
 
@@ -124,7 +126,7 @@ class CloudSaves(QWidget, SideTabContents):
         worker = CloudSyncWorker(self.rgame, CloudSyncWorker.Mode.DOWNLOAD)
         self.rcore.enqueue_worker(self.rgame, worker)
 
-    def __compute_save_path(self):
+    def _compute_save_path(self):
         if self.rgame.is_installed and self.rgame.game.supports_cloud_saves:
             try:
                 with timelogger(self.logger, 'Detecting save path'):
@@ -143,18 +145,18 @@ class CloudSaves(QWidget, SideTabContents):
                 self.cloud_save_path_edit.setDisabled(True)
                 self.compute_save_path_button.setDisabled(True)
 
-                resolver.signals.result_ready.connect(self.__on_wine_resolver_result)
+                resolver.signals.result_ready.connect(self._on_wine_resolver_result)
                 QThreadPool.globalInstance().start(resolver)
                 return
             else:
                 self.cloud_save_path_edit.setText(new_path)
 
     @Slot(Qt.CheckState)
-    def __sync_check_changed(self, state: Qt.CheckState):
+    def _sync_check_changed(self, state: Qt.CheckState):
         self.settings.set_with_global(app_settings.auto_sync_cloud, state != Qt.CheckState.Unchecked, self.rgame.app_name)
 
     @Slot(str, str)
-    def __on_wine_resolver_result(self, path, app_name):
+    def _on_wine_resolver_result(self, path, app_name):
         self.logger.info('Wine resolver finished for %s', app_name)
         self.logger.info('Computed save path: %s', path)
         if app_name == self.rgame.app_name:
@@ -178,13 +180,13 @@ class CloudSaves(QWidget, SideTabContents):
                 return
             self.cloud_save_path_edit.setText(path)
 
-    def __update_widget(self):
+    def _update_widget(self):
         supports_saves = self.rgame.game.supports_cloud_saves or self.rgame.game.supports_mac_cloud_saves
         saves_ready = self.rgame.igame is not None and supports_saves
 
         self.sync_widget.setEnabled(bool(saves_ready and self.rgame.save_path))  # and not self.rgame.is_save_up_to_date))
 
-        self.cloud_widget.setEnabled(saves_ready)
+        self.settings_widget.setEnabled(saves_ready)
         info_text = (
             self.tr("<b>This game doesn't support cloud saves</b>")
             if not supports_saves
@@ -197,7 +199,7 @@ class CloudSaves(QWidget, SideTabContents):
             self.sync_ui.age_label_local.setText('None')
             self.sync_ui.date_info_remote.setText('None')
             self.sync_ui.age_label_remote.setText('None')
-            self.cloud_ui.sync_check.setChecked(False)
+            self.cloud_sync_check.setChecked(False)
             self.cloud_save_path_edit.setText('')
             return
 
@@ -224,22 +226,22 @@ class CloudSaves(QWidget, SideTabContents):
         self.sync_ui.upload_button.setDisabled(not dt_local)
         self.sync_ui.download_button.setDisabled(not dt_remote)
 
-        self.cloud_ui.sync_check.blockSignals(True)
-        self.cloud_ui.sync_check.setChecked(self.rgame.auto_sync_saves)
-        self.cloud_ui.sync_check.blockSignals(False)
+        self.cloud_sync_check.blockSignals(True)
+        self.cloud_sync_check.setChecked(self.rgame.auto_sync_saves)
+        self.cloud_sync_check.blockSignals(False)
 
         self.cloud_save_path_edit.setText(self.rgame.save_path if self.rgame.save_path else '')
         if platform.system() == 'Windows' and not self.rgame.save_path:
-            self.__compute_save_path()
+            self._compute_save_path()
 
     def update_game(self, rgame: RareGame):
         if self.rgame:
-            self.rgame.signals.widget.refresh.disconnect(self.__update_widget)
+            self.rgame.signals.widget.refresh.disconnect(self._update_widget)
 
         self.rgame = rgame
         self.save_path_spec = PathSpec(self.core, self.rgame.igame).resolve_egl_path_vars(self.rgame.raw_save_path)
 
         self.set_title.emit(rgame.app_title)
-        rgame.signals.widget.refresh.connect(self.__update_widget)
+        rgame.signals.widget.refresh.connect(self._update_widget)
 
-        self.__update_widget()
+        self._update_widget()
