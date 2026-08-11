@@ -1,7 +1,9 @@
 # from logging import getLogger
+from datetime import datetime
 
+from legendary.models.game import SaveGameStatus
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPixmap, QResizeEvent
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from rare.utils.misc import qta_icon
@@ -57,3 +59,19 @@ class CloudSyncWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.local, stretch=2)
         layout.addWidget(self.remote, stretch=2)
+
+    def update_widget(self, status: SaveGameStatus, dt_local: datetime | None, dt_remote: datetime | None):
+        local_tz = datetime.now().astimezone().tzinfo
+        self.local.date_label.setText(
+            dt_local.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_local else 'None'
+        )
+        self.remote.date_label.setText(
+            dt_remote.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_remote else 'None'
+        )
+
+        newer = self.tr('Newer')
+        self.local.age_label.setText(f'<b>{newer}</b>' if status == SaveGameStatus.LOCAL_NEWER else ' ')
+        self.remote.age_label.setText(f'<b>{newer}</b>' if status == SaveGameStatus.REMOTE_NEWER else ' ')
+
+        self.local.button.setDisabled(not dt_local)
+        self.remote.button.setDisabled(not dt_remote)

@@ -197,15 +197,7 @@ class CloudSaves(QWidget, SideTabContents):
             return
 
         status, (dt_local, dt_remote) = self.rgame.save_game_state
-
-        local_tz = datetime.now().astimezone().tzinfo
-        self.sync_widget.local.date_label.setText(dt_local.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_local else 'None')
-        self.sync_widget.remote.date_label.setText(dt_remote.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_remote else 'None')
-
-        newer = self.tr('Newer')
-        self.sync_widget.local.age_label.setText(f'<b>{newer}</b>' if status == SaveGameStatus.LOCAL_NEWER else ' ')
-        self.sync_widget.remote.age_label.setText(f'<b>{newer}</b>' if status == SaveGameStatus.REMOTE_NEWER else ' ')
-
+        self.sync_widget.update_widget(status, dt_local, dt_remote)
         button_disabled = self.rgame.state in [
             RareGame.State.RUNNING,
             RareGame.State.SYNCING,
@@ -215,9 +207,6 @@ class CloudSaves(QWidget, SideTabContents):
             self.loading_widget.start()
         else:
             self.loading_widget.stop()
-
-        self.sync_widget.local.button.setDisabled(not dt_local)
-        self.sync_widget.remote.button.setDisabled(not dt_remote)
 
         self.cloud_sync_check.blockSignals(True)
         self.cloud_sync_check.setChecked(self.rgame.auto_sync_saves)

@@ -265,13 +265,13 @@ class RareLauncher(RareApp):
         # self.rgame.signals.widget.refresh.connect(lambda: self.on_exit(exit_code))
         self.rgame.signals.widget.refresh.connect((lambda obj: obj.on_exit(exit_code)).__get__(self))
 
-        state, (dt_local, dt_remote) = self.rgame.save_game_state
+        status, (dt_local, dt_remote) = self.rgame.save_game_state
 
-        if state == SaveGameStatus.LOCAL_NEWER and not self.no_sync_on_exit:
+        if status == SaveGameStatus.LOCAL_NEWER and not self.no_sync_on_exit:
             action = CloudSyncDialogResult.UPLOAD
             self.check_saves_finished(exit_code, action)
         else:
-            sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
+            sync_dialog = CloudSyncDialog(self.rgame.igame, status, dt_local, dt_remote)
             # self.sync_dialog.result_ready.connect(
             #     lambda a: self.__check_saves_finished(exit_code, a)
             # )
@@ -440,8 +440,8 @@ class RareLauncher(RareApp):
             self.start_prepare()
             return
 
-        _, (dt_local, dt_remote) = self.rgame.save_game_state
-        sync_dialog = CloudSyncDialog(self.rgame.igame, dt_local, dt_remote)
+        status, (dt_local, dt_remote) = self.rgame.save_game_state
+        sync_dialog = CloudSyncDialog(self.rgame.igame, status, dt_local, dt_remote)
         sync_dialog.result_ready.connect(self.__sync_ready)
         sync_dialog.open()
         self.sync_dialog = sync_dialog
