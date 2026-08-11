@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 
 ################################################################################
 ## Form generated from reading UI file 'console_env.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -13,14 +12,14 @@ from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QAbstractItemView, QDialogButtonBox, QTableWidget, QTableWidgetItem, QVBoxLayout
 
 
-class Ui_ConsoleEnv(object):
+class Ui_ConsoleEnv:
     def setupUi(self, ConsoleEnv):
         if not ConsoleEnv.objectName():
-            ConsoleEnv.setObjectName(u"ConsoleEnv")
+            ConsoleEnv.setObjectName("ConsoleEnv")
         ConsoleEnv.resize(600, 400)
-        ConsoleEnv.setWindowTitle(u"ConsoleEnv")
+        ConsoleEnv.setWindowTitle("ConsoleEnv")
         self.layout = QVBoxLayout(ConsoleEnv)
-        self.layout.setObjectName(u"layout")
+        self.layout.setObjectName("layout")
         self.table = QTableWidget(ConsoleEnv)
         if (self.table.columnCount() < 2):
             self.table.setColumnCount(2)
@@ -28,9 +27,9 @@ class Ui_ConsoleEnv(object):
         self.table.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
         self.table.setHorizontalHeaderItem(1, __qtablewidgetitem1)
-        self.table.setObjectName(u"table")
+        self.table.setObjectName("table")
         font = QFont()
-        font.setFamilies([u"Monospace"])
+        font.setFamilies(["Monospace"])
         self.table.setFont(font)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setAlternatingRowColors(True)
@@ -45,7 +44,7 @@ class Ui_ConsoleEnv(object):
         self.layout.addWidget(self.table)
 
         self.buttons = QDialogButtonBox(ConsoleEnv)
-        self.buttons.setObjectName(u"buttons")
+        self.buttons.setObjectName("buttons")
         self.buttons.setOrientation(Qt.Horizontal)
         self.buttons.setStandardButtons(QDialogButtonBox.Close)
 
@@ -59,9 +58,8 @@ class Ui_ConsoleEnv(object):
 
     def retranslateUi(self, ConsoleEnv):
         ___qtablewidgetitem = self.table.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("ConsoleEnv", u"Variable", None))
+        ___qtablewidgetitem.setText(QCoreApplication.translate("ConsoleEnv", "Variable", None))
         ___qtablewidgetitem1 = self.table.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("ConsoleEnv", u"Value", None))
-        pass
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("ConsoleEnv", "Value", None))
     # retranslateUi
 

@@ -2,7 +2,7 @@
 ################################################################################
 ## Form generated from reading UI file 'details.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.1
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -437,6 +437,5 @@ class Ui_GameDetails:
         self.uninstall_button.setText(QCoreApplication.translate("GameDetails", "Uninstall", None))
         self.install_button.setText(QCoreApplication.translate("GameDetails", "Install", None))
         self.import_button.setText(QCoreApplication.translate("GameDetails", "Import", None))
-        pass
     # retranslateUi
 
