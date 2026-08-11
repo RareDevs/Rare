@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from enum import IntEnum
 from logging import getLogger
 
-from legendary.models.game import InstalledGame
+from legendary.models.game import InstalledGame, SaveGameStatus
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout
 
@@ -25,7 +25,7 @@ class CloudSyncDialogResult(IntEnum):
 class CloudSyncDialog(ButtonDialog):
     result_ready: Signal = Signal(CloudSyncDialogResult)
 
-    def __init__(self, igame: InstalledGame, dt_local: datetime | None, dt_remote: datetime | None, parent=None):
+    def __init__(self, igame: InstalledGame, status: SaveGameStatus, dt_local: datetime | None, dt_remote: datetime | None, parent=None):
         super(CloudSyncDialog, self).__init__(parent=parent)
         header = self.tr('Cloud saves for')
         self.setWindowTitle(game_title(header, igame.title))
@@ -33,8 +33,13 @@ class CloudSyncDialog(ButtonDialog):
         title_label = QLabel(f'<h4>{game_title(header, igame.title)}</h4>', self)
 
         sync_widget = CloudSyncWidget(self)
+        sync_widget.update_widget(status, dt_local, dt_remote)
         sync_widget.uploadClicked.connect(self._on_upload)
         sync_widget.downloadClicked.connect(self._on_download)
+
+        min_width = max(sync_widget.local.minimumSizeHint().width(), sync_widget.remote.minimumSizeHint().width())
+        sync_widget.local.setMinimumWidth(min_width)
+        sync_widget.remote.setMinimumWidth(min_width)
 
         layout = QVBoxLayout()
         layout.addWidget(title_label)
@@ -47,10 +52,8 @@ class CloudSyncDialog(ButtonDialog):
 
         self.status = CloudSyncDialogResult.CANCEL
 
-        newer = self.tr('Newer')
         if dt_remote and dt_local:
-            sync_widget.local.age_label.setText(f'<b>{newer}</b>' if dt_remote < dt_local else ' ')
-            sync_widget.remote.age_label.setText(f'<b>{newer}</b>' if dt_remote > dt_local else ' ')
+            pass
         # Set status, if one of them is None
         elif dt_remote and not dt_local:
             self.status = CloudSyncDialogResult.DOWNLOAD
@@ -58,14 +61,6 @@ class CloudSyncDialog(ButtonDialog):
             self.status = CloudSyncDialogResult.UPLOAD
         else:
             self.status = CloudSyncDialogResult.SKIP
-
-        local_tz = datetime.now().astimezone().tzinfo
-        sync_widget.local.date_label.setText(dt_local.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_local else 'None')
-        sync_widget.remote.date_label.setText(dt_remote.astimezone(local_tz).strftime('%A, %d %B %Y %X') if dt_remote else 'None')
-
-        min_width = max(sync_widget.local.minimumSizeHint().width(), sync_widget.remote.minimumSizeHint().width())
-        sync_widget.local.setMinimumWidth(min_width)
-        sync_widget.remote.setMinimumWidth(min_width)
 
         if self.status == CloudSyncDialogResult.SKIP:
             self.accept()
@@ -98,6 +93,7 @@ if __name__ == '__main__':
 
     dlg = CloudSyncDialog(
         core.get_installed_list()[0],
+        SaveGameStatus.LOCAL_NEWER,
         datetime.now(tz=timezone.utc),
         datetime.strptime('2021,1', '%Y,%M').replace(tzinfo=timezone.utc)
     )
