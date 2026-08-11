@@ -115,7 +115,7 @@ style.QLabel['#QueueWorkerLabel'][f'[workertype="{widget_object_name(MoveWorker,
     backgroundColor=move_color.darker(400).name(),
 )
 
-from rare.shared.workers.cloud_sync import CloudSyncWorker  # noqa: E402
+from rare.shared.workers.cloud import CloudSyncWorker  # noqa: E402
 
 style.QLabel['#QueueWorkerLabel'][f'[workertype="{widget_object_name(CloudSyncWorker, "")}"]'].setValues(
     borderColor=cloud_sync_color.darker(200).name(),
