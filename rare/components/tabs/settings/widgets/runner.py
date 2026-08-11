@@ -66,6 +66,7 @@ class RunnerSettingsBase(QGroupBox):
         font = self.font()
         font.setItalic(True)
         self.shader_cache_check = QCheckBox(self.tr('Use game-specific shader cache directory'), self)
+        self.shader_cache_check.setObjectName('InfoLabel')
         self.shader_cache_check.setFont(font)
         self.shader_cache_check.setChecked(self.settings.get_value(app_settings.local_shader_cache))
         self.shader_cache_check.checkStateChanged.connect(self._shader_cache_check_changed)

@@ -50,6 +50,7 @@ class LaunchSettingsBase(QGroupBox):
         font.setItalic(True)
 
         self.prelaunch_check = QCheckBox(self.tr('Wait for the pre-launch command to finish before launching the game'))
+        self.prelaunch_check.setObjectName('InfoLabel')
         self.prelaunch_check.setFont(font)
         self.prelaunch_check.checkStateChanged.connect(self._prelauch_check_changed)
 
@@ -68,6 +69,7 @@ class LaunchSettingsBase(QGroupBox):
         self.lgd_wrapper = QCheckBox(
             self.tr('Use "EpicGamesLauncher.exe" shim for compatibility with third-party launchers (Rockstar etc.)')
         )
+        self.lgd_wrapper.setObjectName('InfoLabel')
         self.lgd_wrapper.setFont(font)
         self.lgd_wrapper.checkStateChanged.connect(self._lgd_wrapper_check_changed)
 
