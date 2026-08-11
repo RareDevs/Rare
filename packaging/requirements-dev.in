@@ -1,6 +1,4 @@
-pylint
-mypy
-black[d]
 PySide6-stubs
 qstylizer
 ruff
+ty
