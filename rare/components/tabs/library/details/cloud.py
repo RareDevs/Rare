@@ -1,9 +1,7 @@
 import os
 import platform
-from datetime import datetime
 from logging import getLogger
 
-from legendary.models.game import SaveGameStatus
 from PySide6.QtCore import Qt, QThreadPool, Slot
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -39,11 +37,10 @@ class CloudSaves(QWidget, SideTabContents):
         self.logger = getLogger(type(self).__name__)
 
         self.sync_widget = CloudSyncWidget(self)
-        self.sync_widget.uploadClicked.connect(self._on_upload)
-        self.sync_widget.downloadClicked.connect(self._on_download)
+        self.sync_widget.upload_clicked.connect(self._on_upload)
+        self.sync_widget.download_clicked.connect(self._on_download)
 
         self.loading_widget = LoadingWidget(parent=self.sync_widget)
-        self.loading_widget.setVisible(False)
 
         self.settings_widget = QGroupBox(self)
         self.settings_widget.setTitle(self.tr('Settings'))

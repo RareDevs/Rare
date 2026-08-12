@@ -10,7 +10,7 @@ from rare.utils.misc import qta_icon
 
 
 class CloudSyncItemWidget(QGroupBox):
-    buttonClicked = Signal()
+    button_clicked = Signal()
 
     def __init__(self, title: str, icon: QPixmap, text: str, parent=None):
         super(CloudSyncItemWidget, self).__init__(title, parent=parent)
@@ -24,7 +24,7 @@ class CloudSyncItemWidget(QGroupBox):
         self.age_label = QLabel(self)
         self.age_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.button = QPushButton(text, self)
-        self.button.clicked.connect(self.buttonClicked)
+        self.button.clicked.connect(self.button_clicked)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.date_label)
@@ -34,8 +34,8 @@ class CloudSyncItemWidget(QGroupBox):
 
 
 class CloudSyncWidget(QWidget):
-    uploadClicked = Signal()
-    downloadClicked = Signal()
+    upload_clicked = Signal()
+    download_clicked = Signal()
 
     def __init__(self, parent=None):
         super(CloudSyncWidget, self).__init__(parent=parent)
@@ -46,14 +46,14 @@ class CloudSyncWidget(QWidget):
             qta_icon('mdi.harddisk', 'fa5s.desktop').pixmap(128, 128),
             self.tr('Upload'),
         )
-        self.local.buttonClicked.connect(self.uploadClicked)
+        self.local.button_clicked.connect(self.upload_clicked)
 
         self.remote = CloudSyncItemWidget(
             self.tr('Remote'),
             qta_icon('mdi.cloud-outline', 'fa5s.cloud').pixmap(128, 128),
             self.tr('Download'),
         )
-        self.remote.buttonClicked.connect(self.downloadClicked)
+        self.remote.button_clicked.connect(self.download_clicked)
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)

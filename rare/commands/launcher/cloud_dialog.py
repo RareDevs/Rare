@@ -34,8 +34,8 @@ class CloudSyncDialog(ButtonDialog):
 
         sync_widget = CloudSyncWidget(self)
         sync_widget.update_widget(status, dt_local, dt_remote)
-        sync_widget.uploadClicked.connect(self._on_upload)
-        sync_widget.downloadClicked.connect(self._on_download)
+        sync_widget.upload_clicked.connect(self._on_upload)
+        sync_widget.download_clicked.connect(self._on_download)
 
         min_width = max(sync_widget.local.minimumSizeHint().width(), sync_widget.remote.minimumSizeHint().width())
         sync_widget.local.setMinimumWidth(min_width)

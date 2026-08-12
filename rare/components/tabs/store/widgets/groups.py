@@ -8,10 +8,7 @@ class StoreGroup(QGroupBox):
         super().__init__(parent=parent)
         self.setTitle(title)
         self.main_layout = layout(self)
-        self.loading_widget = LoadingWidget(autostart=True, parent=self)
+        self.loading_widget = LoadingWidget(True, parent=self)
 
     def loading(self, state: bool) -> None:
-        if state:
-            self.loading_widget.start()
-        else:
-            self.loading_widget.stop()
+        self.loading_widget.setVisible(state)
