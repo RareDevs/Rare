@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 )
 
 from rare.utils.misc import qta_icon
+from rare.widgets.loading_widget import LoadingWidget
 
 
 def game_title(text: str, app_title: str) -> str:
@@ -38,7 +39,7 @@ class BaseDialog(QDialog):
 
         self.logger = getLogger(type(self).__name__)
 
-    def setWindowTitle(self, a0):
+    def setWindowTitle(self, a0: str):
         super().setWindowTitle(dialog_title(a0))
 
     def exec(self):
@@ -111,8 +112,8 @@ class ButtonDialog(BaseDialog):
         self.main_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         self.main_layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
-        self.__central_widget: QWidget = None
-        self.__central_layout: QLayout = None
+        self._central_widget: QWidget = None
+        self._central_layout: QLayout = None
 
     def close(self):
         raise RuntimeError(f"Don't use `close()` with {type(self).__name__}")
@@ -125,19 +126,19 @@ class ButtonDialog(BaseDialog):
         widget.layout().setContentsMargins(0, 0, 0, 0)
         self.main_layout.insertWidget(self.main_layout.indexOf(self.subtitle_label) + 1, widget)
         widget.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.__central_widget = widget
+        self._central_widget = widget
 
     def centralWidget(self) -> QWidget:
-        return self.__central_widget
+        return self._central_widget
 
     def setCentralLayout(self, layout: QLayout):
         layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.insertLayout(self.main_layout.indexOf(self.subtitle_label) + 1, layout)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.__central_layout = layout
+        self._central_layout = layout
 
     def centralLayout(self) -> QLayout:
-        return self.__central_layout
+        return self._central_layout
 
     @abstractmethod
     def accept_handler(self):
@@ -165,7 +166,7 @@ class ButtonDialog(BaseDialog):
         super().reject()
 
     # lk: Override `done()` to to run our abstract handling method
-    def done(self, a0):
+    def done(self, a0: int):
         self.done_handler()
         super().done(a0)
 
@@ -183,7 +184,9 @@ class ButtonDialog(BaseDialog):
 class ActionDialog(ButtonDialog):
     def __init__(self, parent=None):
         super(ActionDialog, self).__init__(parent=parent)
-        self.__reject_close = False
+        self._reject_close = False
+
+        self.loading_widget = LoadingWidget(parent=self)
 
         self.action_button = QPushButton(self)
         self.action_button.setAutoDefault(True)
@@ -192,7 +195,7 @@ class ActionDialog(ButtonDialog):
         self.button_layout.insertWidget(2, self.action_button)
 
     def active(self) -> bool:
-        return self.__reject_close
+        return self._reject_close
 
     def setActive(self, active: bool, disable: bool = True):
         if self.centralWidget():
@@ -200,7 +203,8 @@ class ActionDialog(ButtonDialog):
         self.reject_button.setDisabled(active)
         self.action_button.setDisabled(active)
         self.accept_button.setDisabled(active)
-        self.__reject_close = active
+        self.loading_widget.setVisible(active)
+        self._reject_close = active
 
     @abstractmethod
     def action_handler(self):
@@ -213,14 +217,14 @@ class ActionDialog(ButtonDialog):
 
     # lk: Ignore all key presses if there is an ongoing action
     def keyPressEvent(self, a0: QKeyEvent) -> None:
-        if self.__reject_close:
+        if self._reject_close:
             a0.ignore()
             return
         super(BaseDialog, self).keyPressEvent(a0)
 
     # lk: Ignore all closeEvents if there is an ongoing action
     def closeEvent(self, a0: QCloseEvent) -> None:
-        if self.__reject_close:
+        if self._reject_close:
             a0.ignore()
             return
         super(BaseDialog, self).closeEvent(a0)
@@ -262,7 +266,7 @@ class TestDialog(BaseDialog):
             print('is spontaneous')
             a0.ignore()
             return
-        if self.reject_close:
+        if self._reject_close:
             a0.ignore()
         else:
             self._on_close()

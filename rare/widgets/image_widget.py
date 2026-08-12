@@ -188,11 +188,10 @@ class LoadingSpinnerImageWidget(LoadingImageWidget):
     def __init__(self, manager: QRequests, parent=None):
         super(LoadingSpinnerImageWidget, self).__init__(manager, parent=parent)
         self.spinner = LoadingWidget(parent=self)
-        self.spinner.setVisible(False)
 
-    def fetchPixmap(self, url: str, params: dict = None):
+    def fetchPixmap(self, url: str, params: dict | None = None):
         self.spinner.setFixedSize(self._image_size.size)
-        self.spinner.start()
+        self.spinner.setVisible(True)
         params = (
             params if params else {'resize': 1, 'w': self._image_size.base.size.width(), 'h': self._image_size.base.size.height()}
         )
@@ -201,7 +200,7 @@ class LoadingSpinnerImageWidget(LoadingImageWidget):
     def _on_image_ready(self, data):
         super()._on_image_ready(data)
         if shiboken6.isValid(self.spinner):
-            self.spinner.stop()
+            self.spinner.setVisible(False)
 
 
 __all__ = ['ImageSize', 'ImageWidget', 'LoadingImageWidget', 'LoadingSpinnerImageWidget']

@@ -160,7 +160,7 @@ class UbisoftGroup(QGroupBox):
         self.setTitle(self.tr('Link Ubisoft Games'))
 
         self.thread_pool = QThreadPool.globalInstance()
-        self.worker: UbiGetInfoWorker = None
+        self.worker: UbiGetInfoWorker | None = None
 
         self.info_label = QLabel(parent=self)
         self.info_label.setText(self.tr('Getting information about your redeemable Ubisoft games.'))
@@ -169,8 +169,7 @@ class UbisoftGroup(QGroupBox):
         self.link_button.clicked.connect(self._on_link_clicked)
         self.link_button.setEnabled(False)
 
-        self.loading_widget = LoadingWidget(self)
-        self.loading_widget.stop()
+        self.loading_widget = LoadingWidget(parent=self)
 
         header_layout = QHBoxLayout()
         header_layout.addWidget(self.info_label, stretch=1)
@@ -194,7 +193,7 @@ class UbisoftGroup(QGroupBox):
         for widget in self.findChildren(UbiLinkWidget, options=Qt.FindChildOption.FindDirectChildrenOnly):
             widget.disconnect(widget)
             widget.deleteLater()
-        self.loading_widget.start()
+        self.loading_widget.setVisible(True)
 
         self.worker = UbiGetInfoWorker(self.core)
         self.worker.signals.result.connect(self._on_result)
@@ -204,7 +203,7 @@ class UbisoftGroup(QGroupBox):
     @Slot(set, set, str)
     def _on_result(self, redeemed: set, entitlements: set, ubi_account_id: str):
         self.worker = None
-        self.loading_widget.stop()
+        self.loading_widget.setVisible(False)
         if not redeemed and ubi_account_id != 'error':
             self.logger.error('No linked ubisoft account found! Link your accounts via your browser and try again.')
             self.info_label.setText(self.tr('Your account is not linked with Ubisoft. Please link your account and try again.'))
