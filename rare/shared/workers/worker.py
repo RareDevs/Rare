@@ -19,25 +19,25 @@ class Worker(QRunnable):
     def __init__(self):
         super(Worker, self).__init__()
         self.setAutoDelete(True)
-        self.__logger = getLogger(type(self).__name__)
-        self.__signals: QObject = None
+        self._logger = getLogger(type(self).__name__)
+        self._signals: QObject | None = None
 
     def __str__(self):
         return type(self).__name__
 
     @property
     def logger(self) -> Logger:
-        return self.__logger
+        return self._logger
 
     @property
     def signals(self) -> QObject:
-        if self.__signals is None:
+        if self._signals is None:
             raise RuntimeError(f"Subclasses must assign '{type(self).__name__}.signals' QObject attribute")
-        return self.__signals
+        return self._signals
 
     @signals.setter
     def signals(self, obj: QObject):
-        self.__signals = obj
+        self._signals = obj
 
     @abstractmethod
     def run_real(self):

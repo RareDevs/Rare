@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from legendary.models.downloading import AnalysisResult, ConditionCheckResult
@@ -40,7 +40,13 @@ class InstallOptionsModel:
         return {
             k: getattr(self, k)
             for k in vars(self)
-            if k not in ['update', 'silent', 'create_shortcut', 'overlay', 'install_prereqs']
+            if k not in [
+                'update',
+                'silent',
+                'create_shortcut',
+                'overlay',
+                'install_prereqs',
+            ]
         }
 
 
@@ -56,27 +62,29 @@ class InstallDownloadModel:
 
 
 class InstallQueueItemModel:
-    def __init__(self, options: InstallOptionsModel, download: InstallDownloadModel = None):
+    def __init__(self, options: InstallOptionsModel, download: InstallDownloadModel | None = None):
         self.options: InstallOptionsModel | None = options
         # lk: internal attribute holders
-        self.__download: InstallDownloadModel | None = None
-        self.__date: datetime | None = None
+        self._download: InstallDownloadModel | None = None
+        self._date: datetime | None = None
 
         self.download = download
 
     @property
     def download(self) -> InstallDownloadModel | None:
-        return self.__download
+        return self._download
 
     @download.setter
     def download(self, download: InstallDownloadModel | None):
-        self.__download = download
+        self._download = download
         if download is not None:
-            self.__date = datetime.now()
+            self._date = datetime.now(tz=timezone.utc)
 
     @property
     def expired(self) -> bool:
-        return datetime.now() > (self.__date + timedelta(minutes=5))
+        if self._date is None:
+            return True
+        return datetime.now(tz=timezone.utc) > (self._date + timedelta(minutes=5))
 
     def __bool__(self):
         return (self.download is not None) and (self.options is not None) and (not self.expired)
@@ -85,14 +93,14 @@ class InstallQueueItemModel:
 @dataclass
 class UninstallOptionsModel:
     app_name: str
-    accepted: bool = None
-    keep_files: bool = None
-    keep_folder: bool = True
-    keep_config: bool = None
-    keep_overlay_keys: bool = None
+    accepted: bool | None = None
+    keep_files: bool | None = None
+    keep_folder: bool | None = True
+    keep_config: bool | None = None
+    keep_overlay_keys: bool | None = None
 
     @property
-    def __values(self) -> tuple[bool, bool, bool, bool, bool]:
+    def _values(self) -> tuple[bool | None, bool | None, bool | None, bool | None, bool | None]:
         return (
             self.accepted,
             self.keep_files,
@@ -101,8 +109,8 @@ class UninstallOptionsModel:
             self.keep_overlay_keys,
         )
 
-    @__values.setter
-    def __values(self, values: tuple[bool, bool, bool, bool, bool]):
+    @_values.setter
+    def _values(self, values: tuple[bool | None, bool | None, bool | None, bool | None, bool | None]):
         (
             self.accepted,
             self.keep_files,
@@ -112,22 +120,22 @@ class UninstallOptionsModel:
         ) = values
 
     def __bool__(self):
-        return bool(self.app_name) and all(map(lambda x: x is not None, self.__values))
+        return bool(self.app_name) and all(x is not None for x in self._values)
 
     def __iter__(self):
-        return iter(self.__values)
+        return iter(self._values)
 
     def set_accepted(self, keep_files, keep_folder, keep_config, keep_overlay_keys):
-        self.__values = True, keep_files, keep_folder, keep_config, keep_overlay_keys
+        self._values = True, keep_files, keep_folder, keep_config, keep_overlay_keys
 
     def set_rejected(self):
-        self.__values = False, None, None, None, None
+        self._values = False, None, None, None, None
 
 
 @dataclass
 class SelectiveDownloadsModel:
     app_name: str
-    accepted: bool = None
+    accepted: bool | None = None
     install_tag: list[str] | None = None
 
     def __bool__(self):

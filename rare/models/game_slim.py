@@ -128,7 +128,7 @@ class RareGameBase(QObject):
         pass
 
     @property
-    def platforms(self) -> tuple:
+    def platforms(self) -> tuple[str, ...]:
         """!
         @brief Property that holds the platforms a game is available for
 
@@ -224,7 +224,7 @@ class RareGameSlim(RareGameBase):
         super(RareGameSlim, self).__init__(legendary_core, game)
         self.settings = settings
         # None if origin or not installed
-        self.igame: InstalledGame = self.core.get_installed_game(game.app_name)
+        self.igame: InstalledGame | None = self.core.get_installed_game(game.app_name)
         self.saves: list[RareSaveGame] = []
 
     @property

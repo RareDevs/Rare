@@ -2,7 +2,7 @@ import sys
 from abc import abstractmethod
 from logging import getLogger
 
-from PySide6.QtCore import QCoreApplication, Qt, Slot
+from PySide6.QtCore import QCoreApplication, Qt, QThreadPool, Slot
 from PySide6.QtGui import QCloseEvent, QKeyEvent, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
@@ -186,6 +186,9 @@ class ActionDialog(ButtonDialog):
         super(ActionDialog, self).__init__(parent=parent)
         self._reject_close = False
 
+        self.threadpool = QThreadPool(self)
+        self.threadpool.setMaxThreadCount(1)
+
         self.loading_widget = LoadingWidget(parent=self)
 
         self.action_button = QPushButton(self)
@@ -197,7 +200,7 @@ class ActionDialog(ButtonDialog):
     def active(self) -> bool:
         return self._reject_close
 
-    def setActive(self, active: bool, disable: bool = True):
+    def setActive(self, active: bool, *, disable: bool = True):
         if self.centralWidget():
             self.centralWidget().setDisabled(active and disable)
         self.reject_button.setDisabled(active)
@@ -230,7 +233,7 @@ class ActionDialog(ButtonDialog):
         super(BaseDialog, self).closeEvent(a0)
 
 
-__all__ = ['dialog_title', 'game_title', 'BaseDialog', 'ButtonDialog', 'ActionDialog']
+__all__ = ['ActionDialog', 'BaseDialog', 'ButtonDialog', 'dialog_title', 'game_title']
 
 
 class TestDialog(BaseDialog):

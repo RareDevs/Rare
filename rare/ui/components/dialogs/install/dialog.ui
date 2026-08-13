@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>182</width>
-    <height>153</height>
+    <width>438</width>
+    <height>204</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,10 +41,20 @@
      </property>
     </widget>
    </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="eula_label">
+     <property name="text">
+      <string>Accept EULAs</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
    <item row="2" column="0">
     <widget class="QLabel" name="shortcut_label">
      <property name="text">
-      <string>Create shortcut</string>
+      <string>Shortcut</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
@@ -53,19 +63,24 @@
    </item>
    <item row="2" column="1">
     <widget class="QCheckBox" name="shortcut_check">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
-      <string notr="true"/>
+      <string>Create desktop shortcut</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="download_size_label">
      <property name="text">
       <string>Download size</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="4" column="1">
     <widget class="QLabel" name="download_size_text">
      <property name="font">
       <font>
@@ -77,14 +92,14 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="install_size_label">
      <property name="text">
       <string>Total install size</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="5" column="1">
     <widget class="QLabel" name="install_size_text">
      <property name="font">
       <font>
@@ -99,14 +114,14 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="available_space_label">
      <property name="text">
       <string>Available space</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="6" column="1">
     <widget class="QLabel" name="available_space_text">
      <property name="font">
       <font>
@@ -118,14 +133,14 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
+   <item row="7" column="0">
     <widget class="QLabel" name="warning_label">
      <property name="text">
       <string>Warning</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
+   <item row="7" column="1">
     <widget class="QLabel" name="warning_text">
      <property name="font">
       <font>

@@ -1,6 +1,6 @@
 from .cloud import CloudSyncWorker
 from .fetch import FetchWorker, GamesDlcsWorker
-from .install import InstallInfoWorker
+from .install import InstallDataWorker, InstallPrepareWorker
 from .move import MoveInfoWorker, MoveWorker
 from .uninstall import UninstallWorker
 from .verify import VerifyWorker
@@ -11,7 +11,8 @@ __all__ = [
     'CloudSyncWorker',
     'FetchWorker',
     'GamesDlcsWorker',
-    'InstallInfoWorker',
+    'InstallDataWorker',
+    'InstallPrepareWorker',
     'MoveInfoWorker',
     'MoveWorker',
     'OriginWineWorker',

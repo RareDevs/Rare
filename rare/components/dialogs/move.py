@@ -24,9 +24,6 @@ class MoveDialog(ActionDialog):
         self.setWindowTitle(game_title(header, rgame.app_title))
         self.setSubtitle(game_title(header, rgame.app_title))
 
-        self.threadpool = QThreadPool(self)
-        self.threadpool.setMaxThreadCount(1)
-
         move_widget = QWidget(self)
         self.ui = Ui_MoveDialog()
         self.ui.setupUi(move_widget)
@@ -52,19 +49,13 @@ class MoveDialog(ActionDialog):
             MovePathEditReasons.MOVEDIALOG_NO_SPACE: self.tr('Not enough space available on drive.'),
         }
         self.target_path_edit.validationFinished.connect(self.__on_target_path_validation)
-        self.ui.main_layout.setWidget(
-            self.ui.main_layout.getWidgetPosition(self.ui.target_path_label)[0],
-            QFormLayout.ItemRole.FieldRole,
-            self.target_path_edit,
-        )
+        target_path_edit_index, _ = self.ui.main_layout.getWidgetPosition(self.ui.target_path_label)
+        self.ui.main_layout.setWidget(target_path_edit_index, QFormLayout.ItemRole.FieldRole, self.target_path_edit)
 
         self.full_path_info = ElideLabel(parent=self)
         self.full_path_info.setFont(QFont('monospace'))
-        self.ui.main_layout.setWidget(
-            self.ui.main_layout.getWidgetPosition(self.ui.full_path_label)[0],
-            QFormLayout.ItemRole.FieldRole,
-            self.full_path_info,
-        )
+        full_path_info_index, _ = self.ui.main_layout.getWidgetPosition(self.ui.full_path_label)
+        self.ui.main_layout.setWidget(full_path_info_index, QFormLayout.ItemRole.FieldRole, self.full_path_info)
 
         self.ui.rename_path_check.setChecked(self.options.rename_path)
         self.ui.rename_path_check.checkStateChanged.connect(self.__on_rename_path_changed)
@@ -141,7 +132,7 @@ class MoveDialog(ActionDialog):
         return True, path, IndicatorReasonsCommon.VALID
 
     @Slot(bool, object, object, MovePathEditReasons)
-    def __on_worker_result(self, is_valid: bool, src_size: int | float, dst_size: int | float, reason: MovePathEditReasons):
+    def __on_worker_result(self, is_valid: bool, src_size: float, dst_size: float, reason: MovePathEditReasons):
         self.setActive(False, disable=False)
         self.set_size_labels(src_size, dst_size)
         self.action_button.setEnabled(False)
@@ -159,7 +150,7 @@ class MoveDialog(ActionDialog):
         self.set_error_labels(error, reason)
 
     @staticmethod
-    def __set_size_label(label: QLabel, value: int | float | str):
+    def __set_size_label(label: QLabel, value: float | str):
         is_numeric = isinstance(value, (int, float))
         font = label.font()
         font.setBold(is_numeric)
@@ -168,7 +159,7 @@ class MoveDialog(ActionDialog):
         text = format_size(value) if is_numeric else value
         label.setText(text)
 
-    def set_size_labels(self, required: int | float | str, available: int | float | str):
+    def set_size_labels(self, required: float | str, available: float | str):
         self.__set_size_label(self.ui.required_space_text, required)
         self.__set_size_label(self.ui.available_space_text, available)
 

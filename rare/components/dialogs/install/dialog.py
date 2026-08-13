@@ -2,18 +2,19 @@ import os
 import platform as pf
 import shutil
 
-from PySide6.QtCore import Qt, QThreadPool, Signal, Slot
+from legendary.core import LegendaryCore
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QFileDialog, QFormLayout, QLabel, QWidget
 
-from rare.models.game import RareGame
+from rare.models.game import RareEosOverlay, RareGame
 from rare.models.install import (
     InstallDownloadModel,
     InstallOptionsModel,
     InstallQueueItemModel,
 )
 from rare.models.settings import RareAppSettings, app_settings
-from rare.shared.workers import InstallInfoWorker
+from rare.shared.workers import InstallDataWorker, InstallPrepareWorker
 from rare.ui.components.dialogs.install.dialog import Ui_InstallDialog
 from rare.utils.misc import format_size, qta_icon
 from rare.widgets.dialogs import ActionDialog, game_title
@@ -21,12 +22,20 @@ from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 
 from .advanced import InstallDialogAdvanced
 from .selective import InstallDialogSelective
+from .widgets import InstallDialogEulaWidget
 
 
 class InstallDialog(ActionDialog):
     result_ready = Signal(InstallQueueItemModel)
 
-    def __init__(self, settings: RareAppSettings, rgame: 'RareGame', options: InstallOptionsModel, parent=None):
+    def __init__(
+        self,
+        settings: RareAppSettings,
+        core: LegendaryCore,
+        rgame: 'RareGame|RareEosOverlay',
+        options: InstallOptionsModel,
+        parent=None
+    ):
         super(InstallDialog, self).__init__(parent=parent)
         self.settings = settings
 
@@ -49,38 +58,7 @@ class InstallDialog(ActionDialog):
         self.ui = Ui_InstallDialog()
         self.ui.setupUi(install_widget)
 
-        self.core = rgame.core
-        self.rgame = rgame
-        self._options: InstallOptionsModel = options
-        self._download: InstallDownloadModel | None = None
-        self._queue_item: InstallQueueItemModel | None = None
-
-        self.selectable = InstallDialogSelective(rgame, parent=self)
-        self.selectable.stateChanged.connect(self._on_option_changed)
-        self.ui.main_layout.insertRow(
-            self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 1,
-            # self.tr("Optional"),
-            self.selectable,
-        )
-
-        self.advanced = InstallDialogAdvanced(parent=self)
-        self.ui.main_layout.insertRow(
-            self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 2,
-            # self.tr("Advanced"),
-            self.advanced,
-        )
-
-        # self.file_filters = InstallDialogFileFilters(parent=self)
-        # self.ui.main_layout.insertRow(
-        #     self.ui.main_layout.getWidgetPosition(self.ui.shortcut_label)[0] + 3,
-        #     # self.tr("Filters"),
-        #     self.file_filters,
-        # )
-
         self.options_changed = False
-
-        self.threadpool = QThreadPool(self)
-        self.threadpool.setMaxThreadCount(1)
 
         self.install_dir_edit = PathEdit(
             path=options.base_path,
@@ -91,11 +69,8 @@ class InstallDialog(ActionDialog):
         )
         self.install_dir_edit.setReadOnly(True)
         self.install_dir_edit.validationFinished.connect(self._on_install_dir_validation)
-        self.ui.main_layout.setWidget(
-            self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)[0],
-            QFormLayout.ItemRole.FieldRole,
-            self.install_dir_edit,
-        )
+        install_dir_edit_index, _ = self.ui.main_layout.getWidgetPosition(self.ui.install_dir_label)
+        self.ui.main_layout.setWidget(install_dir_edit_index, QFormLayout.ItemRole.FieldRole, self.install_dir_edit)
 
         self.install_dir_edit.setDisabled(rgame.is_installed or rgame.is_dlc)
         self.ui.install_dir_label.setDisabled(rgame.is_installed or rgame.is_dlc)
@@ -105,14 +80,32 @@ class InstallDialog(ActionDialog):
         self.ui.shortcut_check.setChecked(not rgame.is_installed and self.settings.get_value(app_settings.create_shortcut))
         self.ui.shortcut_check.checkStateChanged.connect(self._on_option_changed_no_reload)
 
+        eula_index, _ = self.ui.main_layout.getWidgetPosition(self.ui.eula_label)
+        self.eula_widget = InstallDialogEulaWidget(parent=self)
+        self.eula_widget.check.checkStateChanged.connect(self._on_option_changed_no_reload)
+        self.ui.main_layout.setWidget(eula_index, QFormLayout.ItemRole.FieldRole, self.eula_widget)
+
+        selectable_index = eula_index + 1
+        self.selectable = InstallDialogSelective(rgame, parent=self)
+        self.selectable.stateChanged.connect(self._on_option_changed)
+        self.ui.main_layout.insertRow(selectable_index, self.selectable)
+
+        advanced_index = selectable_index + 1
+        self.advanced = InstallDialogAdvanced(parent=self)
+        self.ui.main_layout.insertRow(advanced_index, self.advanced)
+
+        # file_filters_index = advanced_index + 1
+        # self.file_filters = InstallDialogFileFilters(parent=self)
+        # self.ui.main_layout.insertRow(file_filters_index, self.file_filters)
+
         self.set_error_labels()
 
-        self.ui.platform_combo.addItems(reversed(rgame.platforms))
+        self.ui.platform_combo.addItems(tuple(reversed(rgame.platforms)))
         self.ui.platform_combo.setCurrentIndex(self.ui.platform_combo.findText(options.platform))
         self.ui.platform_combo.currentIndexChanged.connect(self._on_option_changed)
         self.ui.platform_combo.currentIndexChanged.connect(self.check_incompatible_platform)
         self.ui.platform_combo.currentIndexChanged.connect(self.reset_install_dir)
-        self.ui.platform_combo.currentTextChanged.connect(self.selectable.update_list)
+        self.ui.platform_combo.currentTextChanged.connect(self.selectable.update_widget)
 
         self.ui.platform_label.setDisabled(rgame.is_installed or rgame.is_dlc)
         self.ui.platform_combo.setDisabled(rgame.is_installed or rgame.is_dlc)
@@ -122,10 +115,10 @@ class InstallDialog(ActionDialog):
         if options.repair_mode and not options.repair_and_update:
             self.selectable.click()
 
-        self.advanced.ui.max_workers_spin.setValue(self.core.lgd.config.getint('Legendary', 'max_workers', fallback=0))
+        self.advanced.ui.max_workers_spin.setValue(core.lgd.config.getint('Legendary', 'max_workers', fallback=0))
         self.advanced.ui.max_workers_spin.valueChanged.connect(self._on_option_changed)
 
-        self.advanced.ui.max_memory_spin.setValue(self.core.lgd.config.getint('Legendary', 'max_memory', fallback=0))
+        self.advanced.ui.max_memory_spin.setValue(core.lgd.config.getint('Legendary', 'max_memory', fallback=0))
         self.advanced.ui.max_memory_spin.valueChanged.connect(self._on_option_changed)
 
         self.advanced.ui.read_files_check.setChecked(options.read_files)
@@ -145,7 +138,7 @@ class InstallDialog(ActionDialog):
 
         self.accept_button.setEnabled(False)
 
-        if self._options.overlay:
+        if options.overlay:
             self.ui.platform_label.setEnabled(False)
             self.ui.platform_combo.setEnabled(False)
             self.advanced.ui.ignore_space_label.setEnabled(False)
@@ -165,7 +158,7 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.install_prereqs_label.setEnabled(False)
         self.advanced.ui.install_prereqs_check.setEnabled(False)
         self.advanced.ui.install_prereqs_check.checkStateChanged.connect(self._on_option_changed_no_reload)
-        self.advanced.ui.install_prereqs_check.setChecked(self._options.install_prereqs)
+        self.advanced.ui.install_prereqs_check.setChecked(options.install_prereqs)
 
         # lk: set object names for CSS properties
         self.accept_button.setText(header)
@@ -177,6 +170,12 @@ class InstallDialog(ActionDialog):
 
         self.setCentralWidget(install_widget)
 
+        self.core = core
+        self.rgame = rgame
+        self._options: InstallOptionsModel = options
+        self._download: InstallDownloadModel | None = None
+        self._queue_item: InstallQueueItemModel | None = None
+
     def showEvent(self, a0: QShowEvent) -> None:
         if a0.spontaneous():
             return super().showEvent(a0)
@@ -186,10 +185,25 @@ class InstallDialog(ActionDialog):
     def execute(self):
         self.reset_install_dir(self.ui.platform_combo.currentIndex())
         self.check_incompatible_platform(self.ui.platform_combo.currentIndex())
-        self.selectable.update_list(self.ui.platform_combo.currentText())
 
-        if self._options.silent:
-            self.get_download_info()
+        if not self._options.silent:
+            self.open()
+
+        data_worker = InstallDataWorker(self.rgame)
+        data_worker.signals.result.connect(self._on_data_worker_result)
+        data_worker.signals.failed.connect(self._on_worker_failed)
+        self.threadpool.start(data_worker)
+        self.setActive(True)
+
+    @Slot(dict, list)
+    def _on_data_worker_result(self, sdl_data: dict, eulas: list):
+        self.eula_widget.setup_widget(eulas)
+        self.selectable.setup_widget(sdl_data)
+        self.selectable.update_widget(self.ui.platform_combo.currentText())
+        self.setActive(False)
+
+        if self._options.silent and not self.eula_widget.pending_eulas:
+            self.get_download()
         else:
             self.action_handler()
             self.open()
@@ -232,12 +246,12 @@ class InstallDialog(ActionDialog):
         self._options.install_tag = self.selectable.enabled_tags()
         self._options.reset_sdl = True
 
-    def get_download_info(self):
+    def get_download(self):
         self._download = None
-        info_worker = InstallInfoWorker(self.core, self._options)
-        info_worker.signals.result.connect(self._on_worker_result)
-        info_worker.signals.failed.connect(self._on_worker_failed)
-        self.threadpool.start(info_worker)
+        prepare_worker = InstallPrepareWorker(self.core, self._options)
+        prepare_worker.signals.result.connect(self._on_prepare_worker_result)
+        prepare_worker.signals.failed.connect(self._on_worker_failed)
+        self.threadpool.start(prepare_worker)
 
     def action_handler(self):
         self.set_error_labels()
@@ -246,7 +260,7 @@ class InstallDialog(ActionDialog):
         self.setActive(True)
         self.options_changed = False
         self.get_options()
-        self.get_download_info()
+        self.get_download()
 
     @Slot()
     def _on_option_changed(self):
@@ -263,6 +277,8 @@ class InstallDialog(ActionDialog):
             self._options.create_shortcut = state != Qt.CheckState.Unchecked
         elif self.sender() is self.advanced.ui.install_prereqs_check:
             self._options.install_prereqs = state != Qt.CheckState.Unchecked
+        elif self.sender() is self.eula_widget.check:
+            self.accept_button.setEnabled(not self.options_changed and state == Qt.CheckState.Checked)
 
     @staticmethod
     def _install_dir_edit_callback(path: str) -> tuple[bool, str, int]:
@@ -304,7 +320,7 @@ class InstallDialog(ActionDialog):
             return False
 
     @Slot(InstallDownloadModel)
-    def _on_worker_result(self, download: InstallDownloadModel):
+    def _on_prepare_worker_result(self, download: InstallDownloadModel):
         self.setActive(False)
         self._download = download
         download_size = download.analysis.dl_size
@@ -312,7 +328,9 @@ class InstallDialog(ActionDialog):
         # install_size = self.dl_item.download.analysis.disk_space_delta
         self.set_size_labels(download_size, install_size)
         if download_size or (not download_size and (download.game.is_dlc or download.repair)):
-            self.accept_button.setEnabled(not self.options_changed)
+            self.accept_button.setEnabled(
+                not self.options_changed and self.eula_widget.check.checkState() == Qt.CheckState.Checked
+            )
         self.action_button.setEnabled(self.options_changed)
         has_prereqs = bool(download.igame.prereq_info) and not download.igame.prereq_info.get('installed', False)
         if has_prereqs:
@@ -326,14 +344,6 @@ class InstallDialog(ActionDialog):
         self.advanced.ui.install_prereqs_label.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setEnabled(has_prereqs)
         self.advanced.ui.install_prereqs_check.setChecked(has_prereqs and self.same_platform(download))
-
-        # TODO: there is information about the files to be downloaded in analres, don't fetch the manifest again
-        # TODO: see if you can re-use the one from selective downloads
-        # new_manifest_data, _, _ = self.core.get_cdn_manifest(download.game, download.igame.platform, self._options.disable_https)
-        # new_manifest = self.core.load_manifest(new_manifest_data)
-        # self.file_filters.clear()
-        # for e in new_manifest.file_manifest_list.elements:
-        #     self.file_filters.add_item(e.filename.lower())
 
         if self._options.silent:
             self.accept()
@@ -350,7 +360,7 @@ class InstallDialog(ActionDialog):
             self.open()
 
     @staticmethod
-    def _set_size_label(label: QLabel, value: int | float | str):
+    def _set_size_label(label: QLabel, value: float | str):
         is_numeric = isinstance(value, (int, float))
         font = label.font()
         font.setBold(is_numeric)
@@ -359,7 +369,7 @@ class InstallDialog(ActionDialog):
         text = format_size(value) if is_numeric else value
         label.setText(text)
 
-    def set_size_labels(self, download: int | float | str, install: int | float | str):
+    def set_size_labels(self, download: float | str, install: float | str):
         self._set_size_label(self.ui.download_size_text, download)
         self._set_size_label(self.ui.install_size_text, install)
 
@@ -376,6 +386,8 @@ class InstallDialog(ActionDialog):
 
     # lk: _download is already set at this point so just do nothing.
     def accept_handler(self):
+        if self.eula_widget.pending_eulas:
+            self.rgame.accept_eulas(self.eula_widget.pending_eulas)
         self._queue_item = InstallQueueItemModel(options=self._options, download=self._download)
 
     def reject_handler(self):
