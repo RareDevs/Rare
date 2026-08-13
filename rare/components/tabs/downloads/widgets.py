@@ -12,7 +12,7 @@ from rare.models.install import (
     InstallQueueItemModel,
 )
 from rare.shared.image_manager import ImageManager
-from rare.shared.workers.install import InstallInfoWorker
+from rare.shared.workers.install import InstallPrepareWorker
 from rare.ui.components.tabs.downloads.queue_base_widget import Ui_QueueBaseWidget
 from rare.ui.components.tabs.downloads.queue_info_widget import Ui_QueueInfoWidget
 from rare.utils.misc import elide_text, format_size, qta_icon, widget_object_name
@@ -143,7 +143,7 @@ class QueueWidget(QFrame):
 
         if not item:
             self.ui.queue_buttons.setEnabled(False)
-            worker = InstallInfoWorker(core, item.options)
+            worker = InstallPrepareWorker(core, item.options)
             worker.signals.result.connect(self.__update_info)
             worker.signals.failed.connect(
                 (

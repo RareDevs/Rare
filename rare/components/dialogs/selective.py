@@ -18,8 +18,10 @@ class SelectiveDialog(ButtonDialog):
         self.setWindowTitle(game_title(header, rgame.app_title))
         self.setSubtitle(game_title(header, rgame.app_title))
 
-        self.rgame = rgame
-        self.selective_widget = SelectiveWidget(rgame, rgame.igame.platform, self)
+        sdl_data = rgame.sdl_data(rgame.igame.platform)
+        install_tags = rgame.core.lgd.config.get(rgame.app_name, 'install_tags', fallback=None)
+        disable_sdl = rgame.core.lgd.config.getboolean(rgame.app_name, 'disable_sdl', fallback=False)
+        self.selective_widget = SelectiveWidget(sdl_data, install_tags, disable_sdl, parent=self)
 
         container = QGroupBox(self.tr('Optional downloads'), self)
         container_layout = QVBoxLayout(container)
@@ -35,6 +37,7 @@ class SelectiveDialog(ButtonDialog):
         self.accept_button.setIcon(qta_icon('fa.check', 'fa5s.check'))
 
         self.options: SelectiveDownloadsModel = SelectiveDownloadsModel(rgame.app_name)
+        self.rgame = rgame
 
     def done_handler(self):
         self.result_ready.emit(self.rgame, self.options)

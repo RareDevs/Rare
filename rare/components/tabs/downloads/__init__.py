@@ -25,7 +25,7 @@ from rare.models.install import (
 )
 from rare.models.settings import RareAppSettings, app_settings
 from rare.shared import RareCore
-from rare.shared.workers import InstallInfoWorker, UninstallWorker
+from rare.shared.workers import InstallPrepareWorker, UninstallWorker
 from rare.utils.misc import format_size
 from rare.utils.paths import create_desktop_link, desktop_links_supported
 
@@ -34,7 +34,7 @@ from .groups import QueueGroup, UpdateGroup
 from .thread import DlResultCode, DlResultModel, DlThread
 
 
-def get_time(seconds: int | float) -> str:
+def get_time(seconds: float) -> str:
     return str(datetime.timedelta(seconds=seconds))
 
 
@@ -179,7 +179,7 @@ class DownloadsTab(QWidget):
             self.__thread.wait()
 
     def __refresh_download(self, item: InstallQueueItemModel):
-        worker = InstallInfoWorker(self.core, item.options)
+        worker = InstallPrepareWorker(self.core, item.options)
 
         worker.signals.result.connect(
             (lambda obj, d: obj.start_download(InstallQueueItemModel(options=item.options, download=d))).__get__(self)
@@ -311,6 +311,7 @@ class DownloadsTab(QWidget):
         rgame.state = RareGame.State.DOWNLOADING
         install_dialog = InstallDialog(
             self.settings,
+            self.core,
             rgame,
             options=options,
             parent=self,
