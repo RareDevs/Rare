@@ -49,7 +49,7 @@ class QJsonTreeItem:
         self._key = ''
         self._value = ''
         self._type = None
-        self._children = list()
+        self._children = []
 
     def appendChild(self, item):
         self._children.append(item)

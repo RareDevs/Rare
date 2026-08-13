@@ -49,7 +49,7 @@ def get_pstree_from_pid(root_pid: int) -> set[int]:
         for line in lines:
             ppid, pid = map(int, line.split())
             pid_to_ppid[pid] = ppid
-    except Exception:
+    except Exception:  # noqa: BLE001
         return descendants
 
     current_pid: list[int] = [root_pid]
@@ -123,7 +123,7 @@ def subreaper(args: Namespace, other: list[str]) -> int:
 
     if pid == 0:
         os.chdir(workdir)
-        os.execvp(command[0], command)  # noqa: S606
+        os.execvp(command[0], command)
     else:
         signal.signal(signal.SIGTERM, signal_handler)
         signal.signal(signal.SIGINT, signal_handler)

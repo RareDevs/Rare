@@ -32,7 +32,7 @@ class CompatSettingsBase(QWidget, SideTabContents):
         dxvk_config_widget: type[DxvkConfigSettings],
         dxvk_nvapi_drs_widget: type[DxvkNvapiDrsSettings],
         runner_widget: type['RunnerSettingsType'],
-        mangohud_widget: type['MangoHudSettings'] = None,
+        mangohud_widget: type['MangoHudSettings'] | None = None,
         parent=None,
     ):
         super(CompatSettingsBase, self).__init__(parent=parent)

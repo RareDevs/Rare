@@ -15,7 +15,7 @@ class Wrapper:
     def __init__(
         self,
         command: str | list[str],
-        name: str = None,
+        name: str | None = None,
         wtype: WrapperType = None,
         enabled: bool = True,
     ):
@@ -84,4 +84,4 @@ class Wrapper:
 
     @property
     def __dict__(self):
-        return dict(command=self.__command, name=self.__name, wtype=int(self.__wtype))
+        return {'command': self.__command, 'name': self.__name, 'wtype': int(self.__wtype)}

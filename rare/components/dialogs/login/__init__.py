@@ -163,7 +163,7 @@ class LoginDialog(BaseDialog):
                 raise ValueError('Login failed.')
             self.logged_in = True
             self.accept()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.logger.error(str(e))
             self.core.lgd.invalidate_userdata()
             self.ui.next_button.setEnabled(False)

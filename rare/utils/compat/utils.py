@@ -107,7 +107,7 @@ def execute_qprocess(command: list[str], arguments: list[str], environment: Mapp
 def execute(command: list[str], arguments: list[str], environment: Mapping) -> tuple[str, str]:
     try:
         out, err = execute_qprocess(command, arguments, environment)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         out, err = '', str(e)
 
     return out, err

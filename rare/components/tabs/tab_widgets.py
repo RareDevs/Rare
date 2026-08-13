@@ -20,8 +20,8 @@ class MainTabBar(QTabBar):
         size = super(MainTabBar, self).tabSizeHint(index)
         if index == self.expanded_idx:
             offset = self.width()
-            for index in range(self.count()):
-                offset -= super(MainTabBar, self).tabSizeHint(index).width()
+            for tab_index in range(self.count()):
+                offset -= super(MainTabBar, self).tabSizeHint(tab_index).width()
             size.setWidth(max(size.width(), size.width() + offset))
         return size
 

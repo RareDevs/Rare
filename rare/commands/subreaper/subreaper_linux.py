@@ -116,7 +116,7 @@ def subreaper(args: Namespace, other: list[str]) -> int:
         sys.stdout.flush()
         sys.stderr.flush()
         os.chdir(workdir)
-        os.execvp(command[0], command)  # noqa: S606
+        os.execvp(command[0], command)
     else:
         signal.signal(signal.SIGTERM, signal_handler)
         signal.signal(signal.SIGINT, signal_handler)

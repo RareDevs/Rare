@@ -114,7 +114,7 @@ class GamesLibrary(QStackedWidget):
     def add_library_widget(self, rgame: RareGame):
         try:
             widget = self.library_controller.add_game(rgame)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.error('Could not add widget for %s to library: %s', rgame.app_name, e)
             return None
         widget.show_info.connect(self.show_game_info)

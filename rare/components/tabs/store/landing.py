@@ -121,7 +121,7 @@ class LandingWidget(QWidget, SideTabContents):
             w = StoreItemWidget(self.api.cached_manager, item.offer)
             w.show_details.connect(self.show_details)
             self.discounts_group.layout().addWidget(w)
-        have_discounts = any(map(lambda x: bool(x.offer.price.totalPrice.discount), wishlist))
+        have_discounts = any(bool(x.offer.price.totalPrice.discount) for x in wishlist)
         self.discounts_group.setVisible(have_discounts)
         self.discounts_group.loading(False)
 

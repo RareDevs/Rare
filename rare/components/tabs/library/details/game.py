@@ -112,7 +112,7 @@ class LocalLaunchSettings(LaunchSettingsBase):
         if not os.path.exists(path):
             return False, path, IndicatorReasonsCommon.WRONG_PATH
 
-        if not path.endswith(tuple(map(lambda s: s.replace('*', ''), self.override_exe_name_filters))):
+        if not path.endswith(tuple(s.replace('*', '') for s in self.override_exe_name_filters)):
             return False, path, IndicatorReasonsCommon.WRONG_PATH
         path = os.path.relpath(path, self.igame.install_path)
         return True, path, IndicatorReasonsCommon.VALID

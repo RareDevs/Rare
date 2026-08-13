@@ -56,7 +56,7 @@ class UbiGetInfoWorker(Worker):
             entitlements = {i['entitlementName'] for i in entitlements}
 
             self.signals.result.emit(redeemed, entitlements, ubi_account_id)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.logger.error(e)
             self.signals.result.emit(set(), set(), 'error')
 
@@ -81,7 +81,7 @@ class UbiConnectWorker(Worker):
         try:
             self.core.egs.store_claim_uplay_code(self.ubi_account_id, self.partner_link_id)
             self.core.egs.store_redeem_uplay_codes(self.ubi_account_id)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.signals.linked.emit(str(e))
             return
         else:

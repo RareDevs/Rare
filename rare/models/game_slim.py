@@ -282,7 +282,7 @@ class RareGameSlim(RareGameBase):
             return
         self.state = RareGameSlim.State.SYNCING
 
-        status, (dt_local, dt_remote) = self.save_game_state
+        status, (dt_local, _dt_remote) = self.save_game_state
         if status == SaveGameStatus.NO_SAVE or not dt_local:
             self.logger.warning("Can't upload missing save")
             self.state = RareGameSlim.State.IDLE
@@ -306,7 +306,7 @@ class RareGameSlim(RareGameBase):
             return
         self.state = RareGameSlim.State.SYNCING
 
-        status, (dt_local, dt_remote) = self.save_game_state
+        status, (_dt_local, dt_remote) = self.save_game_state
         if status == SaveGameStatus.NO_SAVE or not dt_remote:
             self.logger.error("Can't download missing save")
             self.state = RareGameSlim.State.IDLE

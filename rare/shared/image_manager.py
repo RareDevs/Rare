@@ -7,7 +7,7 @@ from collections.abc import Callable
 from logging import getLogger
 from multiprocessing import cpu_count
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import requests
 from legendary.lfs.eos import EOSOverlayApp
@@ -46,9 +46,6 @@ from rare.utils.paths import (
     image_wide_path,
     resources_path,
 )
-
-if TYPE_CHECKING:
-    pass
 
 
 class ImageWorkerSignals(QObject):
@@ -247,7 +244,7 @@ class ImageManager(QObject):
                 }
             try:
                 cache_data[image['type']] = requests.get(image['url'], params=payload, timeout=10).content
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.logger.error(e)
                 return False
 

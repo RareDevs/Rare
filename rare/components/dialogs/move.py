@@ -1,6 +1,6 @@
 import os
 
-from PySide6.QtCore import QSignalBlocker, QThreadPool, Signal, Slot
+from PySide6.QtCore import QSignalBlocker, Signal, Slot
 from PySide6.QtGui import QFont, QShowEvent, Qt
 from PySide6.QtWidgets import QFileDialog, QFormLayout, QLabel, QWidget
 

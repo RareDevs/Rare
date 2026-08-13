@@ -15,7 +15,7 @@ logger = getLogger('About')
 def versiontuple(v) -> tuple[int, ...]:
     try:
         return tuple(map(int, (v.split('.'))))
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.error('Error while parsing version %s', v)
         logger.error(e)
         return 99, 99, 99, 999

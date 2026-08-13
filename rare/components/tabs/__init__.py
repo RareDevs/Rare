@@ -130,7 +130,7 @@ class MainTabWidget(QTabWidget):
 
     @Slot()
     @Slot(str)
-    def show_import(self, app_name: str = None):
+    def show_import(self, app_name: str | None = None):
         self.setCurrentWidget(self.integrations_tab)
         self.integrations_tab.show_import(app_name)
 

@@ -60,24 +60,24 @@ color_group_map: dict[int, str] = {
 }
 
 
-def load_color_scheme(path: str) -> QPalette:
+def load_color_scheme(path: str) -> QPalette | None:
     palette = QPalette()
     scheme = QSettings(path, QSettings.Format.IniFormat)
     try:
         scheme.beginGroup('ColorScheme')
-        for g in color_group_map:
-            scheme.beginGroup(color_group_map[g])
-            group = QPalette.ColorGroup(g)
-            for r in color_role_map:
-                role = QPalette.ColorRole(r)
-                color = scheme.value(color_role_map[r], None)
+        for group, group_name in color_group_map.items():
+            scheme.beginGroup(group_name)
+            group = QPalette.ColorGroup(group)
+            for role, role_name in color_role_map.items():
+                role = QPalette.ColorRole(role)
+                color = scheme.value(role_name, None)
                 if color is not None:
                     palette.setColor(group, role, QColor(color))
                 else:
                     palette.setColor(group, role, palette.color(QPalette.ColorGroup.Active, role))
             scheme.endGroup()
         scheme.endGroup()
-    except Exception:
+    except Exception:  # noqa: BLE001
         palette = None
     return palette
 
@@ -168,7 +168,7 @@ def path_size(path: str | os.PathLike) -> int:
     )
 
 
-def format_size(b: int | float) -> str:
+def format_size(b: float) -> str:
     for s in ('', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei'):
         if b < 1024:
             return f'{b:.2f} {s}B'
@@ -199,16 +199,16 @@ def relative_date(date):
         return f'{s // 3600} hours ago'
 
 
-def qta_icon(icn_str: str, fallback: str = None, **kwargs):
+def qta_icon(icn_str: str, fallback: str | None = None, **kwargs):
     try:
         return qtawesome.icon(icn_str, **kwargs)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         if not fallback:
             logger.warning(f'{e} {icn_str}')
     if fallback:
         try:
             return qtawesome.icon(fallback, **kwargs)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.error(f'{e} {icn_str}')
     if kwargs.get('color'):
         kwargs['color'] = 'red'
@@ -233,7 +233,7 @@ def widget_object_name(widget: QObject | ShibokenObject | type, suffix: str) -> 
     elif isinstance(widget, (ShibokenObject, type)):
         return f'{widget.__name__}{suffix}'
     else:
-        raise RuntimeError(f'Argument {widget} not a QObject or type of QObject')
+        raise TypeError(f'Argument {widget} not a QObject or type of QObject')
 
 
 def elide_text(label: QLabel, text: str) -> str:

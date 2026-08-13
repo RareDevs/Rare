@@ -131,13 +131,13 @@ def adjust_compat_data_path(app_name: str, value: str) -> None:
     adjust_envvar(app_name, 'STEAM_COMPAT_DATA_PATH', value)
 
 
-def get_compat_data_path(app_name: str | None = None, fallback: Any = None) -> str:
+def get_compat_data_path(app_name: str, fallback: Any = None) -> str:
     _compat = get_envvar(app_name, 'STEAM_COMPAT_DATA_PATH', fallback=fallback)
     # return os.path.join(_compat, "pfx") if _compat else fallback
     return _compat
 
 
-def get_compat_data_path_with_global(app_name: str | None = None, fallback: Any = None) -> str:
+def get_compat_data_path_with_global(app_name: str, fallback: Any = None) -> str:
     _compat = get_envvar_with_global(app_name, 'STEAM_COMPAT_DATA_PATH', fallback=fallback)
     # return os.path.join(_compat, "pfx") if _compat else fallback
     return _compat
@@ -152,17 +152,21 @@ def _get_prefixes(lookup_fn: Callable[[SectionProxy], str]) -> set[tuple[str, st
     for name, section in _config.items():
         pfx = lookup_fn(section)
         if pfx:
-            _prefixes.update([(pfx, name[: -len('.env')] if name.endswith('.env') else name)])
+            _prefixes.update([(pfx, name.removesuffix('.env'))])
     _prefixes = {(os.path.expanduser(p), n) for p, n in _prefixes}
     return {(p, n) for p, n in _prefixes if prefix_exists(p)}
 
 
 def get_wine_prefixes() -> set[tuple[str, str]]:
-    return _get_prefixes(lambda s: s.get('WINEPREFIX') or s.get('wine_prefix'))
+    def _condition(s: SectionProxy) -> str:
+        return s.get('WINEPREFIX') or s.get('wine_prefix', '')
+    return _get_prefixes(_condition)
 
 
 def get_proton_prefixes() -> set[tuple[str, str]]:
-    return _get_prefixes(lambda s: os.path.join(compat_path, 'pfx') if (compat_path := s.get('STEAM_COMPAT_DATA_PATH')) else '')
+    def _condition(s: SectionProxy) -> str:
+        return os.path.join(compat_path, 'pfx') if (compat_path := s.get('STEAM_COMPAT_DATA_PATH')) else ''
+    return _get_prefixes(_condition)
 
 
 def get_prefixes() -> set[tuple[str, str]]:

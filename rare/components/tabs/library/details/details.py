@@ -2,6 +2,7 @@ import os
 import platform
 from hashlib import sha1
 from logging import getLogger
+from typing import ClassVar
 
 from PySide6.QtCore import (
     QCoreApplication,
@@ -531,7 +532,7 @@ class AchievementWidget(QFrame):
 class GameTagCheckBox(QCheckBox):
     checkStateChangedData = Signal(Qt.CheckState, str)
 
-    tag_translations = {
+    tag_translations: ClassVar[dict] = {
         'backlog': QCoreApplication.translate('GameTagCheckBox', 'Backlog', None),
         'completed': QCoreApplication.translate('GameTagCheckBox', 'Completed', None),
         'favorite': QCoreApplication.translate('GameTagCheckBox', 'Favorite', None),
@@ -593,19 +594,19 @@ class GameTagAddDialog(ButtonDialog):
         self.accept_button.setIcon(qta_icon('fa.edit', 'fa5s.edit'))
         self.accept_button.setEnabled(False)
 
-        self.tags = tags
-        self.result: tuple = (False, '')
+        self._tags = tags
+        self._result: tuple[bool, str] = False, ''
 
     @Slot(str)
     def __on_text_changed(self, text: str):
-        enabled = all((bool(text), len(text) > 4, text not in self.tags))
+        enabled = all((bool(text), len(text) > 4, text not in self._tags))
         self.accept_button.setEnabled(enabled)
 
     def done_handler(self):
-        self.result_ready.emit(*self.result)
+        self.result_ready.emit(*self._result)
 
     def accept_handler(self):
-        self.result = (True, self.line_edit.text())
+        self._result = True, self.line_edit.text()
 
     def reject_handler(self):
-        self.result = (False, self.line_edit.text())
+        self._result = False, self.line_edit.text()

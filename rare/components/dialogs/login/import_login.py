@@ -99,7 +99,7 @@ class ImportLogin(LoginFrame):
             if self.core.auth_import():
                 self.logger.info('Logged in as %s', {self.core.lgd.userdata['displayName']})
                 self.success.emit()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             msg = e.message if isinstance(e, LgndrException) else str(e)
             self.ui.status_field.setText(self.tr('Login failed: {}').format(msg))
             self.logger.warning('Failed to import existing session')

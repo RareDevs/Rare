@@ -90,7 +90,7 @@ class DlThread(QThread):
                         self.item.download.dlm.signals_queue.put(self.dlm_signals, block=False, timeout=1.0)
                 time.sleep(self.item.download.dlm.update_interval / 10)
             self.item.download.dlm.join()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.kill()
             self.item.download.dlm.join()
             end_t = time.time()

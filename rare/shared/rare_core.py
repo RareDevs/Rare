@@ -100,7 +100,7 @@ class RareCore(QObject):
             self.workers_disk.append(worker)
             self.threadpool_disk.start(worker, priority=0)
         else:
-            raise RuntimeError(f'Cannot enqueue unkown worker type {type(worker).__name__}')
+            raise TypeError(f'Cannot enqueue unkown worker type {type(worker).__name__}')
         self.__signals.application.update_statusbar.emit()
 
     def _on_worker_finished(self, worker: QueueWorker):
@@ -144,7 +144,7 @@ class RareCore(QObject):
             self.__signals = GlobalSignals()
         return self.__signals
 
-    def args(self, args: Namespace = None) -> Namespace | None:
+    def args(self, args: Namespace | None = None) -> Namespace | None:
         if self.__args is None and args is None:
             raise RuntimeError('Uninitialized use of ArgumentsSingleton')
         if self.__args is not None and args is not None:
@@ -182,7 +182,7 @@ class RareCore(QObject):
                     self.__core.lgd.config.add_section(section)
 
             # Set some platform defaults if unset
-            def check_config(option: str, accepted: set = None) -> bool:
+            def check_config(option: str, accepted: set | None = None) -> bool:
                 _exists = self.__core.lgd.config.has_option('Legendary', option)
                 _value = self.__core.lgd.config.get('Legendary', option, fallback='')
                 _accepted = _value in accepted if accepted is not None else True

@@ -2,6 +2,7 @@ import os
 from collections.abc import Callable
 from enum import Enum, IntEnum
 from logging import getLogger
+from typing import ClassVar
 
 from PySide6.QtCore import (
     QDir,
@@ -133,9 +134,9 @@ class IndicatorLineEdit(QWidget):
         self,
         text: str = '',
         placeholder: str = '',
-        completer: QCompleter = None,
-        edit_func: Callable[[str], tuple[bool, str, int]] = None,
-        save_func: Callable[[str], None] = None,
+        completer: QCompleter | None = None,
+        edit_func: Callable[[str], tuple[bool, str, int]] | None = None,
+        save_func: Callable[[str], None] | None = None,
         horiz_policy: QSizePolicy.Policy = QSizePolicy.Policy.Expanding,
         parent=None,
     ):
@@ -261,9 +262,10 @@ class IndicatorLineEdit(QWidget):
         if self.edit_func is not None:
             if self.__thread is not None:
                 self.__thread.signals.result.disconnect(self.__edit_handler)
-            self.__thread = EditFuncRunnable(self.edit_func, text)
-            self.__thread.signals.result.connect(self.__edit_handler)
-            self.__threadpool.start(self.__thread)
+            thread = EditFuncRunnable(self.edit_func, text)
+            thread.signals.result.connect(self.__edit_handler)
+            self.__threadpool.start(thread)
+            self.__thread = thread
 
     def __save(self, text):
         if self.save_func is not None:
@@ -275,7 +277,7 @@ class PathEditIconProvider(QAbstractFileIconProvider):
         Unknown = -1
         Executable = -2
 
-    icons = {
+    icons: ClassVar[dict] = {
         CustomIconType.Unknown: ('mdi.file-cancel', 'fa5.file-excel'),  # Unknown
         QAbstractFileIconProvider.IconType.Computer: (
             'mdi.desktop-classic',
@@ -331,11 +333,11 @@ class PathEdit(IndicatorLineEdit):
         self,
         path: str = '',
         file_mode: QFileDialog.FileMode = QFileDialog.FileMode.AnyFile,
-        file_filter: QDir.Filter = 0,
-        name_filters: tuple[str, ...] = None,
+        file_filter: QDir.Filter = QDir.Filter.NoFilter,
+        name_filters: tuple[str, ...] | None = None,
         placeholder: str = '',
-        edit_func: Callable[[str], tuple[bool, str, int]] = None,
-        save_func: Callable[[str], None] = None,
+        edit_func: Callable[[str], tuple[bool, str, int]] | None = None,
+        save_func: Callable[[str], None] | None = None,
         horiz_policy: QSizePolicy.Policy = QSizePolicy.Policy.Expanding,
         parent=None,
     ):
@@ -352,8 +354,7 @@ class PathEdit(IndicatorLineEdit):
             logger.warning(e)
         self.__completer_model.setIconProvider(PathEditIconProvider())
         self.__completer_model.setRootPath(path)
-        if file_filter:
-            self.__completer_model.setFilter(file_filter)
+        self.__completer_model.setFilter(file_filter)
         if name_filters:
             self.__completer_model.setNameFilters(name_filters)
         self.__completer.setModel(self.__completer_model)

@@ -141,7 +141,7 @@ class LibraryHeadBar(QWidget):
     def __game_tags_updated(self):
         if self.search_bar.completer():
             self.search_bar.completer().deleteLater()
-        wordlist = tuple(map(lambda x: '::' + x, self.rcore.game_tags))
+        wordlist = tuple('::' + x for x in self.rcore.game_tags)
         completer = QCompleter(wordlist, self.search_bar)
         completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.search_bar.setCompleter(completer)

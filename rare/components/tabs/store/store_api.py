@@ -44,7 +44,7 @@ class StoreAPI(QObject):
         self.installed = installed
 
         self.browse_active = False
-        self.next_browse_request = tuple(())
+        self.next_browse_request = ()
 
     def get_free(self, callback: Callable):
         url = 'https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions'
@@ -64,7 +64,7 @@ class StoreAPI(QObject):
             elements = response.data.catalog.searchStore.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
-                raise e
+                raise
             elements = False
             self.logger.error('Free games request failed with: %s', e)
         callback(elements)
@@ -92,7 +92,7 @@ class StoreAPI(QObject):
             elements = response.data.wishlist.wishlistItems.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
-                raise e
+                raise
             elements = False
             self.logger.error('Wishlist request failed with: %s', e)
         callback(elements)
@@ -126,7 +126,7 @@ class StoreAPI(QObject):
             elements = response.data.catalog.searchStore.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
-                raise e
+                raise
             elements = False
             self.logger.error('Search request failed with: %s', e)
         callback(elements)
@@ -156,13 +156,13 @@ class StoreAPI(QObject):
                 elements = response.data.catalog.searchStore.elements
             except (Exception, AttributeError, KeyError) as e:
                 if DEBUG():
-                    raise e
+                    raise
                 elements = False
                 self.logger.error('Browse request failed with: %s', e)
             callback(elements)
         else:
             self.browse_games(*self.next_browse_request)  # pylint: disable=E1120
-            self.next_browse_request = tuple(())
+            self.next_browse_request = ()
 
     # def get_game_config_graphql(self, namespace: str, callback):
     #     payload = {
@@ -190,7 +190,7 @@ class StoreAPI(QObject):
             callback(product)
         except Exception as e:
             if DEBUG():
-                raise e
+                raise
             self.logger.error(str(e))
             # callback({})
 
@@ -220,7 +220,7 @@ class StoreAPI(QObject):
             success = response.data.wishlist.addToWishlist.success
         except Exception as e:
             if DEBUG():
-                raise e
+                raise
             self.logger.error('Add to wishlist request failed with: %s', e)
             success = False
         callback(success)
@@ -250,7 +250,7 @@ class StoreAPI(QObject):
             success = response.data.wishlist.removeFromWishlist.success
         except Exception as e:
             if DEBUG():
-                raise e
+                raise
             self.logger.error('Remove from wishlist request failed with: %s', e)
             success = False
         callback(success)

@@ -169,7 +169,7 @@ class SearchWidget(QWidget, SideTabContents):
 
     def prepare_request(
         self,
-        price: str = None,
+        price: str | None = None,
         added_tag: int = 0,
         removed_tag: int = 0,
         added_type: str = '',

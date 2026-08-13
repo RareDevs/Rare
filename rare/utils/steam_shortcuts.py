@@ -103,7 +103,7 @@ def load_steam_shortcuts():
     else:
         steam_user = next(
             filter(lambda x: x.most_recent, steam_users),
-            sorted(steam_users, key=lambda x: x.last_login, reverse=True)[0],
+            max(steam_users, key=lambda x: x.last_login),
         )
         logger.info(
             'Found most recently logged-in user %s(%s) (%s)',
@@ -147,7 +147,6 @@ def remove_steam_shortcut(app_name: str) -> SteamShortcut | None:
 
 
 def add_steam_shortcut(app_name: str, app_title: str) -> SteamShortcut:
-    global __steam_shortcuts
 
     if steam_shortcut_exists(app_name):
         logger.info('Removing old Steam shortcut for %s', app_name)

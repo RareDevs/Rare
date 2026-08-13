@@ -36,7 +36,7 @@ class WineRunner:
     runtime: WineRuntime | None = None
 
 
-def find_lutris_wines(runtime_path: str = None, wine_path: str = None) -> list[WineRunner]:
+def find_lutris_wines(runtime_path: str | None = None, wine_path: str | None = None) -> list[WineRunner]:
     runners = []
     if not runtime_path and not wine_path:
         return runners
@@ -49,15 +49,15 @@ def __get_lib_path(executable: str, basename: str = '') -> str:
     lib64 = os.path.realpath(os.path.join(path, 'lib64', basename))
     lib = os.path.realpath(os.path.join(path, 'lib', basename))
     if lib32 == lib or not os.path.exists(lib32):
-        ldpath = ':'.join([lib64, lib])
+        ldpath = f'{lib64}:{lib}'
     elif lib64 == lib or not os.path.exists(lib64):
-        ldpath = ':'.join([lib, lib32])
+        ldpath = f'{lib}:{lib32}'
     else:
         ldpath = lib if os.path.exists(lib) else lib64
     return ldpath
 
 
-def get_wine_environment(executable: str = None, prefix: str = None) -> dict:
+def get_wine_environment(executable: str | None = None, prefix: str | None = None) -> dict:
     # If the tool is unset, return all affected env variable names
     # IMPORTANT: keep this in sync with the code below
     environ = {'WINEPREFIX': prefix if prefix is not None else ''}

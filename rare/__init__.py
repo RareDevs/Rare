@@ -10,4 +10,4 @@ if __name__ == '__main__':
 
     sys.exit(main())
 
-__all__ = ['__version__', '__version_tuple__', '__codename__']
+__all__ = ['__codename__', '__version__', '__version_tuple__']

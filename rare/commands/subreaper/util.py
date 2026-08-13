@@ -27,7 +27,7 @@ def find_mangohud_shim() -> str:
     return '/'.join(ret)
 
 
-def find_mangohud_bin() -> str:
+def find_mangohud_bin() -> str| None:
     return shutil.which('mangohud')
 
 
@@ -35,4 +35,4 @@ if __name__ == '__main__':
     print(find_mangohud_shim())
 
 
-__all__ = ['find_mangohud_shim', 'find_mangohud_bin']
+__all__ = ['find_mangohud_bin', 'find_mangohud_shim']

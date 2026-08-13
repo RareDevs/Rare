@@ -33,7 +33,7 @@ class RequestQueueItem:
 class QRequests(QObject):
     data_ready = Signal(object)
 
-    def __init__(self, cache: str = None, token: str = None, parent=None):
+    def __init__(self, cache: str | None = None, token: str | None = None, parent=None):
         super(QRequests, self).__init__(parent=parent)
         self.logger = getLogger(f'{type(self).__name__}_{type(parent).__name__}')
         self._manager = QNetworkAccessManager(self)
@@ -100,8 +100,8 @@ class QRequests(QObject):
         self,
         url: str,
         handler: RequestHandler,
-        payload: dict = None,
-        params: dict = None,
+        payload: dict | None = None,
+        params: dict | None = None,
     ):
         url = self.__prepare_query(url, params) if params is not None else QUrl(url)
         item = RequestQueueItem(method='get', url=url, payload=payload, handlers=[handler])
@@ -125,8 +125,8 @@ class QRequests(QObject):
         elif reply.error() != QNetworkReply.NetworkError.NoError:
             self.logger.error(reply.errorString())
         else:
-            mimetype, charset = self.__parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))
-            maintype, subtype = mimetype.split('/')
+            mimetype, _charset = self.__parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))
+            maintype, _subtype = mimetype.split('/')
             bin_data = reply.readAll().data()
             if mimetype == 'application/json':
                 data = orjson.loads(bin_data)

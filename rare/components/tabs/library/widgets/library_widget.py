@@ -58,10 +58,10 @@ class ProgressLabel(QLabel):
         origin_h = (image.height() - min_d) // 2
         for x, y in zip(range(origin_w, min_d), range(origin_h, min_d), strict=False):
             pixel = image.pixelColor(x, y).getRgb()
-            color = list(map(lambda t: sum(t) // 2, zip(pixel[:3], color, strict=False)))
+            color = [sum(t) // 2 for t in zip(pixel[:3], color, strict=False)]
         # take the V component of the HSV color
         fg_color = QColor(0, 0, 0) if QColor(*color).value() < 127 else QColor(255, 255, 255)
-        bg_color = QColor(*map(lambda c: 255 - c, color))
+        bg_color = QColor(*(255 - c for c in color))
         return bg_color, fg_color
 
     def setStyleSheetColors(self, bg: QColor, fg: QColor, brd: QColor):
