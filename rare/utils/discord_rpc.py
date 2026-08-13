@@ -39,7 +39,7 @@ class DiscordRPC(QObject):
 
     @Slot()
     @Slot(list)
-    def update_settings(self, game_running: list = None):
+    def update_settings(self, game_running: list | None = None):
         rpc_mode = DiscordRPCMode(self.settings.get_value(app_settings.discord_rpc_mode))
         if rpc_mode == DiscordRPCMode.NEVER:
             self.remove_rpc()
@@ -58,7 +58,7 @@ class DiscordRPC(QObject):
                 return
             try:
                 self.rpc.close()
-            except Exception:
+            except Exception:  # noqa: BLE001
                 logger.warning('Already closed')
             del self.rpc
             self.rpc = None
@@ -83,7 +83,7 @@ class DiscordRPC(QObject):
                 logger.error(f'Is Discord running? \n{e}')
                 self.rpc = None
                 return
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 logger.error(str(e))
                 self.rpc = None
                 return

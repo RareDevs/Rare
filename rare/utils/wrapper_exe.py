@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from logging import getLogger
 from pathlib import Path
 
+import orjson
 import requests
-from orjson import orjson
 
 from rare.utils.paths import data_dir, runtime_assets_path
 
@@ -25,7 +25,7 @@ def download_lgd_wrapper() -> bool:
     runtime_assets = {
         wrapper_path().name: {
             'version': 'v0.0',
-            'date': datetime.isoformat(datetime.min),
+            'date': datetime.isoformat(datetime.min.replace(tzinfo=timezone.utc)),
         }
     }
     version = runtime_assets[wrapper_path().name]['version']
@@ -38,7 +38,8 @@ def download_lgd_wrapper() -> bool:
         resp = requests.get(_github_api_url, timeout=5)
         data = resp.content.decode('utf-8')
         latest_release = orjson.loads(data)
-    except requests.exceptions.Timeout:
+    except requests.exceptions.Timeout as e:
+        logger.error('Error while downloading release: %s', e)
         return wrapper_path().exists()
 
     remote_assets = latest_release['assets']

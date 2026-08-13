@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 
 @dataclass
 class SearchDateRange:
-    start_date: datetime = datetime(year=1990, month=1, day=1, tzinfo=timezone.utc)
-    end_date: datetime = datetime.now(timezone.utc)
+    start_date: datetime = field(default_factory=lambda: datetime(year=1990, month=1, day=1, tzinfo=timezone.utc))
+    end_date: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
 
     def __str__(self):
         def fmt_date(date: datetime) -> str:

@@ -177,7 +177,7 @@ class MoveWorker(QueueWorker):
                 key=lambda a: a.filename.lower(),
             )
             if config_tags := self.core.lgd.config.get(self.rgame.app_name, 'install_tags', fallback=None):
-                install_tags = set(i.strip() for i in config_tags.split(','))
+                install_tags = {i.strip() for i in config_tags.split(',')}
                 file_list = [
                     (f.filename, f.sha_hash.hex())
                     for f in files

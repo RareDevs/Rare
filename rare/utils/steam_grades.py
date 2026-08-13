@@ -1,6 +1,6 @@
 import difflib
 import lzma
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from logging import getLogger
 
@@ -64,8 +64,8 @@ class SteamGrades:
         elapsed_days = 0
 
         if file.is_file():
-            mod_time = datetime.fromtimestamp(file.stat().st_mtime)
-            elapsed_days = abs(datetime.now() - mod_time).days
+            mod_time = datetime.fromtimestamp(file.stat().st_mtime, tz=timezone.utc)
+            elapsed_days = abs(datetime.now(tz=timezone.utc) - mod_time).days
             with file.open('r') as fd:
                 json = orjson.loads(fd.read())
                 version = json.get('version', 0)
@@ -123,7 +123,7 @@ class SteamGrades:
 
         return app.get('tier', 'fail')
 
-    def get_rating(self, core: LegendaryCore, app_name: str, steam_appid: str = None) -> tuple[str, str]:
+    def get_rating(self, core: LegendaryCore, app_name: str, steam_appid: str | None = None) -> tuple[str, str]:
         game = core.get_game(app_name)
         try:
             if steam_appid is None:
@@ -131,7 +131,7 @@ class SteamGrades:
                 if not steam_appid:
                     raise RuntimeError
             grade = self._get_grade(steam_appid)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.logger.error(repr(e))
             self.logger.error('Failed to get ProtonDB rating for %s', game.app_title)
             return '0', 'fail'

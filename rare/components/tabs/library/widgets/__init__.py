@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import TypeVar
+from typing import ClassVar, TypeVar
 
 from PySide6.QtCore import QObject, Qt, Slot
 from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget
@@ -25,7 +25,7 @@ class ViewContainer(QWidget):
         self.layout().addWidget(widget)
         return widget
 
-    __is_visible = {
+    __is_visible: ClassVar[dict ]= {
         LibraryFilter.HIDDEN: lambda x: 'hidden' in x.metadata.tags,
         LibraryFilter.FAVORITES: lambda x: 'favorite' in x.metadata.tags,
         LibraryFilter.INSTALLED: lambda x: x.is_installed and not x.is_unreal and 'hidden' not in x.metadata.tags,

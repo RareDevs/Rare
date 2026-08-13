@@ -61,7 +61,7 @@ class OverlayCheckBox(QCheckBox):
         title: str,
         desc: str = '',
         default_enabled: bool = False,
-        values: tuple = None,
+        values: tuple | None = None,
         parent=None,
     ):
         self.option = option
@@ -101,7 +101,7 @@ class OverlayStringInput(OverlayLineEdit):
 
 
 class OverlayNumberInput(OverlayLineEdit):
-    def __init__(self, option: str, placeholder: int | float, parent=None):
+    def __init__(self, option: str, placeholder: float, parent=None):
         super().__init__(option, str(placeholder), parent=parent)
         validator = QDoubleValidator(self) if isinstance(placeholder, float) else QIntValidator(self)
         self.setValidator(validator)
@@ -177,28 +177,25 @@ class OverlaySettings(QGroupBox):
 
         self.ui.overlay_state_label.setText(label)
 
-        for idx, widget in enumerate(grid_map):
-            widget.setParent(self.ui.options_group)
-            self.ui.options_grid.addWidget(widget, idx // self.grid_row_items, idx % self.grid_row_items)
-            # self.checkboxes[widget.option] = widget
-            self.option_widgets.append(widget)
-            widget.stateChanged.connect(self._update_settings)
+        for idx, w in enumerate(grid_map):
+            w.setParent(self.ui.options_group)
+            self.ui.options_grid.addWidget(w, idx // self.grid_row_items, idx % self.grid_row_items)
+            self.option_widgets.append(w)
+            w.stateChanged.connect(self._update_settings)
         self.ui.options_grid.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
-        for widget, label in left_form_map:
-            widget.setParent(self.ui.options_group)
-            self.ui.left_options_form.addRow(label, widget)
-            # self.values[widget.option] = widget
-            self.option_widgets.append(widget)
-            widget.valueChanged.connect(self._update_settings)
+        for w, _label in left_form_map:
+            w.setParent(self.ui.options_group)
+            self.ui.left_options_form.addRow(_label, w)
+            self.option_widgets.append(w)
+            w.valueChanged.connect(self._update_settings)
         self.ui.left_options_form.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
-        for widget, label in right_form_map:
-            widget.setParent(self.ui.options_group)
-            self.ui.right_options_form.addRow(label, widget)
-            # self.values[widget.option] = widget
-            self.option_widgets.append(widget)
-            widget.valueChanged.connect(self._update_settings)
+        for w, _label in right_form_map:
+            w.setParent(self.ui.options_group)
+            self.ui.right_options_form.addRow(_label, w)
+            self.option_widgets.append(w)
+            w.valueChanged.connect(self._update_settings)
         self.ui.right_options_form.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
         self.ui.options_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
@@ -521,7 +518,6 @@ if __name__ == '__main__':
 
     from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout
 
-    global config
     config = Namespace()
 
     def get_envvar(x, y, fallback):

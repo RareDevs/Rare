@@ -47,7 +47,7 @@ class IntegrationsTab(SideTabWidget):
 
         self.setCurrentIndex(self.import_index)
 
-    def show_import(self, app_name: str = None):
+    def show_import(self, app_name: str | None = None):
         self.setCurrentIndex(self.import_index)
         self.import_group.set_game(app_name)
 

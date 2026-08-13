@@ -44,24 +44,23 @@ class RuntimeAssetsWorker(FetchWorker):
             with timelogger(self.logger, 'Request Steam AppIds'):
                 try:
                     steam_grades.load_steam_appids()
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     self.logger.warning(e)
         if not self.args.offline:
             self.signals.progress.emit(increment, self.signals.tr('Updating workarounds'))
             with timelogger(self.logger, 'Request workarounds'):
                 try:
                     workarounds.load_workarounds()
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     self.logger.warning(e)
         if not self.args.offline:
             self.signals.progress.emit(increment, self.signals.tr('Updating workarounds'))
             with timelogger(self.logger, 'Request wrapper exe'):
                 try:
                     download_lgd_wrapper()
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     self.logger.warning(e)
         self.signals.result.emit((), FetchWorker.Result.RUNTIMEASSETS)
-        return
 
 
 class GamesDlcsWorker(FetchWorker):
@@ -132,7 +131,7 @@ class GamesDlcsWorker(FetchWorker):
                 na_games, na_dlc_dict = ([], {})
             # NOTE: This is here because of broken appIds from Epic
             # https://discord.com/channels/826881530310819914/884510635642216499/1111321692703305729
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.logger.error('General exception while updating non-asset games from EGS.')
                 self.logger.error(e)
                 na_games, na_dlc_dict = ([], {})

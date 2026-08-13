@@ -141,14 +141,10 @@ class StoreDetailsWidget(QWidget, SideTabContents):
             )
 
     def data_received(self, product: DieselProduct):
-        try:
-            if product.pages:
-                product_data: DieselProductDetail = product.pages[0].data
-            else:
-                product_data: DieselProductDetail = product.data
-        except Exception as e:
-            raise e
-            logger.error(str(e))
+        if product.pages:
+            product_data: DieselProductDetail = product.pages[0].data
+        else:
+            product_data: DieselProductDetail = product.data
 
         self.ui.original_price.setFont(self.font())
         price = self.catalog_offer.price.totalPrice.fmtPrice['originalPrice']
@@ -218,7 +214,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
             else:
                 try:
                     icn = qta_icon(f'mdi.{name}', f'fa5b.{name}', scale_factor=1.2)
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     logger.error(str(e))
                     continue
 

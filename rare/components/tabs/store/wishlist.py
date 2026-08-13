@@ -1,4 +1,5 @@
 from enum import IntEnum
+from typing import ClassVar
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
@@ -126,10 +127,10 @@ class WishlistWidget(QWidget, SideTabContents):
                 w.setVisible(bool(w.catalog_game.price.totalPrice.discount))
             else:
                 w.setVisible(True)
-        have_visible = any(map(lambda x: x.isVisible(), widgets))
+        have_visible = any(x.isVisible() for x in widgets)
         self.ui.no_games_label.setVisible(not have_visible)
 
-    __ordering = {
+    __ordering: ClassVar[dict] = {
         WishlistOrder.NAME: lambda x: x.catalog_game.title,
         WishlistOrder.PRICE: lambda x: x.catalog_game.price.totalPrice.discountPrice,
         WishlistOrder.DEVELOPER: lambda x: x.catalog_game.seller['name'],
@@ -154,7 +155,7 @@ class WishlistWidget(QWidget, SideTabContents):
         self.order_wishlist(self.ui.order_combo.currentIndex())
 
     @Slot(object)
-    def set_wishlist(self, wishlist: list[WishlistItemModel] = None):
+    def set_wishlist(self, wishlist: list[WishlistItemModel] | None = None):
         if wishlist and wishlist[0] == 'error':
             return
 

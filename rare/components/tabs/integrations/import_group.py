@@ -76,7 +76,7 @@ class ImportWorker(QRunnable):
         self,
         core: LegendaryCore,
         path: str,
-        app_name: str = None,
+        app_name: str | None = None,
         platform: str | None = None,
         import_folder: bool = False,
         import_dlcs: bool = False,
@@ -113,7 +113,7 @@ class ImportWorker(QRunnable):
         self.signals.disconnect(self.signals)
         self.signals.deleteLater()
 
-    def _try_import(self, path: Path, app_name: str = None) -> ImportedGame:
+    def _try_import(self, path: Path, app_name: str | None = None) -> ImportedGame:
         result = ImportedGame(ImportResult.ERROR)
         result.path = str(path)
         if app_name or (app_name := find_app_name(self.core, str(path))):

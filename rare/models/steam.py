@@ -38,14 +38,14 @@ class SteamUser:
 
     @property
     def __dict__(self):
-        return dict(
-            long_id=self.long_id,
-            short_id=self.short_id,
-            account_name=self.account_name,
-            persona_name=self.persona_name,
-            most_recent=self.most_recent,
-            last_login=self.last_login,
-        )
+        return {
+            'long_id': self.long_id,
+            'short_id': self.short_id,
+            'account_name': self.account_name,
+            'persona_name': self.persona_name,
+            'most_recent': self.most_recent,
+            'last_login': self.last_login,
+        }
 
     def __repr__(self):
         return repr(vars(self))
@@ -148,9 +148,9 @@ class SteamShortcut:
 
     @property
     def __dict__(self):
-        ret = dict(
-            shortcut_appid=self.shortcut_appid(),
-            grid_appid=self.coverart_appid(),
-            last_played=self.last_played,
-        )
+        ret = {
+            'shortcut_appid': self.shortcut_appid(),
+            'grid_appid': self.coverart_appid(),
+            'last_played': self.last_played,
+        }
         return ret

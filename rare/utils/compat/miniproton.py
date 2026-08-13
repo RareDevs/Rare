@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# noqa: EXE001
 import os
 import subprocess
 import sys
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         'd3d12': 'n,b;',
         'd3d12core': 'n,b',
     }
-    dlloverrides = ';'.join(('='.join((k, v)) for k, v in dlls.items()))
+    dlloverrides = ';'.join((f'{k}={v}' for k, v in dlls.items()))
     dlloverrides = ';'.join((os.environ.get('WINEDLLOVERRIDES', ''), dlloverrides))
 
     env = {

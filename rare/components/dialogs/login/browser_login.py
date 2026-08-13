@@ -69,7 +69,7 @@ class BrowserLogin(LoginFrame):
             if self.core.auth_code(auth_code):
                 self.logger.info('Successfully logged in as %s', self.core.lgd.userdata['displayName'])
                 self.success.emit()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             msg = e.message if isinstance(e, LgndrException) else str(e)
             self.ui.status_field.setText(self.tr('Login failed: {}').format(msg))
             self.logger.error('Failed to login through browser')
@@ -96,7 +96,7 @@ class BrowserLogin(LoginFrame):
                     self.core.auth_ex_token(out)
                     self.logger.info('Successfully logged in as %s', {self.core.lgd.userdata['displayName']})
                     self.success.emit()
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     msg = e.message if isinstance(e, LgndrException) else str(e)
                     self.ui.status_field.setText(self.tr('Login failed: {}').format(msg))
                     self.logger.error('Failed to login through browser')

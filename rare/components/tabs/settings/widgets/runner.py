@@ -28,7 +28,7 @@ class RunnerSettingsBase(QGroupBox):
         settings: RareAppSettings,
         rcore: RareCore,
         wine_widget: type['WineSettings'],
-        proton_widget: type['ProtonSettings'] = None,
+        proton_widget: type['ProtonSettings'] | None = None,
         parent=None,
     ):
         super().__init__(parent=parent)

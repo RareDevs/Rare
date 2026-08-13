@@ -74,7 +74,7 @@ class EnvVarsTableModel(QAbstractTableModel):
             index = index.row()
         try:
             return list(self.__data_map)[index]
-        except Exception:
+        except Exception:  # noqa: BLE001
             return ''
 
     def __is_local(self, index: QModelIndex | int):

@@ -42,7 +42,7 @@ class PathSpec:
         else:
             return prefixes[:results]
 
-    def __init__(self, core: LegendaryCore = None, igame: InstalledGame = None):
+    def __init__(self, core: LegendaryCore | None = None, igame: InstalledGame | None = None):
         self.__egl_path_vars = {
             '{appdata}': os.path.expandvars('%LOCALAPPDATA%'),
             '{userdir}': os.path.expandvars('%USERPROFILE%/Documents'),
@@ -56,6 +56,6 @@ class PathSpec:
         if igame is not None:
             self.__egl_path_vars['{installdir}'] = igame.install_path
 
-    def resolve_egl_path_vars(self, path: str) -> str | bytes:
-        cooked_path = (self.__egl_path_vars.get(p.lower(), p) for p in path.split('/'))
+    def resolve_egl_path_vars(self, path: str) -> str:
+        cooked_path = [self.__egl_path_vars.get(p.lower(), p) for p in path.split('/')]
         return os.path.join(*cooked_path)

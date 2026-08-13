@@ -82,19 +82,19 @@ class RareAppSettings(QSettings):
             raise RuntimeError('Uninitialized use of RareSettings')
         return RareAppSettings.__instance
 
-    def get_value(self, option: Setting, prefix: str = None) -> Any:
+    def get_value(self, option: Setting, prefix: str | None = None) -> Any:
         if prefix:
             return self.value(f'{prefix}/{option.key}', defaultValue=option.default, type=option.dtype)
         else:
             return self.value(option.key, defaultValue=option.default, type=option.dtype)
 
-    def set_value(self, option: Setting, value: Any, prefix: str = None) -> None:
+    def set_value(self, option: Setting, value: Any, prefix: str | None = None) -> None:
         if prefix:
             self.setValue(f'{prefix}/{option.key}', option.dtype(value))
         else:
             self.setValue(option.key, option.dtype(value))
 
-    def rem_value(self, option: Setting, prefix: str = None) -> None:
+    def rem_value(self, option: Setting, prefix: str | None = None) -> None:
         if prefix:
             self.remove(f'{prefix}/{option.key}')
         else:
@@ -117,10 +117,10 @@ class RareAppSettings(QSettings):
 
 
 __all__ = [
-    'app_settings',
-    'RareAppSettings',
+    'DiscordRPCMode',
     'LibraryFilter',
     'LibraryOrder',
     'LibraryView',
-    'DiscordRPCMode',
+    'RareAppSettings',
+    'app_settings',
 ]

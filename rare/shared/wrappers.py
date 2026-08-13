@@ -32,7 +32,7 @@ class WrapperEntry:
 
     @property
     def __dict__(self):
-        return dict(checksum=self.__checksum, enabled=self.__enabled)
+        return {'checksum': self.__checksum, 'enabled': self.__enabled}
 
     # def __eq__(self, other) -> bool:
     #     return self.checksum == other.checksum
@@ -167,9 +167,7 @@ if __name__ == '__main__':
 
     from rare.utils.compat import steam
 
-    global config_dir
     config_dir = os.getcwd
-    global config
     config = Namespace()
     config.set_option = lambda x, y, z: print('set_option:', x, y, z)
     config.remove_option = lambda x, y: print('remove_option:', x, y)

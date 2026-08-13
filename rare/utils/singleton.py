@@ -53,7 +53,7 @@ class SingleInstance:
                     os.unlink(self.lockfile)
                 self.fd = os.open(self.lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR)
             except OSError as exc:
-                type, e, tb = sys.exc_info()
+                _type, e, _tb = sys.exc_info()
                 if e.errno == 13:
                     logger.error('Another instance is already running, quitting.')
                     raise SingleInstanceException() from exc
@@ -82,7 +82,7 @@ class SingleInstance:
                 # os.close(self.fp)
                 if os.path.isfile(self.lockfile):
                     os.unlink(self.lockfile)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             if logger:
                 logger.warning(e)
             else:

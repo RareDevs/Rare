@@ -123,7 +123,7 @@ class CloudSaves(QWidget, SideTabContents):
                     new_path = self.core.get_save_path(self.rgame.app_name)
                 if platform.system() != 'Windows' and not os.path.exists(new_path):
                     raise ValueError(f'Path "{new_path}" does not exist.')
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.logger.warning(str(e))
                 resolver = WineSavePathResolver(self.core, self.rgame)
                 # if not resolver.environ.get("WINEPREFIX"):

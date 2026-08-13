@@ -93,7 +93,6 @@ class WinePathResolver(Worker):
 
         path = self._resolve_unix_path(command, environ, self.path)
         self.signals.result_ready.emit(path, self.app_name)
-        return
 
 
 class WineSavePathResolver(WinePathResolver):
@@ -115,7 +114,6 @@ class WineSavePathResolver(WinePathResolver):
         if os.path.exists(path):
             self.rgame.save_path = path
         self.signals.result_ready.emit(path, self.rgame.app_name)
-        return
 
 
 class OriginWineWorker(WinePathResolver):

@@ -157,7 +157,7 @@ class LegendarySettings(QWidget):
         if text:
             if re.match('^[a-zA-Z]{2,3}[-_][a-zA-Z]{2,3}$', text):
                 language, country = text.split('-' if '-' in text else '_')
-                text = '-'.join([language.lower(), country.upper()])
+                text = f'{language.lower()}-{country.upper()}'
             if bool(re.match('^[a-z]{2,3}-[A-Z]{2,3}$', text)):
                 return True, text, IndicatorReasonsCommon.VALID
             else:

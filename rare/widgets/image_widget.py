@@ -167,7 +167,7 @@ class LoadingImageWidget(ImageWidget):
         super(LoadingImageWidget, self).__init__(parent=parent)
         self.manager = manager
 
-    def fetchPixmap(self, url: str, params: dict = None):
+    def fetchPixmap(self, url: str, params: dict | None = None):
         self.setPixmap(QPixmap())
         self.manager.get(url, self._on_image_ready, params=params)
 

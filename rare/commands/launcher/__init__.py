@@ -83,7 +83,7 @@ class PreLaunch(QRunnable):
     def prepare_launch(self, args: InitParams) -> LaunchParams | None:
         try:
             launch = get_launch_params(self.rgame, args)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.signals.error_occurred.emit(str(e))
             return None
         if not launch:
@@ -379,7 +379,7 @@ class RareLauncher(RareApp):
             cmd_line = get_rare_executable()
             executable, arguments = cmd_line[0], cmd_line[1:]
 
-            if appid := os.environ.get('SteamGameId', False):  # noqa: SIM112
+            if appid := os.environ.get('SteamGameId', None):  # noqa: SIM112
                 params.environment['SteamGameId'] = appid
             elif params.environment.get('SteamGameId', False):
                 appid = params.environment['SteamGameId']

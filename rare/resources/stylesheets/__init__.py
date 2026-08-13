@@ -1,4 +1,4 @@
-import rare.resources.stylesheets.RareStyle as RareStyle
+from rare.resources.stylesheets import RareStyle
 
 # Incomplete
 # import rare.resources.stylesheets.ChildOfMetropolis as ChildOfMetropolis

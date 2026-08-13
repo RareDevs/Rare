@@ -88,9 +88,9 @@ class KeyImagesModel:
             else:
                 model = self.available_tall()[0]
             _ = model.url
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.error(e)
-            logger.error(tuple(map(lambda x: x.as_dict(), self.key_images)))
+            logger.error(tuple(x.as_dict() for x in self.key_images))
         else:
             return model
 

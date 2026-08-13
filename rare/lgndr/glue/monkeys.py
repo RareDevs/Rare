@@ -4,8 +4,6 @@ from typing import Protocol, List, Optional, Dict
 
 from rare.lgndr.models.downloading import UIUpdate
 
-logger = logging.getLogger("LgndrMonkeys")
-
 
 class GetBooleanChoiceProtocol(Protocol):
     def __call__(self, prompt: str, default: bool = ...) -> bool:
@@ -13,6 +11,7 @@ class GetBooleanChoiceProtocol(Protocol):
 
 
 def get_boolean_choice_factory(value: bool = True) -> GetBooleanChoiceProtocol:
+    logger = logging.getLogger("LgndrMonkeys")
     def get_boolean_choice(prompt: str, default: bool = value) -> bool:
         logger.debug("get_boolean_choice: %s, default: %s, choice: %s", prompt, default, value)
         return value
@@ -25,6 +24,7 @@ class SdlPromptProtocol(Protocol):
 
 
 def sdl_prompt_factory(install_tag: Optional[List[str]] = None) -> SdlPromptProtocol:
+    logger = logging.getLogger("LgndrMonkeys")
     def sdl_prompt(sdl_data: Dict, title: str) -> List[str]:
         logger.debug("sdl_prompt: %s", title)
         for key in sdl_data.keys():
@@ -40,7 +40,8 @@ class VerifyStdoutProtocol(Protocol):
         ...
 
 
-def verify_stdout_factory(callback: VerifyStdoutProtocol = None) -> VerifyStdoutProtocol:
+def verify_stdout_factory(callback: VerifyStdoutProtocol | None = None) -> VerifyStdoutProtocol:
+    logger = logging.getLogger("LgndrMonkeys")
     def verify_stdout(a0: int, a1: int, a2: float, a3: float) -> None:
         if callback is not None and callable(callback):
             callback(a0, a1, a2, a3)
@@ -54,7 +55,8 @@ class UiUpdateProtocol(Protocol):
         ...
 
 
-def ui_update_factory(callback: UiUpdateProtocol = None) -> UiUpdateProtocol:
+def ui_update_factory(callback: UiUpdateProtocol | None = None) -> UiUpdateProtocol:
+    logger = logging.getLogger("LgndrMonkeys")
     def ui_update(status: UIUpdate) -> None:
         if callback is not None and callable(callback):
             callback(status)
@@ -112,7 +114,7 @@ class LgndrIndirectStatus:
 
 class LgndrIndirectLogger:
     def __init__(
-        self, status: LgndrIndirectStatus, logger: logging.Logger = None, level: int = logging.ERROR
+        self, status: LgndrIndirectStatus, logger: logging.Logger | None = None, level: int = logging.ERROR
     ):
         self.logger = logger
         self.level = level

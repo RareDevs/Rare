@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import multiprocessing
 import os
 import pathlib
@@ -23,7 +25,7 @@ def main() -> int:
         # execute the incoming command instead of Rare itself.
         if 'MULTIPROCESSING_LAUNCH_TOKEN' in os.environ:
             if len(sys.argv) == 5 and sys.argv[1:4] == ['-S', '-s', '-c']:
-                exec(sys.argv[4])
+                exec(sys.argv[4])  # noqa: S102
                 return 0
         os.environ['MULTIPROCESSING_LAUNCH_TOKEN'] = '1'
 

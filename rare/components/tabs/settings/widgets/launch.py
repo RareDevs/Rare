@@ -127,7 +127,7 @@ class LaunchSettingsBase(QGroupBox):
             return
         command = shlex.quote(command)
         arguments = self.prelaunch_args.text().strip()
-        config.adjust_option(self.app_name, 'pre_launch_command', ' '.join([command, arguments]))
+        config.adjust_option(self.app_name, 'pre_launch_command', f'{command} {arguments}')
 
     @Slot(Qt.CheckState)
     def _lgd_wrapper_check_changed(self, state: Qt.CheckState):

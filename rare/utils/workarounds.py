@@ -93,14 +93,14 @@ def apply_workarounds(app_name: str):
         for opt in (options := wa.get('options', {})):
             if config.get_option(app_name, opt, None) is not None:
                 continue
-            if platform.system() not in options[opt].get('os', tuple()):
+            if platform.system() not in options[opt].get('os', ()):
                 continue
             config.set_option(app_name, opt, Workarounds.subst(options[opt]['value']))
         # apply environment
         for var in (environ := wa.get('environ', {})):
             if config.get_envvar(app_name, var, None) is not None:
                 continue
-            if platform.system() not in environ[var].get('os', tuple()):
+            if platform.system() not in environ[var].get('os', ()):
                 continue
             config.set_envvar(app_name, var, Workarounds.subst(environ[var]['value']))
 
