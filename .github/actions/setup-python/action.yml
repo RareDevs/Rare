@@ -10,9 +10,14 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: GH Actions silliness (please add lower)
+      id: silly
+      shell: bash
+      run: |
+         echo "pyarch=$(echo ${{ inputs.architecture }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
     - uses: actions/setup-python@v7
       with:
         cache: pip
         python-version: ${{ inputs.version }}
         check-latest: true
-        architecture: ${{ inputs.architecture }}
+        architecture: ${{ steps.silly.outputs.pyarch }}
