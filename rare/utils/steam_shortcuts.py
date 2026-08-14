@@ -29,13 +29,13 @@ def find_steam() -> str | None:
     if platform.system() == 'Windows':
         # Find the Steam install directory or raise an error
         try:  # 32-bit
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Valve\\Steams')
+            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Valve\\Steams')  # ty: ignore[unresolved-attribute]
         except FileNotFoundError:
             try:  # 64-bit
-                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Wow6432Node\\Valve\\Steam')
+                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Wow6432Node\\Valve\\Steam')  # ty: ignore[unresolved-attribute]
             except FileNotFoundError:
                 return None
-        return winreg.QueryValueEx(key, 'InstallPath')[0]
+        return winreg.QueryValueEx(key, 'InstallPath')[0]  # ty: ignore[unresolved-attribute]
     # return the first valid path
     elif platform.system() in {'Linux', 'FreeBSD'}:
         for path in steam_client_install_paths:
@@ -75,9 +75,9 @@ def _save_shortcuts(steam_path: str, user: SteamUser, shortcuts: dict[str, Steam
         vdf.binary_dump({'shortcuts': _shortcuts}, f)
 
 
-__steam_dir: str | None = None
+__steam_dir: str = ''
 __steam_user: SteamUser | None = None
-__steam_shortcuts: dict | None = None
+__steam_shortcuts: dict[str, SteamShortcut] = {}
 
 
 def steam_shortcuts_supported() -> bool:
@@ -87,7 +87,7 @@ def steam_shortcuts_supported() -> bool:
 def load_steam_shortcuts():
     global __steam_shortcuts, __steam_dir, __steam_user
 
-    if __steam_shortcuts is not None:
+    if __steam_shortcuts:
         return
 
     steam_dir = find_steam()
@@ -125,6 +125,7 @@ def save_steam_shortcuts():
         __steam_user.account_name,
         __steam_user.persona_name,
     )
+
     _save_shortcuts(__steam_dir, __steam_user, __steam_shortcuts)
 
 
@@ -171,7 +172,7 @@ def add_steam_shortcut(app_name: str, app_title: str) -> SteamShortcut:
 
 
 def add_steam_coverart(app_name: str, shortcut: SteamShortcut):
-    if not __steam_dir:
+    if not (__steam_dir and __steam_user):
         return
     steam_grid_dir = os.path.join(__steam_dir, 'userdata', str(__steam_user.short_id), 'config', 'grid')
     if not os.path.exists(steam_grid_dir):
@@ -183,7 +184,7 @@ def add_steam_coverart(app_name: str, shortcut: SteamShortcut):
 
 
 def remove_steam_coverart(shortcut: SteamShortcut):
-    if not __steam_dir:
+    if not (__steam_dir and __steam_user):
         return
     steam_grid_dir = os.path.join(__steam_dir, 'userdata', str(__steam_user.short_id), 'config', 'grid')
     if not os.path.exists(steam_grid_dir):

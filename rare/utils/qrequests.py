@@ -2,7 +2,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from email.message import Message
 from logging import getLogger
-from typing import TypeVar
+from typing import Generic, TypeVar
 
 import orjson
 from PySide6.QtCore import QObject, QUrl, QUrlQuery, Signal, Slot
@@ -19,9 +19,9 @@ RequestHandler = TypeVar('RequestHandler', bound=Callable[[dict | bytes], None])
 
 
 @dataclass
-class RequestQueueItem:
-    method: str = None
-    url: QUrl = None
+class RequestQueueItem(Generic[RequestHandler]):
+    method: str
+    url: QUrl
     payload: dict = field(default_factory=dict)
     params: dict = field(default_factory=dict)
     handlers: list[RequestHandler] = field(default_factory=list)
@@ -37,7 +37,7 @@ class QRequests(QObject):
         super(QRequests, self).__init__(parent=parent)
         self.logger = getLogger(f'{type(self).__name__}_{type(parent).__name__}')
         self._manager = QNetworkAccessManager(self)
-        self._manager.finished.connect(self.__on_finished)
+        self._manager.finished.connect(self._on_finished)
         self._cache = None
         if cache is not None:
             self.logger.debug('Using cache dir %s', cache)
@@ -48,18 +48,18 @@ class QRequests(QObject):
             self.logger.debug('Manager is authorized')
         self._token = token
 
-        self.__active_requests: dict[QNetworkReply, RequestQueueItem] = {}
+        self._active_requests: dict[QNetworkReply, RequestQueueItem] = {}
 
     @staticmethod
-    def __prepare_query(url, params) -> QUrl:
-        url = QUrl(url)
-        query = QUrlQuery(url)
+    def _prepare_query(url: str, params: dict) -> QUrl:
+        qurl = QUrl(url)
+        query = QUrlQuery(qurl)
         for k, v in params.items():
             query.addQueryItem(str(k), str(v))
-        url.setQuery(query)
-        return url
+        qurl.setQuery(query)
+        return qurl
 
-    def __prepare_request(self, item: RequestQueueItem) -> QNetworkRequest:
+    def _prepare_request(self, item: RequestQueueItem) -> QNetworkRequest:
         request = QNetworkRequest(item.url)
         request.setHeader(
             QNetworkRequest.KnownHeaders.ContentTypeHeader,
@@ -79,22 +79,22 @@ class QRequests(QObject):
             request.setRawHeader(b'Authorization', self._token.encode())
         return request
 
-    def __post(self, item: RequestQueueItem):
-        request = self.__prepare_request(item)
+    def _post(self, item: RequestQueueItem):
+        request = self._prepare_request(item)
         payload = orjson.dumps(item.payload)
         reply = self._manager.post(request, payload)
-        reply.errorOccurred.connect(self.__on_error)
-        self.__active_requests[reply] = item
+        reply.errorOccurred.connect(self._on_error)
+        self._active_requests[reply] = item
 
     def post(self, url: str, handler: RequestHandler, payload: dict):
         item = RequestQueueItem(method='post', url=QUrl(url), payload=payload, handlers=[handler])
-        self.__post(item)
+        self._post(item)
 
-    def __get(self, item: RequestQueueItem):
-        request = self.__prepare_request(item)
+    def _get(self, item: RequestQueueItem):
+        request = self._prepare_request(item)
         reply = self._manager.get(request)
-        reply.errorOccurred.connect(self.__on_error)
-        self.__active_requests[reply] = item
+        reply.errorOccurred.connect(self._on_error)
+        self._active_requests[reply] = item
 
     def get(
         self,
@@ -103,29 +103,31 @@ class QRequests(QObject):
         payload: dict | None = None,
         params: dict | None = None,
     ):
-        url = self.__prepare_query(url, params) if params is not None else QUrl(url)
-        item = RequestQueueItem(method='get', url=url, payload=payload, handlers=[handler])
-        self.__get(item)
+        if payload is None:
+            payload = {}
+        qurl = self._prepare_query(url, params) if params is not None else QUrl(url)
+        item = RequestQueueItem(method='get', url=qurl, payload=payload, handlers=[handler])
+        self._get(item)
 
-    def __on_error(self, error: QNetworkReply.NetworkError) -> None:
+    def _on_error(self, error: QNetworkReply.NetworkError) -> None:
         self.logger.error(error)
 
     @staticmethod
-    def __parse_content_type(header) -> tuple[str, str]:
+    def _parse_content_type(header) -> tuple[str, str | None]:
         # lk: this looks weird but `cgi` is deprecated, PEP 594 suggests this way of parsing MIME
         m = Message()
         m['content-type'] = header
         return m.get_content_type(), m.get_content_charset()
 
     @Slot(QNetworkReply)
-    def __on_finished(self, reply: QNetworkReply):
-        item = self.__active_requests.pop(reply, None)
+    def _on_finished(self, reply: QNetworkReply):
+        item = self._active_requests.pop(reply, None)
         if item is None:
             self.logger.error('QNetworkReply: %s without associated item', reply.url().toString())
         elif reply.error() != QNetworkReply.NetworkError.NoError:
             self.logger.error(reply.errorString())
         else:
-            mimetype, _charset = self.__parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))
+            mimetype, _charset = self._parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))
             maintype, _subtype = mimetype.split('/')
             bin_data = reply.readAll().data()
             if mimetype == 'application/json':
