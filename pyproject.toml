@@ -30,7 +30,7 @@ dependencies = [
     "pywin32 ; platform_system == 'Windows'",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 webview = [
     "pywebview[gtk]; platform_system == 'Linux'",
     "pywebview[gtk]; platform_system == 'FreeBSD'",
@@ -42,15 +42,18 @@ webview = [
 discordrpc = [
     "pypresence",
 ]
+packaging = [
+    "cx-freeze",
+    "nuitka",
+]
 dev = [
     "PySide6-stubs",
     "qstylizer",
     "ruff",
     "ty",
-]
-packaging = [
-    "cx-freeze",
-    "nuitka",
+    {include-group = "webview"},
+    {include-group = "discordrpc"},
+    {include-group = "packaging"},
 ]
 
 [project.urls]
