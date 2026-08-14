@@ -56,10 +56,10 @@ def get_pstree_from_pid(root_pid: int) -> set[int]:
     while current_pid:
         current = current_pid.pop()
         # Ignore. mypy flags [arg-type] due to the reuse of pid variable
-        for pid, ppid in pid_to_ppid.items():  # type: ignore
+        for pid, ppid in pid_to_ppid.items():
             if ppid == current and pid not in descendants:
-                descendants.add(pid)  # type: ignore
-                current_pid.append(pid)  # type: ignore
+                descendants.add(pid)
+                current_pid.append(pid)
 
     return descendants
 
