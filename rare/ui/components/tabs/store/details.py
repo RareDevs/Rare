@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QLayout,
     QPushButton,
     QSizePolicy,
+    QSpacerItem,
     QTextBrowser,
     QVBoxLayout,
     QWidget,
@@ -28,7 +29,7 @@ class Ui_StoreDetailsWidget:
     def setupUi(self, StoreDetailsWidget):
         if not StoreDetailsWidget.objectName():
             StoreDetailsWidget.setObjectName("StoreDetailsWidget")
-        StoreDetailsWidget.resize(850, 492)
+        StoreDetailsWidget.resize(928, 626)
         StoreDetailsWidget.setWindowTitle("StoreDetailsWidget")
         self.main_layout = QHBoxLayout(StoreDetailsWidget)
         self.main_layout.setObjectName("main_layout")
@@ -53,30 +54,18 @@ class Ui_StoreDetailsWidget:
         self.right_layout = QGridLayout()
         self.right_layout.setSpacing(24)
         self.right_layout.setObjectName("right_layout")
-        self.requirements_frame = QFrame(StoreDetailsWidget)
-        self.requirements_frame.setObjectName("requirements_frame")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.requirements_frame.sizePolicy().hasHeightForWidth())
-        self.requirements_frame.setSizePolicy(sizePolicy1)
-        self.requirements_frame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.requirements_frame.setFrameShadow(QFrame.Shadow.Sunken)
-        self.requirements_layout = QHBoxLayout(self.requirements_frame)
-        self.requirements_layout.setObjectName("requirements_layout")
-        self.requirements_layout.setContentsMargins(0, 0, 0, 0)
+        self.description_field = QTextBrowser(StoreDetailsWidget)
+        self.description_field.setObjectName("description_field")
+        self.description_field.setMinimumSize(QSize(450, 0))
+        self.description_field.setOpenExternalLinks(True)
 
-        self.right_layout.addWidget(self.requirements_frame, 2, 0, 1, 2, Qt.AlignmentFlag.AlignBottom)
-
-        self.description_label = QTextBrowser(StoreDetailsWidget)
-        self.description_label.setObjectName("description_label")
-        self.description_label.setMinimumSize(QSize(450, 0))
-        self.description_label.setOpenExternalLinks(True)
-
-        self.right_layout.addWidget(self.description_label, 1, 0, 1, 1)
+        self.right_layout.addWidget(self.description_field, 1, 0, 1, 2)
 
         self.details_widget = QWidget(StoreDetailsWidget)
         self.details_widget.setObjectName("details_widget")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.details_widget.sizePolicy().hasHeightForWidth())
         self.details_widget.setSizePolicy(sizePolicy1)
         self.details_widget.setMinimumSize(QSize(450, 0))
@@ -235,8 +224,29 @@ class Ui_StoreDetailsWidget:
 
         self.right_layout.addWidget(self.details_widget, 0, 0, 1, 1)
 
+        self.right_layout_spacer = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.right_layout.addItem(self.right_layout_spacer, 0, 1, 1, 1)
+
+        self.requirements_frame = QFrame(StoreDetailsWidget)
+        self.requirements_frame.setObjectName("requirements_frame")
+        sizePolicy1.setHeightForWidth(self.requirements_frame.sizePolicy().hasHeightForWidth())
+        self.requirements_frame.setSizePolicy(sizePolicy1)
+        self.requirements_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.requirements_frame.setFrameShadow(QFrame.Shadow.Sunken)
+        self.requirements_layout = QHBoxLayout(self.requirements_frame)
+        self.requirements_layout.setObjectName("requirements_layout")
+
+        self.right_layout.addWidget(self.requirements_frame, 2, 0, 1, 2, Qt.AlignmentFlag.AlignBottom)
+
+        self.spare_widget = QWidget(StoreDetailsWidget)
+        self.spare_widget.setObjectName("spare_widget")
+
+        self.right_layout.addWidget(self.spare_widget, 0, 2, 3, 1)
+
         self.right_layout.setRowStretch(1, 1)
         self.right_layout.setColumnStretch(1, 1)
+        self.right_layout.setColumnStretch(2, 2)
 
         self.main_layout.addLayout(self.right_layout)
 

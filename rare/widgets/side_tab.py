@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from logging import getLogger
 from typing import Protocol
 
@@ -65,12 +66,15 @@ class SideTabContents:
 class SideTabContentsProtocol(Protocol):
     implements_scrollarea: bool
 
+    @abstractmethod
     def layout(self) -> QLayout:
         pass
 
+    @abstractmethod
     def set_title(self) -> Signal:
         pass
 
+    @abstractmethod
     def sizeHint(self) -> QSize:
         pass
 
@@ -80,7 +84,8 @@ class SideTabContainer(QWidget):
         self,
         widget: QWidget | SideTabContentsProtocol,
         title: str = '',
-        parent: QWidget = None,
+        *,
+        parent: QWidget | None = None,
     ):
         super(SideTabContainer, self).__init__(parent=parent)
         self.title = QLabel(self)
@@ -120,7 +125,7 @@ class SideTabContainer(QWidget):
 class SideTabWidget(QTabWidget):
     back_clicked = Signal()
 
-    def __init__(self, show_back: bool = False, padding: int = -1, parent=None):
+    def __init__(self, show_back: bool = False, padding: int = -1, *, parent: QWidget | None = None):
         super(SideTabWidget, self).__init__(parent=parent)
         self.setTabBar(SideTabBar(padding=padding, parent=self))
         self.setDocumentMode(True)

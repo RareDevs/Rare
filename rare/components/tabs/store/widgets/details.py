@@ -183,7 +183,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         description = description.replace('### ', '##### ')
         description = description.replace('## ', '#### ')
         description = description.replace('# ', '### ')
-        self.ui.description_label.setMarkdown(description)
+        self.ui.description_field.setMarkdown(description)
         self.ui.developer.setText(about.developerAttribution)
         # try:
         #     if isinstance(aboudeveloper, list):
