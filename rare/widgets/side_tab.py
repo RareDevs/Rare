@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from enum import IntEnum
 from logging import getLogger
 from typing import Protocol
 
@@ -7,7 +8,7 @@ from PySide6.QtCore import (
     Qt,
     Signal,
 )
-from PySide6.QtGui import QFontMetrics
+from PySide6.QtGui import QFontMetrics, QKeyEvent, QPaintEvent
 from PySide6.QtWidgets import (
     QLabel,
     QLayout,
@@ -28,15 +29,29 @@ logger = getLogger('SideTab')
 
 
 class SideTabBar(QTabBar):
-    def __init__(self, padding: int = -1, parent=None):
+    class TabOrientation(IntEnum):
+        Horizontal = 0
+        Vertical = 1
+
+    def __init__(
+        self,
+        *,
+        padding: int = -1,
+        orientation: TabOrientation = TabOrientation.Horizontal,
+        parent: QWidget | None = None
+    ):
         super(SideTabBar, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         self.padding = padding
+        self.orientation = orientation
         self.fm = QFontMetrics(self.font())
 
     # NOTE: if we ever implement a QProxyStyle, this is likely to conflict
 
-    def tabSizeHint(self, index):
+    def tabSizeHint(self, index) -> QSize:
+        if self.orientation == SideTabBar.TabOrientation.Vertical:
+            return super(SideTabBar, self).tabSizeHint(index)
+
         width = QTabBar.tabSizeHint(self, index).height()
         if self.padding < 0:
             width += QTabBar.tabSizeHint(self, index).width()
@@ -44,10 +59,13 @@ class SideTabBar(QTabBar):
             width += self.padding
         return QSize(width, self.fm.height() + 18)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent):
+        if self.orientation == SideTabBar.TabOrientation.Vertical:
+            super(SideTabBar, self).paintEvent(event)
+            return
+
         painter = QStylePainter(self)
         opt = QStyleOptionTab()
-
         for i in range(self.count()):
             self.initStyleOption(opt, i)
             painter.save()
@@ -55,6 +73,7 @@ class SideTabBar(QTabBar):
             opt.shape = QTabBar.Shape.RoundedNorth
             painter.drawControl(QStyle.ControlElement.CE_TabBarTabLabel, opt)
             painter.restore()
+        event.setAccepted(True)
 
 
 class SideTabContents:
@@ -123,11 +142,18 @@ class SideTabContainer(QWidget):
 
 
 class SideTabWidget(QTabWidget):
-    back_clicked = Signal()
+    backClicked = Signal()
 
-    def __init__(self, show_back: bool = False, padding: int = -1, *, parent: QWidget | None = None):
+    def __init__(
+        self,
+        show_back: bool = False,
+        *,
+        padding: int = -1,
+        orientation: SideTabBar.TabOrientation = SideTabBar.TabOrientation.Horizontal,
+        parent: QWidget | None = None,
+    ):
         super(SideTabWidget, self).__init__(parent=parent)
-        self.setTabBar(SideTabBar(padding=padding, parent=self))
+        self.setTabBar(SideTabBar(padding=padding, orientation=orientation, parent=self))
         self.setDocumentMode(True)
         self.setTabPosition(QTabWidget.TabPosition.West)
         if show_back:
@@ -136,12 +162,16 @@ class SideTabWidget(QTabWidget):
                 qta_icon('mdi.keyboard-backspace', 'ei.backward'),
                 self.tr('Back'),
             )
-            self.tabBarClicked.connect(self.back_func)
+            self.tabBarClicked.connect(self._on_tab_clicked)
 
-    def back_func(self, tab):
+    def _on_tab_clicked(self, tab):
         # shortcut for tab == 0
         if not tab:
-            self.back_clicked.emit()
+            self.backClicked.emit()
+
+    def keyPressEvent(self, a0: QKeyEvent):
+        if a0.key() == Qt.Key.Key_Escape:
+            self.backClicked.emit()
 
     def addTab(self, widget: QWidget | SideTabContentsProtocol, a1: str, title: str = '') -> int:
         container = SideTabContainer(widget, title, parent=self)

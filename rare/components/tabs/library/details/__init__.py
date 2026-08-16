@@ -1,8 +1,8 @@
 import contextlib
 import platform as pf
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QKeyEvent, QShowEvent
+from PySide6.QtCore import Signal
+from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QTreeView
 
 from rare.models.game import RareGame
@@ -86,10 +86,6 @@ class GameDetailsTabs(SideTabWidget):
             self.rgame_meta_view.update_game(rgame, rgame.metadata)
 
         self.setCurrentIndex(self.details_index)
-
-    def keyPressEvent(self, a0: QKeyEvent):
-        if a0.key() == Qt.Key.Key_Escape:
-            self.back_clicked.emit()
 
 
 class GameMetadataView(QTreeView, SideTabContents):

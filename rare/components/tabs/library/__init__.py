@@ -42,7 +42,7 @@ class GamesLibrary(QStackedWidget):
         library_page_right_layout.addWidget(self.head_bar)
 
         self.details_page = GameDetailsTabs(settings, rcore, self)
-        self.details_page.back_clicked.connect(self._on_back_clicked)
+        self.details_page.backClicked.connect(self._on_back_clicked)
         self.details_page.import_clicked.connect(self.import_clicked)
         self.addWidget(self.details_page)
 

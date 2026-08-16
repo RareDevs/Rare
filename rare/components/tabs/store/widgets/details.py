@@ -22,7 +22,7 @@ from rare.ui.components.tabs.store.details import Ui_StoreDetailsWidget
 from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.image_widget import LoadingSpinnerImageWidget
-from rare.widgets.side_tab import SideTabContents, SideTabWidget
+from rare.widgets.side_tab import SideTabBar, SideTabContents, SideTabWidget
 
 logger = getLogger('StoreDetails')
 
@@ -54,8 +54,11 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.in_wishlist = False
         self.wishlist = []
 
-        self.requirements_tabs = SideTabWidget(parent=self.ui.requirements_frame)
+        self.requirements_tabs = SideTabWidget(
+            orientation=SideTabBar.TabOrientation.Vertical, parent=self.ui.requirements_frame
+        )
         self.requirements_tabs.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.ui.requirements_layout.setContentsMargins(0, 0, 0, 0)
         self.ui.requirements_layout.addWidget(self.requirements_tabs)
         self.ui.requirements_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
 

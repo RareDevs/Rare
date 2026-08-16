@@ -129,6 +129,7 @@ class GameDetails(QWidget, SideTabContents):
         # lk: hide unfinished things
         self.ui.description_field.setVisible(False)
         self.ui.requirements_frame.setVisible(False)
+        self.ui.requirements_layout.setContentsMargins(0, 0, 0, 0)
 
     @Slot()
     def __on_install(self):
