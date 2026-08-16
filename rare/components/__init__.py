@@ -1,9 +1,11 @@
 import os
 import shutil
+import signal
 from argparse import Namespace
 from datetime import datetime, timezone
 
 import requests.exceptions
+import shiboken6
 from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot
 from PySide6.QtWidgets import QApplication
 
@@ -49,9 +51,19 @@ class Rare(RareApp):
         self.launch_dialog: LaunchDialog | None = None
         self.relogin_timer: QTimer | None = None
 
+        signal.signal(signal.SIGINT, self._on_signal)
+        signal.signal(signal.SIGTERM, self._on_signal)
+
         # This launches the application after it has been instantiated.
         # The timer's signal will be serviced once we call `exec()` on the application
         QTimer.singleShot(0, self.launch_app)
+
+    def _on_signal(self, signum: int, frame) -> None:
+        self.logger.info('%s received. Quitting Rare', signal.strsignal(signum))
+        if self.main_window is not None and shiboken6.isValid(self.main_window):
+            self.main_window.exit_app.emit(0)
+        else:
+            self.quit()
 
     def poke_timer(self):
         dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1]).replace(tzinfo=timezone.utc)
@@ -101,7 +113,8 @@ class Rare(RareApp):
     @Slot(int)
     def _on_exit_app(self, exit_code=0):
         threadpool = QThreadPool.globalInstance()
-        threadpool.waitForDone()
+        if not threadpool.waitForDone(5000):
+            self.logger.warning('Background workers did not finish in time, quitting anyway')
         if self.relogin_timer is not None:
             self.relogin_timer.stop()
             self.relogin_timer.deleteLater()
