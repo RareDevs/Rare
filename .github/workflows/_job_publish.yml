@@ -36,6 +36,7 @@ jobs:
       if: ${{ matrix.file != '' }}
       with:
         name: ${{ matrix.file }}
+        skip-decompress: true
     - name: Upload ${{ matrix.file }} to release
       if: ${{ matrix.file != '' }}
       shell: bash
