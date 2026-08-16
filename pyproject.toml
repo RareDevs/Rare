@@ -24,7 +24,7 @@ dependencies = [
     "requests < 3.0",
     "PySide6-Essentials >= 6.8.1",
     "QtAwesome",
-    "legendary-gl @ git+https://github.com/RareDevs/legendary@9d32abcdd873b9193b403dc98f3f272cfcc8e897",
+    "legendary-gl @ git+https://github.com/RareDevs/legendary@828850273f47432c086d758cd3391047d6dd8ddf",
     "orjson",
     "vdf @ git+https://github.com/solsticegamestudios/vdf@f47c683c1330f0fcddec034fd49c26e41acd63f2",
     "pywin32 ; platform_system == 'Windows'",
