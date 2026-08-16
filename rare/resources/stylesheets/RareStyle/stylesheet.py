@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import qstylizer.parser
 import qstylizer.style
@@ -15,13 +16,15 @@ compressLevel = 6
 compressAlgo = 'zlib'
 compressThreshold = 0
 
+workdir = Path(__file__).parent
+
 
 def css_name(widget: wrappertype | QObject | type, subwidget: str = ''):
     return f'#{widget_object_name(widget, "")}{subwidget}'
 
 
 # style = qstylizer.style.StyleSheet()
-with open(os.path.join(os.path.dirname(__file__), 'template.qss'), encoding='utf-8') as template:
+with workdir.joinpath('template.qss').open('r', encoding='utf-8') as template:
     style = qstylizer.parser.parse(template.read())
 
 background_color_base = QColor(32, 34, 37)
@@ -71,7 +74,7 @@ for selector in (
 
 
 if __name__ == '__main__':
-    with open(os.path.join(os.path.dirname(__file__), 'stylesheet.qss'), 'w', encoding='utf-8') as stylesheet:
+    with workdir.joinpath('stylesheet.qss').open('w', encoding='utf-8') as stylesheet:
         stylesheet.write(f'/* This file is auto-generated from "{os.path.basename(__file__)}". DO NOT EDIT!!! */\n\n')
         stylesheet.write(style.toString(recursive=True))
 
@@ -87,9 +90,9 @@ if __name__ == '__main__':
             '--threshold',
             str(compressThreshold),
             '--verbose' if verbose else '',
-            os.path.join(os.path.dirname(__file__), 'stylesheet.qrc'),
+            workdir.joinpath('stylesheet.qrc').as_posix(),
             '-o',
-            os.path.join(os.path.dirname(__file__), '__init__.py'),
+            workdir.joinpath('__init__.py').as_posix(),
         ],
         True,
     )

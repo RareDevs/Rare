@@ -270,7 +270,7 @@ QComboBox:!editable:hover {
     background-color: rgb( 60,  63,  65);
     width: 14px;
     subcontrol-position: top right;
-    border-bottom-width: 1;
+    border-bottom-width: 1px;
     image: url(":/stylesheets/RareStyle/sort-up.svg");
 }
 *::down-button {
@@ -840,7 +840,11 @@ QTabBar#SideTabBar:disabled {
     border-color: transparent;
     border-right-color: rgb( 60,  63,  65);
 }
-QTabBar#SideTabBar::tab {
+QTabBar#SideTabBar::tab:left {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+QTabBar#SideTabBar::tab:right {
     margin-top: 3px;
     margin-bottom: 3px;
 }
