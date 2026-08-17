@@ -114,8 +114,8 @@ class Rare(RareApp):
         if self._force_exit:
             threadpool.clear()
             self.logger.warning('Force exit: clearing all pending workers')
-        elif not threadpool.waitForDone(5000):
-            self.logger.warning('Background workers did not finish in time, quitting anyway')
+        else:
+            threadpool.waitForDone()
         if self.relogin_timer is not None:
             self.relogin_timer.stop()
             self.relogin_timer.deleteLater()
