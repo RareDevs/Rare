@@ -247,9 +247,8 @@ class RareWindow(QMainWindow):
                 for qw in self.rcore.queued_workers():
                     self.rcore.dequeue_worker(qw)
                 self.update_statusbar()
-            else:
-                e.ignore()
-                return
+            e.ignore()
+            return
         elif self.tab_widget.downloads_tab.is_download_active:
             reply = QMessageBox.question(
                 self,
