@@ -1,5 +1,6 @@
 import os
 import shutil
+import signal
 from argparse import Namespace
 from datetime import datetime, timezone
 
@@ -49,9 +50,21 @@ class Rare(RareApp):
         self.launch_dialog: LaunchDialog | None = None
         self.relogin_timer: QTimer | None = None
 
+        signal.signal(signal.SIGINT, self._on_signal)
+        signal.signal(signal.SIGTERM, self._on_signal)
+
         # This launches the application after it has been instantiated.
         # The timer's signal will be serviced once we call `exec()` on the application
         QTimer.singleShot(0, self.launch_app)
+
+    def _on_signal(self, signum: int, frame) -> None:
+        self.logger.info('%s received. Initiating shutdown', signal.strsignal(signum))
+        if self.main_window is not None:
+            self.main_window.close()
+        elif self.launch_dialog is not None:
+            self.launch_dialog.reject()
+        else:
+            self._on_exit_app(0)
 
     def poke_timer(self):
         dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1]).replace(tzinfo=timezone.utc)
