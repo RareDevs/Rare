@@ -5,7 +5,6 @@ from argparse import Namespace
 from datetime import datetime, timezone
 
 import requests.exceptions
-import shiboken6
 from PySide6.QtCore import Qt, QThreadPool, QTimer, Slot
 from PySide6.QtWidgets import QApplication
 
@@ -50,6 +49,7 @@ class Rare(RareApp):
         self.main_window: RareWindow | None = None
         self.launch_dialog: LaunchDialog | None = None
         self.relogin_timer: QTimer | None = None
+        self._force_exit = False
 
         signal.signal(signal.SIGINT, self._on_signal)
         signal.signal(signal.SIGTERM, self._on_signal)
@@ -59,11 +59,9 @@ class Rare(RareApp):
         QTimer.singleShot(0, self.launch_app)
 
     def _on_signal(self, signum: int, frame) -> None:
-        self.logger.info('%s received. Quitting Rare', signal.strsignal(signum))
-        if self.main_window is not None and shiboken6.isValid(self.main_window):
-            self.main_window.exit_app.emit(0)
-        else:
-            self.quit()
+        self.logger.info('%s received. Forcibly quitting Rare', signal.strsignal(signum))
+        self._force_exit = True
+        self._on_exit_app(0)
 
     def poke_timer(self):
         dt_exp = datetime.fromisoformat(self.core.lgd.userdata['expires_at'][:-1]).replace(tzinfo=timezone.utc)
@@ -113,7 +111,10 @@ class Rare(RareApp):
     @Slot(int)
     def _on_exit_app(self, exit_code=0):
         threadpool = QThreadPool.globalInstance()
-        if not threadpool.waitForDone(5000):
+        if self._force_exit:
+            threadpool.clear()
+            self.logger.warning('Force exit: clearing all pending workers')
+        elif not threadpool.waitForDone(5000):
             self.logger.warning('Background workers did not finish in time, quitting anyway')
         if self.relogin_timer is not None:
             self.relogin_timer.stop()
