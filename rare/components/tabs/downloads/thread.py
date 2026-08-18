@@ -2,6 +2,7 @@ import contextlib
 import os
 import platform
 import queue
+import signal
 import time
 from dataclasses import dataclass
 from enum import IntEnum
@@ -74,6 +75,10 @@ class DlThread(QThread):
         result.app_title = self.rgame.app_title
 
         start_t = time.time()
+        original_mask: set[int] | None = None
+        if platform.system() not in {'Windows'}:
+            # pylint: disable=E1101
+            original_mask = signal.pthread_sigmask(signal.SIG_BLOCK, {signal.SIGINT})
         try:
             self.item.download.dlm.logging_queue = cli.logging_queue
             self.item.download.dlm.proc_debug = self.debug
@@ -156,6 +161,9 @@ class DlThread(QThread):
 
             return
         finally:
+            if original_mask is not None:
+                # pylint: disable=E1101
+                signal.pthread_sigmask(signal.SIG_SETMASK, original_mask)
             self._finish(result)
 
     def _handle_postinstall(self, postinstall, igame):
