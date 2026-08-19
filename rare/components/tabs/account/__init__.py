@@ -1,7 +1,7 @@
 import webbrowser
 
-from PySide6.QtCore import QEvent, QObject, Qt, Signal, Slot
-from PySide6.QtWidgets import QLabel, QLayout, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtWidgets import QLabel, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.signals import GlobalSignals

@@ -1,6 +1,6 @@
-from PySide6.QtCore import QEvent, QObject, QPoint, Signal, Slot
-from PySide6.QtGui import QShortcut, Qt
-from PySide6.QtWidgets import QMenu, QMessageBox, QTabWidget, QWidget, QWidgetAction
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtGui import QShortcut
+from PySide6.QtWidgets import QMessageBox, QTabWidget, QWidget
 
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
