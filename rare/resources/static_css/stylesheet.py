@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import qstylizer.style
 from PySide6.QtCore import QObject
@@ -12,6 +13,8 @@ verbose = True
 compressLevel = 6
 compressAlgo = 'zlib'
 compressThreshold = 0
+
+workdir = Path(__file__).parent
 
 
 def css_name(widget: wrappertype | QObject | type, subwidget: str = ''):
@@ -239,7 +242,7 @@ style.QCheckBox[css_name(GameTagCheckBox, '')].setValues(
 
 
 if __name__ == '__main__':
-    with open(os.path.join(os.path.dirname(__file__), 'stylesheet.qss'), 'w', encoding='utf-8') as stylesheet:
+    with workdir.joinpath('stylesheet.qss').open('w', encoding='utf-8') as stylesheet:
         stylesheet.write(f'/* This file is auto-generated from "{os.path.basename(__file__)}". DO NOT EDIT!!! */\n\n')
         stylesheet.write(style.toString(recursive=True))
 
@@ -255,9 +258,9 @@ if __name__ == '__main__':
             '--threshold',
             str(compressThreshold),
             '--verbose' if verbose else '',
-            os.path.join(os.path.dirname(__file__), 'stylesheet.qrc'),
+            workdir.joinpath('stylesheet.qrc').as_posix(),
             '-o',
-            os.path.join(os.path.dirname(__file__), '__init__.py'),
+            workdir.joinpath('__init__.py').as_posix(),
         ],
         True,
     )
