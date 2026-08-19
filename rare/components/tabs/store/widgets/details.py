@@ -55,7 +55,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.wishlist = []
 
         self.requirements_tabs = SideTabWidget(
-            orientation=SideTabBar.TabOrientation.Vertical, parent=self.ui.requirements_frame
+            tab_orientation=SideTabBar.TabOrientation.Vertical, parent=self.ui.requirements_frame
         )
         self.requirements_tabs.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.ui.requirements_layout.setContentsMargins(0, 0, 0, 0)

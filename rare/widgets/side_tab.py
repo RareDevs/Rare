@@ -149,13 +149,14 @@ class SideTabWidget(QTabWidget):
         show_back: bool = False,
         *,
         padding: int = -1,
-        orientation: SideTabBar.TabOrientation = SideTabBar.TabOrientation.Horizontal,
+        tab_position: QTabWidget.TabPosition = QTabWidget.TabPosition.West,
+        tab_orientation: SideTabBar.TabOrientation = SideTabBar.TabOrientation.Horizontal,
         parent: QWidget | None = None,
     ):
         super(SideTabWidget, self).__init__(parent=parent)
-        self.setTabBar(SideTabBar(padding=padding, orientation=orientation, parent=self))
+        self.setTabBar(SideTabBar(padding=padding, orientation=tab_orientation, parent=self))
+        self.setTabPosition(tab_position)
         self.setDocumentMode(True)
-        self.setTabPosition(QTabWidget.TabPosition.West)
         if show_back:
             super(SideTabWidget, self).addTab(
                 QWidget(self),
