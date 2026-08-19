@@ -30,7 +30,6 @@ class MainTabWidget(QTabWidget):
         self.args = rcore.args()
 
         self.main_bar = MainTabBar(parent=self)
-        self.main_bar.installEventFilter(self)
         self.setTabBar(self.main_bar)
 
         # Generate Tabs
@@ -67,13 +66,8 @@ class MainTabWidget(QTabWidget):
         # Account Tab
         self.account_widget = AccountWidget(self.signals, self.core, self)
         self.account_widget.exit_app.connect(self._on_exit_app)
-        account_action = QWidgetAction(self)
-        account_action.setDefaultWidget(self.account_widget)
-        self.account_menu = QMenu(self)
-        self.account_menu.addAction(account_action)
-        self.account_tab = QWidget(self)
         self.account_index = self.addTab(
-            self.account_tab, qta_icon('mdi.account-circle', 'fa5s.user'), self.core.lgd.userdata.get('displayName')
+            self.account_widget, qta_icon('mdi.account-circle', 'fa5s.user'), self.core.lgd.userdata.get('displayName')
         )
 
         # Open game list on click on Games tab button
@@ -88,21 +82,6 @@ class MainTabWidget(QTabWidget):
         QShortcut('Alt+5', self).activated.connect(self._on_shortcut_activated_settings)
 
         self.setCurrentIndex(self.games_index)
-
-    def eventFilter(self, w: QObject, e: QEvent) -> bool:
-        if not isinstance(e, QEvent):
-            return True
-        if w is self.main_bar and e.type() == QEvent.Type.MouseButtonPress:
-            tab_idx = self.main_bar.tabAt(e.pos())
-            if tab_idx == self.account_index:
-                if e.button() == Qt.MouseButton.LeftButton:
-                    origin = QPoint(
-                        self.main_bar.tabRect(tab_idx).bottomRight().x() - self.account_menu.sizeHint().width(),
-                        self.main_bar.tabRect(tab_idx).bottomRight().y(),
-                    )
-                    self.account_menu.exec(self.mapToGlobal(origin))
-                return True
-        return False
 
     @Slot()
     def _on_shortcut_activated_games(self):

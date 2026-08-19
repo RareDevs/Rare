@@ -1,7 +1,7 @@
 import webbrowser
 
-from PySide6.QtCore import Signal, Slot
-from PySide6.QtWidgets import QLabel, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
+from PySide6.QtCore import QEvent, QObject, Qt, Signal, Slot
+from PySide6.QtWidgets import QLabel, QLayout, QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout, QWidget
 
 from rare.lgndr.core import LegendaryCore
 from rare.models.signals import GlobalSignals
@@ -13,7 +13,7 @@ class AccountWidget(QWidget):
     exit_app: Signal = Signal(int)
     logout: Signal = Signal()
 
-    def __init__(self, signals: GlobalSignals, core: LegendaryCore, parent):
+    def __init__(self, signals: GlobalSignals, core: LegendaryCore, parent: QWidget | None = None):
         super(AccountWidget, self).__init__(parent=parent)
         self.signals = signals
         self.core = core
@@ -33,13 +33,17 @@ class AccountWidget(QWidget):
         self.quit_button = QPushButton(self.tr('Quit'), parent=self)
         self.quit_button.clicked.connect(self._on_quit)
 
+        self.center_widget = QWidget(self)
+        center_widget = QVBoxLayout(self.center_widget)
+        center_widget.setSizeConstraint(QVBoxLayout.SizeConstraint.SetFixedSize)
+        center_widget.addWidget(QLabel(self.tr('Logged in as <b>{}</b>').format(username)))
+        center_widget.addSpacerItem(QSpacerItem(10, 10, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed))
+        center_widget.addWidget(self.open_browser)
+        center_widget.addWidget(self.logout_button)
+        center_widget.addWidget(self.quit_button)
+
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel(self.tr('Logged in as <b>{}</b>').format(username)))
-        vspacer = QSpacerItem(10, 10, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        layout.addSpacerItem(vspacer)
-        layout.addWidget(self.open_browser)
-        layout.addWidget(self.logout_button)
-        layout.addWidget(self.quit_button)
+        layout.addWidget(self.center_widget, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop)
 
     @Slot()
     def _on_browser_clicked(self):
