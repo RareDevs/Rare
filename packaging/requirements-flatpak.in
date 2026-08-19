@@ -1,4 +1,6 @@
+ruff
 build
+uv-build
 installer
 setuptools-scm
 requests < 3.0
