@@ -11,8 +11,8 @@ class LoadingWidget(QLabel):
         # The animation's exact size is 94x94
         self.setFixedSize(96, 96)
         self.setMovie(QMovie(':/images/loader.webp', parent=self))
-        if self.parent() is not None:
-            self.parent().installEventFilter(self)
+        if parent is not None:
+            parent.installEventFilter(self)
         self.setVisible(autostart)
 
     def _center_on_parent(self):

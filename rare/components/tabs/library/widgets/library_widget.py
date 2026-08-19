@@ -8,19 +8,19 @@ from PySide6.QtGui import (
     QPixmap,
     QShowEvent,
 )
-from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel, QWidget
 
 from rare.widgets.image_widget import ImageWidget
 
 
 class ProgressLabel(QLabel):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None):
         super(ProgressLabel, self).__init__(parent=parent)
-        if self.parent() is not None:
-            self.parent().installEventFilter(self)
         self.setObjectName(type(self).__name__)
         self.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         self.setFrameStyle(QLabel.Shape.StyledPanel)
+        if parent is not None:
+            parent.installEventFilter(self)
 
     def __center_on_parent(self):
         fm = QFontMetrics(self.font())
@@ -29,6 +29,9 @@ class ProgressLabel(QLabel):
         self.setGeometry(rect)
 
     def event(self, e: QEvent) -> bool:
+        # FIXME: investigate why this happens
+        if not isinstance(e, QEvent):
+            return True
         if e.type() == QEvent.Type.ParentAboutToChange:
             if self.parent() is not None:
                 self.parent().removeEventFilter(self)
@@ -41,7 +44,7 @@ class ProgressLabel(QLabel):
         if a0.spontaneous():
             return super().showEvent(a0)
         self.__center_on_parent()
-        super().showEvent(a0)
+        return super().showEvent(a0)
 
     def eventFilter(self, a0: QObject, a1: QEvent) -> bool:
         if a0 is self.parent() and a1.type() == QEvent.Type.Resize:
