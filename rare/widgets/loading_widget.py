@@ -8,8 +8,8 @@ class LoadingWidget(QLabel):
         super(LoadingWidget, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         self.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
-        # The animation's exact size is 94x94
-        self.setFixedSize(96, 96)
+        self.setScaledContents(True)
+        self.setFixedSize(48, 48)
         self.setMovie(QMovie(':/images/loader.webp', parent=self))
         if parent is not None:
             parent.installEventFilter(self)

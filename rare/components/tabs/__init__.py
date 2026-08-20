@@ -45,7 +45,8 @@ class MainTabWidget(QTabWidget):
         self.setTabEnabled(self.downloads_index, not self.args.offline)
 
         if not self.args.offline:
-            self.store_tab = StoreTab(self.core, parent=self)
+            self.store_tab = StoreTab(self.core, self.rcore, parent=self)
+            self.store_tab.open_library.connect(self.games_tab.show_library)
             self.store_index = self.addTab(self.store_tab, self.tr('Store (Under Construction)'))
             self.setTabEnabled(self.store_index, not self.args.offline)
 

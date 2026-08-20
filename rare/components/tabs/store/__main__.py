@@ -14,7 +14,7 @@ class StoreWindow(QDialog):
 
         self.core = LegendaryCore()
         self.core.login()
-        self.store_tab = StoreTab(self.core, self)
+        self.store_tab = StoreTab(self.core, parent=self)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.store_tab)

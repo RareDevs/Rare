@@ -41,7 +41,13 @@ class SearchStoreQuery:
         self.locale = f'{self.language}-{self.country}'
 
     def to_dict(self):
-        payload = {
+        price_range = ''
+        free_game = self.free_game
+        if self.price_range == 'free':
+            free_game = True
+        elif self.price_range.startswith('<price>'):
+            price_range = self.price_range.replace('<price>', '')
+        return {
             'allowCountries': self.country,
             'category': self.category,
             'count': self.count,
@@ -58,23 +64,8 @@ class SearchStoreQuery:
             'releaseDate': str(self.release_date),
             'withPrice': self.with_price,
             'withPromotions': self.with_promotions,
-            'priceRange': self.price_range,
-            'freeGame': self.free_game,
+            'priceRange': price_range,
+            'freeGame': free_game,
             'onSale': self.on_sale,
             'effectiveDate': str(self.effective_date),
         }
-        # payload.pop("withPromotions")
-        payload.pop('onSale')
-        if self.price_range == 'free':
-            payload['freeGame'] = True
-            payload.pop('priceRange')
-        elif self.price_range.startswith('<price>'):
-            payload['priceRange'] = self.price_range.replace('<price>', '')
-        if self.on_sale:
-            payload['onSale'] = True
-
-        if self.price_range:
-            payload['effectiveDate'] = self.effective_date
-        else:
-            payload.pop('priceRange')
-        return payload

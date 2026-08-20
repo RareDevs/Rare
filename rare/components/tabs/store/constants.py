@@ -324,6 +324,33 @@ mutation removeFromWishlistMutation(
 }
 """
 
+PURCHASE_QUERY = """
+mutation purchaseMutation(
+  $namespace: String!
+  $offerId: String!
+  $country: String!
+  $locale: String!
+) {
+  Catalog {
+    purchase(
+      namespace: $namespace
+      offerId: $offerId
+      country: $country
+      locale: $locale
+    ) {
+      code
+      error {
+        code
+        message
+      }
+      cart {
+        id
+      }
+    }
+  }
+}
+"""
+
 COUPONS_QUERY = """
 query getCoupons(
   $currencyCountry: String!
@@ -441,6 +468,7 @@ wishlist_add_query = compress_query(WISHLIST_ADD_QUERY)
 wishlist_remove_query = compress_query(WISHLIST_REMOVE_QUERY)
 coupons_query = compress_query(COUPONS_QUERY)
 store_config_query = compress_query(STORE_CONFIG_QUERY)
+purchase_query = compress_query(PURCHASE_QUERY)
 
 
 if __name__ == '__main__':

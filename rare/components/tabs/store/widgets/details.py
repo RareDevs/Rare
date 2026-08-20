@@ -18,6 +18,8 @@ from rare.components.tabs.store.api.models.diesel import (
 from rare.components.tabs.store.api.models.response import CatalogOfferModel
 from rare.components.tabs.store.store_api import StoreAPI
 from rare.models.image import ImageSize
+from rare.models.install import InstallOptionsModel
+from rare.shared import RareCore
 from rare.ui.components.tabs.store.details import Ui_StoreDetailsWidget
 from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
@@ -29,9 +31,10 @@ logger = getLogger('StoreDetails')
 
 class StoreDetailsWidget(QWidget, SideTabContents):
     back_clicked: Signal = Signal()
+    open_library: Signal = Signal()
 
     # TODO Design
-    def __init__(self, installed: list, store_api: StoreAPI, parent=None):
+    def __init__(self, rcore: RareCore | None, store_api: StoreAPI, parent=None):
         super(StoreDetailsWidget, self).__init__(parent=parent)
         self.implements_scrollarea = True
 
@@ -39,17 +42,18 @@ class StoreDetailsWidget(QWidget, SideTabContents):
         self.ui.setupUi(self)
         self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
 
+        self.rcore = rcore
         self.store_api = store_api
-        self.installed = installed
         self.catalog_offer: CatalogOfferModel = None
+        self._primary_mode: str | None = None
 
-        self.image = LoadingSpinnerImageWidget(store_api.cached_manager, self)
+        self.image = LoadingSpinnerImageWidget(store_api.image_manager, self)
         self.image.setFixedSize(ImageSize.DisplayTall)
         self.ui.left_layout.insertWidget(0, self.image, alignment=Qt.AlignmentFlag.AlignTop)
         self.ui.left_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.ui.wishlist_button.clicked.connect(self.add_to_wishlist)
-        self.ui.store_button.clicked.connect(self.button_clicked)
+        self.ui.store_button.clicked.connect(self.on_primary_action)
         self.ui.wishlist_button.setVisible(True)
         self.in_wishlist = False
         self.wishlist = []
@@ -103,12 +107,7 @@ class StoreDetailsWidget(QWidget, SideTabContents):
             slug = slug.replace('/home', '')
         self.slug = slug
 
-        if offer.namespace in self.installed:
-            self.ui.store_button.setText(self.tr('Show Game on Epic Page'))
-            self.ui.status.setVisible(True)
-        else:
-            self.ui.store_button.setText(self.tr('Buy Game in Epic Games Store'))
-            self.ui.status.setVisible(False)
+        self._update_primary_action(offer)
 
         self.ui.original_price.setText(self.tr('Loading'))
         # self.title.setText(self.tr("Loading"))
@@ -234,8 +233,108 @@ class StoreDetailsWidget(QWidget, SideTabContents):
     #     for game in wishlist:
     #         self.wishlist.append(game["offer"]["title"])
 
-    def button_clicked(self):
-        QDesktopServices.openUrl(QUrl(f'https://www.epicgames.com/store/{self.store_api.language_code}/p/{self.slug}'))
+    def _app_name(self, offer: CatalogOfferModel) -> str:
+        if offer.items:
+            return offer.items[0].get('id') or offer.id
+        return offer.id
+
+    def is_free(self, offer: CatalogOfferModel) -> bool:
+        if offer.price is None or offer.price.totalPrice is None:
+            return False
+        return offer.price.totalPrice.discountPrice == 0
+
+    def is_owned(self, offer: CatalogOfferModel) -> bool:
+        if self.rcore is None:
+            return False
+        app_name = self._app_name(offer)
+        if self.rcore.core().is_installed(app_name):
+            return True
+        entitlements = self.rcore.core().lgd.entitlements or []
+        return any(
+            ent.get('namespace') == offer.namespace and ent.get('offerId') == offer.id
+            for ent in entitlements
+        )
+
+    def is_installed(self, offer: CatalogOfferModel) -> bool:
+        if self.rcore is None:
+            return False
+        return self.rcore.core().is_installed(self._app_name(offer))
+
+    def _update_primary_action(self, offer: CatalogOfferModel):
+        if self.is_installed(offer):
+            self.ui.store_button.setText(self.tr('In Library'))
+            self.ui.status.setText(self.tr('You own this game'))
+            self.ui.status.setVisible(True)
+            self._primary_mode = 'library'
+        elif self.is_owned(offer):
+            self.ui.store_button.setText(self.tr('Install'))
+            self.ui.status.setText(self.tr('You own this game'))
+            self.ui.status.setVisible(True)
+            self._primary_mode = 'install'
+        elif self.is_free(offer):
+            self.ui.store_button.setText(self.tr('Get it free'))
+            self.ui.status.setVisible(False)
+            self._primary_mode = 'claim'
+        else:
+            self.ui.store_button.setText(self.tr('Buy on Epic Games Store'))
+            self.ui.status.setVisible(False)
+            self._primary_mode = 'buy'
+        self.ui.store_button.setEnabled(True)
+
+    @Slot()
+    def on_primary_action(self):
+        offer = self.catalog_offer
+        if offer is None or self._primary_mode is None:
+            return
+
+        if self._primary_mode == 'library':
+            self.open_library.emit()
+        elif self._primary_mode == 'install':
+            self._install_offer(offer)
+        elif self._primary_mode == 'claim':
+            self._claim_offer(offer)
+        elif self._primary_mode == 'buy':
+            self._open_store_page()
+
+    def _open_store_page(self):
+        QDesktopServices.openUrl(
+            QUrl(f'https://www.epicgames.com/store/{self.store_api.language_code}/p/{self.slug}')
+        )
+
+    def _install_offer(self, offer: CatalogOfferModel):
+        if self.rcore is None:
+            self._open_store_page()
+            return
+        app_name = self._app_name(offer)
+        self.ui.store_button.setEnabled(False)
+        self.ui.store_button.setText(self.tr('Installing...'))
+        self.rcore.signals().game.install.emit(
+            InstallOptionsModel(
+                app_name=app_name,
+                platform=self.rcore.core().default_platform,
+            )
+        )
+        self.open_library.emit()
+
+    def _claim_offer(self, offer: CatalogOfferModel):
+        self.ui.store_button.setEnabled(False)
+        self.ui.store_button.setText(self.tr('Claiming...'))
+        self.store_api.purchase_free_game(
+            offer.namespace,
+            offer.id,
+            lambda success: self._on_claim_result(offer, success),
+        )
+
+    @Slot(bool)
+    def _on_claim_result(self, offer: CatalogOfferModel, success: bool):
+        if not success:
+            self.ui.store_button.setEnabled(True)
+            self.ui.store_button.setText(self.tr('Buy on Epic Games Store'))
+            self._primary_mode = 'buy'
+            self._open_store_page()
+            return
+        self._update_primary_action(offer)
+        self._install_offer(offer)
 
     def keyPressEvent(self, a0: QKeyEvent):
         if a0.key() == Qt.Key.Key_Escape:

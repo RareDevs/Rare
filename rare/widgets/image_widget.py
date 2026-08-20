@@ -190,7 +190,7 @@ class LoadingSpinnerImageWidget(LoadingImageWidget):
         self.spinner = LoadingWidget(parent=self)
 
     def fetchPixmap(self, url: str, params: dict | None = None):
-        self.spinner.setFixedSize(self._image_size.size)
+        self.spinner.setFixedSize(QSize(48, 48))
         self.spinner.setVisible(True)
         params = (
             params if params else {'resize': 1, 'w': self._image_size.base.size.width(), 'h': self._image_size.base.size.height()}

@@ -3,11 +3,11 @@ from typing import ClassVar
 
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QMessageBox, QSizePolicy, QWidget
+from PySide6.QtWidgets import QGridLayout, QMessageBox, QSizePolicy, QWidget
 
+from rare.shared import RareCore
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
 from rare.utils.misc import qta_icon
-from rare.widgets.flow_layout import FlowLayout
 from rare.widgets.side_tab import SideTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
 
@@ -18,19 +18,22 @@ from .widgets.items import WishlistItemWidget
 
 
 class WishlistPage(SlidingStackedWidget, SideTabContents):
-    def __init__(self, api: StoreAPI, parent=None):
+    open_library = Signal()
+
+    def __init__(self, api: StoreAPI, rcore: RareCore | None = None, parent=None):
         super(WishlistPage, self).__init__(parent=parent)
         self.implements_scrollarea = True
 
-        self.wishlist_widget = WishlistWidget(api, parent=self)
+        self.wishlist_widget = WishlistWidget(api, rcore, parent=self)
         self.wishlist_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.wishlist_widget.set_title.connect(self.set_title)
         self.wishlist_widget.show_details.connect(self.show_details)
 
-        self.details_widget = StoreDetailsWidget([], api, parent=self)
+        self.details_widget = StoreDetailsWidget(rcore, api, parent=self)
         self.details_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.details_widget.set_title.connect(self.set_title)
         self.details_widget.back_clicked.connect(self.show_main)
+        self.details_widget.open_library.connect(self.open_library)
 
         self.setDirection(Qt.Orientation.Horizontal)
         self.addWidget(self.wishlist_widget)
@@ -62,15 +65,19 @@ class WishlistWidget(QWidget, SideTabContents):
     show_details = Signal(CatalogOfferModel)
     update_wishlist = Signal()
 
-    def __init__(self, api: StoreAPI, parent=None):
+    def __init__(self, api: StoreAPI, rcore: RareCore | None = None, parent=None):
         super(WishlistWidget, self).__init__(parent=parent)
         self.implements_scrollarea = True
         self.api = api
+        self.rcore = rcore
         self.ui = Ui_Wishlist()
         self.ui.setupUi(self)
         self.ui.main_layout.setContentsMargins(0, 0, 3, 0)
 
-        self.wishlist_layout = FlowLayout()
+        self.wishlist_layout = QGridLayout()
+        self.wishlist_layout.setContentsMargins(0, 0, 0, 0)
+        self.wishlist_layout.setSpacing(12)
+        self._w_index = 0
         self.ui.container_layout.addLayout(self.wishlist_layout, stretch=1)
 
         filters = {
@@ -138,17 +145,28 @@ class WishlistWidget(QWidget, SideTabContents):
         - (x.catalog_game.price.totalPrice.discountPrice / x.catalog_game.price.totalPrice.originalPrice),
     }
 
+    def _clear_wishlist(self, delete: bool) -> None:
+        self._w_index = 0
+        while self.wishlist_layout.count():
+            item = self.wishlist_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None and delete:
+                widget.deleteLater()
+
+    def _add_wishlist(self, widget: QWidget) -> None:
+        self.wishlist_layout.addWidget(widget, self._w_index // 3, self._w_index % 3)
+        self._w_index += 1
+
     @Slot(int)
     def order_wishlist(self, index: int = int(WishlistOrder.NAME)):
         list_order = self.ui.order_combo.itemData(index, Qt.ItemDataRole.UserRole)
         widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
-        for w in widgets:
-            self.wishlist_layout.removeWidget(w)
+        self._clear_wishlist(delete=False)
 
         reverse = self.ui.reverse_check.isChecked()
         widgets = sorted(widgets, key=self.__ordering[list_order], reverse=reverse)
         for w in widgets:
-            self.wishlist_layout.addWidget(w)
+            self._add_wishlist(w)
 
     @Slot(Qt.CheckState)
     def _on_reverse_changed(self, state: Qt.CheckState):
@@ -156,20 +174,18 @@ class WishlistWidget(QWidget, SideTabContents):
 
     @Slot(object)
     def set_wishlist(self, wishlist: list[WishlistItemModel] | None = None):
-        if wishlist and wishlist[0] == 'error':
+        if not wishlist or (isinstance(wishlist, list) and wishlist[0] == 'error'):
+            self._clear_wishlist(delete=True)
+            self.ui.no_games_label.setVisible(True)
             return
 
-        widgets = self.ui.container.findChildren(WishlistItemWidget, options=Qt.FindChildOption.FindDirectChildrenOnly)
-        for w in widgets:
-            self.wishlist_layout.removeWidget(w)
-            w.disconnect(w)
-            w.deleteLater()
+        self._clear_wishlist(delete=True)
 
         self.ui.no_games_label.setVisible(bool(wishlist))
 
         widgets = []
         for game in wishlist:
-            w = WishlistItemWidget(self.api.cached_manager, game.offer, self.ui.container)
+            w = WishlistItemWidget(self.api.image_manager, game.offer, self.rcore, self.ui.container)
             w.show_details.connect(self.show_details)
             w.delete_from_wishlist.connect(self.delete_from_wishlist)
             widgets.append(w)
@@ -178,7 +194,7 @@ class WishlistWidget(QWidget, SideTabContents):
         reverse = self.ui.reverse_check.isChecked()
         widgets = sorted(widgets, key=self.__ordering[list_order], reverse=reverse)
         for w in widgets:
-            self.wishlist_layout.addWidget(w)
+            self._add_wishlist(w)
 
         self.filter_wishlist(self.ui.filter_combo.currentIndex())
 
