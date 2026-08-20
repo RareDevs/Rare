@@ -245,7 +245,7 @@ QComboBox:!editable:hover {
     border-color: rgb( 0, 150, 170);
     border-left-color: rgb( 0, 175, 195);
     width: 14px;
-    image: url(":/stylesheets/RareAccent/drop-down.svg");
+    image: url(":/stylesheets/Cyanotic/drop-down.svg");
 }
 *::drop-down:editable {
     subcontrol-origin: border;
@@ -257,7 +257,7 @@ QComboBox:!editable:hover {
     border-color: rgb( 47,  79,  79);
     background-color: rgb( 60,  63,  65);
     width: 14px;
-    image: url(":/stylesheets/RareAccent/drop-down.svg");
+    image: url(":/stylesheets/Cyanotic/drop-down.svg");
 }
 *::up-button {
     subcontrol-origin: border;
@@ -271,7 +271,7 @@ QComboBox:!editable:hover {
     width: 14px;
     subcontrol-position: top right;
     border-bottom-width: 1px;
-    image: url(":/stylesheets/RareAccent/sort-up.svg");
+    image: url(":/stylesheets/Cyanotic/sort-up.svg");
 }
 *::down-button {
     subcontrol-origin: border;
@@ -285,7 +285,7 @@ QComboBox:!editable:hover {
     width: 14px;
     subcontrol-position: bottom right;
     border-top-width: 1;
-    image: url(":/stylesheets/RareAccent/sort-down.svg");
+    image: url(":/stylesheets/Cyanotic/sort-down.svg");
 }
 *::drop-down:disabled {
     border-color: rgb( 67,  71,  77);
@@ -505,80 +505,80 @@ QTableView::indicator:disabled {
 }
 QGroupBox::indicator:checked {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/square.svg");
+    image: url(":/stylesheets/Cyanotic/square.svg");
 }
 QCheckBox::indicator:checked {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/square.svg");
+    image: url(":/stylesheets/Cyanotic/square.svg");
 }
 QListView::indicator:checked {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/square.svg");
+    image: url(":/stylesheets/Cyanotic/square.svg");
 }
 QTreeView::indicator:checked {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/square.svg");
+    image: url(":/stylesheets/Cyanotic/square.svg");
 }
 QTableView::indicator:checked {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/square.svg");
+    image: url(":/stylesheets/Cyanotic/square.svg");
 }
 QGroupBox::indicator:indeterminate {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/half-square.svg");
+    image: url(":/stylesheets/Cyanotic/half-square.svg");
 }
 QCheckBox::indicator:indeterminate {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/half-square.svg");
+    image: url(":/stylesheets/Cyanotic/half-square.svg");
 }
 QListView::indicator:indeterminate {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/half-square.svg");
+    image: url(":/stylesheets/Cyanotic/half-square.svg");
 }
 QTreeView::indicator:indeterminate {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/half-square.svg");
+    image: url(":/stylesheets/Cyanotic/half-square.svg");
 }
 QTableView::indicator:indeterminate {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/half-square.svg");
+    image: url(":/stylesheets/Cyanotic/half-square.svg");
 }
 QRadioButton::indicator:checked {
     border-radius: 5%;
-    image: url(":/stylesheets/RareAccent/circle.svg");
+    image: url(":/stylesheets/Cyanotic/circle.svg");
 }
 QGroupBox::indicator:checked:disabled {
-    image: url(":/stylesheets/RareAccent/square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/square-disabled.svg");
 }
 QCheckBox::indicator:checked:disabled {
-    image: url(":/stylesheets/RareAccent/square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/square-disabled.svg");
 }
 QListView::indicator:checked:disabled {
-    image: url(":/stylesheets/RareAccent/square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/square-disabled.svg");
 }
 QTreeView::indicator:checked:disabled {
-    image: url(":/stylesheets/RareAccent/square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/square-disabled.svg");
 }
 QTableView::indicator:checked:disabled {
-    image: url(":/stylesheets/RareAccent/square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/square-disabled.svg");
 }
 QGroupBox::indicator:indeterminate:disabled {
-    image: url(":/stylesheets/RareAccent/half-square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/half-square-disabled.svg");
 }
 QCheckBox::indicator:indeterminate:disabled {
-    image: url(":/stylesheets/RareAccent/half-square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/half-square-disabled.svg");
 }
 QListView::indicator:indeterminate:disabled {
-    image: url(":/stylesheets/RareAccent/half-square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/half-square-disabled.svg");
 }
 QTreeView::indicator:indeterminate:disabled {
-    image: url(":/stylesheets/RareAccent/half-square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/half-square-disabled.svg");
 }
 QTableView::indicator:indeterminate:disabled {
-    image: url(":/stylesheets/RareAccent/half-square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/half-square-disabled.svg");
 }
 QRadioButton::indicator:checked:disabled {
-    image: url(":/stylesheets/RareAccent/circle-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/circle-disabled.svg");
 }
 QGroupBox[checkable="true"] {
     margin-top: 0.5em;

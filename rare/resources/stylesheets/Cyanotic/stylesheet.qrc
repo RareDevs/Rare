@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="stylesheets/RareAccent">
+  <qresource prefix="stylesheets/Cyanotic">
     <file>circle-disabled.svg</file>
     <file>circle.svg</file>
     <file>drop-down.svg</file>

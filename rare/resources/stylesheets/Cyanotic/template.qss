@@ -112,7 +112,7 @@ QComboBox:!editable:hover {
 *::drop-down,
 *::drop-down:editable {
     width: 14px;
-    image: url(":/stylesheets/RareAccent/drop-down.svg");
+    image: url(":/stylesheets/Cyanotic/drop-down.svg");
 }
 *::up-button,
 *::down-button {
@@ -121,12 +121,12 @@ QComboBox:!editable:hover {
 *::up-button {
     subcontrol-position: top right; 
     border-bottom-width: 1px;
-    image: url(":/stylesheets/RareAccent/sort-up.svg");
+    image: url(":/stylesheets/Cyanotic/sort-up.svg");
 }
 *::down-button {
     subcontrol-position: bottom right; 
     border-top-width: 1;
-    image: url(":/stylesheets/RareAccent/sort-down.svg");
+    image: url(":/stylesheets/Cyanotic/sort-down.svg");
 }
 
 QProgressBar {
@@ -300,7 +300,7 @@ QListView::indicator:checked,
 QTreeView::indicator:checked,
 QTableView::indicator:checked {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/square.svg");
+    image: url(":/stylesheets/Cyanotic/square.svg");
 }
 QGroupBox::indicator:indeterminate,
 QCheckBox::indicator:indeterminate,
@@ -308,28 +308,28 @@ QListView::indicator:indeterminate,
 QTreeView::indicator:indeterminate,
 QTableView::indicator:indeterminate {
     border-radius: 2px;
-    image: url(":/stylesheets/RareAccent/half-square.svg");
+    image: url(":/stylesheets/Cyanotic/half-square.svg");
 }
 QRadioButton::indicator:checked {
     border-radius: 5%;
-    image: url(":/stylesheets/RareAccent/circle.svg");
+    image: url(":/stylesheets/Cyanotic/circle.svg");
 }
 QGroupBox::indicator:checked:disabled,
 QCheckBox::indicator:checked:disabled,
 QListView::indicator:checked:disabled,
 QTreeView::indicator:checked:disabled,
 QTableView::indicator:checked:disabled {
-    image: url(":/stylesheets/RareAccent/square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/square-disabled.svg");
 }
 QGroupBox::indicator:indeterminate:disabled,
 QCheckBox::indicator:indeterminate:disabled,
 QListView::indicator:indeterminate:disabled,
 QTreeView::indicator:indeterminate:disabled,
 QTableView::indicator:indeterminate:disabled {
-    image: url(":/stylesheets/RareAccent/half-square-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/half-square-disabled.svg");
 }
 QRadioButton::indicator:checked:disabled {
-    image: url(":/stylesheets/RareAccent/circle-disabled.svg");
+    image: url(":/stylesheets/Cyanotic/circle-disabled.svg");
 }
 
 QGroupBox {
