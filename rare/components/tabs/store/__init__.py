@@ -20,7 +20,8 @@ class StoreTab(SideTabWidget):
             self.core.egs.session.headers['Authorization'],
             self.core.language_code,
             self.core.country_code,
-            [],  # [i.asset_infos["Windows"].namespace for i in self.rcore.game_list if bool(i.asset_infos)]
+            [],
+            self.core.egs._store_user_agent,
         )
 
         self.landing = LandingPage(self.api, parent=self)

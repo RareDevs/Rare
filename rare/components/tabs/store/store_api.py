@@ -5,12 +5,12 @@ from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication
 
 from rare.components.tabs.store.constants import (
+    purchase_query,
     search_query,
     wishlist_add_query,
     wishlist_query,
     wishlist_remove_query,
 )
-from rare.utils.paths import cache_dir
 from rare.utils.qrequests import QRequests
 
 from .api.models.diesel import DieselProduct
@@ -19,8 +19,7 @@ from .api.models.response import (
     ResponseModel,
 )
 
-graphql_url = 'https://store.epicgames.com/graphql'
-# graphql_url = "https://launcher.store.epicgames.com/graphql"
+graphql_url = 'https://launcher.store.epicgames.com/graphql'
 
 
 def DEBUG() -> bool:
@@ -30,7 +29,7 @@ def DEBUG() -> bool:
 class StoreAPI(QObject):
     update_wishlist = Signal()
 
-    def __init__(self, token, language: str, country: str, installed):
+    def __init__(self, token, language: str, country: str, installed, user_agent: str):
         super(StoreAPI, self).__init__()
         self.logger = getLogger(type(self).__name__)
         self.token = token
@@ -38,8 +37,8 @@ class StoreAPI(QObject):
         self.country_code: str = country
         self.locale = f'{self.language_code}-{self.country_code}'
         self.manager = QRequests(parent=self)
-        self.authed_manager = QRequests(token=token, parent=self)
-        self.cached_manager = QRequests(cache=str(cache_dir().joinpath('store')), parent=self)
+        self.authed_manager = QRequests(token=token, user_agent=user_agent, parent=self)
+        self.image_manager = QRequests(parent=self)
 
         self.installed = installed
 
@@ -56,16 +55,26 @@ class StoreAPI(QObject):
         self.manager.get(url, lambda data: self.__handle_free_games(data, callback), params=params)
 
     def __handle_free_games(self, data, callback: Callable):
+        elements = False
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    self.logger.error(error)
+                    self.logger.error('Free games request failed: %s', error)
+                callback(elements)
+                return
+            if (
+                response.data is None
+                or response.data.catalog is None
+                or response.data.catalog.searchStore is None
+            ):
+                self.logger.error('Free games request returned no data')
+                callback(elements)
+                return
             elements = response.data.catalog.searchStore.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise
-            elements = False
             self.logger.error('Free games request failed with: %s', e)
         callback(elements)
 
@@ -84,16 +93,26 @@ class StoreAPI(QObject):
         )
 
     def __handle_wishlist(self, data, callback: Callable[[tuple], None]):
+        elements = False
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    self.logger.error(error)
+                    self.logger.error('Wishlist request failed: %s', error)
+                callback(elements)
+                return
+            if (
+                response.data is None
+                or response.data.wishlist is None
+                or response.data.wishlist.wishlistItems is None
+            ):
+                self.logger.error('Wishlist request returned no data')
+                callback(elements)
+                return
             elements = response.data.wishlist.wishlistItems.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise
-            elements = False
             self.logger.error('Wishlist request failed with: %s', e)
         callback(elements)
 
@@ -115,19 +134,29 @@ class StoreAPI(QObject):
             },
         }
 
-        self.manager.post(graphql_url, lambda data: self.__handle_search(data, callback), payload)
+        self.authed_manager.post(graphql_url, lambda data: self.__handle_search(data, callback), payload)
 
     def __handle_search(self, data, callback: Callable[[tuple], None]):
+        elements = False
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    self.logger.error(error)
+                    self.logger.error('Search request failed: %s', error)
+                callback(elements)
+                return
+            if (
+                response.data is None
+                or response.data.catalog is None
+                or response.data.catalog.searchStore is None
+            ):
+                self.logger.error('Search request returned no data')
+                callback(elements)
+                return
             elements = response.data.catalog.searchStore.elements
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise
-            elements = False
             self.logger.error('Search request failed with: %s', e)
         callback(elements)
 
@@ -137,7 +166,7 @@ class StoreAPI(QObject):
             return
         self.browse_active = True
         payload = {'query': search_query, 'variables': browse_model.to_dict()}
-        self.manager.post(
+        self.authed_manager.post(
             graphql_url,
             lambda data: self.__handle_browse_games(data, callback),
             payload,
@@ -145,38 +174,36 @@ class StoreAPI(QObject):
 
     def __handle_browse_games(self, data, callback):
         self.browse_active = False
-        if data is None:
-            data = {}
-        if not self.next_browse_request:
-            try:
-                response = ResponseModel.from_dict(data)
-                if response.errors:
-                    for error in response.errors:
-                        self.logger.error(error)
-                elements = response.data.catalog.searchStore.elements
-            except (Exception, AttributeError, KeyError) as e:
-                if DEBUG():
-                    raise
-                elements = False
-                self.logger.error('Browse request failed with: %s', e)
-            callback(elements)
-        else:
+        if self.next_browse_request:
             self.browse_games(*self.next_browse_request)  # pylint: disable=E1120
             self.next_browse_request = ()
-
-    # def get_game_config_graphql(self, namespace: str, callback):
-    #     payload = {
-    #         "query": config_query,
-    #         "variables": {
-    #             "namespace": namespace
-    #         }
-    #     }
-
-    def __make_graphql_query(self):
-        pass
-
-    def __make_api_query(self):
-        pass
+            return
+        if data is None:
+            self.logger.error('Browse request failed')
+            callback(False)
+            return
+        try:
+            response = ResponseModel.from_dict(data)
+            if response.errors:
+                for error in response.errors:
+                    self.logger.error('Browse request failed: %s', error)
+                callback(False)
+                return
+            if (
+                response.data is None
+                or response.data.catalog is None
+                or response.data.catalog.searchStore is None
+            ):
+                self.logger.error('Browse request returned no data')
+                callback(False)
+                return
+            elements = response.data.catalog.searchStore.elements
+        except (Exception, AttributeError, KeyError) as e:
+            if DEBUG():
+                raise
+            elements = False
+            self.logger.error('Browse request failed with: %s', e)
+        callback(elements)
 
     def get_game_config_cms(self, slug: str, is_bundle: bool, callback: Callable):
         url = 'https://store-content.ak.epicgames.com/api'
@@ -212,17 +239,27 @@ class StoreAPI(QObject):
         )
 
     def _handle_add_to_wishlist(self, data, callback):
+        success = False
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    self.logger.error(error)
+                    self.logger.error('Add to wishlist request failed: %s', error)
+                callback(success)
+                return
+            if (
+                response.data is None
+                or response.data.wishlist is None
+                or response.data.wishlist.addToWishlist is None
+            ):
+                self.logger.error('Add to wishlist request returned no data')
+                callback(success)
+                return
             success = response.data.wishlist.addToWishlist.success
         except Exception as e:
             if DEBUG():
                 raise
             self.logger.error('Add to wishlist request failed with: %s', e)
-            success = False
         callback(success)
         self.update_wishlist.emit()
 
@@ -242,16 +279,68 @@ class StoreAPI(QObject):
         )
 
     def _handle_remove_from_wishlist(self, data, callback):
+        success = False
         try:
             response = ResponseModel.from_dict(data)
             if response.errors:
                 for error in response.errors:
-                    self.logger.error(error)
+                    self.logger.error('Remove from wishlist request failed: %s', error)
+                callback(success)
+                return
+            if (
+                response.data is None
+                or response.data.wishlist is None
+                or response.data.wishlist.removeFromWishlist is None
+            ):
+                self.logger.error('Remove from wishlist request returned no data')
+                callback(success)
+                return
             success = response.data.wishlist.removeFromWishlist.success
         except Exception as e:
             if DEBUG():
                 raise
             self.logger.error('Remove from wishlist request failed with: %s', e)
-            success = False
         callback(success)
         self.update_wishlist.emit()
+
+    def purchase_free_game(self, namespace: str, offer_id: str, callback: Callable[[bool], None]):
+        payload = {
+            'query': purchase_query,
+            'variables': {
+                'namespace': namespace,
+                'offerId': offer_id,
+                'country': self.country_code,
+                'locale': self.locale,
+            },
+        }
+        self.authed_manager.post(
+            graphql_url,
+            lambda data: self._handle_purchase(data, callback),
+            payload,
+        )
+
+    def _handle_purchase(self, data, callback: Callable[[bool], None]):
+        success = False
+        try:
+            response = ResponseModel.from_dict(data)
+            if response.errors:
+                for error in response.errors:
+                    self.logger.error('Purchase request failed: %s', error)
+                callback(success)
+                return
+            if (
+                response.data is None
+                or response.data.catalog is None
+                or response.data.catalog.purchase is None
+            ):
+                self.logger.error('Purchase request returned no data')
+                callback(success)
+                return
+            code = response.data.catalog.purchase.code
+            success = code in {'OK', 'ALREADY_IN_LIBRARY', 'OK_NO_CHANGE'}
+        except Exception as e:
+            if DEBUG():
+                raise
+            self.logger.error('Purchase request failed with: %s', e)
+            success = False
+        callback(success)

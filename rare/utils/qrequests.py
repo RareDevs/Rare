@@ -14,7 +14,6 @@ from PySide6.QtNetwork import (
 )
 
 user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
-# user_agent = f'UELauncher/{version} Windows/10.0.19041.1.256.64bit'
 RequestHandler = TypeVar('RequestHandler', bound=Callable[[dict | bytes], None])
 
 
@@ -33,7 +32,7 @@ class RequestQueueItem(Generic[RequestHandler]):
 class QRequests(QObject):
     data_ready = Signal(object)
 
-    def __init__(self, cache: str | None = None, token: str | None = None, parent=None):
+    def __init__(self, cache: str | None = None, token: str | None = None, user_agent: str = user_agent, parent=None):
         super(QRequests, self).__init__(parent=parent)
         self.logger = getLogger(f'{type(self).__name__}_{type(parent).__name__}')
         self._manager = QNetworkAccessManager(self)
@@ -47,6 +46,7 @@ class QRequests(QObject):
         if token is not None:
             self.logger.debug('Manager is authorized')
         self._token = token
+        self._user_agent = user_agent
 
         self._active_requests: dict[QNetworkReply, RequestQueueItem] = {}
 
@@ -65,11 +65,13 @@ class QRequests(QObject):
             QNetworkRequest.KnownHeaders.ContentTypeHeader,
             'application/json; charset=UTF-8',
         )
-        request.setHeader(QNetworkRequest.KnownHeaders.UserAgentHeader, user_agent)
+        request.setRawHeader(b'Accept', b'application/json')
+        request.setHeader(QNetworkRequest.KnownHeaders.UserAgentHeader, self._user_agent)
         request.setAttribute(
             QNetworkRequest.Attribute.RedirectPolicyAttribute,
             QNetworkRequest.RedirectPolicy.NoLessSafeRedirectPolicy,
         )
+        request.setAttribute(QNetworkRequest.Attribute.Http2AllowedAttribute, False)
         if self._cache is not None:
             request.setAttribute(
                 QNetworkRequest.Attribute.CacheLoadControlAttribute,
@@ -79,10 +81,18 @@ class QRequests(QObject):
             request.setRawHeader(b'Authorization', self._token.encode())
         return request
 
+    def _fail(self, item: RequestQueueItem) -> None:
+        for handler in item.handlers:
+            handler(None)
+
     def _post(self, item: RequestQueueItem):
         request = self._prepare_request(item)
         payload = orjson.dumps(item.payload)
         reply = self._manager.post(request, payload)
+        if not isinstance(reply, QNetworkReply):
+            self.logger.error('Network request did not return a QNetworkReply: %r', reply)
+            self._fail(item)
+            return
         reply.errorOccurred.connect(self._on_error)
         self._active_requests[reply] = item
 
@@ -93,6 +103,10 @@ class QRequests(QObject):
     def _get(self, item: RequestQueueItem):
         request = self._prepare_request(item)
         reply = self._manager.get(request)
+        if not isinstance(reply, QNetworkReply):
+            self.logger.error('Network request did not return a QNetworkReply: %r', reply)
+            self._fail(item)
+            return
         reply.errorOccurred.connect(self._on_error)
         self._active_requests[reply] = item
 
@@ -121,22 +135,29 @@ class QRequests(QObject):
 
     @Slot(QNetworkReply)
     def _on_finished(self, reply: QNetworkReply):
+        if not isinstance(reply, QNetworkReply):
+            self.logger.error('Finished signal delivered a non-reply object: %r', reply)
+            return
         item = self._active_requests.pop(reply, None)
         if item is None:
             self.logger.error('QNetworkReply: %s without associated item', reply.url().toString())
-        elif reply.error() != QNetworkReply.NetworkError.NoError:
-            self.logger.error(reply.errorString())
+            return
+        if reply.error() != QNetworkReply.NetworkError.NoError:
+            self.logger.error('Network request failed: %s', reply.errorString())
+            self._fail(item)
+            reply.deleteLater()
+            return
+
+        mimetype, _charset = self._parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))
+        maintype, _subtype = mimetype.split('/')
+        bin_data = reply.readAll().data()
+        if mimetype == 'application/json':
+            data = orjson.loads(bin_data)
+        elif maintype == 'image':
+            data = bin_data
         else:
-            mimetype, _charset = self._parse_content_type(reply.header(QNetworkRequest.KnownHeaders.ContentTypeHeader))
-            maintype, _subtype = mimetype.split('/')
-            bin_data = reply.readAll().data()
-            if mimetype == 'application/json':
-                data = orjson.loads(bin_data)
-            elif maintype == 'image':
-                data = bin_data
-            else:
-                data = None
-            for handler in item.handlers:
-                handler(data)
+            data = None
+        for handler in item.handlers:
+            handler(data)
         reply.disconnect(reply)
         reply.deleteLater()
