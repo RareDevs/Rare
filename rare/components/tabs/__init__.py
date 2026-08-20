@@ -29,45 +29,64 @@ class MainTabWidget(QTabWidget):
         self.signals = rcore.signals()
         self.args = rcore.args()
 
-        self.main_bar = MainTabBar(parent=self)
-        self.setTabBar(self.main_bar)
+        self.navigation_bar = MainTabBar(parent=self)
+        self.setTabBar(self.navigation_bar)
+        self.setTabPosition(QTabWidget.TabPosition.West)
+
+        self.collapse_index = self.addTab(
+            QWidget(self), qta_icon('fa5s.bars', 'fa.bars'), self.tr('Toggle')
+        )
+        self.navigation_bar.setTabToolTip(self.collapse_index, self.tr('Toggle sidebar'))
+        self.navigation_bar.collapse_index = self.collapse_index
 
         # Generate Tabs
         self.games_tab = GamesLibrary(self.settings, self.rcore, self)
         self.games_tab.import_clicked.connect(self.show_import)
-        self.games_index = self.addTab(self.games_tab, self.tr('Games'))
+        self.games_index = self.addTab(
+            self.games_tab, qta_icon('ri.gamepad-line', 'fa5s.gamepad'), self.tr('Games')
+        )
+        self.navigation_bar.setTabToolTip(self.games_index, self.tr('Games'))
 
         # Downloads Tab after Games Tab to use populated RareCore games list
         self.downloads_tab = DownloadsTab(self.settings, self.rcore, self)
-        self.downloads_index = self.addTab(self.downloads_tab, '')
+        self.downloads_index = self.addTab(self.downloads_tab, qta_icon('fa5s.download'), '')
         self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
         self.downloads_tab.update_queues_count()
         self.setTabEnabled(self.downloads_index, not self.args.offline)
 
         if not self.args.offline:
             self.store_tab = StoreTab(self.core, parent=self)
-            self.store_index = self.addTab(self.store_tab, self.tr('Store (Under Construction)'))
+            self.store_index = self.addTab(
+                self.store_tab, qta_icon('fa5s.shopping-cart'), self.tr('Store')
+            )
+            self.navigation_bar.setTabToolTip(self.store_index, self.tr('Store'))
             self.setTabEnabled(self.store_index, not self.args.offline)
 
         # Space Tab
         space_index = self.addTab(QWidget(self), 'Rare')
         self.setTabEnabled(space_index, False)
-        self.main_bar.expanded_idx = space_index
+        self.navigation_bar.expanded_index = space_index
 
         # Integrations Tab
         self.integrations_tab = IntegrationsTab(self.rcore, self)
-        self.integrations_index = self.addTab(self.integrations_tab, self.tr('Integrations'))
+        self.integrations_index = self.addTab(
+            self.integrations_tab, qta_icon('fa5s.plug', 'fa5s.link'), self.tr('Integrations')
+        )
+        self.navigation_bar.setTabToolTip(self.integrations_index, self.tr('Integrations'))
 
         # Settings Tab
         self.settings_tab = SettingsTab(settings, rcore, self)
-        self.settings_index = self.addTab(self.settings_tab, qta_icon('fa.gear', 'fa6s.gear'), self.tr('Settings'))
+        self.settings_index = self.addTab(
+            self.settings_tab, qta_icon('fa.gear', 'fa6s.gear'), self.tr('Settings')
+        )
+        self.navigation_bar.setTabToolTip(self.settings_index, self.tr('Settings'))
         self.settings_tab.update_available.connect(self._on_update_available)
 
         # Account Tab
         self.account_widget = AccountWidget(self.signals, self.core, self)
         self.account_widget.exit_app.connect(self._on_exit_app)
         self.account_index = self.addTab(
-            self.account_widget, qta_icon('mdi.account-circle', 'fa5s.user'), self.core.lgd.userdata.get('displayName')
+            self.account_widget, qta_icon('mdi.account-circle', 'fa5s.user'), self.core.lgd.userdata.get('displayName'),
         )
 
         # Open game list on click on Games tab button
@@ -105,7 +124,7 @@ class MainTabWidget(QTabWidget):
 
     @Slot()
     def _on_update_available(self):
-        self.main_bar.setTabText(self.settings_index, self.tr('Settings (!)'))
+        self.setTabText(self.settings_index, self.tr('Settings (!)'))
 
     @Slot()
     @Slot(str)
@@ -131,11 +150,9 @@ class MainTabWidget(QTabWidget):
     @Slot(int)
     def __on_downloads_update_title(self, num_downloads: int):
         suffix = '' if not num_downloads else f' ({num_downloads})'
-        self.setTabText(
-            self.indexOf(self.downloads_tab),
-            self.tr('Downloads') + suffix,
-        )
+        self.setTabText(self.downloads_index, self.tr('Downloads') + suffix)
 
+    @Slot(int)
     def mouse_clicked(self, index):
         if index == self.games_index:
             self.games_tab.show_library()
@@ -143,7 +160,7 @@ class MainTabWidget(QTabWidget):
             self.integrations_tab.show_import()
 
     def resizeEvent(self, event):
-        self.main_bar.setMinimumWidth(self.width())
+        self.navigation_bar.setMinimumHeight(self.height() - 1)
         super(MainTabWidget, self).resizeEvent(event)
 
     @Slot(int)

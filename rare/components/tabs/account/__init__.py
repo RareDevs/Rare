@@ -43,7 +43,7 @@ class AccountWidget(QWidget):
         center_widget.addWidget(self.quit_button)
 
         layout = QVBoxLayout(self)
-        layout.addWidget(self.center_widget, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.center_widget, alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignBottom)
 
     @Slot()
     def _on_browser_clicked(self):
