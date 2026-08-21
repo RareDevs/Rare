@@ -10,9 +10,9 @@ from .account import AccountWidget
 from .downloads import DownloadsTab
 from .integrations import IntegrationsTab
 from .library import GamesLibrary
+from .navigation_bar import NavigationBar
 from .settings import SettingsTab
 from .store import StoreTab
-from .tab_widgets import MainTabBar
 
 
 class MainTabWidget(QTabWidget):
@@ -29,7 +29,7 @@ class MainTabWidget(QTabWidget):
         self.signals = rcore.signals()
         self.args = rcore.args()
 
-        self.navigation_bar = MainTabBar(parent=self)
+        self.navigation_bar = NavigationBar(parent=self)
         self.setTabBar(self.navigation_bar)
         self.setTabPosition(QTabWidget.TabPosition.West)
 

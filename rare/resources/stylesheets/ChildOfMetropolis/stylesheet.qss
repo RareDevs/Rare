@@ -634,7 +634,7 @@ QBalloonTip {
 }
 
 /* Main tab bar styling */
-QTabBar#MainTabBar {
+QTabBar#NavigationBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
@@ -647,31 +647,31 @@ QTabBar#MainTabBar {
         stop: 1 #C2C4C5);
     */
 }
-QTabBar#MainTabBar:disabled {
+QTabBar#NavigationBar:disabled {
     border-color: transparent;
     border-bottom-color: #A3DAAA;
 }
-QTabBar#MainTabBar::tab {
+QTabBar#NavigationBar::tab {
     margin-left: 3px;
     margin-right: 3px;
     border-top-color: transparent;
     border-bottom-color: #5CD3FF;
     padding: 3px 5px;
 }/*
-QTabBar#MainTabBar::tab:top:first,
-QTabBar#MainTabBar::tab:bottom:first {
+QTabBar#NavigationBar::tab:top:first,
+QTabBar#NavigationBar::tab:bottom:first {
     margin-left: 0px;
     border-left: transparent;
 }
-QTabBar#MainTabBar::tab:top:last,
-QTabBar#MainTabBar::tab:bottom:last {
+QTabBar#NavigationBar::tab:top:last,
+QTabBar#NavigationBar::tab:bottom:last {
     margin-right: 0px;
     border-right: transparent;
 }*/
-QTabBar#MainTabBar::tab:top:hover {
+QTabBar#NavigationBar::tab:top:hover {
     border-top-color: #5CD3FF;
 }
-QTabBar#MainTabBar::tab:top:selected {
+QTabBar#NavigationBar::tab:top:selected {
     border-color: #5CD3FF;
     border-bottom-color: #C2C4C5;
 }

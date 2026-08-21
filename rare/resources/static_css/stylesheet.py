@@ -200,10 +200,10 @@ style.QPushButton[css_name(ListWidget, 'Button')].textAlign.setValue('left')
 style.QLabel[css_name(ListWidget, 'InfoLabel')].color.setValue('#999')
 
 
-# MainTabBar
-from rare.components.tabs.tab_widgets import MainTabBar  # noqa: E402
+# NavigationBar
+from rare.components.tabs.navigation_bar import NavigationBar  # noqa: E402
 
-style.QTabBar[css_name(MainTabBar, '')].tab.disabled.setValues(
+style.QTabBar[css_name(NavigationBar, '')].tab.disabled.setValues(
     border='0px',
     backgroundColor='transparent',
 )
