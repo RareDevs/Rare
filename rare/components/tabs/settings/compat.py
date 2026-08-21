@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
-from rare.widgets.side_tab import SideTabContents
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents
 
 from .widgets.overlay import DxvkConfigSettings, DxvkHudSettings, DxvkNvapiDrsSettings
 from .widgets.runner import RunnerSettingsBase, RunnerSettingsType
@@ -18,7 +18,7 @@ if pf.system() in {'Linux', 'FreeBSD'}:
     from .widgets.proton import ProtonSettings
 
 
-class CompatSettingsBase(QWidget, SideTabContents):
+class CompatSettingsBase(QWidget, ScrollAreaTabContents):
     # str: option key
     environ_changed: Signal = Signal(str)
     # # bool: state, str: path

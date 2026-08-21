@@ -1,10 +1,10 @@
 from rare.shared import RareCore
-from rare.widgets.side_tab import SideTabContents
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents
 
 from .widgets.envvars import EnvVars
 
 
-class EnvironSettingsBase(EnvVars, SideTabContents):
+class EnvironSettingsBase(EnvVars, ScrollAreaTabContents):
     def __init__(
         self,
         rcore: RareCore,

@@ -1,7 +1,7 @@
 from PySide6.QtGui import QHideEvent, QShowEvent
 
 from rare.lgndr.core import LegendaryCore
-from rare.widgets.side_tab import SideTabWidget
+from rare.widgets.scrollarea_tabs import ScrollAreaTabWidget
 
 from .landing import LandingPage
 from .search import SearchPage
@@ -9,7 +9,7 @@ from .store_api import StoreAPI
 from .wishlist import WishlistPage
 
 
-class StoreTab(SideTabWidget):
+class StoreTab(ScrollAreaTabWidget):
     def __init__(self, core: LegendaryCore, parent=None):
         super(StoreTab, self).__init__(parent=parent)
         self.init = False

@@ -5,13 +5,13 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils import config_helper as config
-from rare.widgets.side_tab import SideTabContents
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents
 
 from .widgets.launch import LaunchSettingsBase, LaunchSettingsType
 from .widgets.wrappers import WrapperSettings
 
 
-class GameSettingsBase(QWidget, SideTabContents):
+class GameSettingsBase(QWidget, ScrollAreaTabContents):
     # str: option key
     environ_changed: Signal = Signal(str)
 

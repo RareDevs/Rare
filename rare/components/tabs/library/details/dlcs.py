@@ -8,7 +8,7 @@ from rare.ui.components.tabs.library.details.dlc_widget import Ui_GameDlcWidget
 from rare.ui.components.tabs.library.details.dlcs import Ui_GameDlcs
 from rare.utils.misc import qta_icon, widget_object_name
 from rare.widgets.image_widget import ImageSize, ImageWidget
-from rare.widgets.side_tab import SideTabContents
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents
 
 
 class GameDlcWidget(QFrame):
@@ -96,7 +96,7 @@ class AvailableGameDlcWidget(GameDlcWidget):
         self.rdlc.install()
 
 
-class GameDlcs(QToolBox, SideTabContents):
+class GameDlcs(QToolBox, ScrollAreaTabContents):
     def __init__(self, rcore: RareCore, parent=None):
         super(GameDlcs, self).__init__(parent=parent)
         self.implements_scrollarea = True
