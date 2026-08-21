@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QMessageBox, QSizePolicy, QWidget
 from rare.ui.components.tabs.store.wishlist import Ui_Wishlist
 from rare.utils.misc import qta_icon
 from rare.widgets.flow_layout import FlowLayout
-from rare.widgets.side_tab import SideTabContents
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
 
 from .api.models.response import CatalogOfferModel, WishlistItemModel
@@ -17,7 +17,7 @@ from .widgets.details import StoreDetailsWidget
 from .widgets.items import WishlistItemWidget
 
 
-class WishlistPage(SlidingStackedWidget, SideTabContents):
+class WishlistPage(SlidingStackedWidget, ScrollAreaTabContents):
     def __init__(self, api: StoreAPI, parent=None):
         super(WishlistPage, self).__init__(parent=parent)
         self.implements_scrollarea = True
@@ -58,7 +58,7 @@ class WishlistFilter(IntEnum):
     DISCOUNT = 1
 
 
-class WishlistWidget(QWidget, SideTabContents):
+class WishlistWidget(QWidget, ScrollAreaTabContents):
     show_details = Signal(CatalogOfferModel)
     update_wishlist = Signal()
 

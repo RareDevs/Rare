@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
 from rare.ui.components.tabs.store.search import Ui_SearchWidget
 from rare.widgets.button_edit import ButtonLineEdit
 from rare.widgets.flow_layout import FlowLayout
-from rare.widgets.side_tab import SideTabContents
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
 
 from .api.models.query import SearchStoreQuery
@@ -25,7 +25,7 @@ from .widgets.items import SearchItemWidget
 logger = getLogger('Shop')
 
 
-class SearchPage(SlidingStackedWidget, SideTabContents):
+class SearchPage(SlidingStackedWidget, ScrollAreaTabContents):
     def __init__(self, store_api: StoreAPI, parent=None):
         super(SearchPage, self).__init__(parent=parent)
         self.implements_scrollarea = True
@@ -55,7 +55,7 @@ class SearchPage(SlidingStackedWidget, SideTabContents):
 
 
 # noinspection PyAttributeOutsideInit,PyBroadException
-class SearchWidget(QWidget, SideTabContents):
+class SearchWidget(QWidget, ScrollAreaTabContents):
     show_details = Signal(CatalogOfferModel)
 
     def __init__(self, store_api: StoreAPI, parent=None):

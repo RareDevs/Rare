@@ -17,7 +17,7 @@ from rare.components.tabs.store.api.models.response import (
     WishlistItemModel,
 )
 from rare.widgets.flow_layout import FlowLayout
-from rare.widgets.side_tab import SideTabContents
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents
 from rare.widgets.sliding_stack import SlidingStackedWidget
 
 from .store_api import StoreAPI
@@ -28,7 +28,7 @@ from .widgets.items import StoreItemWidget
 logger = getLogger('StoreLanding')
 
 
-class LandingPage(SlidingStackedWidget, SideTabContents):
+class LandingPage(SlidingStackedWidget, ScrollAreaTabContents):
     def __init__(self, store_api: StoreAPI, parent=None):
         super(LandingPage, self).__init__(parent=parent)
         self.implements_scrollarea = True
@@ -64,7 +64,7 @@ class LandingPage(SlidingStackedWidget, SideTabContents):
         self.slideInWidget(self.details_widget)
 
 
-class LandingWidget(QWidget, SideTabContents):
+class LandingWidget(QWidget, ScrollAreaTabContents):
     show_details = Signal(CatalogOfferModel)
 
     def __init__(self, api: StoreAPI, parent=None):

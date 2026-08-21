@@ -28,10 +28,10 @@ from rare.utils.misc import qta_icon
 from rare.widgets.cloudsync_widget import CloudSyncWidget
 from rare.widgets.indicator_edit import IndicatorReasonsCommon, PathEdit
 from rare.widgets.loading_widget import LoadingWidget
-from rare.widgets.side_tab import SideTabContents
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents
 
 
-class CloudSaves(QWidget, SideTabContents):
+class CloudSaves(QWidget, ScrollAreaTabContents):
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):
         super(CloudSaves, self).__init__(parent=parent)
         self.logger = getLogger(type(self).__name__)
