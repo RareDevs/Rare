@@ -13,8 +13,8 @@ from PySide6.QtNetwork import (
     QNetworkRequest,
 )
 
-user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
-# user_agent = f'UELauncher/{version} Windows/10.0.19041.1.256.64bit'
+_user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
+# _user_agent = f'UELauncher/{version} Windows/10.0.19041.1.256.64bit'
 RequestHandler = TypeVar('RequestHandler', bound=Callable[[dict | bytes], None])
 
 
@@ -33,7 +33,9 @@ class RequestQueueItem(Generic[RequestHandler]):
 class QRequests(QObject):
     data_ready = Signal(object)
 
-    def __init__(self, cache: str | None = None, token: str | None = None, parent=None):
+    def __init__(
+        self, cache: str | None = None, token: str | None = None, user_agent: str = _user_agent, parent: QObject | None = None
+    ):
         super(QRequests, self).__init__(parent=parent)
         self.logger = getLogger(f'{type(self).__name__}_{type(parent).__name__}')
         self._manager = QNetworkAccessManager(self)
@@ -47,6 +49,7 @@ class QRequests(QObject):
         if token is not None:
             self.logger.debug('Manager is authorized')
         self._token = token
+        self._user_agent = user_agent
 
         self._active_requests: dict[QNetworkReply, RequestQueueItem] = {}
 
@@ -65,11 +68,12 @@ class QRequests(QObject):
             QNetworkRequest.KnownHeaders.ContentTypeHeader,
             'application/json; charset=UTF-8',
         )
-        request.setHeader(QNetworkRequest.KnownHeaders.UserAgentHeader, user_agent)
+        request.setHeader(QNetworkRequest.KnownHeaders.UserAgentHeader, self._user_agent)
         request.setAttribute(
             QNetworkRequest.Attribute.RedirectPolicyAttribute,
             QNetworkRequest.RedirectPolicy.NoLessSafeRedirectPolicy,
         )
+        # request.setAttribute(QNetworkRequest.Attribute.Http2AllowedAttribute, False)
         if self._cache is not None:
             request.setAttribute(
                 QNetworkRequest.Attribute.CacheLoadControlAttribute,

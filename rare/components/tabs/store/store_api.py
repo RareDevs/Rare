@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from logging import getLogger
 
+from legendary.api.egs import EPCAPI
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication
 
@@ -19,9 +20,6 @@ from .api.models.response import (
     ResponseModel,
 )
 
-graphql_url = 'https://store.epicgames.com/graphql'
-# graphql_url = "https://launcher.store.epicgames.com/graphql"
-
 
 def DEBUG() -> bool:
     return '--debug' in QApplication.arguments()
@@ -30,7 +28,7 @@ def DEBUG() -> bool:
 class StoreAPI(QObject):
     update_wishlist = Signal()
 
-    def __init__(self, token, language: str, country: str, installed):
+    def __init__(self, token, language: str, country: str, user_agent: str, installed):
         super(StoreAPI, self).__init__()
         self.logger = getLogger(type(self).__name__)
         self.token = token
@@ -38,8 +36,10 @@ class StoreAPI(QObject):
         self.country_code: str = country
         self.locale = f'{self.language_code}-{self.country_code}'
         self.manager = QRequests(parent=self)
-        self.authed_manager = QRequests(token=token, parent=self)
+        self.authed_manager = QRequests(token=token, user_agent=user_agent, parent=self)
         self.cached_manager = QRequests(cache=str(cache_dir().joinpath('store')), parent=self)
+
+        self.grapql_url = f'https://{EPCAPI._store_gql_host}/graphql'
 
         self.installed = installed
 
@@ -65,13 +65,13 @@ class StoreAPI(QObject):
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise
-            elements = False
+            elements = ()
             self.logger.error('Free games request failed with: %s', e)
         callback(elements)
 
     def get_wishlist(self, callback: Callable):
         self.authed_manager.post(
-            graphql_url,
+            self.grapql_url,
             lambda data: self.__handle_wishlist(data, callback),
             {
                 'query': wishlist_query,
@@ -93,7 +93,7 @@ class StoreAPI(QObject):
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise
-            elements = False
+            elements = ()
             self.logger.error('Wishlist request failed with: %s', e)
         callback(elements)
 
@@ -115,7 +115,7 @@ class StoreAPI(QObject):
             },
         }
 
-        self.manager.post(graphql_url, lambda data: self.__handle_search(data, callback), payload)
+        self.authed_manager.post(self.grapql_url, lambda data: self.__handle_search(data, callback), payload)
 
     def __handle_search(self, data, callback: Callable[[tuple], None]):
         try:
@@ -127,7 +127,7 @@ class StoreAPI(QObject):
         except (Exception, AttributeError, KeyError) as e:
             if DEBUG():
                 raise
-            elements = False
+            elements = ()
             self.logger.error('Search request failed with: %s', e)
         callback(elements)
 
@@ -137,8 +137,8 @@ class StoreAPI(QObject):
             return
         self.browse_active = True
         payload = {'query': search_query, 'variables': browse_model.to_dict()}
-        self.manager.post(
-            graphql_url,
+        self.authed_manager.post(
+            self.grapql_url,
             lambda data: self.__handle_browse_games(data, callback),
             payload,
         )
@@ -157,7 +157,7 @@ class StoreAPI(QObject):
             except (Exception, AttributeError, KeyError) as e:
                 if DEBUG():
                     raise
-                elements = False
+                elements = ()
                 self.logger.error('Browse request failed with: %s', e)
             callback(elements)
         else:
@@ -206,7 +206,7 @@ class StoreAPI(QObject):
             },
         }
         self.authed_manager.post(
-            graphql_url,
+            self.grapql_url,
             lambda data: self._handle_add_to_wishlist(data, callback),
             payload,
         )
@@ -236,7 +236,7 @@ class StoreAPI(QObject):
             },
         }
         self.authed_manager.post(
-            graphql_url,
+            self.grapql_url,
             lambda data: self._handle_remove_from_wishlist(data, callback),
             payload,
         )
