@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
 
 from rare.shared import RareCore
-from rare.widgets.side_tab import SideTabWidget
+from rare.widgets.scrollarea_tabs import ScrollAreaTabWidget
 
 from .egl_sync_group import EGLSyncGroup
 from .eos_group import EosGroup
@@ -10,7 +10,7 @@ from .import_group import ImportGroup
 from .ubisoft_group import UbisoftGroup
 
 
-class IntegrationsTab(SideTabWidget):
+class IntegrationsTab(ScrollAreaTabWidget):
     def __init__(self, rcore: RareCore, parent=None):
         super(IntegrationsTab, self).__init__(show_back=False, parent=parent)
         self.import_group = ImportGroup(rcore, self)

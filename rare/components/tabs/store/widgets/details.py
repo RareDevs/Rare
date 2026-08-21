@@ -22,12 +22,12 @@ from rare.ui.components.tabs.store.details import Ui_StoreDetailsWidget
 from rare.utils.misc import qta_icon
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.image_widget import LoadingSpinnerImageWidget
-from rare.widgets.side_tab import SideTabBar, SideTabContents, SideTabWidget
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents, SideTabBar, SideTabWidget
 
 logger = getLogger('StoreDetails')
 
 
-class StoreDetailsWidget(QWidget, SideTabContents):
+class StoreDetailsWidget(QWidget, ScrollAreaTabContents):
     back_clicked: Signal = Signal()
 
     # TODO Design
@@ -256,7 +256,7 @@ class SocialButton(QPushButton):
         QDesktopServices.openUrl(QUrl(self.url))
 
 
-class RequirementsWidget(QWidget, SideTabContents):
+class RequirementsWidget(QWidget, ScrollAreaTabContents):
     def __init__(self, system: DieselSystemDetail, parent=None):
         super().__init__(parent=parent)
         self.implements_scrollarea = True

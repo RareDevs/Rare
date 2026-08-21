@@ -38,12 +38,12 @@ from rare.utils.qrequests import QRequests
 from rare.widgets.dialogs import ButtonDialog, game_title
 from rare.widgets.elide_label import ElideLabel
 from rare.widgets.image_widget import ImageSize, ImageWidget, LoadingImageWidget
-from rare.widgets.side_tab import SideTabContents
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents
 
 logger = getLogger('GameInfo')
 
 
-class GameDetails(QWidget, SideTabContents):
+class GameDetails(QWidget, ScrollAreaTabContents):
     # str: app_name
     import_clicked = Signal(str)
 
