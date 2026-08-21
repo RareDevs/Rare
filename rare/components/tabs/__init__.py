@@ -1,5 +1,5 @@
 from PySide6.QtCore import Signal, Slot
-from PySide6.QtGui import QShortcut
+from PySide6.QtGui import QIcon, QShortcut
 from PySide6.QtWidgets import QMessageBox, QTabWidget, QWidget
 
 from rare.models.settings import RareAppSettings
@@ -42,43 +42,35 @@ class MainTabWidget(QTabWidget):
         # Generate Tabs
         self.games_tab = GamesLibrary(self.settings, self.rcore, self)
         self.games_tab.import_clicked.connect(self.show_import)
-        self.games_index = self.addTab(
-            self.games_tab, qta_icon('ri.gamepad-line', 'fa5s.gamepad'), self.tr('Games')
-        )
+        self.games_index = self.addTab(self.games_tab, qta_icon('mdi.gamepad-variant', 'fa5s.gamepad'), self.tr('Games'))
         self.navigation_bar.setTabToolTip(self.games_index, self.tr('Games'))
 
         # Downloads Tab after Games Tab to use populated RareCore games list
         self.downloads_tab = DownloadsTab(self.settings, self.rcore, self)
-        self.downloads_index = self.addTab(self.downloads_tab, qta_icon('fa5s.download'), '')
+        self.downloads_index = self.addTab(self.downloads_tab, qta_icon('mdi.download-box', 'fa5s.download'), '')
         self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
         self.downloads_tab.update_queues_count()
         self.setTabEnabled(self.downloads_index, not self.args.offline)
 
         if not self.args.offline:
             self.store_tab = StoreTab(self.core, parent=self)
-            self.store_index = self.addTab(
-                self.store_tab, qta_icon('fa5s.shopping-cart'), self.tr('Store')
-            )
+            self.store_index = self.addTab(self.store_tab, qta_icon('mdi6.store', 'fa5s.store'), self.tr('Store'))
             self.navigation_bar.setTabToolTip(self.store_index, self.tr('Store'))
             self.setTabEnabled(self.store_index, not self.args.offline)
 
         # Space Tab
-        space_index = self.addTab(QWidget(self), 'Rare')
+        space_index = self.addTab(QWidget(self), QIcon(), 'Rare')
         self.setTabEnabled(space_index, False)
         self.navigation_bar.expanded_index = space_index
 
         # Integrations Tab
         self.integrations_tab = IntegrationsTab(self.rcore, self)
-        self.integrations_index = self.addTab(
-            self.integrations_tab, qta_icon('fa5s.plug', 'fa5s.link'), self.tr('Integrations')
-        )
+        self.integrations_index = self.addTab(self.integrations_tab, qta_icon('mdi.source-branch', 'fa6s.code-branch'), self.tr('Integrations'))
         self.navigation_bar.setTabToolTip(self.integrations_index, self.tr('Integrations'))
 
         # Settings Tab
         self.settings_tab = SettingsTab(settings, rcore, self)
-        self.settings_index = self.addTab(
-            self.settings_tab, qta_icon('fa.gear', 'fa6s.gear'), self.tr('Settings')
-        )
+        self.settings_index = self.addTab(self.settings_tab, qta_icon('fa.gear', 'fa6s.gear'), self.tr('Settings'))
         self.navigation_bar.setTabToolTip(self.settings_index, self.tr('Settings'))
         self.settings_tab.update_available.connect(self._on_update_available)
 
@@ -86,7 +78,7 @@ class MainTabWidget(QTabWidget):
         self.account_widget = AccountWidget(self.signals, self.core, self)
         self.account_widget.exit_app.connect(self._on_exit_app)
         self.account_index = self.addTab(
-            self.account_widget, qta_icon('mdi.account-circle', 'fa5s.user'), self.core.lgd.userdata.get('displayName'),
+            self.account_widget, qta_icon('mdi.account-circle', 'fa5s.user'), self.core.lgd.userdata.get('displayName')
         )
 
         # Open game list on click on Games tab button
