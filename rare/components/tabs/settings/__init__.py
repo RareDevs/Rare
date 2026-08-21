@@ -4,7 +4,7 @@ from PySide6.QtCore import Signal, Slot
 
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
-from rare.widgets.side_tab import SideTabWidget
+from rare.widgets.scrollarea_tabs import ScrollAreaTabWidget
 
 from .about import About
 from .compat import GlobalCompatSettings
@@ -15,7 +15,7 @@ from .legendary import LegendarySettings
 from .rare import RareSettings
 
 
-class SettingsTab(SideTabWidget):
+class SettingsTab(ScrollAreaTabWidget):
     update_available = Signal()
 
     def __init__(self, settings: RareAppSettings, rcore: RareCore, parent=None):

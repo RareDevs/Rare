@@ -9,7 +9,7 @@ from rare.models.game import RareGame
 from rare.models.settings import RareAppSettings
 from rare.shared import RareCore
 from rare.utils.json_formatter import QJsonModel
-from rare.widgets.side_tab import SideTabContents, SideTabWidget
+from rare.widgets.scrollarea_tabs import ScrollAreaTabContents, ScrollAreaTabWidget
 
 from .cloud import CloudSaves
 from .compat import LocalCompatSettings
@@ -19,7 +19,7 @@ from .environ import LocalEnvironSettings
 from .game import LocalGameSettings
 
 
-class GameDetailsTabs(SideTabWidget):
+class GameDetailsTabs(ScrollAreaTabWidget):
     # str: app_name
     import_clicked = Signal(str)
 
@@ -88,7 +88,7 @@ class GameDetailsTabs(SideTabWidget):
         self.setCurrentIndex(self.details_index)
 
 
-class GameMetadataView(QTreeView, SideTabContents):
+class GameMetadataView(QTreeView, ScrollAreaTabContents):
     def __init__(self, parent=None):
         super(GameMetadataView, self).__init__(parent=parent)
         self.implements_scrollarea = True
