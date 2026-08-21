@@ -790,27 +790,27 @@ QBalloonTip {
     border-radius: 4px;
     padding: 1px;
 }
-QTabBar#MainTabBar {
+QTabBar#NavigationBar {
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
     border-bottom-color: rgb( 0, 150, 170);
 }
-QTabBar#MainTabBar:disabled {
+QTabBar#NavigationBar:disabled {
     border-color: transparent;
     border-bottom-color: rgb( 60,  63,  65);
 }
-QTabBar#MainTabBar::tab {
+QTabBar#NavigationBar::tab {
     margin-left: 3px;
     margin-right: 3px;
     border-top-color: transparent;
     border-bottom-color: rgb( 0, 150, 170);
     padding: 3px 5px;
 }
-QTabBar#MainTabBar::tab:top:hover {
+QTabBar#NavigationBar::tab:top:hover {
     border-top-color: rgb( 0, 150, 170);
 }
-QTabBar#MainTabBar::tab:top:selected {
+QTabBar#NavigationBar::tab:top:selected {
     border-color: rgb( 0, 150, 170);
     border-bottom-color: rgb( 32,  34,  37);
 }

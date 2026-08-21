@@ -16,10 +16,10 @@ from PySide6.QtWidgets import (
 )
 
 
-class MainTabBar(QTabBar):
+class NavigationBar(QTabBar):
 
     def __init__(self, parent: QWidget | None = None):
-        super(MainTabBar, self).__init__(parent=parent)
+        super(NavigationBar, self).__init__(parent=parent)
         self.setObjectName(type(self).__name__)
         self._margin = 8
         self.setShape(QTabBar.Shape.RoundedWest)
@@ -79,20 +79,20 @@ class MainTabBar(QTabBar):
 
     def resizeEvent(self, event):
         self._spacer_height = max(0, self.height() - self._natural_height())
-        return super(MainTabBar, self).resizeEvent(event)
+        return super(NavigationBar, self).resizeEvent(event)
 
     def leaveEvent(self, event):
         if self._hover_index != -1:
             self._hover_index = -1
             self.update()
-        return super(MainTabBar, self).leaveEvent(event)
+        return super(NavigationBar, self).leaveEvent(event)
 
     def mouseMoveEvent(self, event):
         index = self.tabAt(event.pos())
         if index != self._hover_index:
             self._hover_index = index
             self.update()
-        return super(MainTabBar, self).mouseMoveEvent(event)
+        return super(NavigationBar, self).mouseMoveEvent(event)
 
     def mousePressEvent(self, e: QMouseEvent, /) -> None:
         if e.type() == QMouseEvent.Type.MouseButtonPress:
