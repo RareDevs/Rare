@@ -1,3 +1,5 @@
+from math import floor
+
 from PySide6.QtCore import (
     Property,
     QEasingCurve,
@@ -6,29 +8,31 @@ from PySide6.QtCore import (
     QSize,
     Qt,
 )
-from PySide6.QtGui import QColor, QFontMetrics, QIcon, QMouseEvent, QPainter, QPalette, QPixmap
+from PySide6.QtGui import QColor, QFontMetrics, QIcon, QMouseEvent, QPainter, QPixmap
 from PySide6.QtWidgets import (
-    QStyle,
-    QStyleOptionTab,
-    QStylePainter,
     QTabBar,
     QWidget,
 )
 
+from rare.models.settings import RareAppSettings, app_settings
+from rare.widgets.scrollarea_tabs import SideTabBar
 
-class NavigationBar(QTabBar):
 
-    def __init__(self, parent: QWidget | None = None):
-        super(NavigationBar, self).__init__(parent=parent)
+class NavigationBar(SideTabBar):
+
+    def __init__(self, settings: RareAppSettings, parent: QWidget | None = None):
+        super(NavigationBar, self).__init__(padding=0, parent=parent)
         self.setObjectName(type(self).__name__)
         self._margin = 8
-        self.setShape(QTabBar.Shape.RoundedWest)
-        self.setExpanding(False)
-        self.setMovable(False)
+        # self.setShape(QTabBar.Shape.RoundedWest)
+        # self.setExpanding(False)
+        # self.setMovable(False)
         self.setDrawBase(False)
-        self.setUsesScrollButtons(False)
+        # self.setUsesScrollButtons(False)
         self.setIconSize(QSize(24, 24))
-        self.setMouseTracking(True)
+        # self.setMouseTracking(True)
+
+        self.settings = settings
 
         self._progress: float = 0.0
         self._spacer_index: int = -1
@@ -41,6 +45,8 @@ class NavigationBar(QTabBar):
 
         self.collapse_index: int | None = None
         self.expanded_index: int | None = None
+
+        self.set_collapsed(self.settings.get_value(app_settings.collapsed_tabs), animate=False)
 
     def is_collapsed(self) -> bool:
         return self._progress > 0.5
@@ -60,6 +66,7 @@ class NavigationBar(QTabBar):
 
     def toggle_collapsed(self) -> None:
         self.set_collapsed(not self.is_collapsed())
+        self.settings.set_value(app_settings.collapsed_tabs, not self.is_collapsed())
 
     def set_spacer_index(self, index: int) -> None:
         self._spacer_index = index
@@ -113,47 +120,44 @@ class NavigationBar(QTabBar):
 
     collapseProgress = Property(float, _get_progress, _set_progress)
 
-    def tabSizeHint(self, index):
-        fm = QFontMetrics(self.font())
-        height = fm.height() + 18
+    def tabSizeHint(self, index) -> QSize:
+        size = super().tabSizeHint(index)
         if index == self.expanded_index:
             offset = self.height()
-            for _tab_index in range(self.count()):
-                offset -= height
-            height = max(height, height + offset)
-        width = round(self._expanded_width() + (self._collapsed_width() - self._expanded_width()) * self._progress)
-        return QSize(width, height)
+            for tab_index in range(self.count()):
+                offset -= super().tabSizeHint(tab_index).height()
+            size.setHeight(max(size.height(), size.height() + offset))
+        size.setWidth(
+            floor(size.width() + (self._collapsed_width() - size.width()) * self._progress)
+        )
+        return size
 
-    def sizeHint(self):
-        if not self.count():
-            return QSize(self._collapsed_width() + 150, 30)
-        width = max(self.tabSizeHint(i).width() for i in range(self.count()))
-        return QSize(width, self._natural_height())
+    def sizeHint(self) -> QSize:
+        size = super().sizeHint()
+        size.setWidth(max(self.tabSizeHint(i).width() for i in range(self.count())))
+        return size
 
-    def minimumSizeHint(self):
-        return self.sizeHint()
-
-    def paintEvent(self, event):
-        painter = QStylePainter(self)
-        opt = QStyleOptionTab()
-        pal = self.palette()
-
-        for i in range(self.count()):
-            if i == self._spacer_index:
-                continue
-            rect = self.tabRect(i)
-            self.initStyleOption(opt, i)
-            hovered = i == self._hover_index and not self._collapsed
-            disabled = not self.isTabEnabled(i)
-            if hovered:
-                opt.state |= QStyle.StateFlag.State_MouseOver
-            self.style().drawControl(QStyle.ControlElement.CE_TabBarTabShape, opt, painter, self)
-
-            tab_icon = self.tabIcon(i)
-            tab_text = '' if self._collapsed else self.tabText(i)
-            self._draw_tab_label(
-                painter, rect, tab_icon, tab_text, pal.color(QPalette.ColorRole.WindowText), disabled
-            )
+    # def paintEvent(self, event):
+    #     painter = QStylePainter(self)
+    #     opt = QStyleOptionTab()
+    #     pal = self.palette()
+    #
+    #     for i in range(self.count()):
+    #         if i == self._spacer_index:
+    #             continue
+    #         rect = self.tabRect(i)
+    #         self.initStyleOption(opt, i)
+    #         hovered = i == self._hover_index and not self._collapsed
+    #         disabled = not self.isTabEnabled(i)
+    #         if hovered:
+    #             opt.state |= QStyle.StateFlag.State_MouseOver
+    #         self.style().drawControl(QStyle.ControlElement.CE_TabBarTabShape, opt, painter, self)
+    #
+    #         tab_icon = self.tabIcon(i)
+    #         tab_text = '' if self._collapsed else self.tabText(i)
+    #         self._draw_tab_label(
+    #             painter, rect, tab_icon, tab_text, pal.color(QPalette.ColorRole.WindowText), disabled
+    #         )
 
     def _tint_icon(self, icon: QIcon, color: QColor, size: QSize) -> QIcon:
         pm = icon.pixmap(size, QIcon.Mode.Normal)

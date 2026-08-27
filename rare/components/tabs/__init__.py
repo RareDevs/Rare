@@ -29,7 +29,7 @@ class MainTabWidget(QTabWidget):
         self.signals = rcore.signals()
         self.args = rcore.args()
 
-        self.navigation_bar = NavigationBar(parent=self)
+        self.navigation_bar = NavigationBar(settings=settings, parent=self)
         self.setTabBar(self.navigation_bar)
         self.setTabPosition(QTabWidget.TabPosition.West)
 
@@ -48,7 +48,7 @@ class MainTabWidget(QTabWidget):
         # Downloads Tab after Games Tab to use populated RareCore games list
         self.downloads_tab = DownloadsTab(self.settings, self.rcore, self)
         self.downloads_index = self.addTab(self.downloads_tab, qta_icon('mdi.download-box', 'fa5s.download'), '')
-        self.downloads_tab.update_title.connect(self.__on_downloads_update_title)
+        self.downloads_tab.update_title.connect(self._on_downloads_update_title)
         self.downloads_tab.update_queues_count()
         self.setTabEnabled(self.downloads_index, not self.args.offline)
 
@@ -140,7 +140,7 @@ class MainTabWidget(QTabWidget):
         self.integrations_tab.show_ubisoft()
 
     @Slot(int)
-    def __on_downloads_update_title(self, num_downloads: int):
+    def _on_downloads_update_title(self, num_downloads: int):
         suffix = '' if not num_downloads else f' ({num_downloads})'
         self.setTabText(self.downloads_index, self.tr('Downloads') + suffix)
 

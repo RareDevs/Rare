@@ -175,10 +175,10 @@ class SideTabWidget(ScrollAreaTabWidget):
     def __init__(
         self,
         *,
-        show_back: bool = False,
         padding: int = -1,
         tab_position: QTabWidget.TabPosition = QTabWidget.TabPosition.West,
         tab_orientation: SideTabBar.TabOrientation = SideTabBar.TabOrientation.Horizontal,
+        show_back: bool = False,
         parent: QWidget | None = None,
     ):
         super(SideTabWidget, self).__init__(show_back=show_back, parent=parent)

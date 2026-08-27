@@ -22,6 +22,7 @@ from .api.models.response import (
 
 
 def DEBUG() -> bool:
+    return False
     return '--debug' in QApplication.arguments()
 
 
