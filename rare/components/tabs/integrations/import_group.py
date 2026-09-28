@@ -173,11 +173,8 @@ class ImportGroup(QGroupBox):
         )
         self.import_path_edit.setReadOnly(True)
         self.import_path_edit.textChanged.connect(self._path_changed)
-        self.ui.import_layout.setWidget(
-            self.ui.import_layout.getWidgetPosition(self.ui.path_edit_label)[0],
-            QFormLayout.ItemRole.FieldRole,
-            self.import_path_edit,
-        )
+        import_path_edit_row, _ = self.ui.import_layout.getWidgetPosition(self.ui.path_edit_label)
+        self.ui.import_layout.setWidget(import_path_edit_row,QFormLayout.ItemRole.FieldRole, self.import_path_edit)
 
         self.app_name_edit = IndicatorLineEdit(
             placeholder=self.tr('Use in case the app name was not found automatically'),
@@ -186,11 +183,8 @@ class ImportGroup(QGroupBox):
             parent=self,
         )
         self.app_name_edit.textChanged.connect(self._app_name_changed)
-        self.ui.import_layout.setWidget(
-            self.ui.import_layout.getWidgetPosition(self.ui.app_name_label)[0],
-            QFormLayout.ItemRole.FieldRole,
-            self.app_name_edit,
-        )
+        app_name_edit_row, _ = self.ui.import_layout.getWidgetPosition(self.ui.app_name_label)
+        self.ui.import_layout.setWidget(app_name_edit_row, QFormLayout.ItemRole.FieldRole, self.app_name_edit)
 
         self.ui.import_folder_check.checkStateChanged.connect(self._on_import_folder_changed)
         self.ui.import_dlcs_check.setEnabled(False)
