@@ -281,8 +281,8 @@ class ImportGroup(QGroupBox):
 
     @Slot(Qt.CheckState)
     def _on_import_folder_changed(self, state: Qt.CheckState):
-        self.app_name_edit.setEnabled(not state)
-        self.ui.platform_combo.setEnabled(not state)
+        self.app_name_edit.setEnabled(state == Qt.CheckState.Unchecked)
+        self.ui.platform_combo.setEnabled(state == Qt.CheckState.Unchecked)
         self.ui.platform_combo.setToolTip(
             self.tr(
                 'When importing multiple games, the current OS will be used at the'
