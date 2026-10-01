@@ -129,8 +129,8 @@ class DLManager(DLManagerReal):
             if runtime and processed_chunks:
                 average_speed = processed_chunks / runtime
                 estimate = (num_chunk_tasks - processed_chunks) / average_speed
-                hours, estimate = int(estimate // 3600), estimate % 3600
-                minutes, seconds = int(estimate // 60), int(estimate % 60)
+                hours, remainder = int(estimate // 3600), estimate % 3600
+                minutes, seconds = int(remainder // 60), int(remainder % 60)
 
                 rt_hours, runtime = int(runtime // 3600), runtime % 3600
                 rt_minutes, rt_seconds = int(runtime // 60), int(runtime % 60)
