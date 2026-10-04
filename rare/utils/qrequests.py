@@ -97,6 +97,12 @@ class QRequests(QObject):
     def _get(self, item: RequestQueueItem):
         request = self._prepare_request(item)
         reply = self._manager.get(request)
+        if not isinstance(reply, QNetworkReply):
+            # FIXME: investigate why this happens
+            #
+            # ERROR: AttributeError: 'PySide6.QtCore.QRunnable' object has no attribute 'errorOccurred'
+            self.logger.error('Supplied reply %s with target %s is not a QNetworkReply object',type(reply),)
+            return
         reply.errorOccurred.connect(self._on_error)
         self._active_requests[reply] = item
 
