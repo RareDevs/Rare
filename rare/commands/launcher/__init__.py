@@ -383,6 +383,8 @@ class RareLauncher(RareApp):
                 params.environment['SteamGameId'] = appid
             elif params.environment.get('SteamGameId', False):
                 appid = params.environment['SteamGameId']
+            else:
+                appid = params.environment['SteamGameId'] = '0'
 
             self.game_process.setProgram(executable)
             # TODO: Add "SteamLauch" and "AppId=xxxxxx" here for steamdeck/gamescope
